@@ -9,12 +9,27 @@ const state = { user: null, sports: [], charts: {} };
 function token() { return localStorage.getItem(TOKEN_KEY); }
 function setToken(t) { t ? localStorage.setItem(TOKEN_KEY, t) : localStorage.removeItem(TOKEN_KEY); }
 
-async function api(path, { method = "GET", body, raw = false, allow401 = false } = {}) {
+async function api(path, { method = "GET", body, raw = false, allow401 = false, timeoutMs = 15000 } = {}) {
   const headers = {};
   if (body) headers["Content-Type"] = "application/json";
   const t = token();
   if (t) headers["Authorization"] = `Bearer ${t}`;
-  const res = await fetch(path, { method, headers, body: body ? JSON.stringify(body) : undefined });
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+  let res;
+  try {
+    res = await fetch(path, {
+      method,
+      headers,
+      body: body ? JSON.stringify(body) : undefined,
+      signal: ctrl.signal,
+    });
+  } catch (err) {
+    if (err.name === "AbortError") throw new Error("Request timed out — is the server running?");
+    throw err;
+  } finally {
+    clearTimeout(timer);
+  }
   if (res.status === 401 && !allow401) { setToken(null); showAuth(); throw new Error("Session expired"); }
   if (!res.ok) {
     let detail = res.statusText;
@@ -142,13 +157,16 @@ window.addEventListener("hashchange", route);
 
 /* -------------------------------- boot -------------------------------- */
 async function boot() {
+  showAuthLoading();
   try {
     state.user = await api("/auth/me");
-  } catch { showAuth(); return; }
-  showApp();
-  await refreshTicker();
-  if (!location.hash) location.hash = "#/bets";
-  await route();
+    showApp();
+    await refreshTicker();
+    if (!location.hash) location.hash = "#/bets";
+    await route();
+  } catch {
+    showAuth();
+  }
 }
 
 /* ============================ Bets list ============================ */
@@ -525,4 +543,10 @@ async function createKey() {
 }
 
 /* -------------------------------- start -------------------------------- */
-if (token()) boot(); else showAuth();
+function start() {
+  if (token()) boot();
+  else showAuth();
+}
+start();
+// Bfcache can restore the page with the loading spinner still visible without re-running scripts.
+window.addEventListener("pageshow", e => { if (e.persisted) start(); });
