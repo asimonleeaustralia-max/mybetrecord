@@ -44,6 +44,7 @@ class UserOut(BaseModel):
     base_currency: str
     bankroll: float
     kelly_multiplier: float
+    is_admin: bool
     created_at: datetime
 
 

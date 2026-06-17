@@ -35,4 +35,7 @@ def get_db() -> Generator[Session, None, None]:
 def init_db() -> None:
     """Create tables if they don't exist. Production uses Alembic instead."""
     from . import models  # noqa: F401  (ensure models are registered)
+    from .seed import seed_dev_admin
+
     Base.metadata.create_all(bind=engine)
+    seed_dev_admin()

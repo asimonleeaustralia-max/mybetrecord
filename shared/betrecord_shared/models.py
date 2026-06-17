@@ -45,6 +45,7 @@ class User(Base):
     kelly_multiplier: Mapped[float] = mapped_column(Float, default=1.0)  # 1=full, .5=half
 
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
 
     api_keys: Mapped[list["ApiKey"]] = relationship(back_populates="user", cascade="all, delete-orphan")
