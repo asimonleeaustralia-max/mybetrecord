@@ -9,13 +9,13 @@ const state = { user: null, sports: [], charts: {} };
 function token() { return localStorage.getItem(TOKEN_KEY); }
 function setToken(t) { t ? localStorage.setItem(TOKEN_KEY, t) : localStorage.removeItem(TOKEN_KEY); }
 
-async function api(path, { method = "GET", body, raw = false } = {}) {
+async function api(path, { method = "GET", body, raw = false, allow401 = false } = {}) {
   const headers = {};
   if (body) headers["Content-Type"] = "application/json";
   const t = token();
   if (t) headers["Authorization"] = `Bearer ${t}`;
   const res = await fetch(path, { method, headers, body: body ? JSON.stringify(body) : undefined });
-  if (res.status === 401) { setToken(null); showAuth(); throw new Error("Session expired"); }
+  if (res.status === 401 && !allow401) { setToken(null); showAuth(); throw new Error("Session expired"); }
   if (!res.ok) {
     let detail = res.statusText;
     try { detail = (await res.json()).detail || detail; } catch {}
@@ -53,12 +53,21 @@ function toast(msg, isErr = false) {
 function clone(id) { return document.importNode($(`#${id}`).content, true); }
 
 /* -------------------------------- auth -------------------------------- */
-function showAuth() {
+function showAuthLoading() {
   $("#app").hidden = true;
+  $("#auth").hidden = true;
+  $("#authLoading").hidden = false;
+}
+function showAuth(message = null) {
+  $("#app").hidden = true;
+  $("#authLoading").hidden = true;
   $("#auth").hidden = false;
+  const err = $("#authError");
+  if (message) { err.textContent = message; err.hidden = false; }
 }
 function showApp() {
   $("#auth").hidden = true;
+  $("#authLoading").hidden = true;
   $("#app").hidden = false;
 }
 
@@ -73,11 +82,15 @@ $$("[data-auth-tab]").forEach(btn => btn.addEventListener("click", () => {
 $("#loginForm").addEventListener("submit", async e => {
   e.preventDefault();
   const f = Object.fromEntries(new FormData(e.target));
+  $("#authError").hidden = true;
+  showAuthLoading();
   try {
-    const { access_token } = await api("/auth/login", { method: "POST", body: f });
+    const { access_token } = await api("/auth/login", { method: "POST", body: f, allow401: true });
     setToken(access_token);
     await boot();
-  } catch (err) { authError(err.message); }
+  } catch {
+    showAuth("Login failed");
+  }
 });
 
 $("#registerForm").addEventListener("submit", async e => {
