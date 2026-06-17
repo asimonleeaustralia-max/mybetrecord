@@ -1,0 +1,70 @@
+# Local development. From the repo root:  docker compose up --build
+# Then open http://localhost:8080
+#
+# Each service builds from the repo root so it can pull in the shared package.
+
+x-service-env: &service-env
+  DATABASE_URL: postgresql+psycopg://betrecord:betrecord@db:5432/betrecord
+  JWT_SECRET: dev-only-change-me
+  ENVIRONMENT: development
+  CORS_ORIGINS: "*"
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: betrecord
+      POSTGRES_PASSWORD: betrecord
+      POSTGRES_DB: betrecord
+    ports: ["5432:5432"]
+    volumes: ["pgdata:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U betrecord"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  auth:
+    build: { context: ., dockerfile: services/auth/Dockerfile }
+    environment: { <<: *service-env }
+    depends_on:
+      db: { condition: service_healthy }
+    ports: ["8001:8001"]
+
+  bets:
+    build: { context: ., dockerfile: services/bets/Dockerfile }
+    environment: { <<: *service-env }
+    depends_on:
+      db: { condition: service_healthy }
+    ports: ["8002:8002"]
+
+  reports:
+    build: { context: ., dockerfile: services/reports/Dockerfile }
+    environment: { <<: *service-env }
+    depends_on:
+      db: { condition: service_healthy }
+    ports: ["8003:8003"]
+
+  payments:
+    build: { context: ., dockerfile: services/payments/Dockerfile }
+    environment:
+      <<: *service-env
+      STRIPE_SECRET_KEY: ""        # set to enable billing
+      STRIPE_PRICE_ID: ""
+      STRIPE_WEBHOOK_SECRET: ""
+    depends_on:
+      db: { condition: service_healthy }
+    ports: ["8004:8004"]
+
+  frontend:
+    build: { context: ., dockerfile: frontend/Dockerfile }
+    environment:
+      AUTH_UPSTREAM: auth:8001
+      BETS_UPSTREAM: bets:8002
+      REPORTS_UPSTREAM: reports:8003
+      PAYMENTS_UPSTREAM: payments:8004
+    depends_on: [auth, bets, reports, payments]
+    ports: ["8080:8080"]
+
+volumes:
+  pgdata:

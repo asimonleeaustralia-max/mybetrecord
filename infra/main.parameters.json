@@ -1,0 +1,15 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "namePrefix": { "value": "mybetrec" },
+    "imageTag": { "value": "latest" },
+    "pgAdminLogin": { "value": "betadmin" },
+    "pgAdminPassword": { "value": "REPLACE_WITH_STRONG_PASSWORD" },
+    "jwtSecret": { "value": "REPLACE_WITH_LONG_RANDOM_SECRET" },
+    "corsOrigins": { "value": "*" },
+    "stripeSecretKey": { "value": "" },
+    "stripePriceId": { "value": "" },
+    "stripeWebhookSecret": { "value": "" }
+  }
+}

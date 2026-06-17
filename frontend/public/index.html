@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#16181D" />
+  <title>mybetrecord · your betting ledger</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
+</head>
+<body>
+
+  <!-- ───────────────────────── Auth gate ───────────────────────── -->
+  <section id="auth" class="auth" hidden>
+    <div class="auth__panel">
+      <div class="wordmark wordmark--lg">my<span>bet</span>record</div>
+      <p class="auth__tag">A disciplined ledger for people who bet to a number.</p>
+
+      <div class="seg" role="tablist">
+        <button class="seg__btn is-active" data-auth-tab="login" role="tab">Sign in</button>
+        <button class="seg__btn" data-auth-tab="register" role="tab">Create account</button>
+      </div>
+
+      <form id="loginForm" class="auth__form">
+        <label>Email<input type="email" name="email" autocomplete="email" required /></label>
+        <label>Password<input type="password" name="password" autocomplete="current-password" required /></label>
+        <button class="btn btn--brass" type="submit">Sign in</button>
+      </form>
+
+      <form id="registerForm" class="auth__form" hidden>
+        <label>Display name<input type="text" name="display_name" autocomplete="name" /></label>
+        <label>Email<input type="email" name="email" autocomplete="email" required /></label>
+        <label>Password <span class="hint">8+ characters</span><input type="password" name="password" autocomplete="new-password" minlength="8" required /></label>
+        <button class="btn btn--brass" type="submit">Create account</button>
+      </form>
+
+      <p id="authError" class="form-error" hidden></p>
+    </div>
+  </section>
+
+  <!-- ───────────────────────── App shell ──────────────────────── -->
+  <div id="app" class="app" hidden>
+    <header class="topbar">
+      <div class="wordmark">my<span>bet</span>record</div>
+      <div class="ticker">
+        <div class="ticker__item"><span class="ticker__label">Bankroll</span><span id="tkBankroll" class="num">—</span></div>
+        <div class="ticker__item"><span class="ticker__label">P/L</span><span id="tkPL" class="num">—</span></div>
+        <div class="ticker__item"><span class="ticker__label">Yield</span><span id="tkYield" class="num">—</span></div>
+      </div>
+      <button id="logoutBtn" class="btn btn--ghost btn--sm">Sign out</button>
+    </header>
+
+    <nav class="tabs">
+      <a href="#/bets" class="tab" data-view="bets">Bets</a>
+      <a href="#/new" class="tab" data-view="new">Record a bet</a>
+      <a href="#/reports" class="tab" data-view="reports">Reports</a>
+      <a href="#/settings" class="tab" data-view="settings">Settings</a>
+    </nav>
+
+    <main id="main" class="main"></main>
+  </div>
+
+  <div id="toast" class="toast" hidden></div>
+
+  <!-- ───────────────────── view templates ─────────────────────── -->
+  <template id="tpl-bets">
+    <div class="view">
+      <div class="view__head">
+        <h1>Your bets</h1>
+        <a href="#/new" class="btn btn--brass btn--sm">+ Record a bet</a>
+      </div>
+      <div class="filters" id="betsFilters"></div>
+      <div class="table-wrap">
+        <table class="ledger">
+          <thead>
+            <tr>
+              <th>Date</th><th>Sport</th><th>Event / Selection</th><th>Type</th>
+              <th class="r">Odds</th><th class="r">Stake</th><th>Result</th>
+              <th class="r">P/L</th><th class="r">CLV</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="betsBody"></tbody>
+        </table>
+      </div>
+      <p id="betsEmpty" class="empty" hidden>No bets match these filters yet. Record your first one to start the ledger.</p>
+    </div>
+  </template>
+
+  <template id="tpl-form">
+    <div class="view view--narrow">
+      <div class="view__head"><h1 id="formTitle">Record a bet</h1></div>
+      <form id="betForm" class="betform">
+        <fieldset>
+          <legend>What you backed</legend>
+          <div class="grid2">
+            <label>Sport
+              <input list="sportList" name="sport" required placeholder="e.g. Horse racing" />
+              <datalist id="sportList"></datalist>
+            </label>
+            <label>Bet type
+              <select name="bet_type">
+                <option value="win">Win</option>
+                <option value="each_way">Each way</option>
+                <option value="over_under">Over / Under</option>
+                <option value="multi">Multi / Acca</option>
+                <option value="handicap">Handicap</option>
+                <option value="other">Other</option>
+              </select>
+            </label>
+          </div>
+          <label>Event<input name="event" required placeholder="e.g. 14:30 Ascot" /></label>
+          <label>Selection<input name="selection" required placeholder="e.g. Galileo Gold" /></label>
+          <label>Date &amp; time placed<input type="datetime-local" name="placed_at" /></label>
+        </fieldset>
+
+        <fieldset>
+          <legend>Odds &amp; stake</legend>
+          <div class="grid3">
+            <label>Odds format
+              <select name="odds_format" id="oddsFormat">
+                <option value="decimal">Decimal</option>
+                <option value="american">American</option>
+                <option value="fractional">Fractional</option>
+              </select>
+            </label>
+            <label id="oddsField">Odds<input name="odds" inputmode="decimal" required placeholder="2.50" /></label>
+            <label id="oddsDenField" hidden>Denominator<input name="odds_denominator" inputmode="decimal" placeholder="4" /></label>
+          </div>
+          <div class="grid3">
+            <label>Stake<input name="stake" inputmode="decimal" required placeholder="50" /></label>
+            <label>Currency<input name="currency" maxlength="3" placeholder="GBP" /></label>
+            <label class="check"><input type="checkbox" name="each_way" /> Each way</label>
+          </div>
+          <div class="grid2" id="ewFields" hidden>
+            <label>Place fraction<input name="place_fraction" inputmode="decimal" placeholder="0.25" /></label>
+            <label class="check"><input type="checkbox" name="placed" /> Placed</label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Settlement</legend>
+          <div class="grid2">
+            <label>Result
+              <select name="outcome">
+                <option value="pending">Pending</option>
+                <option value="win">Win</option>
+                <option value="loss">Loss</option>
+                <option value="void">Void</option>
+                <option value="half_win">Half win</option>
+                <option value="half_loss">Half loss</option>
+              </select>
+            </label>
+            <label>Cash-out amount <span class="hint">total returned, if cashed out</span>
+              <input name="cash_out_amount" inputmode="decimal" placeholder="optional" /></label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Modelling &amp; edge</legend>
+          <div class="grid2">
+            <label>Bet model<input name="bet_model" placeholder="e.g. xG v2" /></label>
+            <label>Closing odds (decimal)<input name="closing_odds" inputmode="decimal" placeholder="2.30" /></label>
+          </div>
+          <div class="grid2">
+            <label>Model implied odds (decimal)<input name="model_implied_odds" inputmode="decimal" placeholder="2.20" /></label>
+            <label>Personal implied odds (decimal)<input name="personal_implied_odds" inputmode="decimal" placeholder="2.10" /></label>
+          </div>
+          <p class="kelly" id="kellyHint" hidden></p>
+        </fieldset>
+
+        <fieldset>
+          <legend>Exchange &amp; notes</legend>
+          <div class="grid2">
+            <label>Betting exchange<input name="exchange" placeholder="e.g. Betfair" /></label>
+            <label>Commission % <span class="hint">taken from winnings</span><input name="exchange_commission_pct" inputmode="decimal" placeholder="2" /></label>
+          </div>
+          <label>Tipster<input name="tipster" placeholder="optional" /></label>
+          <label>Notes<textarea name="notes" rows="2" placeholder="Reasoning, conditions, anything worth remembering"></textarea></label>
+        </fieldset>
+
+        <div class="formactions">
+          <a href="#/bets" class="btn btn--ghost">Cancel</a>
+          <button class="btn btn--brass" type="submit" id="saveBtn">Save bet</button>
+        </div>
+      </form>
+    </div>
+  </template>
+
+  <template id="tpl-reports">
+    <div class="view">
+      <div class="view__head">
+        <h1>Reports</h1>
+        <div class="exports">
+          <button class="btn btn--ghost btn--sm" id="exportCsv">Export CSV</button>
+          <button class="btn btn--ghost btn--sm" id="exportXlsx">Export Excel</button>
+        </div>
+      </div>
+      <div class="filters" id="reportFilters"></div>
+      <div class="cards" id="metricCards"></div>
+      <div class="panel">
+        <div class="panel__head"><h2>Equity curve</h2><span class="panel__sub">cumulative profit/loss</span></div>
+        <canvas id="equityChart" height="120"></canvas>
+      </div>
+      <div class="split">
+        <div class="panel">
+          <div class="panel__head"><h2>By dimension</h2>
+            <select id="breakdownDim" class="mini-select">
+              <option value="sport">Sport</option>
+              <option value="tipster">Tipster</option>
+              <option value="bet_type">Bet type</option>
+              <option value="exchange">Exchange</option>
+            </select>
+          </div>
+          <div class="table-wrap">
+            <table class="ledger ledger--compact">
+              <thead><tr><th id="dimHead">Sport</th><th class="r">Bets</th><th class="r">Strike</th><th class="r">Yield</th><th class="r">P/L</th></tr></thead>
+              <tbody id="breakdownBody"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel__head"><h2>Profit by month</h2></div>
+          <canvas id="monthlyChart" height="160"></canvas>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <template id="tpl-settings">
+    <div class="view view--narrow">
+      <div class="view__head"><h1>Settings</h1></div>
+      <form id="settingsForm" class="betform">
+        <fieldset>
+          <legend>Preferences</legend>
+          <div class="grid2">
+            <label>Default odds format
+              <select name="default_odds_format">
+                <option value="decimal">Decimal</option>
+                <option value="american">American</option>
+                <option value="fractional">Fractional</option>
+              </select>
+            </label>
+            <label>Base currency<input name="base_currency" maxlength="3" /></label>
+          </div>
+          <div class="grid2">
+            <label>Bankroll <span class="hint">used for Kelly</span><input name="bankroll" inputmode="decimal" /></label>
+            <label>Kelly multiplier <span class="hint">1 = full, 0.5 = half</span><input name="kelly_multiplier" inputmode="decimal" /></label>
+          </div>
+          <label>Display name<input name="display_name" /></label>
+          <div class="formactions"><button class="btn btn--brass" type="submit">Save settings</button></div>
+        </fieldset>
+      </form>
+
+      <div class="panel">
+        <div class="panel__head"><h2>API access</h2>
+          <button class="btn btn--ghost btn--sm" id="newKeyBtn">Generate key</button>
+        </div>
+        <p class="panel__sub">Use a key to push or pull your record from scripts. Send it as <code>Authorization: Bearer mbr_…</code> or <code>X-API-Key</code>.</p>
+        <div id="newKeyReveal" class="reveal" hidden></div>
+        <table class="ledger ledger--compact">
+          <thead><tr><th>Name</th><th>Prefix</th><th>Last used</th><th></th></tr></thead>
+          <tbody id="keysBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </template>
+
+  <script src="/app.js" defer></script>
+</body>
+</html>

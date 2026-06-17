@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+*.egg-info/
+build/
+.pytest_cache/
+.DS_Store
+node_modules/
+dist/
+betrecord.local.db
