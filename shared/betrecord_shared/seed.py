@@ -34,6 +34,21 @@ def _ensure_is_admin_column() -> None:
             )
 
 
+def _ensure_bookmaker_column() -> None:
+    """Add bookmaker to existing databases created before the column existed."""
+    if "bets" not in inspect(engine).get_table_names():
+        return
+    columns = {c["name"] for c in inspect(engine).get_columns("bets")}
+    if "bookmaker" in columns:
+        return
+    dialect = engine.dialect.name
+    with engine.begin() as conn:
+        if dialect == "postgresql":
+            conn.execute(text("ALTER TABLE bets ADD COLUMN IF NOT EXISTS bookmaker VARCHAR(80)"))
+        else:
+            conn.execute(text("ALTER TABLE bets ADD COLUMN bookmaker VARCHAR(80)"))
+
+
 def seed_dev_admin() -> None:
     """Create a default admin account for local development."""
     if get_settings().environment == "production":
@@ -42,6 +57,7 @@ def seed_dev_admin() -> None:
     from .security import hash_password
 
     _ensure_is_admin_column()
+    _ensure_bookmaker_column()
 
     with SessionLocal() as db:
         user = db.scalar(select(User).where(User.email == DEV_ADMIN_EMAIL))

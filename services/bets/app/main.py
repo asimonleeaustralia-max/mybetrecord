@@ -105,6 +105,7 @@ def list_bets(
     outcome: Optional[str] = None,
     bet_type: Optional[str] = None,
     tipster: Optional[str] = None,
+    bookmaker: Optional[str] = None,
     exchange: Optional[str] = None,
     date_from: Optional[datetime] = None,
     date_to: Optional[datetime] = None,
@@ -120,6 +121,8 @@ def list_bets(
         stmt = stmt.where(Bet.bet_type == bet_type)
     if tipster:
         stmt = stmt.where(Bet.tipster == tipster)
+    if bookmaker:
+        stmt = stmt.where(Bet.bookmaker == bookmaker)
     if exchange:
         stmt = stmt.where(Bet.exchange == exchange)
     if date_from:
@@ -160,6 +163,7 @@ def create_bet(
         model_implied_odds=payload.model_implied_odds,
         personal_implied_odds=payload.personal_implied_odds,
         closing_odds=payload.closing_odds,
+        bookmaker=payload.bookmaker,
         exchange=payload.exchange,
         exchange_commission_pct=payload.exchange_commission_pct or 0.0,
         tipster=payload.tipster,
@@ -205,7 +209,7 @@ def update_bet(
         "event", "selection", "sport", "bet_type", "placed_at", "stake", "currency",
         "each_way", "place_fraction", "placed", "outcome", "cash_out_amount",
         "bet_model", "model_implied_odds", "personal_implied_odds", "closing_odds",
-        "exchange", "exchange_commission_pct", "tipster", "notes",
+        "bookmaker", "exchange", "exchange_commission_pct", "tipster", "notes",
     ):
         if field in data:
             value = data[field]

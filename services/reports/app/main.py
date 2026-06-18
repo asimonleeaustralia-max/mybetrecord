@@ -53,6 +53,8 @@ def _filtered(db: Session, user_id: str, f: dict):
         stmt = stmt.where(Bet.bet_type == f["bet_type"])
     if f.get("tipster"):
         stmt = stmt.where(Bet.tipster == f["tipster"])
+    if f.get("bookmaker"):
+        stmt = stmt.where(Bet.bookmaker == f["bookmaker"])
     if f.get("exchange"):
         stmt = stmt.where(Bet.exchange == f["exchange"])
     if f.get("outcome"):
@@ -68,6 +70,7 @@ def _common_filters(
     sport: Optional[str] = None,
     bet_type: Optional[str] = None,
     tipster: Optional[str] = None,
+    bookmaker: Optional[str] = None,
     exchange: Optional[str] = None,
     outcome: Optional[str] = None,
     date_from: Optional[datetime] = None,
@@ -75,7 +78,7 @@ def _common_filters(
 ) -> dict:
     return {
         "sport": sport, "bet_type": bet_type, "tipster": tipster,
-        "exchange": exchange, "outcome": outcome,
+        "bookmaker": bookmaker, "exchange": exchange, "outcome": outcome,
         "date_from": date_from, "date_to": date_to,
     }
 
@@ -120,7 +123,7 @@ def equity_curve(
 
 @app.get("/reports/breakdown")
 def breakdown(
-    dimension: str = Query(default="sport", pattern="^(sport|tipster|bet_type|exchange)$"),
+    dimension: str = Query(default="sport", pattern="^(sport|tipster|bet_type|bookmaker|exchange)$"),
     user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
     f: dict = Depends(_common_filters),
@@ -158,6 +161,7 @@ _EXPORT_COLUMNS = [
     ("personal_implied_odds", "Personal odds"),
     ("kelly_stake", "Kelly stake"),
     ("closing_odds", "Closing odds"),
+    ("bookmaker", "Bookmaker"),
     ("exchange", "Exchange"),
     ("exchange_commission_pct", "Commission %"),
     ("tipster", "Tipster"),

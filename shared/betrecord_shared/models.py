@@ -105,6 +105,9 @@ class Bet(Base):
     kelly_stake: Mapped[float | None] = mapped_column(Float, nullable=True)            # computed
     closing_odds: Mapped[float | None] = mapped_column(Float, nullable=True)           # decimal
 
+    # Where the bet was placed
+    bookmaker: Mapped[str | None] = mapped_column(String(80), nullable=True, index=True)
+
     # Exchange
     exchange: Mapped[str | None] = mapped_column(String(80), nullable=True)
     exchange_commission_pct: Mapped[float] = mapped_column(Float, default=0.0)

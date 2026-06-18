@@ -356,6 +356,7 @@ function fillForm(form, b) {
   set("model_implied_odds", b.model_implied_odds);
   set("personal_implied_odds", b.personal_implied_odds);
   set("exchange", b.exchange); set("exchange_commission_pct", b.exchange_commission_pct);
+  set("bookmaker", b.bookmaker);
   set("tipster", b.tipster); set("notes", b.notes);
 }
 

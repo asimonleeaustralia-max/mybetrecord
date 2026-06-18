@@ -174,6 +174,12 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         if not self._dispatch():
             self.send_error(404)
 
+    def end_headers(self):
+        path = self.path.split("?")[0]
+        if path in ("/", "/index.html") or path.endswith((".html", ".js", ".css")):
+            self.send_header("Cache-Control", "no-cache, no-store, must-revalidate")
+        super().end_headers()
+
     def log_message(self, fmt, *args):  # quieter logs
         pass
 
