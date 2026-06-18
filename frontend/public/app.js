@@ -49,6 +49,51 @@ function fillCurrencySelect(select, limit, selected = "") {
   select.innerHTML = html;
 }
 
+// Popular sports by global betting handle, largest first.
+const SPORTS = [
+  "Soccer", "Horse racing", "American football", "Basketball", "Tennis",
+  "Cricket", "Golf", "Baseball", "Rugby union", "Ice hockey",
+  "Boxing", "MMA", "Greyhound racing", "Darts", "Snooker",
+  "Rugby league", "Cycling", "Formula 1", "Esports", "Volleyball",
+  "Handball", "Table tennis", "Australian rules football", "Gaelic football", "Hurling",
+  "Motorsport", "Athletics", "Skiing", "Badminton", "Squash",
+  "Pool", "Bowls", "Politics", "Entertainment",
+];
+
+// Top bookmaker brands by parent operator size (iGaming EU Top 50, Mar 2026).
+const BOOKMAKERS = [
+  "FanDuel", "Paddy Power", "Betfair", "Sky Bet", "Sportsbet",
+  "OPAP", "DraftKings", "Bet365", "Sisal", "GoldBet",
+  "Tipico", "Caesars Sportsbook", "Betway", "Parions Sport", "BetRivers",
+  "Ladbrokes", "Coral", "bwin", "Stake", "Bally Bet",
+  "Fanatics Sportsbook", "Betano", "Fortuna", "Hard Rock Bet", "BetMGM",
+  "theScore Bet", "Superbet", "GGPoker", "Caliente", "HKJC",
+  "Svenska Spel", "Betsson", "LOTTO24", "TAB", "Danske Spil",
+  "Winamax", "Betfred", "ATG", "Lottoland", "Grosvenor",
+  "BetVictor", "PlayOJO", "Pinnacle", "Novibet", "ComeOn",
+  "BetKing", "888sport", "LiveScore Bet", "Coolbet", "Codere",
+];
+
+function fillNameDatalist(datalist, defaults, extra = []) {
+  const seen = new Set();
+  const items = [];
+  for (const name of [...extra, ...defaults]) {
+    const key = (name || "").trim().toLowerCase();
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+    items.push(name.trim());
+  }
+  datalist.innerHTML = items.map(s => `<option value="${esc(s)}">`).join("");
+}
+
+function fillSportDatalist(datalist, extra = []) {
+  fillNameDatalist(datalist, SPORTS, extra);
+}
+
+function fillBookmakerDatalist(datalist, extra = []) {
+  fillNameDatalist(datalist, BOOKMAKERS, extra);
+}
+
 /* ----------------------------- API client ----------------------------- */
 function token() { return localStorage.getItem(TOKEN_KEY); }
 function setToken(t) { t ? localStorage.setItem(TOKEN_KEY, t) : localStorage.removeItem(TOKEN_KEY); }
@@ -334,7 +379,8 @@ async function renderForm(id) {
   main.innerHTML = "";
   main.appendChild(clone("tpl-form"));
   state.sports = await api("/bets/sports").catch(() => []);
-  $("#sportList").innerHTML = state.sports.map(s => `<option value="${esc(s)}">`).join("");
+  fillSportDatalist($("#sportList"), state.sports);
+  fillBookmakerDatalist($("#bookmakerList"));
 
   const form = $("#betForm");
   // default odds format from user settings
