@@ -210,17 +210,38 @@ function buildBetFilters() {
   $$("select, input", root).forEach(el => el.addEventListener("change", loadBets));
 }
 
+const BET_OUTCOMES = [
+  { value: "pending", label: "Pending" },
+  { value: "win", label: "Win" },
+  { value: "loss", label: "Loss" },
+  { value: "void", label: "Void" },
+  { value: "half_win", label: "Half win" },
+  { value: "half_loss", label: "Half loss" },
+];
+
 async function loadBets() {
   const bets = await api("/bets" + qs(currentFilters("betsFilters")));
   const body = $("#betsBody");
   $("#betsEmpty").hidden = bets.length > 0;
   body.innerHTML = bets.map(betRow).join("");
   $$("[data-del]", body).forEach(b => b.addEventListener("click", () => deleteBet(b.dataset.del)));
+  $$("[data-outcome]", body).forEach(sel => {
+    sel.dataset.prev = sel.value;
+    sel.addEventListener("change", () => quickSetOutcome(sel));
+  });
 }
 
-function outcomePill(o) {
+function outcomeTone(o) {
   const map = { win: "win", loss: "loss", void: "void", pending: "pending", half_win: "win", half_loss: "loss", cashed_out: "void" };
-  return `<span class="pill pill--${map[o] || "pending"}">${esc(o.replace("_", " "))}</span>`;
+  return map[o] || "pending";
+}
+
+function outcomeSelect(b) {
+  const tone = outcomeTone(b.outcome);
+  const opts = BET_OUTCOMES.map(o =>
+    `<option value="${o.value}"${o.value === b.outcome ? " selected" : ""}>${esc(o.label)}</option>`
+  ).join("");
+  return `<select class="mini-select outcome-select outcome-select--${tone}" data-outcome="${b.id}" aria-label="Result for ${esc(b.selection)}">${opts}</select>`;
 }
 
 function betRow(b) {
@@ -233,11 +254,27 @@ function betRow(b) {
     <td>${esc(b.bet_type.replace("_", " "))}</td>
     <td class="r">${Number(b.odds_decimal).toFixed(2)}</td>
     <td class="r">${money(b.stake)}</td>
-    <td>${outcomePill(b.outcome)}</td>
+    <td>${outcomeSelect(b)}</td>
     <td class="r ${plClass(b.profit)}">${money(b.profit, true)}</td>
     <td class="r">${b.clv_pct == null ? "—" : pct(b.clv_pct)}</td>
     <td class="r"><a class="btn btn--ghost btn--sm" href="#/edit/${b.id}">Edit</a> <button class="btn btn--danger" data-del="${b.id}">Delete</button></td>
   </tr>`;
+}
+
+async function quickSetOutcome(sel) {
+  const id = sel.dataset.outcome;
+  const prev = sel.dataset.prev;
+  const outcome = sel.value;
+  if (outcome === prev) return;
+  sel.disabled = true;
+  try {
+    await api(`/bets/${id}`, { method: "PATCH", body: { outcome } });
+    await Promise.all([loadBets(), refreshTicker()]);
+  } catch (err) {
+    sel.value = prev;
+    toast(err.message, true);
+    sel.disabled = false;
+  }
 }
 
 async function deleteBet(id) {
