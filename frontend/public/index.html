@@ -127,7 +127,7 @@
 
         <fieldset>
           <legend>Odds &amp; stake</legend>
-          <div class="grid3">
+          <div class="grid2" id="oddsEntryRow">
             <label>Odds format
               <select name="odds_format" id="oddsFormat">
                 <option value="decimal">Decimal</option>
@@ -135,8 +135,10 @@
                 <option value="fractional">Fractional</option>
               </select>
             </label>
-            <label id="oddsField">Odds<input name="odds" inputmode="decimal" required placeholder="2.50" /></label>
-            <label id="oddsDenField" hidden>Denominator<input name="odds_denominator" inputmode="decimal" placeholder="4" /></label>
+            <div id="oddsValueFields" class="odds-value-fields odds-value-fields--decimal">
+              <label id="oddsField"><span id="oddsFieldLabel">Decimal odds</span><input name="odds" inputmode="decimal" required placeholder="2.50" /></label>
+              <label class="odds-den-field">Denominator<input name="odds_denominator" inputmode="decimal" placeholder="4" /></label>
+            </div>
           </div>
           <div class="grid3">
             <label>Stake<input name="stake" inputmode="decimal" required placeholder="50" /></label>

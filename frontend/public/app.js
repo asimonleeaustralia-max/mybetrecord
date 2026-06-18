@@ -384,13 +384,15 @@ async function renderForm(id) {
 
   const form = $("#betForm");
   // default odds format from user settings
-  form.odds_format.value = state.user.default_odds_format || "decimal";
+  const defaultFmt = state.user.default_odds_format || "decimal";
+  form.odds_format.value = defaultFmt;
+  form.odds_format.dataset.prev = defaultFmt;
   fillCurrencyDatalist($("#currencyList"), 50);
   form.currency.value = state.user.base_currency || "GBP";
   syncOddsFormat();
   syncEachWay();
 
-  form.odds_format.addEventListener("change", syncOddsFormat);
+  form.odds_format.addEventListener("change", onOddsFormatChange);
   form.each_way.addEventListener("change", syncEachWay);
   ["odds", "personal_implied_odds"].forEach(n => form[n].addEventListener("input", updateKellyHint));
 
@@ -424,12 +426,97 @@ async function renderForm(id) {
   });
 }
 
+const ODDS_LABELS = {
+  decimal: "Decimal odds",
+  american: "American odds",
+  fractional: "Numerator",
+};
+
+function gcd(a, b) {
+  a = Math.abs(Math.round(a));
+  b = Math.abs(Math.round(b));
+  while (b) { const t = b; b = a % b; a = t; }
+  return a || 1;
+}
+
+function decimalToAmerican(d) {
+  if (!(d > 1)) return "";
+  if (d >= 2) return "+" + Math.round((d - 1) * 100);
+  return String(Math.round(-100 / (d - 1)));
+}
+
+function decimalToFractionalParts(d, maxDen = 100) {
+  const x = d - 1;
+  let bestNum = 1, bestDen = 1, bestErr = Math.abs(x - 1);
+  for (let den = 1; den <= maxDen; den++) {
+    const num = Math.round(x * den);
+    const err = Math.abs(x - num / den);
+    if (err < bestErr) { bestErr = err; bestNum = num; bestDen = den; }
+  }
+  const g = gcd(bestNum, bestDen);
+  return { numerator: bestNum / g, denominator: bestDen / g };
+}
+
+function parseOddsToDecimal(form, format = form.odds_format.value) {
+  const raw = String(form.odds.value || "").trim();
+  if (!raw) return NaN;
+  if (format === "decimal") return parseFloat(raw);
+  if (format === "american") {
+    const a = parseFloat(raw.replace(/^\+/, ""));
+    if (!Number.isFinite(a) || a === 0) return NaN;
+    return a > 0 ? 1 + a / 100 : 1 + 100 / Math.abs(a);
+  }
+  const num = parseFloat(raw);
+  const den = parseFloat(form.odds_denominator.value);
+  if (!Number.isFinite(num) || !Number.isFinite(den) || den === 0) return NaN;
+  return 1 + num / den;
+}
+
+function formatOddsFromDecimal(d, format) {
+  if (!(d > 1)) return { odds: "" };
+  if (format === "decimal") return { odds: d.toFixed(2) };
+  if (format === "american") return { odds: decimalToAmerican(d) };
+  const { numerator, denominator } = decimalToFractionalParts(d);
+  return { odds: String(numerator), denominator: String(denominator) };
+}
+
+function onOddsFormatChange() {
+  const form = $("#betForm");
+  const prev = form.odds_format.dataset.prev || form.odds_format.value;
+  const next = form.odds_format.value;
+  const dec = parseOddsToDecimal(form, prev);
+  if (dec > 1) {
+    const formatted = formatOddsFromDecimal(dec, next);
+    form.odds.value = formatted.odds;
+    form.odds_denominator.value = next === "fractional" ? (formatted.denominator || "") : "";
+  } else if (next !== "fractional") {
+    form.odds_denominator.value = "";
+  }
+  form.odds_format.dataset.prev = next;
+  syncOddsFormat();
+}
+
 function syncOddsFormat() {
   const form = $("#betForm");
-  const frac = form.odds_format.value === "fractional";
-  $("#oddsDenField").hidden = !frac;
-  $("#oddsField").querySelector("input").placeholder =
-    form.odds_format.value === "american" ? "+150" : frac ? "6 (numerator)" : "2.50";
+  const fmt = form.odds_format.value;
+  const frac = fmt === "fractional";
+  const fields = form.querySelector("#oddsValueFields");
+  fields.className = `odds-value-fields odds-value-fields--${fmt}`;
+  const oddsInput = form.odds;
+  form.querySelector("#oddsFieldLabel").textContent = ODDS_LABELS[fmt] || "Odds";
+  oddsInput.required = true;
+  form.odds_denominator.required = frac;
+  if (!frac) form.odds_denominator.value = "";
+  if (fmt === "american") {
+    oddsInput.placeholder = "+150 or -200";
+    oddsInput.inputMode = "text";
+  } else if (frac) {
+    oddsInput.placeholder = "6";
+    oddsInput.inputMode = "decimal";
+  } else {
+    oddsInput.placeholder = "2.50";
+    oddsInput.inputMode = "decimal";
+  }
 }
 function syncEachWay() {
   const form = $("#betForm");
@@ -440,9 +527,9 @@ function updateKellyHint() {
   const form = $("#betForm");
   const bankroll = state.user.bankroll;
   const personal = parseFloat(form.personal_implied_odds.value);
-  const oddsDec = parseFloat(form.odds.value); // approximate (decimal entry)
+  const oddsDec = parseOddsToDecimal(form);
   const hint = $("#kellyHint");
-  if (bankroll && personal > 1 && oddsDec > 1 && form.odds_format.value === "decimal") {
+  if (bankroll && personal > 1 && oddsDec > 1) {
     const b = oddsDec - 1, p = 1 / personal, q = 1 - p;
     const f = Math.max(0, (b * p - q) / b) * (state.user.kelly_multiplier || 1);
     const stake = (f * bankroll).toFixed(2);
@@ -469,6 +556,7 @@ function readForm(form) {
   out.placed = form.placed.checked;
   if (out.currency) out.currency = out.currency.trim().toUpperCase();
   if (out.placed_at) out.placed_at = new Date(out.placed_at).toISOString();
+  if (out.odds_format !== "fractional") delete out.odds_denominator;
   return out;
 }
 
@@ -477,9 +565,13 @@ function fillForm(form, b) {
   set("sport", b.sport); set("bet_type", b.bet_type); set("event", b.event);
   set("selection", b.selection);
   set("placed_at", new Date(b.placed_at).toISOString().slice(0, 16));
-  // stored odds are decimal; present as decimal for editing clarity
-  form.odds_format.value = "decimal";
-  set("odds", Number(b.odds_decimal).toFixed(2));
+  const fmt = b.odds_format || "decimal";
+  form.odds_format.value = fmt;
+  form.odds_format.dataset.prev = fmt;
+  const formatted = formatOddsFromDecimal(Number(b.odds_decimal), fmt);
+  set("odds", formatted.odds);
+  if (fmt === "fractional") set("odds_denominator", formatted.denominator);
+  else form.odds_denominator.value = "";
   set("stake", b.stake);
   set("currency", b.currency);
   form.each_way.checked = b.each_way; form.placed.checked = b.placed;

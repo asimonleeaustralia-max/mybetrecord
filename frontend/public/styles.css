@@ -88,6 +88,7 @@ a { color: inherit; }
 
 /* ---------- form inputs (shared) ---------- */
 label { display: grid; gap: 6px; font-size: .82rem; font-weight: 600; color: var(--ink-soft); }
+[hidden] { display: none !important; }
 .hint { font-weight: 400; color: var(--faint); }
 input, select, textarea {
   font: 500 .95rem var(--sans);
@@ -193,6 +194,11 @@ fieldset { border: 1px solid var(--line); border-radius: var(--radius); padding:
 legend { padding: 0 8px; font-size: .9rem; font-weight: 600; color: var(--brass-deep); }
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+.odds-value-fields { display: grid; gap: 14px; }
+.odds-value-fields--decimal,
+.odds-value-fields--american { grid-template-columns: 1fr; }
+.odds-value-fields--fractional { grid-template-columns: 1fr 1fr; }
+.odds-value-fields:not(.odds-value-fields--fractional) .odds-den-field { display: none !important; }
 textarea { font-family: var(--sans); resize: vertical; }
 .kelly { margin: 0; padding: 10px 12px; background: var(--brass-wash); border-radius: 8px; font-family: var(--mono); font-size: .82rem; color: var(--brass-deep); }
 .formactions { display: flex; justify-content: flex-end; gap: 10px; }
