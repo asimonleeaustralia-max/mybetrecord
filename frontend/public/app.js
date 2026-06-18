@@ -3,7 +3,7 @@
    /auth, /bets, /reports, /payments to the right container. */
 
 const TOKEN_KEY = "mbr_token";
-const state = { user: null, sports: [], currencies: [], charts: {} };
+const state = { user: null, sports: [], betTypes: [], currencies: [], charts: {} };
 
 // Top currencies by forex turnover / economic weight, largest first.
 const CURRENCIES = [
@@ -78,6 +78,88 @@ const SPORTS = [
   "Virtual sports", "Olympics", "Politics", "Entertainment", "TV & film",
   "Music awards", "Financial markets", "Lottery", "Specials",
 ];
+
+// Common bet types by market, largest / most common first.
+const BET_TYPES = [
+  // Match result
+  "Win", "Each way", "Place", "Outright", "Ante-post", "Draw no bet", "Double chance",
+  "Match odds", "Moneyline", "To qualify", "To be relegated", "Top scorer",
+  // Handicap & spread
+  "Handicap", "Asian handicap", "European handicap", "Spread", "Puck line", "Run line",
+  "Game handicap", "Set handicap",
+  // Totals
+  "Over / Under", "Asian totals", "Team totals", "Total goals", "Total points",
+  "Total games", "Total sets", "Total runs", "Total corners", "Total cards",
+  // Accumulators & full cover
+  "Accumulator", "Multi / Acca", "Parlay", "Full cover", "System bet",
+  "Double", "Treble", "Trixie", "Patent", "Yankee", "Canadian", "Heinz",
+  "Super Heinz", "Goliath", "Lucky 15", "Lucky 31", "Lucky 63", "Alphabet",
+  // Score & time
+  "Correct score", "Half-time / Full-time", "Half-time result", "Full-time result",
+  "Winning margin", "Race to points", "Next goal", "Next scorer",
+  // Goals & scoring
+  "Both teams to score", "Clean sheet", "First goalscorer", "Anytime goalscorer",
+  "Last goalscorer", "To score", "Goal line", "Odd / Even goals",
+  // Tennis & racket
+  "Set betting", "Set winner", "Game winner", "Total aces",
+  // Racing
+  "Forecast", "Tricast", "Reverse forecast", "Without favourite", "Match bet",
+  "Distance", "Faller insurance",
+  // Props & specials
+  "Prop", "Player prop", "Team prop", "Special", "Method of victory", "Round betting",
+  "Cards", "Corners", "Penalties", "Bookings", "Shots on target",
+  "First team to score", "Highest scoring half", "Win to nil",
+  // Exchange & trading
+  "Back", "Lay", "Trading",
+  // Other
+  "In-play", "Cash out", "Boosted odds", "Request a bet", "Same game parlay",
+  "Bet builder", "Insurance", "Free bet",
+];
+
+// Legacy snake_case values stored before free-text bet types.
+const BET_TYPE_LABELS = {
+  win: "Win",
+  each_way: "Each way",
+  over_under: "Over / Under",
+  multi: "Multi / Acca",
+  handicap: "Handicap",
+  other: "Other",
+};
+
+function betTypeLabel(v) {
+  if (!v) return "";
+  const mapped = BET_TYPE_LABELS[v] || BET_TYPE_LABELS[v.toLowerCase()];
+  if (mapped) return mapped;
+  if (v.includes("_")) {
+    return v.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+  }
+  return v;
+}
+
+function betTypeChoices(extra = []) {
+  const seen = new Set();
+  const items = [];
+  for (const t of [...extra, ...BET_TYPES]) {
+    const key = (t || "").trim().toLowerCase();
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+    items.push(t.trim());
+  }
+  return items.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
+}
+
+function fillBetTypeDatalist(datalist, extra = []) {
+  fillNameDatalist(datalist, BET_TYPES, extra);
+}
+
+function betTypeFilterOptions(selected = "") {
+  const types = betTypeChoices(state.betTypes || []);
+  const opts = types.map(t => {
+    const sel = t === selected ? " selected" : "";
+    return `<option value="${esc(t)}"${sel}>${esc(betTypeLabel(t))}</option>`;
+  }).join("");
+  return `<option value="">All</option>${opts}`;
+}
 
 // Major bookmakers & betting exchanges worldwide (largest / most common first).
 const BOOKMAKERS = [
@@ -327,6 +409,7 @@ async function renderBets() {
   main.appendChild(clone("tpl-bets"));
 
   state.sports = await api("/bets/sports").catch(() => []);
+  state.betTypes = await api("/bets/bet-types").catch(() => []);
   buildBetFilters();
   await loadBets();
 }
@@ -350,7 +433,7 @@ function buildBetFilters() {
   root.innerHTML = `
     <label>Sport<select name="sport"><option value="">All</option>${state.sports.map(s => `<option>${esc(s)}</option>`).join("")}</select></label>
     <label>Result<select name="outcome"><option value="">All</option><option value="win">Win</option><option value="loss">Loss</option><option value="void">Void</option><option value="pending">Pending</option></select></label>
-    <label>Type<select name="bet_type"><option value="">All</option><option value="win">Win</option><option value="each_way">Each way</option><option value="over_under">Over/Under</option><option value="multi">Multi</option><option value="handicap">Handicap</option></select></label>
+    <label>Type<select name="bet_type">${betTypeFilterOptions()}</select></label>
     <label>From<input type="date" name="date_from" /></label>
     <label>To<input type="date" name="date_to" /></label>`;
   $$("select, input", root).forEach(el => el.addEventListener("change", loadBets));
@@ -401,7 +484,7 @@ function betRow(b) {
     <td class="num">${date}</td>
     <td>${esc(b.sport)}</td>
     <td>${esc(b.event)}<div class="sel">${label}</div></td>
-    <td>${esc(b.bet_type.replace("_", " "))}</td>
+    <td>${esc(betTypeLabel(b.bet_type))}</td>
     <td class="r">${Number(b.odds_decimal).toFixed(2)}</td>
     <td class="r">${money(b.stake)}</td>
     <td>${outcomeSelect(b)}</td>
@@ -443,8 +526,10 @@ async function renderForm(id) {
   main.innerHTML = "";
   main.appendChild(clone("tpl-form"));
   state.sports = await api("/bets/sports").catch(() => []);
+  state.betTypes = await api("/bets/bet-types").catch(() => []);
   fillSportDatalist($("#sportList"), state.sports);
   fillBookmakerDatalist($("#bookmakerList"));
+  fillBetTypeDatalist($("#betTypeList"), state.betTypes);
 
   const form = $("#betForm");
   // default odds format from user settings
@@ -620,6 +705,7 @@ function readForm(form) {
   out.each_way = form.each_way.checked;
   out.placed = form.placed.checked;
   if (out.currency) out.currency = out.currency.trim().toUpperCase();
+  if (out.bet_type) out.bet_type = out.bet_type.trim();
   out.placed_at = readDatetimeField(form, "placed_at");
   out.settled_at = readDatetimeField(form, "settled_at");
   if (out.odds_format !== "fractional") delete out.odds_denominator;
@@ -628,7 +714,9 @@ function readForm(form) {
 
 function fillForm(form, b) {
   const set = (n, v) => { if (form[n] != null && v != null) form[n].value = v; };
-  set("sport", b.sport); set("bet_type", b.bet_type); set("event", b.event);
+  set("sport", b.sport);
+  set("bet_type", BET_TYPE_LABELS[b.bet_type] || BET_TYPE_LABELS[b.bet_type?.toLowerCase()] || b.bet_type);
+  set("event", b.event);
   set("selection", b.selection);
   set("placed_at", b.placed_at ? new Date(b.placed_at).toISOString().slice(0, 16) : "");
   set("settled_at", b.settled_at ? new Date(b.settled_at).toISOString().slice(0, 16) : "");
@@ -658,8 +746,9 @@ async function renderReports() {
   main.innerHTML = "";
   main.appendChild(clone("tpl-reports"));
 
-  [state.sports, state.currencies] = await Promise.all([
+  [state.sports, state.betTypes, state.currencies] = await Promise.all([
     api("/bets/sports").catch(() => []),
+    api("/bets/bet-types").catch(() => []),
     api("/bets/currencies").catch(() => []),
   ]);
   buildReportFilters();
@@ -678,7 +767,7 @@ function buildReportFilters() {
   ].join("");
   root.innerHTML = `
     <label>Sport<select name="sport"><option value="">All</option>${state.sports.map(s => `<option>${esc(s)}</option>`).join("")}</select></label>
-    <label>Type<select name="bet_type"><option value="">All</option><option value="win">Win</option><option value="each_way">Each way</option><option value="over_under">Over/Under</option><option value="multi">Multi</option></select></label>
+    <label>Type<select name="bet_type">${betTypeFilterOptions()}</select></label>
     <label>Currency<select name="currency">${currencyOpts}</select></label>
     <label>From<input type="date" name="date_from" /></label>
     <label>To<input type="date" name="date_to" /></label>`;
@@ -772,8 +861,9 @@ async function loadBreakdown() {
   const f = currentFilters("reportFilters");
   f.dimension = dim;
   const rows = await api("/reports/breakdown" + qs(f));
+  const label = k => dim === "bet_type" ? betTypeLabel(k) : k;
   $("#breakdownBody").innerHTML = rows.map(r => `
-    <tr><td>${esc(r.key)}</td>
+    <tr><td>${esc(label(r.key))}</td>
     <td class="r num">${r.settled_bets}</td>
     <td class="r num">${pct(r.strike_rate_pct)}</td>
     <td class="r num">${pct(r.yield_pct)}</td>

@@ -106,14 +106,8 @@
               <datalist id="sportList"></datalist>
             </label>
             <label>Bet type
-              <select name="bet_type">
-                <option value="win">Win</option>
-                <option value="each_way">Each way</option>
-                <option value="over_under">Over / Under</option>
-                <option value="multi">Multi / Acca</option>
-                <option value="handicap">Handicap</option>
-                <option value="other">Other</option>
-              </select>
+              <input list="betTypeList" name="bet_type" required value="Win" placeholder="e.g. Win, Each way, Acca" />
+              <datalist id="betTypeList"></datalist>
             </label>
           </div>
           <div class="grid2">

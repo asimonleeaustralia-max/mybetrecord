@@ -40,10 +40,27 @@ def get_db() -> Generator[Session, None, None]:
 
 def init_db() -> None:
     """Create tables if they don't exist. Production uses Alembic instead."""
+    from sqlalchemy import text
+    from sqlalchemy.exc import IntegrityError
+
     from . import models  # noqa: F401  (ensure models are registered)
     from .seed import seed_dev_admin, _migrate_exchange_to_bookmaker, _ensure_settled_at_column
 
-    Base.metadata.create_all(bind=engine)
+    if settings.database_url.startswith("postgresql"):
+        # Four services can start together on docker-compose; without a lock,
+        # concurrent create_all() calls race and Postgres raises UniqueViolation.
+        with engine.begin() as conn:
+            conn.execute(text("SELECT pg_advisory_xact_lock(78901234)"))
+            try:
+                Base.metadata.create_all(bind=conn)
+            except IntegrityError:
+                pass
+    else:
+        try:
+            Base.metadata.create_all(bind=engine)
+        except IntegrityError:
+            pass
+
     _migrate_exchange_to_bookmaker()
     _ensure_settled_at_column()
     seed_dev_admin()

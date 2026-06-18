@@ -77,7 +77,7 @@ class Bet(Base):
     event: Mapped[str] = mapped_column(String(255), nullable=False)
     selection: Mapped[str] = mapped_column(String(255), nullable=False)
     sport: Mapped[str] = mapped_column(String(80), index=True, nullable=False)
-    bet_type: Mapped[str] = mapped_column(String(40), default="win")  # win|each_way|over_under|multi|...
+    bet_type: Mapped[str] = mapped_column(String(80), default="Win")
     placed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now, index=True)
 
     # Odds — stored canonically as decimal; the entry format is remembered for display.

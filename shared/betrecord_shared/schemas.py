@@ -69,7 +69,7 @@ class BetBase(BaseModel):
     event: str
     selection: str
     sport: str
-    bet_type: str = "win"
+    bet_type: str = "Win"
     placed_at: Optional[datetime] = None
     settled_at: Optional[datetime] = None
 
