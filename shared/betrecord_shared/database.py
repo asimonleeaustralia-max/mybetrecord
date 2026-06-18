@@ -44,7 +44,7 @@ def init_db() -> None:
     from sqlalchemy.exc import IntegrityError
 
     from . import models  # noqa: F401  (ensure models are registered)
-    from .seed import seed_dev_admin, _migrate_exchange_to_bookmaker, _ensure_settled_at_column
+    from .seed import seed_dev_admin, _migrate_exchange_to_bookmaker, _ensure_last_login_at_column, _ensure_settled_at_column
 
     if settings.database_url.startswith("postgresql"):
         # Four services can start together on docker-compose; without a lock,
@@ -63,4 +63,5 @@ def init_db() -> None:
 
     _migrate_exchange_to_bookmaker()
     _ensure_settled_at_column()
+    _ensure_last_login_at_column()
     seed_dev_admin()

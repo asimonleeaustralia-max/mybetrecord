@@ -85,6 +85,23 @@ def _migrate_exchange_to_bookmaker() -> None:
         )
 
 
+def _ensure_last_login_at_column() -> None:
+    """Add last_login_at to existing databases created before the column existed."""
+    if "users" not in inspect(engine).get_table_names():
+        return
+    columns = {c["name"] for c in inspect(engine).get_columns("users")}
+    if "last_login_at" in columns:
+        return
+    dialect = engine.dialect.name
+    with engine.begin() as conn:
+        if dialect == "postgresql":
+            conn.execute(
+                text("ALTER TABLE users ADD COLUMN IF NOT EXISTS last_login_at TIMESTAMP WITH TIME ZONE")
+            )
+        else:
+            conn.execute(text("ALTER TABLE users ADD COLUMN last_login_at DATETIME"))
+
+
 def seed_dev_admin() -> None:
     """Create a default admin account for local development."""
     if get_settings().environment == "production":

@@ -63,6 +63,7 @@
       <a href="#/new" class="tab" data-view="new">Record a bet</a>
       <a href="#/reports" class="tab" data-view="reports">Reports</a>
       <a href="#/settings" class="tab" data-view="settings">Settings</a>
+      <a href="#/admin" class="tab" data-view="admin" hidden>Admin</a>
     </nav>
 
     <main id="main" class="main"></main>
@@ -276,6 +277,62 @@
           <thead><tr><th>Name</th><th>Prefix</th><th>Last used</th><th></th></tr></thead>
           <tbody id="keysBody"></tbody>
         </table>
+      </div>
+    </div>
+  </template>
+
+  <template id="tpl-admin">
+    <div class="view">
+      <div class="view__head">
+        <h1>Admin</h1>
+        <span class="panel__sub">Monitor users and application activity</span>
+      </div>
+      <div class="cards" id="adminStats"></div>
+
+      <div class="panel">
+        <div class="panel__head">
+          <h2>Users</h2>
+          <input type="search" id="adminUserSearch" class="mini-select" placeholder="Search email or name…" />
+        </div>
+        <div class="table-wrap">
+          <table class="ledger ledger--compact">
+            <thead>
+              <tr>
+                <th>Email</th><th>Name</th><th>Status</th><th>Role</th>
+                <th>Last login</th><th>Joined</th>
+                <th class="r">Bets</th><th class="r">Keys</th><th></th>
+              </tr>
+            </thead>
+            <tbody id="adminUsersBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel__head">
+          <h2>App events</h2>
+          <select id="adminEventFilter" class="mini-select">
+            <option value="">All events</option>
+            <option value="login">Login</option>
+            <option value="login_failed">Login failed</option>
+            <option value="login_blocked">Login blocked</option>
+            <option value="register">Register</option>
+            <option value="settings_updated">Settings updated</option>
+            <option value="api_key_created">API key created</option>
+            <option value="api_key_revoked">API key revoked</option>
+            <option value="admin.user_update">Admin user update</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table class="ledger ledger--compact">
+            <thead>
+              <tr>
+                <th>When</th><th>Event</th><th>User</th><th>Detail</th><th>IP</th>
+              </tr>
+            </thead>
+            <tbody id="adminEventsBody"></tbody>
+          </table>
+        </div>
       </div>
     </div>
   </template>

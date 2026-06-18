@@ -63,6 +63,46 @@ class ApiKeyCreated(ApiKeyOut):
     api_key: str
 
 
+# ----------------------------- Admin -------------------------------------- #
+
+class AdminUserOut(BaseModel):
+    id: str
+    email: EmailStr
+    display_name: Optional[str]
+    is_active: bool
+    is_admin: bool
+    created_at: datetime
+    last_login_at: Optional[datetime]
+    bet_count: int
+    api_key_count: int
+
+
+class AdminUserUpdate(BaseModel):
+    is_active: Optional[bool] = None
+    is_admin: Optional[bool] = None
+
+
+class AdminStatsOut(BaseModel):
+    total_users: int
+    active_users: int
+    admin_users: int
+    total_bets: int
+    signups_today: int
+    logins_today: int
+    events_today: int
+
+
+class AppEventOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: str
+    user_id: Optional[str]
+    user_email: Optional[str] = None
+    event_type: str
+    detail: Optional[str]
+    ip_address: Optional[str]
+    created_at: datetime
+
+
 # -------------------------------- Bets ------------------------------------ #
 
 class BetBase(BaseModel):

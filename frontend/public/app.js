@@ -282,6 +282,14 @@ function plClass(v) { return v > 0 ? "pl-pos" : v < 0 ? "pl-neg" : "pl-zero"; }
 function pct(v) { return v == null ? "—" : `${Number(v).toFixed(2)}%`; }
 function esc(s) { return (s ?? "").toString().replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
 
+function formatDt(iso) {
+  if (!iso) return "—";
+  const d = new Date(iso);
+  const date = d.toLocaleDateString(undefined, { day: "2-digit", month: "short", year: "numeric" });
+  const time = d.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
+  return `${date} ${time}`;
+}
+
 function toast(msg, isErr = false) {
   const el = $("#toast");
   el.textContent = msg;
@@ -310,6 +318,12 @@ function showApp() {
   $("#auth").hidden = true;
   $("#authLoading").hidden = true;
   $("#app").hidden = false;
+  updateAdminNav();
+}
+
+function updateAdminNav() {
+  const tab = document.querySelector('.tab[data-view="admin"]');
+  if (tab) tab.hidden = !state.user?.is_admin;
 }
 
 $$("[data-auth-tab]").forEach(btn => btn.addEventListener("click", () => {
@@ -373,12 +387,17 @@ const routes = {
   "/new": () => renderForm(null),
   "/reports": renderReports,
   "/settings": renderSettings,
+  "/admin": renderAdmin,
 };
 
 async function route() {
   if (!state.user) return;
   const hash = location.hash || "#/bets";
   const [path, id] = hash.slice(1).split("/").filter(Boolean).reduce((a, p, i) => (i === 0 ? ["/" + p] : [a[0], p]), ["", ""]);
+  if (path === "/admin" && !state.user.is_admin) {
+    location.hash = "#/bets";
+    return;
+  }
   $$(".tab").forEach(t => t.classList.toggle("is-active", t.getAttribute("href") === `#${path}`));
 
   if (path === "/edit" && id) return renderForm(id);
@@ -940,6 +959,110 @@ async function createKey() {
   reveal.hidden = false;
   reveal.textContent = `Copy this now — it won't be shown again:  ${k.api_key}`;
   await loadKeys();
+}
+
+/* ============================ Admin ============================ */
+async function renderAdmin() {
+  const main = $("#main");
+  main.innerHTML = "";
+  main.appendChild(clone("tpl-admin"));
+
+  let userSearchTimer;
+  $("#adminUserSearch").addEventListener("input", () => {
+    clearTimeout(userSearchTimer);
+    userSearchTimer = setTimeout(loadAdminUsers, 300);
+  });
+  $("#adminEventFilter").addEventListener("change", loadAdminEvents);
+
+  await Promise.all([loadAdminStats(), loadAdminUsers(), loadAdminEvents()]);
+}
+
+async function loadAdminStats() {
+  const s = await api("/auth/admin/stats");
+  const cards = [
+    ["Users", String(s.total_users), `${s.active_users} active · ${s.admin_users} admins`],
+    ["Total bets", String(s.total_bets), "across all accounts"],
+    ["Signups today", String(s.signups_today), "new accounts"],
+    ["Logins today", String(s.logins_today), "successful sign-ins"],
+    ["Events today", String(s.events_today), "all activity"],
+  ];
+  $("#adminStats").innerHTML = cards.map(([l, v, sub]) =>
+    `<div class="card"><div class="card__label">${l}</div><div class="card__value">${v}</div><div class="card__sub">${sub}</div></div>`
+  ).join("");
+}
+
+function adminStatusBadge(active) {
+  return active
+    ? `<span class="outcome-select outcome-select--win">Active</span>`
+    : `<span class="outcome-select outcome-select--loss">Disabled</span>`;
+}
+
+function adminRoleBadge(isAdmin) {
+  return isAdmin
+    ? `<span class="outcome-select outcome-select--win">Admin</span>`
+    : `<span class="outcome-select outcome-select--pending">User</span>`;
+}
+
+async function loadAdminUsers() {
+  const search = $("#adminUserSearch").value.trim();
+  const qs = search ? `?search=${encodeURIComponent(search)}` : "";
+  const users = await api(`/auth/admin/users${qs}`);
+  $("#adminUsersBody").innerHTML = users.map(u => `
+    <tr data-user="${u.id}">
+      <td>${esc(u.email)}</td>
+      <td>${esc(u.display_name || "—")}</td>
+      <td>${adminStatusBadge(u.is_active)}</td>
+      <td>${adminRoleBadge(u.is_admin)}</td>
+      <td class="num">${formatDt(u.last_login_at)}</td>
+      <td class="num">${formatDt(u.created_at)}</td>
+      <td class="r num">${u.bet_count}</td>
+      <td class="r num">${u.api_key_count}</td>
+      <td class="r">
+        <button class="btn btn--ghost btn--sm" data-toggle-active="${u.id}" data-active="${u.is_active}">
+          ${u.is_active ? "Disable" : "Enable"}
+        </button>
+        <button class="btn btn--ghost btn--sm" data-toggle-admin="${u.id}" data-admin="${u.is_admin}">
+          ${u.is_admin ? "Revoke admin" : "Make admin"}
+        </button>
+      </td>
+    </tr>`).join("")
+    || `<tr><td colspan="9" class="empty">No users found.</td></tr>`;
+
+  $$("[data-toggle-active]").forEach(btn => btn.addEventListener("click", () =>
+    adminToggleUser(btn.dataset.toggleActive, { is_active: btn.dataset.active !== "true" })
+  ));
+  $$("[data-toggle-admin]").forEach(btn => btn.addEventListener("click", () =>
+    adminToggleUser(btn.dataset.toggleAdmin, { is_admin: btn.dataset.admin !== "true" })
+  ));
+}
+
+async function adminToggleUser(userId, payload) {
+  const label = payload.is_active != null
+    ? (payload.is_active ? "Enable this account?" : "Disable this account?")
+    : (payload.is_admin ? "Grant admin access?" : "Revoke admin access?");
+  if (!confirm(label)) return;
+  try {
+    await api(`/auth/admin/users/${userId}`, { method: "PATCH", body: payload });
+    toast("User updated");
+    await Promise.all([loadAdminUsers(), loadAdminEvents(), loadAdminStats()]);
+  } catch (err) {
+    toast(err.message, true);
+  }
+}
+
+async function loadAdminEvents() {
+  const eventType = $("#adminEventFilter").value;
+  const qs = eventType ? `?event_type=${encodeURIComponent(eventType)}` : "";
+  const events = await api(`/auth/admin/events${qs}`);
+  $("#adminEventsBody").innerHTML = events.map(e => `
+    <tr>
+      <td class="num">${formatDt(e.created_at)}</td>
+      <td>${esc(e.event_type)}</td>
+      <td>${esc(e.user_email || e.user_id || "—")}</td>
+      <td>${esc(e.detail || "—")}</td>
+      <td class="num">${esc(e.ip_address || "—")}</td>
+    </tr>`).join("")
+    || `<tr><td colspan="5" class="empty">No events yet.</td></tr>`;
 }
 
 /* -------------------------------- start -------------------------------- */

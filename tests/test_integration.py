@@ -293,3 +293,91 @@ def test_checkout_requires_stripe_config(clients, auth_headers):
         headers=headers,
     )
     assert r.status_code == 503  # billing not configured
+
+
+# ------------------------------- admin ------------------------------------ #
+
+def _admin_headers(clients):
+    r = clients["auth"].post(
+        "/auth/login", json={"email": "admin@admin.com", "password": "password"}
+    )
+    assert r.status_code == 200, r.text
+    return {"Authorization": f"Bearer {r.json()['access_token']}"}
+
+
+def test_admin_endpoints_require_admin(clients, auth_headers):
+    headers, _ = auth_headers
+    assert clients["auth"].get("/auth/admin/stats", headers=headers).status_code == 403
+    assert clients["auth"].get("/auth/admin/users", headers=headers).status_code == 403
+    assert clients["auth"].get("/auth/admin/events", headers=headers).status_code == 403
+
+
+def test_admin_stats_users_and_events(clients, auth_headers):
+    user_headers, email = auth_headers
+    admin_headers = _admin_headers(clients)
+
+    # User activity generates events.
+    clients["auth"].post("/auth/login", json={"email": email, "password": "password123"})
+    clients["auth"].patch("/auth/settings", headers=user_headers, json={"bankroll": 500})
+
+    stats = clients["auth"].get("/auth/admin/stats", headers=admin_headers)
+    assert stats.status_code == 200
+    body = stats.json()
+    assert body["total_users"] >= 2
+    assert body["logins_today"] >= 2
+
+    users = clients["auth"].get("/auth/admin/users", headers=admin_headers)
+    assert users.status_code == 200
+    emails = {u["email"] for u in users.json()}
+    assert "admin@admin.com" in emails
+    assert email in emails
+    target = next(u for u in users.json() if u["email"] == email)
+    assert target["last_login_at"] is not None
+
+    events = clients["auth"].get("/auth/admin/events", headers=admin_headers)
+    assert events.status_code == 200
+    types = {e["event_type"] for e in events.json()}
+    assert "login" in types
+    assert "settings_updated" in types
+
+
+def test_admin_can_toggle_user_active(clients, auth_headers):
+    admin_headers = _admin_headers(clients)
+    _, email = auth_headers
+    users = clients["auth"].get("/auth/admin/users?search=" + email, headers=admin_headers).json()
+    user_id = users[0]["id"]
+
+    disabled = clients["auth"].patch(
+        f"/auth/admin/users/{user_id}",
+        headers=admin_headers,
+        json={"is_active": False},
+    )
+    assert disabled.status_code == 200
+    assert disabled.json()["is_active"] is False
+
+    # Disabled user cannot log in.
+    assert clients["auth"].post(
+        "/auth/login", json={"email": email, "password": "password123"}
+    ).status_code == 403
+
+    enabled = clients["auth"].patch(
+        f"/auth/admin/users/{user_id}",
+        headers=admin_headers,
+        json={"is_active": True},
+    )
+    assert enabled.status_code == 200
+    assert clients["auth"].post(
+        "/auth/login", json={"email": email, "password": "password123"}
+    ).status_code == 200
+
+
+def test_admin_cannot_disable_self(clients):
+    admin_headers = _admin_headers(clients)
+    me = clients["auth"].get("/auth/me", headers=admin_headers).json()
+    r = clients["auth"].patch(
+        f"/auth/admin/users/{me['id']}",
+        headers=admin_headers,
+        json={"is_active": False},
+    )
+    assert r.status_code == 400
+
