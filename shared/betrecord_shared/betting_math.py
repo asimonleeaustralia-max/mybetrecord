@@ -155,17 +155,17 @@ def settle_profit(
     each_way: bool = False,
     place_fraction: float = 0.25,   # e.g. 1/4 odds for the place part
     placed: bool = False,           # did the each-way 'place' part win?
-    exchange_commission_pct: float = 0.0,   # commission on NET winnings, %
+    exchange_commission_pct: float = 0.0,   # % deducted from net winnings
     cash_out_amount: Optional[float] = None,
 ) -> float:
-    """Return profit/loss for one bet (negative = loss), net of exchange commission.
+    """Return profit/loss for one bet (negative = loss), net of winnings deductions.
 
     Notes
     -----
     * stake is the TOTAL staked. For an each-way bet that is the combined
       win + place stake; the unit stake is stake / 2.
-    * commission applies only to net winnings (the exchange model), and only
-      when the bet shows a profit.
+    * winnings deductions apply only to net winnings, and only when the bet
+      shows a profit (e.g. exchange commission).
     * a non-null cash_out_amount overrides outcome: P/L = cash_out - stake.
     """
     stake = float(stake)

@@ -49,6 +49,23 @@ def _ensure_bookmaker_column() -> None:
             conn.execute(text("ALTER TABLE bets ADD COLUMN bookmaker VARCHAR(80)"))
 
 
+def _migrate_exchange_to_bookmaker() -> None:
+    """Copy legacy exchange names into bookmaker for existing databases."""
+    if "bets" not in inspect(engine).get_table_names():
+        return
+    columns = {c["name"] for c in inspect(engine).get_columns("bets")}
+    if "exchange" not in columns:
+        return
+    with engine.begin() as conn:
+        conn.execute(
+            text(
+                "UPDATE bets SET bookmaker = exchange "
+                "WHERE exchange IS NOT NULL AND exchange != '' "
+                "AND (bookmaker IS NULL OR bookmaker = '')"
+            )
+        )
+
+
 def seed_dev_admin() -> None:
     """Create a default admin account for local development."""
     if get_settings().environment == "production":

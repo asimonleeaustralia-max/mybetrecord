@@ -134,7 +134,7 @@ def test_odds_below_one_rejected(clients, auth_headers):
 
 def test_pl_win_with_commission(clients, auth_headers):
     b = _make_bet(clients, auth_headers[0], odds=2.5, stake=100, outcome="win",
-                  exchange="Betfair", exchange_commission_pct=5)
+                  bookmaker="Betfair", exchange_commission_pct=5)
     assert b["profit"] == pytest.approx(142.5)  # 150 gross - 7.5 commission
 
 
@@ -245,6 +245,13 @@ def test_exports(clients, auth_headers):
     assert xlsx.status_code == 200
     assert "spreadsheetml" in xlsx.headers["content-type"]
     assert len(xlsx.content) > 1000
+
+    js = clients["reports"].get("/reports/export.json", headers=headers)
+    assert js.status_code == 200
+    assert "application/json" in js.headers["content-type"]
+    rows = js.json()
+    assert len(rows) == 1
+    assert rows[0]["sport"] == "Boxing"
 
 
 # ------------------------------- payments --------------------------------- #

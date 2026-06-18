@@ -2,7 +2,7 @@
 
 A betting ledger for people who bet to a number. Record every bet with the
 context that matters — odds in any format, your model's price, your own price,
-Kelly stake, closing line, exchange commission — then see ROI, yield, strike
+Kelly stake, closing line, winnings deductions — then see ROI, yield, strike
 rate, an equity curve, and breakdowns by sport, tipster, or bet type. Export
 to CSV or Excel, and drive the whole thing from an API if you want to.
 
@@ -49,15 +49,16 @@ Every service imports it, so "what is the P/L of this bet" has exactly one answe
 Event, selection, sport, bet type (win / each-way / over-under / multi /
 handicap), odds (decimal, American, or fractional — stored canonically as
 decimal), date & time, stake and currency, result (win / loss / void /
-half-win / half-loss / pending), P/L (net of exchange commission), cash-out
+half-win / half-loss / pending), P/L (net of any winnings deduction %), cash-out
 amount, bet model, model implied odds, personal implied odds, Kelly stake
-recommendation, closing odds, betting exchange and its commission %, tipster,
+recommendation, closing odds, bookmaker, winnings deduction % (e.g. exchange
+commission), tipster,
 and free-text notes. Previously used sports are offered as an autocomplete
 dropdown on the entry form.
 
 **Derived automatically:** decimal odds from any input format, net P/L
 (including each-way settlement, half-win/half-loss, cash-out override, and
-exchange commission on winners), Kelly stake (from your bankroll and personal
+winnings deductions on winners), Kelly stake (from your bankroll and personal
 implied odds), closing-line value, and per-unit edge.
 
 ---
@@ -168,7 +169,7 @@ curl -X POST https://<your-site>/bets \
   -d '{"event":"14:30 Ascot","selection":"Galileo Gold","sport":"Horse racing",
        "bet_type":"win","odds":2.5,"odds_format":"decimal","stake":100,
        "outcome":"win","personal_implied_odds":2.1,"closing_odds":2.3,
-       "exchange":"Betfair","exchange_commission_pct":5}'
+       "bookmaker":"Betfair","exchange_commission_pct":5}'
 
 # Pull your summary, or export
 curl https://<your-site>/reports/summary -H "Authorization: Bearer $KEY"

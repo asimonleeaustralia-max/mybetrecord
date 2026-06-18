@@ -107,10 +107,7 @@ class Bet(Base):
 
     # Where the bet was placed
     bookmaker: Mapped[str | None] = mapped_column(String(80), nullable=True, index=True)
-
-    # Exchange
-    exchange: Mapped[str | None] = mapped_column(String(80), nullable=True)
-    exchange_commission_pct: Mapped[float] = mapped_column(Float, default=0.0)
+    exchange_commission_pct: Mapped[float] = mapped_column(Float, default=0.0)  # % deducted from winnings
 
     # Meta
     tipster: Mapped[str | None] = mapped_column(String(120), nullable=True)

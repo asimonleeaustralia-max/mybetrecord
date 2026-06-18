@@ -41,7 +41,8 @@ def get_db() -> Generator[Session, None, None]:
 def init_db() -> None:
     """Create tables if they don't exist. Production uses Alembic instead."""
     from . import models  # noqa: F401  (ensure models are registered)
-    from .seed import seed_dev_admin
+    from .seed import seed_dev_admin, _migrate_exchange_to_bookmaker
 
     Base.metadata.create_all(bind=engine)
+    _migrate_exchange_to_bookmaker()
     seed_dev_admin()

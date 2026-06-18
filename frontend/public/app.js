@@ -51,13 +51,32 @@ function fillCurrencySelect(select, limit, selected = "") {
 
 // Popular sports by global betting handle, largest first.
 const SPORTS = [
+  // Major markets
   "Soccer", "Horse racing", "American football", "Basketball", "Tennis",
   "Cricket", "Golf", "Baseball", "Rugby union", "Ice hockey",
-  "Boxing", "MMA", "Greyhound racing", "Darts", "Snooker",
-  "Rugby league", "Cycling", "Formula 1", "Esports", "Volleyball",
-  "Handball", "Table tennis", "Australian rules football", "Gaelic football", "Hurling",
-  "Motorsport", "Athletics", "Skiing", "Badminton", "Squash",
-  "Pool", "Bowls", "Politics", "Entertainment",
+  "Boxing", "MMA", "Greyhound racing", "Harness racing", "Darts",
+  "Snooker", "Rugby league", "Rugby sevens", "Cycling", "Formula 1",
+  "Esports", "Volleyball", "Handball", "Table tennis", "Futsal",
+  // Regional & secondary team sports
+  "Australian rules football", "Gaelic football", "Hurling", "Field hockey",
+  "Beach volleyball", "Water polo", "Lacrosse", "Floorball", "Netball",
+  "Bandy", "Softball", "Kabaddi",
+  // Motorsport
+  "Motorsport", "NASCAR", "MotoGP", "IndyCar", "Rally",
+  // Winter sports
+  "Alpine skiing", "Cross-country skiing", "Ski jumping", "Biathlon",
+  "Curling", "Figure skating", "Bobsleigh", "Luge", "Skeleton",
+  // Combat & racket
+  "Muay Thai", "Kickboxing", "Wrestling", "Pro wrestling", "Badminton",
+  "Squash", "Padel", "Pickleball",
+  // Athletics & aquatics
+  "Athletics", "Swimming", "Diving", "Triathlon", "Rowing", "Sailing",
+  "Surfing", "Skateboarding", "Climbing", "Gymnastics",
+  // Other sports & games
+  "Pool", "Bowls", "Chess", "Equestrian", "Polo", "Shooting", "Archery",
+  // Non-sport / specials
+  "Virtual sports", "Olympics", "Politics", "Entertainment", "TV & film",
+  "Music awards", "Financial markets", "Lottery", "Specials",
 ];
 
 // Top bookmaker brands by parent operator size (iGaming EU Top 50, Mar 2026).
@@ -72,6 +91,7 @@ const BOOKMAKERS = [
   "Winamax", "Betfred", "ATG", "Lottoland", "Grosvenor",
   "BetVictor", "PlayOJO", "Pinnacle", "Novibet", "ComeOn",
   "BetKing", "888sport", "LiveScore Bet", "Coolbet", "Codere",
+  "Smarkets", "Matchbook", "Betdaq",
 ];
 
 function fillNameDatalist(datalist, defaults, extra = []) {
@@ -580,7 +600,7 @@ function fillForm(form, b) {
   set("bet_model", b.bet_model); set("closing_odds", b.closing_odds);
   set("model_implied_odds", b.model_implied_odds);
   set("personal_implied_odds", b.personal_implied_odds);
-  set("exchange", b.exchange); set("exchange_commission_pct", b.exchange_commission_pct);
+  set("exchange_commission_pct", b.exchange_commission_pct);
   set("bookmaker", b.bookmaker);
   set("tipster", b.tipster); set("notes", b.notes);
 }
@@ -596,6 +616,7 @@ async function renderReports() {
   $("#breakdownDim").addEventListener("change", loadBreakdown);
   $("#exportCsv").addEventListener("click", () => downloadExport("csv"));
   $("#exportXlsx").addEventListener("click", () => downloadExport("xlsx"));
+  $("#exportJson").addEventListener("click", () => downloadExport("json"));
   await loadReports();
 }
 

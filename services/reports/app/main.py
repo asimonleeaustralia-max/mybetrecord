@@ -9,13 +9,14 @@ from __future__ import annotations
 
 import csv
 import io
+import json
 from collections import defaultdict
 from datetime import datetime
 from typing import Optional
 
 from fastapi import Depends, FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
+from fastapi.responses import Response, StreamingResponse
 from openpyxl import Workbook
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -24,6 +25,7 @@ from betrecord_shared import betting_math as bm
 from betrecord_shared.config import get_settings
 from betrecord_shared.database import get_db
 from betrecord_shared.models import Bet, User
+from betrecord_shared.schemas import BetOut
 from betrecord_shared.security import get_current_user
 
 settings = get_settings()
@@ -55,8 +57,6 @@ def _filtered(db: Session, user_id: str, f: dict):
         stmt = stmt.where(Bet.tipster == f["tipster"])
     if f.get("bookmaker"):
         stmt = stmt.where(Bet.bookmaker == f["bookmaker"])
-    if f.get("exchange"):
-        stmt = stmt.where(Bet.exchange == f["exchange"])
     if f.get("outcome"):
         stmt = stmt.where(Bet.outcome == f["outcome"])
     if f.get("date_from"):
@@ -71,14 +71,13 @@ def _common_filters(
     bet_type: Optional[str] = None,
     tipster: Optional[str] = None,
     bookmaker: Optional[str] = None,
-    exchange: Optional[str] = None,
     outcome: Optional[str] = None,
     date_from: Optional[datetime] = None,
     date_to: Optional[datetime] = None,
 ) -> dict:
     return {
         "sport": sport, "bet_type": bet_type, "tipster": tipster,
-        "bookmaker": bookmaker, "exchange": exchange, "outcome": outcome,
+        "bookmaker": bookmaker, "outcome": outcome,
         "date_from": date_from, "date_to": date_to,
     }
 
@@ -123,7 +122,7 @@ def equity_curve(
 
 @app.get("/reports/breakdown")
 def breakdown(
-    dimension: str = Query(default="sport", pattern="^(sport|tipster|bet_type|bookmaker|exchange)$"),
+    dimension: str = Query(default="sport", pattern="^(sport|tipster|bet_type|bookmaker)$"),
     user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
     f: dict = Depends(_common_filters),
@@ -162,8 +161,7 @@ _EXPORT_COLUMNS = [
     ("kelly_stake", "Kelly stake"),
     ("closing_odds", "Closing odds"),
     ("bookmaker", "Bookmaker"),
-    ("exchange", "Exchange"),
-    ("exchange_commission_pct", "Commission %"),
+    ("exchange_commission_pct", "Winnings deduction %"),
     ("tipster", "Tipster"),
     ("notes", "Notes"),
 ]
@@ -174,6 +172,16 @@ def _value(bet: Bet, attr: str):
     if isinstance(v, datetime):
         return v.isoformat()
     return v
+
+
+def _serialise(bet: Bet) -> BetOut:
+    out = BetOut.model_validate(bet)
+    if bet.closing_odds:
+        out.clv_pct = bm.closing_line_value(bet.odds_decimal, bet.closing_odds)
+    if bet.personal_implied_odds:
+        p = bm.implied_probability(bet.personal_implied_odds)
+        out.edge_pct = round(bm.edge(bet.odds_decimal, p) * 100.0, 2)
+    return out
 
 
 @app.get("/reports/export.csv")
@@ -193,6 +201,21 @@ def export_csv(
         iter([buffer.getvalue()]),
         media_type="text/csv",
         headers={"Content-Disposition": "attachment; filename=mybetrecord.csv"},
+    )
+
+
+@app.get("/reports/export.json")
+def export_json(
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+    f: dict = Depends(_common_filters),
+):
+    bets = _filtered(db, user.id, f)
+    payload = [_serialise(b).model_dump(mode="json") for b in bets]
+    return Response(
+        content=json.dumps(payload, indent=2),
+        media_type="application/json",
+        headers={"Content-Disposition": "attachment; filename=mybetrecord.json"},
     )
 
 

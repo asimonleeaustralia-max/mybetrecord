@@ -116,10 +116,14 @@
               </select>
             </label>
           </div>
-          <label>Bookmaker
-            <input list="bookmakerList" name="bookmaker" placeholder="e.g. Ladbrokes, Bet365" />
-            <datalist id="bookmakerList"></datalist>
-          </label>
+          <div class="grid2">
+            <label>Bookmaker
+              <input list="bookmakerList" name="bookmaker" placeholder="e.g. Ladbrokes, Betfair" />
+              <datalist id="bookmakerList"></datalist>
+            </label>
+            <label>Winnings deduction % <span class="hint">e.g. exchange commission</span>
+              <input name="exchange_commission_pct" inputmode="decimal" placeholder="0" /></label>
+          </div>
           <label>Event<input name="event" required placeholder="e.g. 14:30 Ascot" /></label>
           <label>Selection<input name="selection" required placeholder="e.g. Galileo Gold" /></label>
           <label>Date &amp; time placed<input type="datetime-local" name="placed_at" /></label>
@@ -186,11 +190,7 @@
         </fieldset>
 
         <fieldset>
-          <legend>Exchange &amp; notes</legend>
-          <div class="grid2">
-            <label>Betting exchange<input name="exchange" placeholder="e.g. Betfair" /></label>
-            <label>Commission % <span class="hint">taken from winnings</span><input name="exchange_commission_pct" inputmode="decimal" placeholder="2" /></label>
-          </div>
+          <legend>Notes</legend>
           <label>Tipster<input name="tipster" placeholder="optional" /></label>
           <label>Notes<textarea name="notes" rows="2" placeholder="Reasoning, conditions, anything worth remembering"></textarea></label>
         </fieldset>
@@ -210,6 +210,7 @@
         <div class="exports">
           <button class="btn btn--ghost btn--sm" id="exportCsv">Export CSV</button>
           <button class="btn btn--ghost btn--sm" id="exportXlsx">Export Excel</button>
+          <button class="btn btn--ghost btn--sm" id="exportJson">Export JSON</button>
         </div>
       </div>
       <div class="filters" id="reportFilters"></div>
@@ -226,7 +227,6 @@
               <option value="tipster">Tipster</option>
               <option value="bet_type">Bet type</option>
               <option value="bookmaker">Bookmaker</option>
-              <option value="exchange">Exchange</option>
             </select>
           </div>
           <div class="table-wrap">
