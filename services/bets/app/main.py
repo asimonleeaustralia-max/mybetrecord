@@ -139,7 +139,8 @@ def create_bet(
     user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ) -> BetOut:
-    odds_decimal = _normalise_odds(payload.odds, payload.odds_format, payload.odds_denominator)
+    odds_format = payload.odds_format or user.default_odds_format or "decimal"
+    odds_decimal = _normalise_odds(payload.odds, odds_format, payload.odds_denominator)
     if odds_decimal <= 1.0:
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, "Decimal odds must exceed 1.0")
 
@@ -151,7 +152,7 @@ def create_bet(
         bet_type=payload.bet_type,
         placed_at=payload.placed_at or datetime.now(timezone.utc),
         odds_decimal=odds_decimal,
-        odds_format=payload.odds_format,
+        odds_format=odds_format,
         stake=payload.stake,
         currency=(payload.currency or user.base_currency).upper(),
         each_way=payload.each_way,

@@ -71,9 +71,8 @@ docker compose up --build
 # open http://localhost:8080
 ```
 
-That starts Postgres, all four services, and the frontend. Create an account,
-set your bankroll under **Settings** (used for the Kelly recommendation), and
-record a bet.
+That starts Postgres, all four services, and the frontend. Create an account, set your **default entry odds** format and bankroll under
+**Settings** (bankroll is used for the Kelly recommendation), and record a bet.
 
 ### Without Docker
 

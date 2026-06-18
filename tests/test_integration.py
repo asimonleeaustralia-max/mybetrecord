@@ -93,6 +93,19 @@ def test_odds_decimal(clients, auth_headers):
     assert b["odds_decimal"] == pytest.approx(2.5)
 
 
+def test_odds_format_defaults_from_user_settings(clients, auth_headers):
+    headers, _ = auth_headers
+    clients["auth"].patch("/auth/settings", headers=headers, json={"default_odds_format": "american"})
+    # API clients can omit odds_format; the user's settings preference is used.
+    r = clients["bets"].post("/bets", headers=headers, json={
+        "event": "Test event", "selection": "Test pick", "sport": "Testball",
+        "bet_type": "win", "odds": 150, "stake": 100, "outcome": "pending",
+    })
+    assert r.status_code == 201, r.text
+    assert r.json()["odds_decimal"] == pytest.approx(2.5)
+    assert r.json()["odds_format"] == "american"
+
+
 def test_odds_american(clients, auth_headers):
     h = auth_headers[0]
     assert _make_bet(clients, h, odds=150, odds_format="american")["odds_decimal"] == pytest.approx(2.5)

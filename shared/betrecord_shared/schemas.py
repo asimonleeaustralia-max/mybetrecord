@@ -75,7 +75,7 @@ class BetBase(BaseModel):
     # Accept odds in any format; the bets service normalises to decimal.
     # A string is allowed so fractional odds can be sent as "11/8".
     odds: float | str
-    odds_format: str = Field(default="decimal", pattern="^(decimal|american|fractional)$")
+    odds_format: Optional[str] = Field(default=None, pattern="^(decimal|american|fractional)$")
     odds_denominator: Optional[float] = None  # for fractional when odds is the numerator
 
     stake: float = Field(gt=0)
