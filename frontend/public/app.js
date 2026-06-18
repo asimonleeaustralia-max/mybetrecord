@@ -5,6 +5,50 @@
 const TOKEN_KEY = "mbr_token";
 const state = { user: null, sports: [], charts: {} };
 
+// Top currencies by forex turnover / economic weight, largest first.
+const CURRENCIES = [
+  ["USD", "US Dollar"], ["EUR", "Euro"], ["JPY", "Japanese Yen"], ["GBP", "British Pound"],
+  ["CNY", "Chinese Yuan"], ["AUD", "Australian Dollar"], ["CAD", "Canadian Dollar"],
+  ["CHF", "Swiss Franc"], ["HKD", "Hong Kong Dollar"], ["SGD", "Singapore Dollar"],
+  ["SEK", "Swedish Krona"], ["KRW", "South Korean Won"], ["NOK", "Norwegian Krone"],
+  ["NZD", "New Zealand Dollar"], ["INR", "Indian Rupee"], ["MXN", "Mexican Peso"],
+  ["TWD", "New Taiwan Dollar"], ["ZAR", "South African Rand"], ["BRL", "Brazilian Real"],
+  ["DKK", "Danish Krone"], ["PLN", "Polish Zloty"], ["THB", "Thai Baht"],
+  ["IDR", "Indonesian Rupiah"], ["HUF", "Hungarian Forint"], ["CZK", "Czech Koruna"],
+  ["ILS", "Israeli Shekel"], ["CLP", "Chilean Peso"], ["PHP", "Philippine Peso"],
+  ["AED", "UAE Dirham"], ["COP", "Colombian Peso"], ["SAR", "Saudi Riyal"],
+  ["MYR", "Malaysian Ringgit"], ["RON", "Romanian Leu"], ["TRY", "Turkish Lira"],
+  ["BGN", "Bulgarian Lev"], ["ARS", "Argentine Peso"], ["PEN", "Peruvian Sol"],
+  ["RUB", "Russian Ruble"], ["ISK", "Icelandic Króna"], ["EGP", "Egyptian Pound"],
+  ["VND", "Vietnamese Dong"], ["NGN", "Nigerian Naira"], ["PKR", "Pakistani Rupee"],
+  ["UAH", "Ukrainian Hryvnia"], ["BDT", "Bangladeshi Taka"], ["MAD", "Moroccan Dirham"],
+  ["QAR", "Qatari Riyal"], ["KWD", "Kuwaiti Dinar"], ["BHD", "Bahraini Dinar"],
+];
+
+function currencyCodes(limit) {
+  return new Set(CURRENCIES.slice(0, limit).map(([c]) => c));
+}
+
+function fillCurrencyDatalist(datalist, limit) {
+  datalist.innerHTML = CURRENCIES.slice(0, limit).map(([code, name]) =>
+    `<option value="${code}">${esc(name)}</option>`
+  ).join("");
+}
+
+function fillCurrencySelect(select, limit, selected = "") {
+  const list = CURRENCIES.slice(0, limit);
+  const codes = currencyCodes(limit);
+  const sel = (selected || "").toUpperCase();
+  let html = "";
+  if (sel && !codes.has(sel)) {
+    html += `<option value="${esc(sel)}" selected>${esc(sel)}</option>`;
+  }
+  html += list.map(([code, name]) =>
+    `<option value="${code}"${code === sel ? " selected" : ""}>${code} — ${esc(name)}</option>`
+  ).join("");
+  select.innerHTML = html;
+}
+
 /* ----------------------------- API client ----------------------------- */
 function token() { return localStorage.getItem(TOKEN_KEY); }
 function setToken(t) { t ? localStorage.setItem(TOKEN_KEY, t) : localStorage.removeItem(TOKEN_KEY); }
@@ -295,6 +339,7 @@ async function renderForm(id) {
   const form = $("#betForm");
   // default odds format from user settings
   form.odds_format.value = state.user.default_odds_format || "decimal";
+  fillCurrencyDatalist($("#currencyList"), 50);
   form.currency.value = state.user.base_currency || "GBP";
   syncOddsFormat();
   syncEachWay();
@@ -319,6 +364,10 @@ async function renderForm(id) {
   form.addEventListener("submit", async e => {
     e.preventDefault();
     const payload = readForm(form);
+    if (!payload.currency || !/^[A-Z]{3}$/.test(payload.currency)) {
+      toast("Enter a valid 3-letter currency code", true);
+      return;
+    }
     try {
       if (editing) await api(`/bets/${editing.id}`, { method: "PATCH", body: payload });
       else await api("/bets", { method: "POST", body: payload });
@@ -372,7 +421,7 @@ function readForm(form) {
   }
   out.each_way = form.each_way.checked;
   out.placed = form.placed.checked;
-  if (out.currency) out.currency = out.currency.toUpperCase();
+  if (out.currency) out.currency = out.currency.trim().toUpperCase();
   if (out.placed_at) out.placed_at = new Date(out.placed_at).toISOString();
   return out;
 }
@@ -385,7 +434,8 @@ function fillForm(form, b) {
   // stored odds are decimal; present as decimal for editing clarity
   form.odds_format.value = "decimal";
   set("odds", Number(b.odds_decimal).toFixed(2));
-  set("stake", b.stake); set("currency", b.currency);
+  set("stake", b.stake);
+  set("currency", b.currency);
   form.each_way.checked = b.each_way; form.placed.checked = b.placed;
   set("place_fraction", b.place_fraction);
   set("outcome", b.outcome); set("cash_out_amount", b.cash_out_amount);
@@ -534,7 +584,7 @@ async function renderSettings() {
   const form = $("#settingsForm");
   const u = state.user;
   form.default_odds_format.value = u.default_odds_format;
-  form.base_currency.value = u.base_currency;
+  fillCurrencySelect(form.base_currency, 20, u.base_currency);
   form.bankroll.value = u.bankroll;
   form.kelly_multiplier.value = u.kelly_multiplier;
   form.display_name.value = u.display_name || "";

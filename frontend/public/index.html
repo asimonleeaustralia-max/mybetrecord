@@ -137,7 +137,10 @@
           </div>
           <div class="grid3">
             <label>Stake<input name="stake" inputmode="decimal" required placeholder="50" /></label>
-            <label>Currency<input name="currency" maxlength="3" placeholder="GBP" /></label>
+            <label>Currency
+              <input list="currencyList" name="currency" maxlength="3" placeholder="GBP" autocapitalize="characters" required />
+              <datalist id="currencyList"></datalist>
+            </label>
             <label class="check"><input type="checkbox" name="each_way" /> Each way</label>
           </div>
           <div class="grid2" id="ewFields" hidden>
@@ -250,7 +253,7 @@
                 <option value="fractional">Fractional</option>
               </select>
             </label>
-            <label>Base currency<input name="base_currency" maxlength="3" /></label>
+            <label>Default currency<select name="base_currency"></select></label>
           </div>
           <div class="grid2">
             <label>Bankroll <span class="hint">used for Kelly</span><input name="bankroll" inputmode="decimal" /></label>
