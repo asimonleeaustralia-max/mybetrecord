@@ -49,6 +49,25 @@ def _ensure_bookmaker_column() -> None:
             conn.execute(text("ALTER TABLE bets ADD COLUMN bookmaker VARCHAR(80)"))
 
 
+def _ensure_settled_at_column() -> None:
+    """Add settled_at to existing databases created before the column existed."""
+    if "bets" not in inspect(engine).get_table_names():
+        return
+    columns = {c["name"] for c in inspect(engine).get_columns("bets")}
+    if "settled_at" in columns:
+        return
+    dialect = engine.dialect.name
+    with engine.begin() as conn:
+        if dialect == "postgresql":
+            conn.execute(text("ALTER TABLE bets ADD COLUMN settled_at TIMESTAMP WITH TIME ZONE"))
+            conn.execute(text("UPDATE bets SET settled_at = placed_at"))
+            conn.execute(text("ALTER TABLE bets ALTER COLUMN settled_at SET NOT NULL"))
+            conn.execute(text("ALTER TABLE bets ALTER COLUMN settled_at SET DEFAULT NOW()"))
+        else:
+            conn.execute(text("ALTER TABLE bets ADD COLUMN settled_at DATETIME"))
+            conn.execute(text("UPDATE bets SET settled_at = placed_at"))
+
+
 def _migrate_exchange_to_bookmaker() -> None:
     """Copy legacy exchange names into bookmaker for existing databases."""
     if "bets" not in inspect(engine).get_table_names():
@@ -75,6 +94,7 @@ def seed_dev_admin() -> None:
 
     _ensure_is_admin_column()
     _ensure_bookmaker_column()
+    _ensure_settled_at_column()
 
     with SessionLocal() as db:
         user = db.scalar(select(User).where(User.email == DEV_ADMIN_EMAIL))

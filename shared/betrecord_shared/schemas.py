@@ -71,6 +71,7 @@ class BetBase(BaseModel):
     sport: str
     bet_type: str = "win"
     placed_at: Optional[datetime] = None
+    settled_at: Optional[datetime] = None
 
     # Accept odds in any format; the bets service normalises to decimal.
     # A string is allowed so fractional odds can be sent as "11/8".
@@ -111,6 +112,7 @@ class BetUpdate(BaseModel):
     sport: Optional[str] = None
     bet_type: Optional[str] = None
     placed_at: Optional[datetime] = None
+    settled_at: Optional[datetime] = None
     odds: Optional[float | str] = None
     odds_format: Optional[str] = Field(default=None, pattern="^(decimal|american|fractional)$")
     odds_denominator: Optional[float] = None
@@ -139,6 +141,7 @@ class BetOut(BaseModel):
     sport: str
     bet_type: str
     placed_at: datetime
+    settled_at: datetime
     odds_decimal: float
     odds_format: str
     stake: float

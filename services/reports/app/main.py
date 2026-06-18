@@ -10,7 +10,7 @@ from __future__ import annotations
 import csv
 import io
 import json
-from collections import defaultdict
+from collections import Counter, defaultdict
 from datetime import datetime
 from typing import Optional
 
@@ -59,11 +59,22 @@ def _filtered(db: Session, user_id: str, f: dict):
         stmt = stmt.where(Bet.bookmaker == f["bookmaker"])
     if f.get("outcome"):
         stmt = stmt.where(Bet.outcome == f["outcome"])
+    if f.get("currency"):
+        stmt = stmt.where(Bet.currency == f["currency"])
     if f.get("date_from"):
         stmt = stmt.where(Bet.placed_at >= f["date_from"])
     if f.get("date_to"):
         stmt = stmt.where(Bet.placed_at <= f["date_to"])
     return db.scalars(stmt.order_by(Bet.placed_at.asc())).all()
+
+
+def _dominant_currency(db: Session, user_id: str) -> Optional[str]:
+    """Currency the user has recorded the most bets in (count; ties → alphabetical)."""
+    rows = db.scalars(select(Bet.currency).where(Bet.user_id == user_id)).all()
+    if not rows:
+        return None
+    counts = Counter((c or "GBP").upper() for c in rows)
+    return max(counts, key=lambda k: (counts[k], k))
 
 
 def _common_filters(
@@ -72,12 +83,14 @@ def _common_filters(
     tipster: Optional[str] = None,
     bookmaker: Optional[str] = None,
     outcome: Optional[str] = None,
+    currency: Optional[str] = None,
     date_from: Optional[datetime] = None,
     date_to: Optional[datetime] = None,
 ) -> dict:
     return {
         "sport": sport, "bet_type": bet_type, "tipster": tipster,
         "bookmaker": bookmaker, "outcome": outcome,
+        "currency": currency.upper() if currency else None,
         "date_from": date_from, "date_to": date_to,
     }
 
@@ -89,12 +102,19 @@ def summary(
     user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
     f: dict = Depends(_common_filters),
+    use_primary_currency: bool = False,
 ):
-    bets = _filtered(db, user.id, f)
+    filters = dict(f)
+    display_currency = filters.get("currency")
+    if use_primary_currency and not display_currency:
+        display_currency = _dominant_currency(db, user.id) or user.base_currency
+        filters["currency"] = display_currency
+    bets = _filtered(db, user.id, filters)
     rows = [{"stake": b.stake, "profit": b.profit, "outcome": b.outcome} for b in bets]
     metrics = bm.portfolio_metrics(rows)
     metrics["roi_vs_bankroll_pct"] = bm.roi_vs_bankroll(metrics["profit"], user.bankroll)
     metrics["base_currency"] = user.base_currency
+    metrics["currency"] = display_currency
     metrics["bankroll"] = user.bankroll
     metrics["total_bets"] = len(bets)
     return metrics
@@ -144,7 +164,8 @@ def breakdown(
 # ------------------------------- exports ---------------------------------- #
 
 _EXPORT_COLUMNS = [
-    ("placed_at", "Date/Time"),
+    ("placed_at", "Date/Time placed"),
+    ("settled_at", "Date/Time settled"),
     ("sport", "Sport"),
     ("event", "Event"),
     ("selection", "Selection"),

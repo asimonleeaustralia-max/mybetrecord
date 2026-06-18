@@ -7,6 +7,7 @@ from the bettor's settings, so the stored row is always self-consistent.
 
 from __future__ import annotations
 
+from collections import Counter
 from datetime import datetime, timezone
 from typing import Optional
 
@@ -97,6 +98,14 @@ def sports_used(user: User = Depends(get_current_user), db: Session = Depends(ge
     return [s for s in rows if s]
 
 
+@app.get("/bets/currencies", response_model=list[str])
+def currencies_used(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Currencies the user has bet in, most-used first (for report filters)."""
+    rows = db.scalars(select(Bet.currency).where(Bet.user_id == user.id)).all()
+    counts = Counter((c or "GBP").upper() for c in rows)
+    return sorted(counts, key=lambda k: (-counts[k], k))
+
+
 @app.get("/bets", response_model=list[BetOut])
 def list_bets(
     user: User = Depends(get_current_user),
@@ -148,6 +157,7 @@ def create_bet(
         sport=payload.sport,
         bet_type=payload.bet_type,
         placed_at=payload.placed_at or datetime.now(timezone.utc),
+        settled_at=payload.settled_at or datetime.now(timezone.utc),
         odds_decimal=odds_decimal,
         odds_format=odds_format,
         stake=payload.stake,
@@ -203,13 +213,15 @@ def update_bet(
         bet.odds_format = new_fmt
 
     for field in (
-        "event", "selection", "sport", "bet_type", "placed_at", "stake", "currency",
+        "event", "selection", "sport", "bet_type", "placed_at", "settled_at", "stake", "currency",
         "each_way", "place_fraction", "placed", "outcome", "cash_out_amount",
         "bet_model", "model_implied_odds", "personal_implied_odds", "closing_odds",
         "bookmaker", "exchange_commission_pct", "tipster", "notes",
     ):
         if field in data:
             value = data[field]
+            if field in ("placed_at", "settled_at") and value is None:
+                value = datetime.now(timezone.utc)
             if field == "currency" and value:
                 value = value.upper()
             setattr(bet, field, value)

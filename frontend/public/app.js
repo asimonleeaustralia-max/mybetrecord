@@ -3,7 +3,7 @@
    /auth, /bets, /reports, /payments to the right container. */
 
 const TOKEN_KEY = "mbr_token";
-const state = { user: null, sports: [], charts: {} };
+const state = { user: null, sports: [], currencies: [], charts: {} };
 
 // Top currencies by forex turnover / economic weight, largest first.
 const CURRENCIES = [
@@ -239,11 +239,13 @@ $("#logoutBtn").addEventListener("click", () => { setToken(null); showAuth(); lo
 /* ------------------------------- ticker ------------------------------- */
 async function refreshTicker() {
   try {
-    const s = await api("/reports/summary");
+    const s = await api("/reports/summary?use_primary_currency=true");
     $("#tkBankroll").textContent = state.user.bankroll ? money(state.user.bankroll) : "—";
     const pl = $("#tkPL");
     pl.textContent = money(s.profit, true);
     pl.className = "num " + plClass(s.profit);
+    const plLabel = pl.closest(".ticker__item")?.querySelector(".ticker__label");
+    if (plLabel) plLabel.textContent = s.currency ? `P/L (${s.currency})` : "P/L";
     $("#tkYield").textContent = pct(s.yield_pct);
   } catch {}
 }
@@ -353,20 +355,27 @@ function outcomeSelect(b) {
   return `<select class="mini-select outcome-select outcome-select--${tone}" data-outcome="${b.id}" aria-label="Result for ${esc(b.selection)}">${opts}</select>`;
 }
 
+const ICON_EDIT = `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`;
+const ICON_DELETE = `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>`;
+
 function betRow(b) {
   const d = new Date(b.placed_at);
   const date = d.toLocaleDateString(undefined, { day: "2-digit", month: "short", year: "2-digit" });
+  const label = esc(b.selection);
   return `<tr>
     <td class="num">${date}</td>
     <td>${esc(b.sport)}</td>
-    <td>${esc(b.event)}<div class="sel">${esc(b.selection)}</div></td>
+    <td>${esc(b.event)}<div class="sel">${label}</div></td>
     <td>${esc(b.bet_type.replace("_", " "))}</td>
     <td class="r">${Number(b.odds_decimal).toFixed(2)}</td>
     <td class="r">${money(b.stake)}</td>
     <td>${outcomeSelect(b)}</td>
     <td class="r ${plClass(b.profit)}">${money(b.profit, true)}</td>
     <td class="r">${b.clv_pct == null ? "—" : pct(b.clv_pct)}</td>
-    <td class="r"><a class="btn btn--ghost btn--sm" href="#/edit/${b.id}">Edit</a> <button class="btn btn--danger" data-del="${b.id}">Delete</button></td>
+    <td class="r"><div class="row-actions">
+      <a class="icon-btn icon-btn--edit" href="#/edit/${b.id}" aria-label="Edit ${label}">${ICON_EDIT}</a>
+      <button type="button" class="icon-btn icon-btn--delete" data-del="${b.id}" aria-label="Delete ${label}">${ICON_DELETE}</button>
+    </div></td>
   </tr>`;
 }
 
@@ -423,10 +432,6 @@ async function renderForm(id) {
     editing = await api(`/bets/${id}`);
     fillForm(form, editing);
     syncOddsFormat(); syncEachWay(); updateKellyHint();
-  } else {
-    // default datetime-local to now
-    const now = new Date(Date.now() - new Date().getTimezoneOffset() * 60000);
-    form.placed_at.value = now.toISOString().slice(0, 16);
   }
 
   form.addEventListener("submit", async e => {
@@ -562,6 +567,11 @@ function updateKellyHint() {
   }
 }
 
+function readDatetimeField(form, name) {
+  const v = String(form[name]?.value || "").trim();
+  return v ? new Date(v).toISOString() : new Date().toISOString();
+}
+
 const NUM_FIELDS = ["odds", "odds_denominator", "stake", "place_fraction", "cash_out_amount",
   "model_implied_odds", "personal_implied_odds", "closing_odds", "exchange_commission_pct"];
 
@@ -575,7 +585,8 @@ function readForm(form) {
   out.each_way = form.each_way.checked;
   out.placed = form.placed.checked;
   if (out.currency) out.currency = out.currency.trim().toUpperCase();
-  if (out.placed_at) out.placed_at = new Date(out.placed_at).toISOString();
+  out.placed_at = readDatetimeField(form, "placed_at");
+  out.settled_at = readDatetimeField(form, "settled_at");
   if (out.odds_format !== "fractional") delete out.odds_denominator;
   return out;
 }
@@ -584,7 +595,8 @@ function fillForm(form, b) {
   const set = (n, v) => { if (form[n] != null && v != null) form[n].value = v; };
   set("sport", b.sport); set("bet_type", b.bet_type); set("event", b.event);
   set("selection", b.selection);
-  set("placed_at", new Date(b.placed_at).toISOString().slice(0, 16));
+  set("placed_at", b.placed_at ? new Date(b.placed_at).toISOString().slice(0, 16) : "");
+  set("settled_at", b.settled_at ? new Date(b.settled_at).toISOString().slice(0, 16) : "");
   const fmt = b.odds_format || "decimal";
   form.odds_format.value = fmt;
   form.odds_format.dataset.prev = fmt;
@@ -611,7 +623,10 @@ async function renderReports() {
   main.innerHTML = "";
   main.appendChild(clone("tpl-reports"));
 
-  state.sports = await api("/bets/sports").catch(() => []);
+  [state.sports, state.currencies] = await Promise.all([
+    api("/bets/sports").catch(() => []),
+    api("/bets/currencies").catch(() => []),
+  ]);
   buildReportFilters();
   $("#breakdownDim").addEventListener("change", loadBreakdown);
   $("#exportCsv").addEventListener("click", () => downloadExport("csv"));
@@ -622,11 +637,18 @@ async function renderReports() {
 
 function buildReportFilters() {
   const root = $("#reportFilters");
+  const currencyOpts = [
+    `<option value="">All currencies</option>`,
+    ...state.currencies.map(c => `<option value="${esc(c)}">${esc(c)}</option>`),
+  ].join("");
   root.innerHTML = `
     <label>Sport<select name="sport"><option value="">All</option>${state.sports.map(s => `<option>${esc(s)}</option>`).join("")}</select></label>
     <label>Type<select name="bet_type"><option value="">All</option><option value="win">Win</option><option value="each_way">Each way</option><option value="over_under">Over/Under</option><option value="multi">Multi</option></select></label>
+    <label>Currency<select name="currency">${currencyOpts}</select></label>
     <label>From<input type="date" name="date_from" /></label>
     <label>To<input type="date" name="date_to" /></label>`;
+  const currencySelect = root.querySelector('[name="currency"]');
+  if (state.currencies.length) currencySelect.value = state.currencies[0];
   $$("select, input", root).forEach(el => el.addEventListener("change", loadReports));
 }
 
@@ -637,12 +659,13 @@ async function loadReports() {
 async function loadSummary() {
   const f = currentFilters("reportFilters");
   const s = await api("/reports/summary" + qs(f));
+  const currencyNote = s.currency ? `${s.currency} only` : "all currencies";
   const cards = [
-    ["Profit / Loss", `<span class="${plClass(s.profit)}">${money(s.profit, true)}</span>`, `${s.settled_bets} settled`],
+    ["Profit / Loss", `<span class="${plClass(s.profit)}">${money(s.profit, true)}</span>`, `${s.settled_bets} settled · ${currencyNote}`],
     ["ROI", pct(s.roi_pct), s.roi_vs_bankroll_pct != null ? `${pct(s.roi_vs_bankroll_pct)} of bankroll` : "per unit staked"],
     ["Yield", pct(s.yield_pct), `${money(s.turnover)} turnover`],
     ["Strike rate", pct(s.strike_rate_pct), `${s.wins}W / ${s.losses}L / ${s.voids}V`],
-    ["Total bets", String(s.total_bets), `${ccy()} base`],
+    ["Total bets", String(s.total_bets), currencyNote],
   ];
   $("#metricCards").innerHTML = cards.map(([l, v, sub]) =>
     `<div class="card"><div class="card__label">${l}</div><div class="card__value">${v}</div><div class="card__sub">${sub}</div></div>`).join("");

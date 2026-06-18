@@ -124,6 +124,51 @@ input:focus, select:focus, textarea:focus {
 .btn--danger { background: transparent; color: var(--loss); border-color: transparent; padding: 4px 8px; }
 .btn--danger:hover { background: #fbecea; }
 
+.row-actions {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 2px;
+}
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--faint);
+  cursor: pointer;
+  text-decoration: none;
+  transition: color .15s ease, background .15s ease, border-color .15s ease, transform .04s ease;
+}
+.icon-btn:active { transform: translateY(1px); }
+.icon-btn .icon { width: 16px; height: 16px; flex-shrink: 0; }
+.icon-btn--edit:hover,
+.icon-btn--edit:focus-visible {
+  color: var(--brass-deep);
+  background: var(--brass-wash);
+  border-color: #e8dcc4;
+}
+.icon-btn--delete:hover,
+.icon-btn--delete:focus-visible {
+  color: var(--loss);
+  background: #fbecea;
+  border-color: #f0ccc8;
+}
+.ledger tbody tr:hover .icon-btn { color: var(--muted); }
+.ledger tbody tr:hover .icon-btn--edit:hover,
+.ledger tbody tr:hover .icon-btn--edit:focus-visible { color: var(--brass-deep); }
+.ledger tbody tr:hover .icon-btn--delete:hover,
+.ledger tbody tr:hover .icon-btn--delete:focus-visible { color: var(--loss); }
+.icon-btn:focus-visible {
+  outline: 2px solid var(--brass);
+  outline-offset: 1px;
+}
+
 .form-error { color: var(--loss); font-size: .85rem; margin-top: 14px; }
 
 /* ============================ App shell ============================ */

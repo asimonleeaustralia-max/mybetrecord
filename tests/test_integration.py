@@ -224,6 +224,30 @@ def test_reports_summary_and_breakdown(clients, auth_headers):
     assert by_sport["Darts"] == pytest.approx(0.0)
 
 
+def test_reports_currency_filter_and_primary_currency(clients, auth_headers):
+    headers, _ = auth_headers
+    _make_bet(clients, headers, currency="GBP", odds=2.0, stake=100, outcome="win")   # +100 GBP
+    _make_bet(clients, headers, currency="GBP", odds=2.0, stake=100, outcome="win")   # +100 GBP
+    _make_bet(clients, headers, currency="USD", odds=2.0, stake=100, outcome="win")    # +100 USD
+
+    currencies = clients["bets"].get("/bets/currencies", headers=headers).json()
+    assert currencies == ["GBP", "USD"]
+
+    primary = clients["reports"].get("/reports/summary?use_primary_currency=true", headers=headers).json()
+    assert primary["currency"] == "GBP"
+    assert primary["profit"] == pytest.approx(200.0)
+    assert primary["settled_bets"] == 2
+
+    usd_only = clients["reports"].get("/reports/summary?currency=USD", headers=headers).json()
+    assert usd_only["currency"] == "USD"
+    assert usd_only["profit"] == pytest.approx(100.0)
+    assert usd_only["settled_bets"] == 1
+
+    mixed = clients["reports"].get("/reports/summary", headers=headers).json()
+    assert mixed["currency"] is None
+    assert mixed["profit"] == pytest.approx(300.0)
+
+
 def test_equity_curve_excludes_pending(clients, auth_headers):
     headers, _ = auth_headers
     _make_bet(clients, headers, odds=2.0, stake=100, outcome="win")
