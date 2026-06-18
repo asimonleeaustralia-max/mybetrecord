@@ -74,6 +74,8 @@ a { color: inherit; }
 .seg__btn.is-active { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
 .auth__form { display: grid; gap: 14px; }
 .auth__form[hidden] { display: none !important; }
+/* .auth sets display:grid; reinforce [hidden] so panels don't stack visibly */
+.auth[hidden], #app[hidden] { display: none !important; }
 
 .auth-loading__spinner {
   width: 40px; height: 40px;

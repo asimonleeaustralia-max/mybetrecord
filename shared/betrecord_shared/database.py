@@ -11,8 +11,14 @@ from .config import get_settings
 
 settings = get_settings()
 
+_connect_args: dict = {}
+if settings.database_url.startswith("sqlite"):
+    # run_local.py shares one SQLite file across four processes
+    _connect_args = {"check_same_thread": False, "timeout": 30}
+
 engine = create_engine(
     settings.database_url,
+    connect_args=_connect_args,
     pool_pre_ping=True,
     future=True,
 )

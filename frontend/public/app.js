@@ -102,7 +102,7 @@ $("#loginForm").addEventListener("submit", async e => {
   try {
     const { access_token } = await api("/auth/login", { method: "POST", body: f, allow401: true });
     setToken(access_token);
-    await boot();
+    await boot({ loading: true });
   } catch {
     showAuth("Login failed");
   }
@@ -113,10 +113,14 @@ $("#registerForm").addEventListener("submit", async e => {
   const f = Object.fromEntries(new FormData(e.target));
   if (!f.display_name) delete f.display_name;
   try {
+    showAuthLoading();
     const { access_token } = await api("/auth/register", { method: "POST", body: f });
     setToken(access_token);
-    await boot();
-  } catch (err) { authError(err.message); }
+    await boot({ loading: true });
+  } catch (err) {
+    showAuth();
+    authError(err.message);
+  }
 });
 
 function authError(msg) { const el = $("#authError"); el.textContent = msg; el.hidden = false; }
@@ -156,8 +160,8 @@ async function route() {
 window.addEventListener("hashchange", route);
 
 /* -------------------------------- boot -------------------------------- */
-async function boot() {
-  showAuthLoading();
+async function boot({ loading = false } = {}) {
+  if (loading) showAuthLoading();
   try {
     state.user = await api("/auth/me");
     showApp();
@@ -165,6 +169,7 @@ async function boot() {
     if (!location.hash) location.hash = "#/bets";
     await route();
   } catch {
+    setToken(null);
     showAuth();
   }
 }
