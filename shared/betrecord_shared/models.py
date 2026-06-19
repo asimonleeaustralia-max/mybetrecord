@@ -120,7 +120,8 @@ class Bet(Base):
     model_implied_odds: Mapped[float | None] = mapped_column(Float, nullable=True)     # decimal
     personal_implied_odds: Mapped[float | None] = mapped_column(Float, nullable=True)  # decimal
     kelly_stake: Mapped[float | None] = mapped_column(Float, nullable=True)            # computed
-    closing_odds: Mapped[float | None] = mapped_column(Float, nullable=True)           # decimal
+    closing_odds: Mapped[float | None] = mapped_column(Float, nullable=True)           # decimal, bookmaker
+    closing_odds_exchange: Mapped[float | None] = mapped_column(Float, nullable=True)  # decimal, exchange
 
     # Where the bet was placed
     bookmaker: Mapped[str | None] = mapped_column(String(80), nullable=True, index=True)

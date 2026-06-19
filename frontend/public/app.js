@@ -756,7 +756,7 @@ function readDatetimeField(form, name) {
 }
 
 const NUM_FIELDS = ["odds", "odds_denominator", "stake", "place_fraction", "cash_out_amount",
-  "model_implied_odds", "personal_implied_odds", "closing_odds", "exchange_commission_pct"];
+  "model_implied_odds", "personal_implied_odds", "closing_odds", "closing_odds_exchange", "exchange_commission_pct"];
 
 function readForm(form) {
   const data = Object.fromEntries(new FormData(form));
@@ -796,6 +796,7 @@ function fillForm(form, b) {
   set("place_fraction", b.place_fraction);
   set("outcome", b.outcome); set("cash_out_amount", b.cash_out_amount);
   set("bet_model", b.bet_model); set("closing_odds", b.closing_odds);
+  set("closing_odds_exchange", b.closing_odds_exchange);
   set("model_implied_odds", b.model_implied_odds);
   set("personal_implied_odds", b.personal_implied_odds);
   set("exchange_commission_pct", b.exchange_commission_pct);

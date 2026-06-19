@@ -1,0 +1,53 @@
+---
+description: Deploy mybetrecord to Azure from Cursor (scripts/deploy.sh, .env.deploy)
+alwaysApply: false
+---
+
+# Azure deploy from Cursor
+
+When the user asks to deploy to Azure, run the project deploy script — do not invent a one-off az sequence.
+
+## Prerequisites
+
+1. Azure CLI installed (`az --version`)
+2. Logged in: `az login`
+3. `.env.deploy` at repo root (copy from `.env.deploy.example`) with `PG_ADMIN_PASSWORD` and `JWT_SECRET` set
+
+## Deploy command
+
+From the repo root:
+
+```bash
+chmod +x scripts/deploy.sh   # once, if needed
+./scripts/deploy.sh
+```
+
+| Flag | When to use |
+|------|-------------|
+| `--bootstrap` | Explicit first-time deploy (infra → images → redeploy) |
+| `--skip-tests` | Hotfix deploy when tests are already green |
+| `--dry-run` | Show steps without calling Azure |
+| `--tag TAG` | Pin image tag (default: short git SHA) |
+
+The script auto-bootstraps if no ACR exists in the resource group.
+
+## After deploy
+
+Read the printed `frontendUrl`, or:
+
+```bash
+az deployment group show -g mybetrecord-rg -n main \
+  --query properties.outputs.frontendUrl.value -o tsv
+```
+
+## Permissions
+
+The deploy script needs **network** access for `az acr build` and Azure API calls. Request `full_network` (or `all`) when running it from the agent.
+
+## Do not commit
+
+Never commit `.env.deploy` or paste secrets into chat. If secrets are missing, tell the user to fill `.env.deploy` locally.
+
+## CI/CD
+
+GitHub Actions uses the same script on push to `main` (see `.github/workflows/ci-cd.yml`).

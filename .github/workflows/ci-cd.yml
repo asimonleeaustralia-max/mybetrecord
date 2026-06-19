@@ -41,32 +41,11 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Resolve ACR name
-        id: acr
+      - name: Deploy to Azure
+        env:
+          PG_ADMIN_PASSWORD: ${{ secrets.PG_ADMIN_PASSWORD }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
         run: |
-          ACR=$(az acr list -g "$RESOURCE_GROUP" --query "[0].name" -o tsv)
-          echo "name=$ACR" >> "$GITHUB_OUTPUT"
-
-      - name: Build & push images
-        run: |
-          ACR=${{ steps.acr.outputs.name }}
-          TAG=${GITHUB_SHA::7}
-          for svc in auth bets reports payments; do
-            az acr build --registry "$ACR" \
-              --image "$svc:$TAG" --image "$svc:latest" \
-              --file "services/$svc/Dockerfile" .
-          done
-          az acr build --registry "$ACR" \
-            --image "frontend:$TAG" --image "frontend:latest" \
-            --file "frontend/Dockerfile" .
-
-      - name: Deploy infrastructure + apps
-        run: |
-          az deployment group create \
-            --resource-group "$RESOURCE_GROUP" \
-            --template-file infra/main.bicep \
-            --parameters infra/main.parameters.json \
-            --parameters imageTag=${GITHUB_SHA::7} \
-              pgAdminPassword='${{ secrets.PG_ADMIN_PASSWORD }}' \
-              jwtSecret='${{ secrets.JWT_SECRET }}' \
-              stripeSecretKey='${{ secrets.STRIPE_SECRET_KEY }}'
+          TAG="${GITHUB_SHA::7}"
+          ./scripts/deploy.sh --skip-tests --tag "$TAG"

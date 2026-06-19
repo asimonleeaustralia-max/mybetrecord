@@ -85,6 +85,21 @@ def _migrate_exchange_to_bookmaker() -> None:
         )
 
 
+def _ensure_closing_odds_exchange_column() -> None:
+    """Add closing_odds_exchange to existing databases created before the column existed."""
+    if "bets" not in inspect(engine).get_table_names():
+        return
+    columns = {c["name"] for c in inspect(engine).get_columns("bets")}
+    if "closing_odds_exchange" in columns:
+        return
+    dialect = engine.dialect.name
+    with engine.begin() as conn:
+        if dialect == "postgresql":
+            conn.execute(text("ALTER TABLE bets ADD COLUMN IF NOT EXISTS closing_odds_exchange FLOAT"))
+        else:
+            conn.execute(text("ALTER TABLE bets ADD COLUMN closing_odds_exchange FLOAT"))
+
+
 def _ensure_last_login_at_column() -> None:
     """Add last_login_at to existing databases created before the column existed."""
     if "users" not in inspect(engine).get_table_names():

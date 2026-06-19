@@ -109,12 +109,32 @@ Deployment is Bicep (`infra/main.bicep`) → a Container Apps environment, an
 Azure Container Registry, a PostgreSQL Flexible Server, Log Analytics, and the
 five container apps.
 
+### Deploy from Cursor (or your terminal)
+
+One script drives the full flow (tests → ACR build → Bicep). In Cursor, ask
+the agent to **deploy to Azure** — it will run `scripts/deploy.sh` using the
+rule in `.cursor/rules/azure-deploy.mdc`.
+
+```bash
+cp .env.deploy.example .env.deploy   # once
+# Edit .env.deploy: PG_ADMIN_PASSWORD, JWT_SECRET, optional CORS / Stripe
+
+az login
+./scripts/deploy.sh                  # first time auto-bootstraps if no ACR yet
+./scripts/deploy.sh --skip-tests     # hotfix when tests already passed
+./scripts/deploy.sh --dry-run        # preview steps
+```
+
+The deployment output `frontendUrl` is your live site.
+
+### Manual deploy (step by step)
+
 ```bash
 # 1. Resource group
 az group create -n mybetrecord-rg -l australiaeast
 
 # 2. Infra + a registry to push to
-az deployment group create -g mybetrecord-rg \
+az deployment group create -g mybetrecord-rg -n main \
   --template-file infra/main.bicep \
   --parameters infra/main.parameters.json \
   --parameters pgAdminPassword='<strong-password>' jwtSecret='<long-random>'
@@ -129,8 +149,6 @@ az acr build --registry $ACR --image frontend:latest --file frontend/Dockerfile 
 # 4. Re-run step 2 so the apps pick up the freshly pushed images.
 ```
 
-The deployment output `frontendUrl` is your live site.
-
 **Point mybetrecord.com at it:** add the domain to the frontend container app
 (`az containerapp hostname add` + a managed certificate), then create the DNS
 records Azure shows you at your registrar. Set `corsOrigins` to that URL.
@@ -138,10 +156,9 @@ records Azure shows you at your registrar. Set `corsOrigins` to that URL.
 ### CI/CD
 
 `.github/workflows/ci-cd.yml` runs the tests on every push/PR, then on `main`
-logs into Azure via OIDC, builds and pushes all images, and redeploys the
-Bicep. Configure these repo secrets: `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`,
-`AZURE_SUBSCRIPTION_ID`, `PG_ADMIN_PASSWORD`, `JWT_SECRET`, and (optionally)
-`STRIPE_SECRET_KEY`.
+calls `./scripts/deploy.sh --skip-tests` after Azure OIDC login. Configure these
+repo secrets: `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID`,
+`PG_ADMIN_PASSWORD`, `JWT_SECRET`, and (optionally) `STRIPE_SECRET_KEY`.
 
 ### Why Container Apps instead of bare Container Instances
 
@@ -197,6 +214,7 @@ shared/betrecord_shared/   domain models, schemas, security, betting math
 services/{auth,bets,reports,payments}/   one FastAPI app each
 frontend/                  nginx + the SPA (index.html, styles.css, app.js)
 infra/main.bicep           Azure deployment
+scripts/deploy.sh          deploy to Azure (Cursor / CI / terminal)
 tests/                     betting-math unit tests
 docker-compose.yml         local dev
 ```
