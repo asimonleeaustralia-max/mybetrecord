@@ -289,8 +289,8 @@ function setToken(t) { t ? localStorage.setItem(TOKEN_KEY, t) : localStorage.rem
 async function api(path, { method = "GET", body, raw = false, allow401 = false, timeoutMs = 15000 } = {}) {
   const headers = {};
   if (body) headers["Content-Type"] = "application/json";
-  const t = token();
-  if (t) headers["Authorization"] = `Bearer ${t}`;
+  const authToken = token();
+  if (authToken) headers["Authorization"] = `Bearer ${authToken}`;
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), timeoutMs);
   let res;
