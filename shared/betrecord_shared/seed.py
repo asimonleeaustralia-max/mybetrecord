@@ -49,6 +49,21 @@ def _ensure_bookmaker_column() -> None:
             conn.execute(text("ALTER TABLE bets ADD COLUMN bookmaker VARCHAR(80)"))
 
 
+def _ensure_event_at_column() -> None:
+    """Add event_at to existing databases created before the column existed."""
+    if "bets" not in inspect(engine).get_table_names():
+        return
+    columns = {c["name"] for c in inspect(engine).get_columns("bets")}
+    if "event_at" in columns:
+        return
+    dialect = engine.dialect.name
+    with engine.begin() as conn:
+        if dialect == "postgresql":
+            conn.execute(text("ALTER TABLE bets ADD COLUMN IF NOT EXISTS event_at TIMESTAMP WITH TIME ZONE"))
+        else:
+            conn.execute(text("ALTER TABLE bets ADD COLUMN event_at DATETIME"))
+
+
 def _ensure_settled_at_column() -> None:
     """Add settled_at to existing databases created before the column existed."""
     if "bets" not in inspect(engine).get_table_names():
@@ -98,6 +113,28 @@ def _ensure_closing_odds_exchange_column() -> None:
             conn.execute(text("ALTER TABLE bets ADD COLUMN IF NOT EXISTS closing_odds_exchange FLOAT"))
         else:
             conn.execute(text("ALTER TABLE bets ADD COLUMN closing_odds_exchange FLOAT"))
+
+
+def _ensure_timezone_column() -> None:
+    """Add timezone to existing databases created before the column existed."""
+    if "users" not in inspect(engine).get_table_names():
+        return
+    columns = {c["name"] for c in inspect(engine).get_columns("users")}
+    if "timezone" in columns:
+        return
+    dialect = engine.dialect.name
+    with engine.begin() as conn:
+        if dialect == "postgresql":
+            conn.execute(
+                text(
+                    "ALTER TABLE users ADD COLUMN IF NOT EXISTS timezone "
+                    "VARCHAR(64) NOT NULL DEFAULT 'UTC'"
+                )
+            )
+        else:
+            conn.execute(
+                text("ALTER TABLE users ADD COLUMN timezone VARCHAR(64) NOT NULL DEFAULT 'UTC'")
+            )
 
 
 def _ensure_preferred_locale_column() -> None:

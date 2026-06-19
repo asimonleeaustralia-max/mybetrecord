@@ -22,6 +22,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from betrecord_shared import betting_math as bm
+from betrecord_shared.bankroll import current_bankroll, settled_profit
 from betrecord_shared.config import get_settings
 from betrecord_shared.database import get_db
 from betrecord_shared.models import Bet, User
@@ -112,10 +113,16 @@ def summary(
     bets = _filtered(db, user.id, filters)
     rows = [{"stake": b.stake, "profit": b.profit, "outcome": b.outcome} for b in bets]
     metrics = bm.portfolio_metrics(rows)
-    metrics["roi_vs_bankroll_pct"] = bm.roi_vs_bankroll(metrics["profit"], user.bankroll)
+    base = (user.base_currency or "GBP").upper()
+    if display_currency and display_currency.upper() == base:
+        metrics["bankroll"] = current_bankroll(user.bankroll, metrics["profit"])
+        metrics["roi_vs_bankroll_pct"] = bm.roi_vs_bankroll(metrics["profit"], user.bankroll)
+    else:
+        pl = settled_profit(db, user.id, base)
+        metrics["bankroll"] = current_bankroll(user.bankroll, pl)
+        metrics["roi_vs_bankroll_pct"] = bm.roi_vs_bankroll(pl, user.bankroll)
     metrics["base_currency"] = user.base_currency
     metrics["currency"] = display_currency
-    metrics["bankroll"] = user.bankroll
     metrics["total_bets"] = len(bets)
     return metrics
 
@@ -168,6 +175,7 @@ _EXPORT_COLUMNS = [
     ("settled_at", "Date/Time settled"),
     ("sport", "Sport"),
     ("event", "Event"),
+    ("event_at", "Event date/time"),
     ("selection", "Selection"),
     ("bet_type", "Bet type"),
     ("odds_decimal", "Odds (decimal)"),

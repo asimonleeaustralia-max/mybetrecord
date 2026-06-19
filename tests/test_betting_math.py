@@ -5,6 +5,7 @@ import math
 import pytest
 
 from betrecord_shared import betting_math as bm
+from betrecord_shared.bankroll import current_bankroll
 
 
 # ------------------------------ conversions ------------------------------ #
@@ -141,3 +142,9 @@ def test_portfolio_metrics():
 def test_clv():
     # took 2.50, closed 2.30 -> beat the close
     assert bm.closing_line_value(2.5, 2.3) == pytest.approx(8.7, abs=0.1)
+
+
+def test_current_bankroll():
+    assert current_bankroll(1000, 150) == 1150.0
+    assert current_bankroll(1000, -100) == 900.0
+    assert current_bankroll(0, 50) == 50.0

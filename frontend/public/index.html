@@ -120,6 +120,7 @@
           </div>
           <label><span data-i18n="form.event">Event</span><input name="event" required data-i18n-placeholder="form.eventPlaceholder" /></label>
           <label><span data-i18n="form.selection">Selection</span><input name="selection" required data-i18n-placeholder="form.selectionPlaceholder" /></label>
+          <label><span data-i18n="form.eventAt">Event date &amp; time</span> <span class="hint" data-i18n="form.optional">optional</span><input type="datetime-local" name="event_at" /></label>
           <label><span data-i18n="form.placedAt">Date &amp; time placed</span><input type="datetime-local" name="placed_at" /></label>
         </fieldset>
 
@@ -276,6 +277,9 @@
           <legend data-i18n="settings.preferences">Preferences</legend>
           <label><span data-i18n="settings.language">Preferred language</span>
             <select name="preferred_locale" id="localeSelect"></select>
+          </label>
+          <label><span data-i18n="settings.timezone">Time zone</span> <span class="hint" data-i18n="settings.timezoneHint">used for dates and times in the app</span>
+            <select name="timezone" id="timezoneSelect"></select>
           </label>
           <div class="grid2">
             <label><span data-i18n="settings.defaultOdds">Default entry odds</span> <span class="hint" data-i18n="settings.defaultOddsHint">pre-selected when logging a bet</span>

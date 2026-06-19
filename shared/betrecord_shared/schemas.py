@@ -4,8 +4,9 @@ from __future__ import annotations
 
 from datetime import datetime
 from typing import Optional
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
-from pydantic import BaseModel, EmailStr, Field, ConfigDict
+from pydantic import BaseModel, EmailStr, Field, ConfigDict, field_validator
 
 ODDS_FORMAT_PATTERN = (
     "^(decimal|american|fractional|hong_kong|malaysian|indonesian)$"
@@ -14,10 +15,29 @@ ODDS_FORMAT_PATTERN = (
 
 # ----------------------------- Auth / users ------------------------------- #
 
+def _validate_iana_timezone(value: str | None) -> str | None:
+    if value is None:
+        return None
+    value = value.strip()
+    if not value:
+        return None
+    try:
+        ZoneInfo(value)
+    except ZoneInfoNotFoundError as exc:
+        raise ValueError("Invalid timezone") from exc
+    return value
+
+
 class UserRegister(BaseModel):
     email: EmailStr
     password: str = Field(min_length=8, max_length=128)
     display_name: Optional[str] = None
+    timezone: Optional[str] = Field(default=None, max_length=64)
+
+    @field_validator("timezone")
+    @classmethod
+    def _timezone(cls, v: str | None) -> str | None:
+        return _validate_iana_timezone(v)
 
 
 class UserLogin(BaseModel):
@@ -41,6 +61,12 @@ class SettingsUpdate(BaseModel):
     bankroll: Optional[float] = Field(default=None, ge=0)
     kelly_multiplier: Optional[float] = Field(default=None, gt=0, le=1)
     preferred_locale: Optional[str] = Field(default=None, pattern=LOCALE_PATTERN)
+    timezone: Optional[str] = Field(default=None, max_length=64)
+
+    @field_validator("timezone")
+    @classmethod
+    def _timezone(cls, v: str | None) -> str | None:
+        return _validate_iana_timezone(v)
 
 
 class UserOut(BaseModel):
@@ -53,6 +79,7 @@ class UserOut(BaseModel):
     bankroll: float
     kelly_multiplier: float
     preferred_locale: str
+    timezone: str
     is_admin: bool
     created_at: datetime
 
@@ -120,6 +147,7 @@ class BetBase(BaseModel):
     sport: str
     bet_type: str = "Win"
     placed_at: Optional[datetime] = None
+    event_at: Optional[datetime] = None
     settled_at: Optional[datetime] = None
 
     # Accept odds in any format; the bets service normalises to decimal.
@@ -162,6 +190,7 @@ class BetUpdate(BaseModel):
     sport: Optional[str] = None
     bet_type: Optional[str] = None
     placed_at: Optional[datetime] = None
+    event_at: Optional[datetime] = None
     settled_at: Optional[datetime] = None
     odds: Optional[float | str] = None
     odds_format: Optional[str] = Field(default=None, pattern=ODDS_FORMAT_PATTERN)
@@ -192,6 +221,7 @@ class BetOut(BaseModel):
     sport: str
     bet_type: str
     placed_at: datetime
+    event_at: Optional[datetime] = None
     settled_at: datetime
     odds_decimal: float
     odds_format: str

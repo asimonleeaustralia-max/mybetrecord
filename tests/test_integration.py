@@ -37,6 +37,41 @@ def test_settings_update(clients, auth_headers):
     assert body["default_odds_format"] == "fractional"
 
 
+def test_register_captures_timezone(clients):
+    email = "tz-user@example.com"
+    r = clients["auth"].post(
+        "/auth/register",
+        json={"email": email, "password": "password123", "timezone": "Europe/London"},
+    )
+    assert r.status_code == 201, r.text
+    headers = {"Authorization": f"Bearer {r.json()['access_token']}"}
+    me = clients["auth"].get("/auth/me", headers=headers)
+    assert me.status_code == 200
+    assert me.json()["timezone"] == "Europe/London"
+
+
+def test_register_defaults_timezone_to_utc(clients):
+    email = "tz-default@example.com"
+    r = clients["auth"].post("/auth/register", json={"email": email, "password": "password123"})
+    assert r.status_code == 201, r.text
+    headers = {"Authorization": f"Bearer {r.json()['access_token']}"}
+    me = clients["auth"].get("/auth/me", headers=headers)
+    assert me.json()["timezone"] == "UTC"
+
+
+def test_settings_timezone(clients, auth_headers):
+    headers, _ = auth_headers
+    r = clients["auth"].patch("/auth/settings", headers=headers, json={"timezone": "America/New_York"})
+    assert r.status_code == 200
+    assert r.json()["timezone"] == "America/New_York"
+
+
+def test_settings_rejects_invalid_timezone(clients, auth_headers):
+    headers, _ = auth_headers
+    r = clients["auth"].patch("/auth/settings", headers=headers, json={"timezone": "Not/A/Zone"})
+    assert r.status_code == 422
+
+
 # --------------------------- API keys (regression) ------------------------ #
 
 def test_api_key_lifecycle(clients, auth_headers):
@@ -224,6 +259,31 @@ def test_update_and_delete_bet(clients, auth_headers):
 
     assert clients["bets"].delete(f"/bets/{bet_id}", headers=headers).status_code == 204
     assert clients["bets"].get(f"/bets/{bet_id}", headers=headers).status_code == 404
+
+
+def test_bankroll_updates_on_settle(clients, auth_headers):
+    headers, _ = auth_headers
+    clients["auth"].patch("/auth/settings", headers=headers, json={"bankroll": 1000, "base_currency": "GBP"})
+
+    bet = _make_bet(clients, headers, odds=2.0, stake=100, outcome="pending", currency="GBP")
+    summary = clients["reports"].get("/reports/summary?use_primary_currency=true", headers=headers).json()
+    assert summary["bankroll"] == pytest.approx(1000.0)
+
+    clients["bets"].patch(f"/bets/{bet['id']}", headers=headers, json={"outcome": "win"})
+    summary = clients["reports"].get("/reports/summary?use_primary_currency=true", headers=headers).json()
+    assert summary["bankroll"] == pytest.approx(1100.0)  # +100 profit
+
+    clients["bets"].patch(f"/bets/{bet['id']}", headers=headers, json={"outcome": "loss"})
+    summary = clients["reports"].get("/reports/summary?use_primary_currency=true", headers=headers).json()
+    assert summary["bankroll"] == pytest.approx(900.0)  # starting + (-100)
+
+
+def test_bankroll_ignores_other_currency(clients, auth_headers):
+    headers, _ = auth_headers
+    clients["auth"].patch("/auth/settings", headers=headers, json={"bankroll": 1000, "base_currency": "GBP"})
+    _make_bet(clients, headers, odds=2.0, stake=100, outcome="win", currency="USD")
+    summary = clients["reports"].get("/reports/summary?use_primary_currency=true", headers=headers).json()
+    assert summary["bankroll"] == pytest.approx(1000.0)
 
 
 def test_cannot_touch_another_users_bet(clients, auth_headers):

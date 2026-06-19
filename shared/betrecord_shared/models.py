@@ -44,6 +44,7 @@ class User(Base):
     bankroll: Mapped[float] = mapped_column(Float, default=0.0)
     kelly_multiplier: Mapped[float] = mapped_column(Float, default=1.0)  # 1=full, .5=half
     preferred_locale: Mapped[str] = mapped_column(String(16), default="en")
+    timezone: Mapped[str] = mapped_column(String(64), default="UTC")  # IANA, e.g. Europe/London
 
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
@@ -96,6 +97,7 @@ class Bet(Base):
     sport: Mapped[str] = mapped_column(String(80), index=True, nullable=False)
     bet_type: Mapped[str] = mapped_column(String(80), default="Win")
     placed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now, index=True)
+    event_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     # Odds — stored canonically as decimal; the entry format is remembered for display.
     odds_decimal: Mapped[float] = mapped_column(Float, nullable=False)

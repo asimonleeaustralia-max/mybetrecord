@@ -59,6 +59,47 @@ function fillCurrencySelect(select, limit, selected = "") {
   select.innerHTML = html;
 }
 
+function browserTimeZone() {
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
+  } catch {
+    return "UTC";
+  }
+}
+
+function timezoneOffsetLabel(tz) {
+  try {
+    const part = new Intl.DateTimeFormat("en-GB", { timeZone: tz, timeZoneName: "shortOffset" })
+      .formatToParts(new Date())
+      .find(p => p.type === "timeZoneName");
+    return part ? part.value : "";
+  } catch {
+    return "";
+  }
+}
+
+function fillTimezoneSelect(select, selected = "UTC") {
+  let zones;
+  try {
+    zones = Intl.supportedValuesOf("timeZone");
+  } catch {
+    zones = ["UTC"];
+  }
+  zones.sort();
+  const sel = selected || "UTC";
+  const known = new Set(zones);
+  let html = "";
+  if (sel && !known.has(sel)) {
+    html += `<option value="${esc(sel)}" selected>${esc(sel)}</option>`;
+  }
+  html += zones.map(tz => {
+    const off = timezoneOffsetLabel(tz);
+    const label = off ? `${tz} (${off})` : tz;
+    return `<option value="${esc(tz)}"${tz === sel ? " selected" : ""}>${esc(label)}</option>`;
+  }).join("");
+  select.innerHTML = html;
+}
+
 // Popular sports by global betting handle, largest first.
 const SPORTS = [
   // Major markets
@@ -303,8 +344,9 @@ function esc(s) { return (s ?? "").toString().replace(/[&<>"]/g, c => ({ "&": "&
 function formatDt(iso) {
   if (!iso) return "—";
   const d = new Date(iso);
-  const date = i18n.formatLocaleDate(d, { day: "2-digit", month: "short", year: "numeric" });
-  const time = i18n.formatLocaleTime(d, { hour: "2-digit", minute: "2-digit" });
+  const tzOpt = state.user?.timezone ? { timeZone: state.user.timezone } : {};
+  const date = i18n.formatLocaleDate(d, { day: "2-digit", month: "short", year: "numeric", ...tzOpt });
+  const time = i18n.formatLocaleTime(d, { hour: "2-digit", minute: "2-digit", ...tzOpt });
   return `${date} ${time}`;
 }
 
@@ -379,6 +421,7 @@ function bindEvents() {
     e.preventDefault();
     const f = Object.fromEntries(new FormData(e.target));
     if (!f.display_name) delete f.display_name;
+    f.timezone = browserTimeZone();
     try {
       showAuthLoading();
       const { access_token } = await api("/auth/register", { method: "POST", body: f });
@@ -401,7 +444,8 @@ function authError(msg) { const el = $("#authError"); el.textContent = msg; el.h
 async function refreshTicker() {
   try {
     const s = await api("/reports/summary?use_primary_currency=true");
-    $("#tkBankroll").textContent = state.user.bankroll ? money(state.user.bankroll) : "—";
+    if (state.user && s.bankroll != null) state.user.bankroll = s.bankroll;
+    $("#tkBankroll").textContent = s.bankroll ? money(s.bankroll) : "—";
     const pl = $("#tkPL");
     pl.textContent = money(s.profit, true);
     pl.className = "num " + plClass(s.profit);
@@ -828,6 +872,11 @@ function readDatetimeField(form, name) {
   return v ? new Date(v).toISOString() : new Date().toISOString();
 }
 
+function readOptionalDatetimeField(form, name) {
+  const v = String(form[name]?.value || "").trim();
+  return v ? new Date(v).toISOString() : null;
+}
+
 const NUM_FIELDS = ["odds", "odds_denominator", "stake", "place_fraction", "cash_out_amount",
   "model_implied_odds", "personal_implied_odds", "closing_odds", "closing_odds_exchange", "exchange_commission_pct"];
 
@@ -843,6 +892,7 @@ function readForm(form) {
   if (out.currency) out.currency = out.currency.trim().toUpperCase();
   if (out.bet_type) out.bet_type = out.bet_type.trim();
   out.placed_at = readDatetimeField(form, "placed_at");
+  out.event_at = readOptionalDatetimeField(form, "event_at");
   out.settled_at = readDatetimeField(form, "settled_at");
   if (out.odds_format !== "fractional") delete out.odds_denominator;
   return out;
@@ -854,6 +904,7 @@ function fillForm(form, b) {
   set("bet_type", BET_TYPE_LABELS[b.bet_type] || BET_TYPE_LABELS[b.bet_type?.toLowerCase()] || b.bet_type);
   set("event", b.event);
   set("selection", b.selection);
+  set("event_at", b.event_at ? new Date(b.event_at).toISOString().slice(0, 16) : "");
   set("placed_at", b.placed_at ? new Date(b.placed_at).toISOString().slice(0, 16) : "");
   set("settled_at", b.settled_at ? new Date(b.settled_at).toISOString().slice(0, 16) : "");
   const fmt = b.odds_format || "decimal";
@@ -1055,6 +1106,7 @@ async function renderSettings() {
   const u = state.user;
   await i18n.loadCatalog();
   $("#localeSelect").innerHTML = i18n.languageOptions(u.preferred_locale || "en");
+  fillTimezoneSelect($("#timezoneSelect"), u.timezone || "UTC");
   form.default_odds_format.value = u.default_odds_format;
   fillCurrencySelect(form.base_currency, 20, u.base_currency);
   form.bankroll.value = u.bankroll || "";
@@ -1066,6 +1118,7 @@ async function renderSettings() {
     const data = Object.fromEntries(new FormData(form));
     const payload = {
       preferred_locale: data.preferred_locale,
+      timezone: data.timezone,
       default_odds_format: data.default_odds_format,
       base_currency: data.base_currency.toUpperCase(),
       bankroll: Number(data.bankroll || 0),
@@ -1090,7 +1143,7 @@ async function loadKeys() {
   $("#keysBody").innerHTML = keys.map(k => `
     <tr><td>${esc(k.name)}</td>
     <td class="num">${esc(k.prefix)}…</td>
-    <td class="num">${k.last_used_at ? i18n.formatLocaleDate(new Date(k.last_used_at)) : t("settings.never")}</td>
+    <td class="num">${k.last_used_at ? formatDt(k.last_used_at) : t("settings.never")}</td>
     <td class="r"><button class="btn btn--danger" data-revoke="${k.id}">${t("settings.revoke")}</button></td></tr>`).join("")
     || `<tr><td colspan="4" class="empty">${t("settings.noKeys")}</td></tr>`;
   $$("[data-revoke]").forEach(b => b.addEventListener("click", async () => {

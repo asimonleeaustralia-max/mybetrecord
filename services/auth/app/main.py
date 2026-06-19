@@ -86,6 +86,7 @@ def register(
         email=payload.email.lower(),
         password_hash=hash_password(payload.password),
         display_name=payload.display_name,
+        timezone=payload.timezone or "UTC",
     )
     db.add(user)
     log_event(

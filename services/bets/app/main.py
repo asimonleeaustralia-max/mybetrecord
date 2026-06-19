@@ -18,6 +18,7 @@ from sqlalchemy import distinct, select
 from sqlalchemy.orm import Session
 
 from betrecord_shared import betting_math as bm
+from betrecord_shared.bankroll import effective_bankroll
 from betrecord_shared.config import get_settings
 from betrecord_shared.database import get_db, init_db
 from betrecord_shared.models import Bet, User
@@ -55,7 +56,7 @@ def _normalise_odds(value: float, fmt: str, denominator: Optional[float]) -> flo
     return bm.to_decimal(value, fmt)
 
 
-def _recompute(bet: Bet, user: User) -> None:
+def _recompute(bet: Bet, user: User, db: Session) -> None:
     """Recompute profit + kelly stake from the bet's own fields and user bankroll."""
     bet.profit = bm.settle_profit(
         stake=bet.stake,
@@ -68,7 +69,7 @@ def _recompute(bet: Bet, user: User) -> None:
         cash_out_amount=bet.cash_out_amount,
     )
     multiplier = user.kelly_multiplier or 1.0
-    bankroll = user.bankroll or 0.0
+    bankroll = effective_bankroll(db, user, bet)
 
     if bet.personal_implied_odds and bet.personal_implied_odds > 1.0:
         p = bm.implied_probability(bet.personal_implied_odds)
@@ -178,6 +179,7 @@ def create_bet(
         sport=payload.sport,
         bet_type=payload.bet_type,
         placed_at=payload.placed_at or datetime.now(timezone.utc),
+        event_at=payload.event_at,
         settled_at=payload.settled_at or datetime.now(timezone.utc),
         odds_decimal=odds_decimal,
         odds_format=odds_format,
@@ -198,7 +200,7 @@ def create_bet(
         tipster=payload.tipster,
         notes=payload.notes,
     )
-    _recompute(bet, user)
+    _recompute(bet, user, db)
     db.add(bet)
     db.commit()
     db.refresh(bet)
@@ -235,7 +237,7 @@ def update_bet(
         bet.odds_format = new_fmt
 
     for field in (
-        "event", "selection", "sport", "bet_type", "placed_at", "settled_at", "stake", "currency",
+        "event", "selection", "sport", "bet_type", "placed_at", "event_at", "settled_at", "stake", "currency",
         "each_way", "place_fraction", "placed", "outcome", "cash_out_amount",
         "bet_model", "model_implied_odds", "personal_implied_odds", "closing_odds", "closing_odds_exchange",
         "bookmaker", "exchange_commission_pct", "tipster", "notes",
@@ -248,7 +250,7 @@ def update_bet(
                 value = value.upper()
             setattr(bet, field, value)
 
-    _recompute(bet, user)
+    _recompute(bet, user, db)
     db.commit()
     db.refresh(bet)
     return _serialise(bet)
