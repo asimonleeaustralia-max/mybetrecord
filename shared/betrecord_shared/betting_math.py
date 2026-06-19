@@ -9,6 +9,8 @@ Odds vocabulary
 - decimal odds (D): total return per unit staked, e.g. 2.50 returns 2.50 for 1 staked.
 - american / moneyline (A): +150 means stake 100 to win 150; -200 means stake 200 to win 100.
 - fractional (N/M): profit N for every M staked, e.g. 6/4.
+- hong_kong (HK): profit per unit staked, e.g. 0.85 → decimal 1.85.
+- malaysian / indonesian: signed profit per unit; +0.85 → 1.85, -0.85 → 2.176.
 - implied probability (p): the probability the price corresponds to = 1 / D.
 """
 
@@ -65,24 +67,88 @@ def decimal_to_fractional(decimal_odds: float, max_denominator: int = 100) -> st
     return f"{frac.numerator}/{frac.denominator}"
 
 
+def _parse_signed_float(value: float | str) -> float:
+    if isinstance(value, str):
+        text = value.strip().replace(",", "")
+        if not text:
+            raise ValueError("Odds value is empty")
+        return float(text.replace("+", ""))
+    return float(value)
+
+
+def hong_kong_to_decimal(hk: float | str) -> float:
+    o = _parse_signed_float(hk)
+    if o < 0:
+        raise ValueError("Hong Kong odds cannot be negative")
+    return 1.0 + o
+
+
+def signed_asian_to_decimal(odds: float | str) -> float:
+    """Malaysian and Indonesian odds share the same sign convention."""
+    o = _parse_signed_float(odds)
+    if o == 0:
+        raise ValueError("Odds cannot be 0")
+    return (1.0 + o) if o > 0 else (1.0 + 1.0 / abs(o))
+
+
+def decimal_to_hong_kong(decimal_odds: float) -> float:
+    d = float(decimal_odds)
+    if d <= 1.0:
+        raise ValueError("Decimal odds must be > 1.0")
+    return round(d - 1.0, 4)
+
+
+def decimal_to_signed_asian(decimal_odds: float, *, positive_when_under_evens: bool) -> float:
+    """Convert decimal odds to signed Asian display.
+
+    Malaysian uses positive odds when decimal <= 2 (profit < stake).
+    Indonesian uses positive odds when decimal >= 2 (profit >= stake).
+    """
+    d = float(decimal_odds)
+    if d <= 1.0:
+        raise ValueError("Decimal odds must be > 1.0")
+    if positive_when_under_evens:
+        if d <= 2.0:
+            return round(d - 1.0, 4)
+        return round(-1.0 / (d - 1.0), 4)
+    if d >= 2.0:
+        return round(d - 1.0, 4)
+    return round(-1.0 / (d - 1.0), 4)
+
+
+def decimal_to_malaysian(decimal_odds: float) -> float:
+    return decimal_to_signed_asian(decimal_odds, positive_when_under_evens=True)
+
+
+def decimal_to_indonesian(decimal_odds: float) -> float:
+    return decimal_to_signed_asian(decimal_odds, positive_when_under_evens=False)
+
+
 def to_decimal(value: float | str, odds_format: str = "decimal",
                denominator: Optional[float] = None) -> float:
     """Normalise any supported input to decimal odds.
 
-    odds_format: 'decimal' | 'american' | 'fractional'
+    odds_format: 'decimal' | 'american' | 'fractional' | 'hong_kong' |
+                 'malaysian' | 'indonesian'
     For 'fractional' either pass value as 'N/M' string, or value=N with denominator=M.
     """
     fmt = (odds_format or "decimal").lower()
     if fmt == "decimal":
         return float(value)
     if fmt == "american":
-        return american_to_decimal(float(value))
+        return american_to_decimal(_parse_signed_float(value))
     if fmt == "fractional":
         if isinstance(value, str):
             return fractional_str_to_decimal(value)
         if denominator is None:
             raise ValueError("Fractional odds need a denominator")
         return fractional_to_decimal(float(value), denominator)
+    if fmt == "hong_kong":
+        return hong_kong_to_decimal(value)
+    if fmt == "malaysian":
+        return signed_asian_to_decimal(value)
+    if fmt == "indonesian":
+        return signed_asian_to_decimal(value)
     raise ValueError(f"Unknown odds format: {odds_format}")
 
 

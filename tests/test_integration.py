@@ -123,6 +123,24 @@ def test_odds_fractional_numerator_denominator(clients, auth_headers):
     assert b["odds_decimal"] == pytest.approx(2.5)
 
 
+def test_odds_hong_kong(clients, auth_headers):
+    b = _make_bet(clients, auth_headers[0], odds=0.85, odds_format="hong_kong")
+    assert b["odds_decimal"] == pytest.approx(1.85)
+    assert b["odds_format"] == "hong_kong"
+
+
+def test_odds_malaysian(clients, auth_headers):
+    h = auth_headers[0]
+    assert _make_bet(clients, h, odds=0.85, odds_format="malaysian")["odds_decimal"] == pytest.approx(1.85)
+    assert _make_bet(clients, h, odds=-0.85, odds_format="malaysian")["odds_decimal"] == pytest.approx(1 + 1 / 0.85)
+
+
+def test_odds_indonesian(clients, auth_headers):
+    h = auth_headers[0]
+    assert _make_bet(clients, h, odds=1.5, odds_format="indonesian")["odds_decimal"] == pytest.approx(2.5)
+    assert _make_bet(clients, h, odds=-1.5, odds_format="indonesian")["odds_decimal"] == pytest.approx(1 + 1 / 1.5)
+
+
 def test_odds_below_one_rejected(clients, auth_headers):
     r = clients["bets"].post("/bets", headers=auth_headers[0], json={
         "event": "x", "selection": "y", "sport": "z", "odds": 0.8,

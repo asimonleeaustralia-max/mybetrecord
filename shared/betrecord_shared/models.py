@@ -39,7 +39,7 @@ class User(Base):
     display_name: Mapped[str | None] = mapped_column(String(120), nullable=True)
 
     # Settings
-    default_odds_format: Mapped[str] = mapped_column(String(16), default="decimal")  # decimal|american|fractional
+    default_odds_format: Mapped[str] = mapped_column(String(16), default="decimal")  # decimal|american|fractional|hong_kong|malaysian|indonesian
     base_currency: Mapped[str] = mapped_column(String(3), default="GBP")
     bankroll: Mapped[float] = mapped_column(Float, default=0.0)
     kelly_multiplier: Mapped[float] = mapped_column(Float, default=1.0)  # 1=full, .5=half

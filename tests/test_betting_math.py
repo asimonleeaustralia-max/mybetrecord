@@ -23,6 +23,46 @@ def test_fractional():
     assert bm.fractional_str_to_decimal("6/4") == pytest.approx(2.5)
     assert bm.fractional_str_to_decimal("2.5") == pytest.approx(2.5)
 
+
+def test_hong_kong_to_decimal():
+    assert bm.hong_kong_to_decimal(0.85) == pytest.approx(1.85)
+    assert bm.hong_kong_to_decimal("0.85") == pytest.approx(1.85)
+
+
+def test_hong_kong_negative_rejected():
+    with pytest.raises(ValueError):
+        bm.hong_kong_to_decimal(-0.5)
+
+
+def test_signed_asian_positive():
+    assert bm.signed_asian_to_decimal(0.85) == pytest.approx(1.85)
+    assert bm.signed_asian_to_decimal(1.5) == pytest.approx(2.5)
+    assert bm.signed_asian_to_decimal("+0.85") == pytest.approx(1.85)
+
+
+def test_signed_asian_negative():
+    assert bm.signed_asian_to_decimal(-0.85) == pytest.approx(1 + 1 / 0.85)
+    assert bm.signed_asian_to_decimal(-1.5) == pytest.approx(1 + 1 / 1.5)
+
+
+def test_decimal_to_hong_kong():
+    assert bm.decimal_to_hong_kong(1.85) == pytest.approx(0.85)
+
+
+def test_decimal_to_signed_asian_roundtrip():
+    assert bm.decimal_to_malaysian(1.85) == pytest.approx(0.85)
+    assert bm.decimal_to_indonesian(2.5) == pytest.approx(1.5)
+    neg_malay = bm.decimal_to_malaysian(1 + 1 / 0.85)
+    assert neg_malay == pytest.approx(-0.85)
+    neg_indo = bm.decimal_to_indonesian(1 + 1 / 1.5)
+    assert neg_indo == pytest.approx(-1.5)
+
+
+def test_to_decimal_asian_formats():
+    assert bm.to_decimal(0.85, "hong_kong") == pytest.approx(1.85)
+    assert bm.to_decimal(0.85, "malaysian") == pytest.approx(1.85)
+    assert bm.to_decimal(-1.5, "indonesian") == pytest.approx(1 + 1 / 1.5)
+
 def test_implied_probability():
     assert bm.implied_probability(2.0) == pytest.approx(0.5)
     assert bm.implied_probability(4.0) == pytest.approx(0.25)

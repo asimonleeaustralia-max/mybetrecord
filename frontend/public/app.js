@@ -594,7 +594,31 @@ const ODDS_LABELS = {
   decimal: "Decimal odds",
   american: "American odds",
   fractional: "Numerator",
+  hong_kong: "Hong Kong odds",
+  malaysian: "Malaysian odds",
+  indonesian: "Indonesian odds",
 };
+
+function parseSignedOdds(raw) {
+  const text = String(raw || "").trim().replace(/^\+/, "");
+  if (!text) return NaN;
+  const n = parseFloat(text);
+  return Number.isFinite(n) ? n : NaN;
+}
+
+function signedAsianToDecimal(o) {
+  if (!Number.isFinite(o) || o === 0) return NaN;
+  return o > 0 ? 1 + o : 1 + 1 / Math.abs(o);
+}
+
+function decimalToSignedAsian(d, positiveWhenUnderEvens) {
+  if (!(d > 1)) return "";
+  const o = positiveWhenUnderEvens
+    ? (d <= 2 ? d - 1 : -1 / (d - 1))
+    : (d >= 2 ? d - 1 : -1 / (d - 1));
+  const rounded = Math.round(o * 10000) / 10000;
+  return (rounded > 0 ? "+" : "") + String(rounded);
+}
 
 function gcd(a, b) {
   a = Math.abs(Math.round(a));
@@ -626,9 +650,17 @@ function parseOddsToDecimal(form, format = form.odds_format.value) {
   if (!raw) return NaN;
   if (format === "decimal") return parseFloat(raw);
   if (format === "american") {
-    const a = parseFloat(raw.replace(/^\+/, ""));
+    const a = parseSignedOdds(raw);
     if (!Number.isFinite(a) || a === 0) return NaN;
     return a > 0 ? 1 + a / 100 : 1 + 100 / Math.abs(a);
+  }
+  if (format === "hong_kong") {
+    const hk = parseFloat(raw);
+    if (!Number.isFinite(hk) || hk < 0) return NaN;
+    return 1 + hk;
+  }
+  if (format === "malaysian" || format === "indonesian") {
+    return signedAsianToDecimal(parseSignedOdds(raw));
   }
   const num = parseFloat(raw);
   const den = parseFloat(form.odds_denominator.value);
@@ -640,6 +672,9 @@ function formatOddsFromDecimal(d, format) {
   if (!(d > 1)) return { odds: "" };
   if (format === "decimal") return { odds: d.toFixed(2) };
   if (format === "american") return { odds: decimalToAmerican(d) };
+  if (format === "hong_kong") return { odds: (Math.round((d - 1) * 10000) / 10000).toFixed(2) };
+  if (format === "malaysian") return { odds: decimalToSignedAsian(d, true) };
+  if (format === "indonesian") return { odds: decimalToSignedAsian(d, false) };
   const { numerator, denominator } = decimalToFractionalParts(d);
   return { odds: String(numerator), denominator: String(denominator) };
 }
@@ -674,6 +709,15 @@ function syncOddsFormat() {
   if (fmt === "american") {
     oddsInput.placeholder = "+150 or -200";
     oddsInput.inputMode = "text";
+  } else if (fmt === "malaysian") {
+    oddsInput.placeholder = "+0.85 or -0.85";
+    oddsInput.inputMode = "text";
+  } else if (fmt === "indonesian") {
+    oddsInput.placeholder = "+1.50 or -1.50";
+    oddsInput.inputMode = "text";
+  } else if (fmt === "hong_kong") {
+    oddsInput.placeholder = "0.85";
+    oddsInput.inputMode = "decimal";
   } else if (frac) {
     oddsInput.placeholder = "6";
     oddsInput.inputMode = "decimal";

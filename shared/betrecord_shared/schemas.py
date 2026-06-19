@@ -7,6 +7,10 @@ from typing import Optional
 
 from pydantic import BaseModel, EmailStr, Field, ConfigDict
 
+ODDS_FORMAT_PATTERN = (
+    "^(decimal|american|fractional|hong_kong|malaysian|indonesian)$"
+)
+
 
 # ----------------------------- Auth / users ------------------------------- #
 
@@ -29,7 +33,7 @@ class TokenResponse(BaseModel):
 
 class SettingsUpdate(BaseModel):
     display_name: Optional[str] = None
-    default_odds_format: Optional[str] = Field(default=None, pattern="^(decimal|american|fractional)$")
+    default_odds_format: Optional[str] = Field(default=None, pattern=ODDS_FORMAT_PATTERN)
     base_currency: Optional[str] = Field(default=None, min_length=3, max_length=3)
     bankroll: Optional[float] = Field(default=None, ge=0)
     kelly_multiplier: Optional[float] = Field(default=None, gt=0, le=1)
@@ -116,7 +120,7 @@ class BetBase(BaseModel):
     # Accept odds in any format; the bets service normalises to decimal.
     # A string is allowed so fractional odds can be sent as "11/8".
     odds: float | str
-    odds_format: Optional[str] = Field(default=None, pattern="^(decimal|american|fractional)$")
+    odds_format: Optional[str] = Field(default=None, pattern=ODDS_FORMAT_PATTERN)
     odds_denominator: Optional[float] = None  # for fractional when odds is the numerator
 
     stake: float = Field(gt=0)
@@ -154,7 +158,7 @@ class BetUpdate(BaseModel):
     placed_at: Optional[datetime] = None
     settled_at: Optional[datetime] = None
     odds: Optional[float | str] = None
-    odds_format: Optional[str] = Field(default=None, pattern="^(decimal|american|fractional)$")
+    odds_format: Optional[str] = Field(default=None, pattern=ODDS_FORMAT_PATTERN)
     odds_denominator: Optional[float] = None
     stake: Optional[float] = Field(default=None, gt=0)
     currency: Optional[str] = None
