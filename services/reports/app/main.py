@@ -179,7 +179,10 @@ _EXPORT_COLUMNS = [
     ("bet_model", "Model"),
     ("model_implied_odds", "Model odds"),
     ("personal_implied_odds", "Personal odds"),
-    ("kelly_stake", "Kelly stake"),
+    ("personal_edge_pct", "Personal edge %"),
+    ("model_edge_pct", "Model edge %"),
+    ("kelly_stake", "Personal Kelly stake"),
+    ("model_kelly_stake", "Model Kelly stake"),
     ("closing_odds", "Closing odds bookmaker"),
     ("closing_odds_exchange", "Closing odds exchange"),
     ("bookmaker", "Bookmaker"),
@@ -200,9 +203,7 @@ def _serialise(bet: Bet) -> BetOut:
     out = BetOut.model_validate(bet)
     if bet.closing_odds:
         out.clv_pct = bm.closing_line_value(bet.odds_decimal, bet.closing_odds)
-    if bet.personal_implied_odds:
-        p = bm.implied_probability(bet.personal_implied_odds)
-        out.edge_pct = round(bm.edge(bet.odds_decimal, p) * 100.0, 2)
+    out.edge_pct = bet.personal_edge_pct
     return out
 
 

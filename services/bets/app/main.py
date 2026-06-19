@@ -67,23 +67,35 @@ def _recompute(bet: Bet, user: User) -> None:
         exchange_commission_pct=bet.exchange_commission_pct or 0.0,
         cash_out_amount=bet.cash_out_amount,
     )
-    # Kelly uses the bettor's own probability estimate (personal implied odds).
-    if bet.personal_implied_odds and user.bankroll:
+    multiplier = user.kelly_multiplier or 1.0
+    bankroll = user.bankroll or 0.0
+
+    if bet.personal_implied_odds and bet.personal_implied_odds > 1.0:
         p = bm.implied_probability(bet.personal_implied_odds)
-        bet.kelly_stake = bm.kelly_stake(
-            bet.odds_decimal, p, user.bankroll, user.kelly_multiplier or 1.0
+        bet.personal_edge_pct = bm.edge_pct_from_implied(bet.odds_decimal, bet.personal_implied_odds)
+        bet.kelly_stake = (
+            bm.kelly_stake(bet.odds_decimal, p, bankroll, multiplier) if bankroll else None
         )
     else:
+        bet.personal_edge_pct = None
         bet.kelly_stake = None
+
+    if bet.model_implied_odds and bet.model_implied_odds > 1.0:
+        p = bm.implied_probability(bet.model_implied_odds)
+        bet.model_edge_pct = bm.edge_pct_from_implied(bet.odds_decimal, bet.model_implied_odds)
+        bet.model_kelly_stake = (
+            bm.kelly_stake(bet.odds_decimal, p, bankroll, multiplier) if bankroll else None
+        )
+    else:
+        bet.model_edge_pct = None
+        bet.model_kelly_stake = None
 
 
 def _serialise(bet: Bet) -> BetOut:
     out = BetOut.model_validate(bet)
     if bet.closing_odds:
         out.clv_pct = bm.closing_line_value(bet.odds_decimal, bet.closing_odds)
-    if bet.personal_implied_odds:
-        p = bm.implied_probability(bet.personal_implied_odds)
-        out.edge_pct = round(bm.edge(bet.odds_decimal, p) * 100.0, 2)
+    out.edge_pct = bet.personal_edge_pct
     return out
 
 

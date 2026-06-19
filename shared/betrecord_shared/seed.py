@@ -122,6 +122,28 @@ def _ensure_preferred_locale_column() -> None:
             )
 
 
+def _ensure_modelling_edge_columns() -> None:
+    """Add edge and model Kelly columns to existing databases."""
+    if "bets" not in inspect(engine).get_table_names():
+        return
+    columns = {c["name"] for c in inspect(engine).get_columns("bets")}
+    dialect = engine.dialect.name
+    additions = [
+        ("personal_edge_pct", "FLOAT"),
+        ("model_edge_pct", "FLOAT"),
+        ("model_kelly_stake", "FLOAT"),
+    ]
+    pending = [(name, sql_type) for name, sql_type in additions if name not in columns]
+    if not pending:
+        return
+    with engine.begin() as conn:
+        for name, sql_type in pending:
+            if dialect == "postgresql":
+                conn.execute(text(f"ALTER TABLE bets ADD COLUMN IF NOT EXISTS {name} {sql_type}"))
+            else:
+                conn.execute(text(f"ALTER TABLE bets ADD COLUMN {name} {sql_type}"))
+
+
 def _ensure_last_login_at_column() -> None:
     """Add last_login_at to existing databases created before the column existed."""
     if "users" not in inspect(engine).get_table_names():

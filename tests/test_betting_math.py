@@ -81,6 +81,10 @@ def test_kelly_stake_half():
     assert bm.kelly_stake(2.0, 0.6, bankroll=1000, multiplier=0.5) == pytest.approx(100.0)
 
 
+def test_edge_pct_from_implied():
+    assert bm.edge_pct_from_implied(2.5, 2.1) == pytest.approx(19.05, abs=0.1)
+
+
 # ------------------------------ settlement ------------------------------- #
 
 def test_win_profit():

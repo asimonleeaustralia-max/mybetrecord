@@ -187,6 +187,20 @@ def test_kelly_none_without_bankroll(clients, auth_headers):
     assert b["kelly_stake"] is None  # bankroll defaults to 0
 
 
+def test_personal_and_model_edge_saved(clients, auth_headers):
+    headers, _ = auth_headers
+    clients["auth"].patch("/auth/settings", headers=headers, json={"bankroll": 1000})
+    b = _make_bet(
+        clients, headers, odds=2.5, stake=100,
+        personal_implied_odds=2.1, model_implied_odds=2.0,
+    )
+    assert b["personal_edge_pct"] == pytest.approx(19.05, abs=0.1)
+    assert b["model_edge_pct"] == pytest.approx(25.0, abs=0.1)
+    assert b["edge_pct"] == b["personal_edge_pct"]
+    assert b["kelly_stake"] == pytest.approx(126.98, abs=0.5)
+    assert b["model_kelly_stake"] == pytest.approx(166.67, abs=0.5)
+
+
 # --------------------------- sports dropdown ------------------------------ #
 
 def test_sports_dropdown_distinct_sorted(clients, auth_headers):

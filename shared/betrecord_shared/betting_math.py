@@ -199,6 +199,15 @@ def edge(decimal_odds: float, personal_probability: float) -> float:
     return p * (d - 1.0) - (1.0 - p)
 
 
+def edge_pct_from_implied(decimal_odds: float, implied_odds_decimal: float) -> Optional[float]:
+    """Edge as a percentage when the estimate is expressed as decimal implied odds."""
+    implied = float(implied_odds_decimal)
+    if implied <= 1.0:
+        return None
+    p = implied_probability(implied)
+    return round(edge(decimal_odds, p) * 100.0, 2)
+
+
 # --------------------------------------------------------------------------- #
 # Settlement — profit / loss for a single bet.
 # --------------------------------------------------------------------------- #

@@ -51,6 +51,7 @@ def init_db() -> None:
         _ensure_last_login_at_column,
         _ensure_preferred_locale_column,
         _ensure_settled_at_column,
+        _ensure_modelling_edge_columns,
     )
 
     if settings.database_url.startswith("postgresql"):
@@ -73,4 +74,5 @@ def init_db() -> None:
     _ensure_closing_odds_exchange_column()
     _ensure_last_login_at_column()
     _ensure_preferred_locale_column()
+    _ensure_modelling_edge_columns()
     seed_dev_admin()

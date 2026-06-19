@@ -246,6 +246,11 @@ legend { padding: 0 8px; font-size: .9rem; font-weight: 600; color: var(--brass-
 .odds-value-fields:not(.odds-value-fields--fractional) .odds-den-field { display: none !important; }
 textarea { font-family: var(--sans); resize: vertical; }
 .kelly { margin: 0; padding: 10px 12px; background: var(--brass-wash); border-radius: 8px; font-family: var(--mono); font-size: .82rem; color: var(--brass-deep); }
+.calc-field { display: flex; flex-direction: column; gap: 4px; margin: 0; }
+.implied-col { display: flex; flex-direction: column; gap: 10px; }
+.calc-results { display: flex; flex-direction: column; gap: 10px; }
+.calc-field__label { font-family: var(--sans); font-size: .78rem; font-weight: 600; color: var(--ink-muted); }
+.calc-field__value { font-family: var(--mono); font-size: .9rem; }
 .formactions { display: flex; justify-content: flex-end; gap: 10px; }
 
 /* ---------- reports ---------- */
