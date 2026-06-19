@@ -9,37 +9,36 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/styles.css" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
 </head>
 <body>
 
   <!-- ───────────────────────── Auth loading ────────────────────── -->
   <section id="authLoading" class="auth auth-loading" hidden>
-    <div class="auth-loading__spinner" role="status" aria-label="Signing in"></div>
+    <div class="auth-loading__spinner" role="status" data-i18n="meta.signingIn" data-i18n-attr="aria-label"></div>
   </section>
 
   <!-- ───────────────────────── Auth gate ───────────────────────── -->
   <section id="auth" class="auth" hidden>
     <div class="auth__panel">
       <div class="wordmark wordmark--lg">my<span>bet</span>record</div>
-      <p class="auth__tag">A disciplined ledger for people who bet to a number.</p>
+      <p class="auth__tag" data-i18n="auth.tagline">A disciplined ledger for people who bet to a number.</p>
 
       <div class="seg" role="tablist">
-        <button class="seg__btn is-active" data-auth-tab="login" role="tab">Sign in</button>
-        <button class="seg__btn" data-auth-tab="register" role="tab">Create account</button>
+        <button class="seg__btn is-active" data-auth-tab="login" role="tab" data-i18n="auth.signIn">Sign in</button>
+        <button class="seg__btn" data-auth-tab="register" role="tab" data-i18n="auth.createAccount">Create account</button>
       </div>
 
       <form id="loginForm" class="auth__form">
-        <label>Email<input type="email" name="email" autocomplete="email" required /></label>
-        <label>Password<input type="password" name="password" autocomplete="current-password" required /></label>
-        <button class="btn btn--brass" type="submit">Sign in</button>
+        <label><span data-i18n="auth.email">Email</span><input type="email" name="email" autocomplete="email" required /></label>
+        <label><span data-i18n="auth.password">Password</span><input type="password" name="password" autocomplete="current-password" required /></label>
+        <button class="btn btn--brass" type="submit" data-i18n="auth.signIn">Sign in</button>
       </form>
 
       <form id="registerForm" class="auth__form" hidden>
-        <label>Display name<input type="text" name="display_name" autocomplete="name" /></label>
-        <label>Email<input type="email" name="email" autocomplete="email" required /></label>
-        <label>Password <span class="hint">8+ characters</span><input type="password" name="password" autocomplete="new-password" minlength="8" required /></label>
-        <button class="btn btn--brass" type="submit">Create account</button>
+        <label><span data-i18n="auth.displayName">Display name</span><input type="text" name="display_name" autocomplete="name" /></label>
+        <label><span data-i18n="auth.email">Email</span><input type="email" name="email" autocomplete="email" required /></label>
+        <label><span data-i18n="auth.password">Password</span> <span class="hint" data-i18n="auth.passwordHint">8+ characters</span><input type="password" name="password" autocomplete="new-password" minlength="8" required /></label>
+        <button class="btn btn--brass" type="submit" data-i18n="auth.createAccount">Create account</button>
       </form>
 
       <p id="authError" class="form-error" hidden></p>
@@ -51,19 +50,19 @@
     <header class="topbar">
       <div class="wordmark">my<span>bet</span>record</div>
       <div class="ticker">
-        <div class="ticker__item"><span class="ticker__label">Bankroll</span><span id="tkBankroll" class="num">—</span></div>
-        <div class="ticker__item"><span class="ticker__label">P/L</span><span id="tkPL" class="num">—</span></div>
-        <div class="ticker__item"><span class="ticker__label">Yield</span><span id="tkYield" class="num">—</span></div>
+        <div class="ticker__item"><span class="ticker__label" data-i18n="ticker.bankroll">Bankroll</span><span id="tkBankroll" class="num">—</span></div>
+        <div class="ticker__item"><span class="ticker__label" data-i18n="ticker.pl">P/L</span><span id="tkPL" class="num">—</span></div>
+        <div class="ticker__item"><span class="ticker__label" data-i18n="ticker.yield">Yield</span><span id="tkYield" class="num">—</span></div>
       </div>
-      <button id="logoutBtn" class="btn btn--ghost btn--sm">Sign out</button>
+      <button id="logoutBtn" class="btn btn--ghost btn--sm" data-i18n="nav.signOut">Sign out</button>
     </header>
 
     <nav class="tabs">
-      <a href="#/bets" class="tab" data-view="bets">Bets</a>
-      <a href="#/new" class="tab" data-view="new">Record a bet</a>
-      <a href="#/reports" class="tab" data-view="reports">Reports</a>
-      <a href="#/settings" class="tab" data-view="settings">Settings</a>
-      <a href="#/admin" class="tab" data-view="admin" hidden>Admin</a>
+      <a href="#/bets" class="tab" data-view="bets" data-i18n="nav.bets">Bets</a>
+      <a href="#/new" class="tab" data-view="new" data-i18n="nav.recordBet">Record a bet</a>
+      <a href="#/reports" class="tab" data-view="reports" data-i18n="nav.reports">Reports</a>
+      <a href="#/settings" class="tab" data-view="settings" data-i18n="nav.settings">Settings</a>
+      <a href="#/admin" class="tab" data-view="admin" hidden data-i18n="nav.admin">Admin</a>
     </nav>
 
     <main id="main" class="main"></main>
@@ -75,131 +74,131 @@
   <template id="tpl-bets">
     <div class="view">
       <div class="view__head">
-        <h1>Your bets</h1>
-        <a href="#/new" class="btn btn--brass btn--sm">+ Record a bet</a>
+        <h1 data-i18n="bets.title">Your bets</h1>
+        <a href="#/new" class="btn btn--brass btn--sm" data-i18n="bets.recordBet">+ Record a bet</a>
       </div>
       <div class="filters" id="betsFilters"></div>
       <div class="table-wrap">
         <table class="ledger">
           <thead>
             <tr>
-              <th>Date</th><th>Sport</th><th>Event / Selection</th><th>Type</th>
-              <th class="r">Odds</th><th class="r">Stake</th><th>Result</th>
-              <th class="r">P/L</th><th class="r">CLV</th><th></th>
+              <th data-i18n="bets.date">Date</th><th data-i18n="bets.sport">Sport</th><th data-i18n="bets.eventSelection">Event / Selection</th><th data-i18n="bets.type">Type</th>
+              <th class="r" data-i18n="bets.odds">Odds</th><th class="r" data-i18n="bets.stake">Stake</th><th data-i18n="bets.result">Result</th>
+              <th class="r" data-i18n="bets.pl">P/L</th><th class="r" data-i18n="bets.clv">CLV</th><th></th>
             </tr>
           </thead>
           <tbody id="betsBody"></tbody>
         </table>
       </div>
-      <p id="betsEmpty" class="empty" hidden>No bets match these filters yet. Record your first one to start the ledger.</p>
+      <p id="betsEmpty" class="empty" hidden data-i18n="bets.empty">No bets match these filters yet. Record your first one to start the ledger.</p>
     </div>
   </template>
 
   <template id="tpl-form">
     <div class="view view--narrow">
-      <div class="view__head"><h1 id="formTitle">Record a bet</h1></div>
+      <div class="view__head"><h1 id="formTitle" data-i18n="form.recordTitle">Record a bet</h1></div>
       <form id="betForm" class="betform">
         <fieldset>
-          <legend>What you backed</legend>
+          <legend data-i18n="form.whatYouBacked">What you backed</legend>
           <div class="grid2">
-            <label>Sport
-              <input list="sportList" name="sport" required placeholder="e.g. Horse racing" />
+            <label><span data-i18n="form.sport">Sport</span>
+              <input list="sportList" name="sport" required data-i18n-placeholder="form.sportPlaceholder" />
               <datalist id="sportList"></datalist>
             </label>
-            <label>Bet type
-              <input list="betTypeList" name="bet_type" required value="Win" placeholder="e.g. Win, Each way, Acca" />
+            <label><span data-i18n="form.betType">Bet type</span>
+              <input list="betTypeList" name="bet_type" required value="Win" data-i18n-placeholder="form.betTypePlaceholder" />
               <datalist id="betTypeList"></datalist>
             </label>
           </div>
           <div class="grid2">
-            <label>Bookmaker
-              <input list="bookmakerList" name="bookmaker" placeholder="e.g. Ladbrokes, Betfair" />
+            <label><span data-i18n="form.bookmaker">Bookmaker</span>
+              <input list="bookmakerList" name="bookmaker" data-i18n-placeholder="form.bookmakerPlaceholder" />
               <datalist id="bookmakerList"></datalist>
             </label>
-            <label>Winnings deduction % <span class="hint">e.g. exchange commission</span>
+            <label><span data-i18n="form.commission">Winnings deduction %</span> <span class="hint" data-i18n="form.commissionHint">e.g. exchange commission</span>
               <input name="exchange_commission_pct" inputmode="decimal" placeholder="0" /></label>
           </div>
-          <label>Event<input name="event" required placeholder="e.g. 14:30 Ascot" /></label>
-          <label>Selection<input name="selection" required placeholder="e.g. Galileo Gold" /></label>
-          <label>Date &amp; time placed<input type="datetime-local" name="placed_at" /></label>
+          <label><span data-i18n="form.event">Event</span><input name="event" required data-i18n-placeholder="form.eventPlaceholder" /></label>
+          <label><span data-i18n="form.selection">Selection</span><input name="selection" required data-i18n-placeholder="form.selectionPlaceholder" /></label>
+          <label><span data-i18n="form.placedAt">Date &amp; time placed</span><input type="datetime-local" name="placed_at" /></label>
         </fieldset>
 
         <fieldset>
-          <legend>Odds &amp; stake</legend>
+          <legend data-i18n="form.oddsStake">Odds &amp; stake</legend>
           <div class="grid2" id="oddsEntryRow">
-            <label>Odds format
+            <label><span data-i18n="form.oddsFormat">Odds format</span>
               <select name="odds_format" id="oddsFormat">
-                <option value="decimal">Decimal</option>
-                <option value="american">American</option>
-                <option value="fractional">Fractional</option>
-                <option value="hong_kong">Hong Kong</option>
-                <option value="malaysian">Malaysian</option>
-                <option value="indonesian">Indonesian</option>
+                <option value="decimal" data-i18n="form.decimal">Decimal</option>
+                <option value="american" data-i18n="form.american">American</option>
+                <option value="fractional" data-i18n="form.fractional">Fractional</option>
+                <option value="hong_kong" data-i18n="form.hong_kong">Hong Kong</option>
+                <option value="malaysian" data-i18n="form.malaysian">Malaysian</option>
+                <option value="indonesian" data-i18n="form.indonesian">Indonesian</option>
               </select>
             </label>
             <div id="oddsValueFields" class="odds-value-fields odds-value-fields--decimal">
-              <label id="oddsField"><span id="oddsFieldLabel">Decimal odds</span><input name="odds" inputmode="decimal" required placeholder="2.50" /></label>
-              <label class="odds-den-field">Denominator<input name="odds_denominator" inputmode="decimal" placeholder="4" /></label>
+              <label id="oddsField"><span id="oddsFieldLabel" data-i18n="form.decimalOdds">Decimal odds</span><input name="odds" inputmode="decimal" required placeholder="2.50" /></label>
+              <label class="odds-den-field"><span data-i18n="form.denominator">Denominator</span><input name="odds_denominator" inputmode="decimal" placeholder="4" /></label>
             </div>
           </div>
           <div class="grid3">
-            <label>Stake<input name="stake" inputmode="decimal" required placeholder="50" /></label>
-            <label>Currency
+            <label><span data-i18n="form.stake">Stake</span><input name="stake" inputmode="decimal" required placeholder="50" /></label>
+            <label><span data-i18n="form.currency">Currency</span>
               <input list="currencyList" name="currency" maxlength="3" placeholder="GBP" autocapitalize="characters" required />
               <datalist id="currencyList"></datalist>
             </label>
-            <label class="check"><input type="checkbox" name="each_way" /> Each way</label>
+            <label class="check"><input type="checkbox" name="each_way" /> <span data-i18n="form.eachWay">Each way</span></label>
           </div>
           <div class="grid2" id="ewFields" hidden>
-            <label>Place fraction<input name="place_fraction" inputmode="decimal" placeholder="0.25" /></label>
-            <label class="check"><input type="checkbox" name="placed" /> Placed</label>
+            <label><span data-i18n="form.placeFraction">Place fraction</span><input name="place_fraction" inputmode="decimal" placeholder="0.25" /></label>
+            <label class="check"><input type="checkbox" name="placed" /> <span data-i18n="form.placed">Placed</span></label>
           </div>
         </fieldset>
 
         <fieldset>
-          <legend>Settlement</legend>
+          <legend data-i18n="form.settlement">Settlement</legend>
           <div class="grid2">
-            <label>Result
+            <label><span data-i18n="form.result">Result</span>
               <select name="outcome">
-                <option value="pending">Pending</option>
-                <option value="win">Win</option>
-                <option value="loss">Loss</option>
-                <option value="void">Void</option>
-                <option value="half_win">Half win</option>
-                <option value="half_loss">Half loss</option>
+                <option value="pending" data-i18n="outcomes.pending">Pending</option>
+                <option value="win" data-i18n="outcomes.win">Win</option>
+                <option value="loss" data-i18n="outcomes.loss">Loss</option>
+                <option value="void" data-i18n="outcomes.void">Void</option>
+                <option value="half_win" data-i18n="outcomes.half_win">Half win</option>
+                <option value="half_loss" data-i18n="outcomes.half_loss">Half loss</option>
               </select>
             </label>
-            <label>Date &amp; time settled<input type="datetime-local" name="settled_at" /></label>
+            <label><span data-i18n="form.settledAt">Date &amp; time settled</span><input type="datetime-local" name="settled_at" /></label>
           </div>
           <div class="grid2">
-            <label>Cash-out amount <span class="hint">total returned, if cashed out</span>
-              <input name="cash_out_amount" inputmode="decimal" placeholder="optional" /></label>
+            <label><span data-i18n="form.cashOut">Cash-out amount</span> <span class="hint" data-i18n="form.cashOutHint">total returned, if cashed out</span>
+              <input name="cash_out_amount" inputmode="decimal" data-i18n-placeholder="form.optional" /></label>
           </div>
         </fieldset>
 
         <fieldset>
-          <legend>Modelling &amp; edge</legend>
-          <label>Bet model<input name="bet_model" placeholder="e.g. xG v2" /></label>
+          <legend data-i18n="form.modelling">Modelling &amp; edge</legend>
+          <label><span data-i18n="form.betModel">Bet model</span><input name="bet_model" data-i18n-placeholder="form.betModelPlaceholder" /></label>
           <div class="grid2">
-            <label>Closing odds bookmaker (decimal)<input name="closing_odds" inputmode="decimal" placeholder="2.30" /></label>
-            <label>Closing odds exchange (decimal)<input name="closing_odds_exchange" inputmode="decimal" placeholder="2.28" /></label>
+            <label><span data-i18n="form.closingBookmaker">Closing odds bookmaker (decimal)</span><input name="closing_odds" inputmode="decimal" placeholder="2.30" /></label>
+            <label><span data-i18n="form.closingExchange">Closing odds exchange (decimal)</span><input name="closing_odds_exchange" inputmode="decimal" placeholder="2.28" /></label>
           </div>
           <div class="grid2">
-            <label>Model implied odds (decimal)<input name="model_implied_odds" inputmode="decimal" placeholder="2.20" /></label>
-            <label>Personal implied odds (decimal)<input name="personal_implied_odds" inputmode="decimal" placeholder="2.10" /></label>
+            <label><span data-i18n="form.modelImplied">Model implied odds (decimal)</span><input name="model_implied_odds" inputmode="decimal" placeholder="2.20" /></label>
+            <label><span data-i18n="form.personalImplied">Personal implied odds (decimal)</span><input name="personal_implied_odds" inputmode="decimal" placeholder="2.10" /></label>
           </div>
           <p class="kelly" id="kellyHint" hidden></p>
         </fieldset>
 
         <fieldset>
-          <legend>Notes</legend>
-          <label>Tipster<input name="tipster" placeholder="optional" /></label>
-          <label>Notes<textarea name="notes" rows="2" placeholder="Reasoning, conditions, anything worth remembering"></textarea></label>
+          <legend data-i18n="form.notes">Notes</legend>
+          <label><span data-i18n="form.tipster">Tipster</span><input name="tipster" data-i18n-placeholder="form.optional" /></label>
+          <label><span data-i18n="form.notes">Notes</span><textarea name="notes" rows="2" data-i18n-placeholder="form.notesPlaceholder"></textarea></label>
         </fieldset>
 
         <div class="formactions">
-          <a href="#/bets" class="btn btn--ghost">Cancel</a>
-          <button class="btn btn--brass" type="submit" id="saveBtn">Save bet</button>
+          <a href="#/bets" class="btn btn--ghost" data-i18n="form.cancel">Cancel</a>
+          <button class="btn btn--brass" type="submit" id="saveBtn" data-i18n="form.saveBet">Save bet</button>
         </div>
       </form>
     </div>
@@ -208,38 +207,38 @@
   <template id="tpl-reports">
     <div class="view">
       <div class="view__head">
-        <h1>Reports</h1>
+        <h1 data-i18n="reports.title">Reports</h1>
         <div class="exports">
-          <button class="btn btn--ghost btn--sm" id="exportCsv">Export CSV</button>
-          <button class="btn btn--ghost btn--sm" id="exportXlsx">Export Excel</button>
-          <button class="btn btn--ghost btn--sm" id="exportJson">Export JSON</button>
+          <button class="btn btn--ghost btn--sm" id="exportCsv" data-i18n="reports.exportCsv">Export CSV</button>
+          <button class="btn btn--ghost btn--sm" id="exportXlsx" data-i18n="reports.exportXlsx">Export Excel</button>
+          <button class="btn btn--ghost btn--sm" id="exportJson" data-i18n="reports.exportJson">Export JSON</button>
         </div>
       </div>
       <div class="filters" id="reportFilters"></div>
       <div class="cards" id="metricCards"></div>
       <div class="panel">
-        <div class="panel__head"><h2>Equity curve</h2><span class="panel__sub">cumulative profit/loss</span></div>
+        <div class="panel__head"><h2 data-i18n="reports.equityCurve">Equity curve</h2><span class="panel__sub" data-i18n="reports.equitySub">cumulative profit/loss</span></div>
         <canvas id="equityChart" height="120"></canvas>
       </div>
       <div class="split">
         <div class="panel">
-          <div class="panel__head"><h2>By dimension</h2>
+          <div class="panel__head"><h2 data-i18n="reports.byDimension">By dimension</h2>
             <select id="breakdownDim" class="mini-select">
-              <option value="sport">Sport</option>
-              <option value="tipster">Tipster</option>
-              <option value="bet_type">Bet type</option>
-              <option value="bookmaker">Bookmaker</option>
+              <option value="sport" data-i18n="reports.dimSport">Sport</option>
+              <option value="tipster" data-i18n="reports.dimTipster">Tipster</option>
+              <option value="bet_type" data-i18n="reports.dimBetType">Bet type</option>
+              <option value="bookmaker" data-i18n="reports.dimBookmaker">Bookmaker</option>
             </select>
           </div>
           <div class="table-wrap">
             <table class="ledger ledger--compact">
-              <thead><tr><th id="dimHead">Sport</th><th class="r">Bets</th><th class="r">Strike</th><th class="r">Yield</th><th class="r">P/L</th></tr></thead>
+              <thead><tr><th id="dimHead" data-i18n="reports.dimSport">Sport</th><th class="r" data-i18n="reports.bets">Bets</th><th class="r" data-i18n="reports.strike">Strike</th><th class="r" data-i18n="reports.yield">Yield</th><th class="r" data-i18n="reports.pl">P/L</th></tr></thead>
               <tbody id="breakdownBody"></tbody>
             </table>
           </div>
         </div>
         <div class="panel">
-          <div class="panel__head"><h2>Profit by month</h2></div>
+          <div class="panel__head"><h2 data-i18n="reports.profitByMonth">Profit by month</h2></div>
           <canvas id="monthlyChart" height="160"></canvas>
         </div>
       </div>
@@ -248,40 +247,43 @@
 
   <template id="tpl-settings">
     <div class="view view--narrow">
-      <div class="view__head"><h1>Settings</h1></div>
+      <div class="view__head"><h1 data-i18n="settings.title">Settings</h1></div>
       <form id="settingsForm" class="betform">
         <fieldset>
-          <legend>Preferences</legend>
+          <legend data-i18n="settings.preferences">Preferences</legend>
+          <label><span data-i18n="settings.language">Preferred language</span>
+            <select name="preferred_locale" id="localeSelect"></select>
+          </label>
           <div class="grid2">
-            <label>Default entry odds <span class="hint">pre-selected when logging a bet</span>
+            <label><span data-i18n="settings.defaultOdds">Default entry odds</span> <span class="hint" data-i18n="settings.defaultOddsHint">pre-selected when logging a bet</span>
               <select name="default_odds_format">
-                <option value="decimal">Decimal (e.g. 2.50)</option>
-                <option value="american">American (e.g. +150)</option>
-                <option value="fractional">Fractional (e.g. 6/4)</option>
-                <option value="hong_kong">Hong Kong (e.g. 0.85)</option>
-                <option value="malaysian">Malaysian (e.g. +0.85 or -0.85)</option>
-                <option value="indonesian">Indonesian (e.g. +1.50 or -1.50)</option>
+                <option value="decimal" data-i18n="settings.oddsDecimal">Decimal (e.g. 2.50)</option>
+                <option value="american" data-i18n="settings.oddsAmerican">American (e.g. +150)</option>
+                <option value="fractional" data-i18n="settings.oddsFractional">Fractional (e.g. 6/4)</option>
+                <option value="hong_kong" data-i18n="settings.oddsHongKong">Hong Kong (e.g. 0.85)</option>
+                <option value="malaysian" data-i18n="settings.oddsMalaysian">Malaysian (e.g. +0.85 or -0.85)</option>
+                <option value="indonesian" data-i18n="settings.oddsIndonesian">Indonesian (e.g. +1.50 or -1.50)</option>
               </select>
             </label>
-            <label>Default currency<select name="base_currency"></select></label>
+            <label><span data-i18n="settings.defaultCurrency">Default currency</span><select name="base_currency"></select></label>
           </div>
           <div class="grid2">
-            <label>Bankroll <span class="hint">used for Kelly</span><input name="bankroll" inputmode="decimal" /></label>
-            <label>Kelly multiplier <span class="hint">1 = full, 0.5 = half</span><input name="kelly_multiplier" inputmode="decimal" /></label>
+            <label><span data-i18n="settings.bankroll">Bankroll</span> <span class="hint" data-i18n="settings.bankrollHint">used for Kelly</span><input name="bankroll" inputmode="decimal" /></label>
+            <label><span data-i18n="settings.kellyMultiplier">Kelly multiplier</span> <span class="hint" data-i18n="settings.kellyHint">1 = full, 0.5 = half</span><input name="kelly_multiplier" inputmode="decimal" /></label>
           </div>
-          <label>Display name<input name="display_name" /></label>
-          <div class="formactions"><button class="btn btn--brass" type="submit">Save settings</button></div>
+          <label><span data-i18n="settings.displayName">Display name</span><input name="display_name" /></label>
+          <div class="formactions"><button class="btn btn--brass" type="submit" data-i18n="settings.save">Save settings</button></div>
         </fieldset>
       </form>
 
       <div class="panel">
-        <div class="panel__head"><h2>API access</h2>
-          <button class="btn btn--ghost btn--sm" id="newKeyBtn">Generate key</button>
+        <div class="panel__head"><h2 data-i18n="settings.apiAccess">API access</h2>
+          <button class="btn btn--ghost btn--sm" id="newKeyBtn" data-i18n="settings.generateKey">Generate key</button>
         </div>
-        <p class="panel__sub">Use a key to push or pull your record from scripts. Send it as <code>Authorization: Bearer mbr_…</code> or <code>X-API-Key</code>.</p>
+        <p class="panel__sub" data-i18n="settings.apiHelp" data-i18n-html>Use a key to push or pull your record from scripts. Send it as <code>Authorization: Bearer mbr_…</code> or <code>X-API-Key</code>.</p>
         <div id="newKeyReveal" class="reveal" hidden></div>
         <table class="ledger ledger--compact">
-          <thead><tr><th>Name</th><th>Prefix</th><th>Last used</th><th></th></tr></thead>
+          <thead><tr><th data-i18n="settings.keyName">Name</th><th data-i18n="settings.keyPrefix">Prefix</th><th data-i18n="settings.keyLastUsed">Last used</th><th></th></tr></thead>
           <tbody id="keysBody"></tbody>
         </table>
       </div>
@@ -291,23 +293,23 @@
   <template id="tpl-admin">
     <div class="view">
       <div class="view__head">
-        <h1>Admin</h1>
-        <span class="panel__sub">Monitor users and application activity</span>
+        <h1 data-i18n="admin.title">Admin</h1>
+        <span class="panel__sub" data-i18n="admin.subtitle">Monitor users and application activity</span>
       </div>
       <div class="cards" id="adminStats"></div>
 
       <div class="panel">
         <div class="panel__head">
-          <h2>Users</h2>
-          <input type="search" id="adminUserSearch" class="mini-select" placeholder="Search email or name…" />
+          <h2 data-i18n="admin.users">Users</h2>
+          <input type="search" id="adminUserSearch" class="mini-select" data-i18n-placeholder="admin.searchPlaceholder" />
         </div>
         <div class="table-wrap">
           <table class="ledger ledger--compact">
             <thead>
               <tr>
-                <th>Email</th><th>Name</th><th>Status</th><th>Role</th>
-                <th>Last login</th><th>Joined</th>
-                <th class="r">Bets</th><th class="r">Keys</th><th></th>
+                <th data-i18n="admin.email">Email</th><th data-i18n="admin.name">Name</th><th data-i18n="admin.status">Status</th><th data-i18n="admin.role">Role</th>
+                <th data-i18n="admin.lastLogin">Last login</th><th data-i18n="admin.joined">Joined</th>
+                <th class="r" data-i18n="admin.bets">Bets</th><th class="r" data-i18n="admin.keys">Keys</th><th></th>
               </tr>
             </thead>
             <tbody id="adminUsersBody"></tbody>
@@ -317,24 +319,24 @@
 
       <div class="panel">
         <div class="panel__head">
-          <h2>App events</h2>
+          <h2 data-i18n="admin.events">App events</h2>
           <select id="adminEventFilter" class="mini-select">
-            <option value="">All events</option>
-            <option value="login">Login</option>
-            <option value="login_failed">Login failed</option>
-            <option value="login_blocked">Login blocked</option>
-            <option value="register">Register</option>
-            <option value="settings_updated">Settings updated</option>
-            <option value="api_key_created">API key created</option>
-            <option value="api_key_revoked">API key revoked</option>
-            <option value="admin.user_update">Admin user update</option>
+            <option value="" data-i18n="admin.allEvents">All events</option>
+            <option value="login" data-i18n="admin.eventLogin">Login</option>
+            <option value="login_failed" data-i18n="admin.eventLoginFailed">Login failed</option>
+            <option value="login_blocked" data-i18n="admin.eventLoginBlocked">Login blocked</option>
+            <option value="register" data-i18n="admin.eventRegister">Register</option>
+            <option value="settings_updated" data-i18n="admin.eventSettingsUpdated">Settings updated</option>
+            <option value="api_key_created" data-i18n="admin.eventApiKeyCreated">API key created</option>
+            <option value="api_key_revoked" data-i18n="admin.eventApiKeyRevoked">API key revoked</option>
+            <option value="admin.user_update" data-i18n="admin.eventAdminUserUpdate">Admin user update</option>
           </select>
         </div>
         <div class="table-wrap">
           <table class="ledger ledger--compact">
             <thead>
               <tr>
-                <th>When</th><th>Event</th><th>User</th><th>Detail</th><th>IP</th>
+                <th data-i18n="admin.when">When</th><th data-i18n="admin.event">Event</th><th data-i18n="admin.user">User</th><th data-i18n="admin.detail">Detail</th><th data-i18n="admin.ip">IP</th>
               </tr>
             </thead>
             <tbody id="adminEventsBody"></tbody>
@@ -344,6 +346,37 @@
     </div>
   </template>
 
-  <script src="/app.js" defer></script>
+  <script src="/i18n.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", async function () {
+      var auth = document.getElementById("auth");
+      var loading = document.getElementById("authLoading");
+      try {
+        if (loading) loading.hidden = false;
+        var loc = localStorage.getItem("mbr_token")
+          ? "en"
+          : (window.i18n.getLocaleCookie() || window.i18n.getLoginLocale());
+        await window.i18n.initI18n(loc);
+        document.title = window.i18n.t("meta.title");
+        if (!localStorage.getItem("mbr_token") && auth) {
+          window.i18n.applyI18n(auth);
+          if (loading) loading.hidden = true;
+          auth.hidden = false;
+        }
+      } catch (e) {
+        console.error("Boot failed:", e);
+        if (loading) loading.hidden = true;
+        if (auth) auth.hidden = false;
+      }
+      var s = document.createElement("script");
+      s.src = "/app.js";
+      s.onload = function () { if (window.mbrAttach) window.mbrAttach(); };
+      s.onerror = function () {
+        if (loading) loading.hidden = true;
+        if (auth) auth.hidden = false;
+      };
+      document.body.appendChild(s);
+    });
+  </script>
 </body>
 </html>

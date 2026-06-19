@@ -43,6 +43,7 @@ class User(Base):
     base_currency: Mapped[str] = mapped_column(String(3), default="GBP")
     bankroll: Mapped[float] = mapped_column(Float, default=0.0)
     kelly_multiplier: Mapped[float] = mapped_column(Float, default=1.0)  # 1=full, .5=half
+    preferred_locale: Mapped[str] = mapped_column(String(16), default="en")
 
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     is_admin: Mapped[bool] = mapped_column(Boolean, default=False)

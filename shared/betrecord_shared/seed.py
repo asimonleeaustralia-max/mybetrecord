@@ -100,6 +100,28 @@ def _ensure_closing_odds_exchange_column() -> None:
             conn.execute(text("ALTER TABLE bets ADD COLUMN closing_odds_exchange FLOAT"))
 
 
+def _ensure_preferred_locale_column() -> None:
+    """Add preferred_locale to existing databases created before the column existed."""
+    if "users" not in inspect(engine).get_table_names():
+        return
+    columns = {c["name"] for c in inspect(engine).get_columns("users")}
+    if "preferred_locale" in columns:
+        return
+    dialect = engine.dialect.name
+    with engine.begin() as conn:
+        if dialect == "postgresql":
+            conn.execute(
+                text(
+                    "ALTER TABLE users ADD COLUMN IF NOT EXISTS preferred_locale "
+                    "VARCHAR(16) NOT NULL DEFAULT 'en'"
+                )
+            )
+        else:
+            conn.execute(
+                text("ALTER TABLE users ADD COLUMN preferred_locale VARCHAR(16) NOT NULL DEFAULT 'en'")
+            )
+
+
 def _ensure_last_login_at_column() -> None:
     """Add last_login_at to existing databases created before the column existed."""
     if "users" not in inspect(engine).get_table_names():

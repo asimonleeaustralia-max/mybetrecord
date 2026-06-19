@@ -31,12 +31,16 @@ class TokenResponse(BaseModel):
     expires_in: int
 
 
+LOCALE_PATTERN = r"^[a-z]{2,3}(-[A-Z]{2})?$"
+
+
 class SettingsUpdate(BaseModel):
     display_name: Optional[str] = None
     default_odds_format: Optional[str] = Field(default=None, pattern=ODDS_FORMAT_PATTERN)
     base_currency: Optional[str] = Field(default=None, min_length=3, max_length=3)
     bankroll: Optional[float] = Field(default=None, ge=0)
     kelly_multiplier: Optional[float] = Field(default=None, gt=0, le=1)
+    preferred_locale: Optional[str] = Field(default=None, pattern=LOCALE_PATTERN)
 
 
 class UserOut(BaseModel):
@@ -48,6 +52,7 @@ class UserOut(BaseModel):
     base_currency: str
     bankroll: float
     kelly_multiplier: float
+    preferred_locale: str
     is_admin: bool
     created_at: datetime
 

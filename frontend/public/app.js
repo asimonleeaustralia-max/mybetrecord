@@ -1,9 +1,19 @@
 /* mybetrecord — single-page client.
    Talks to the services through the same origin; nginx proxies
    /auth, /bets, /reports, /payments to the right container. */
+(function () {
+"use strict";
 
 const TOKEN_KEY = "mbr_token";
 const state = { user: null, sports: [], betTypes: [], currencies: [], charts: {} };
+
+const t = (key, vars) => window.i18n?.t(key, vars) ?? key;
+
+function clone(id) {
+  const node = document.importNode($(`#${id}`).content, true);
+  if (window.i18n) i18n.applyI18n(node);
+  return node;
+}
 
 // Top currencies by forex turnover / economic weight, largest first.
 const CURRENCIES = [
@@ -158,7 +168,7 @@ function betTypeFilterOptions(selected = "") {
     const sel = t === selected ? " selected" : "";
     return `<option value="${esc(t)}"${sel}>${esc(betTypeLabel(t))}</option>`;
   }).join("");
-  return `<option value="">All</option>${opts}`;
+  return `<option value="">${t("bets.all")}</option>${opts}`;
 }
 
 // Major bookmakers & betting exchanges worldwide (largest / most common first).
@@ -251,14 +261,14 @@ async function api(path, { method = "GET", body, raw = false, allow401 = false, 
       signal: ctrl.signal,
     });
   } catch (err) {
-    if (err.name === "AbortError") throw new Error("Request timed out — is the server running?");
+    if (err.name === "AbortError") throw new Error(t("errors.requestTimeout"));
     throw err;
   } finally {
     clearTimeout(timer);
   }
-  if (res.status === 401 && !allow401) { setToken(null); showAuth(); throw new Error("Session expired"); }
+  if (res.status === 401 && !allow401) { setToken(null); showAuth(); throw new Error(t("auth.sessionExpired")); }
   if (!res.ok) {
-    let detail = res.statusText || `Request failed (${res.status})`;
+    let detail = res.statusText || t("errors.requestFailed");
     const text = await res.text();
     if (text) {
       try {
@@ -268,7 +278,7 @@ async function api(path, { method = "GET", body, raw = false, allow401 = false, 
         detail = text;
       }
     }
-    throw new Error(typeof detail === "string" ? detail : "Request failed");
+    throw new Error(typeof detail === "string" ? detail : t("errors.requestFailed"));
   }
   if (raw) return res;
   if (res.status === 204) return null;
@@ -283,7 +293,7 @@ const ccy = () => state.user?.base_currency || "GBP";
 function money(v, withSign = false) {
   if (v == null) return "—";
   const n = Number(v);
-  const s = n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const s = i18n.formatLocaleNumber(n, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   return (withSign && n > 0 ? "+" : "") + s;
 }
 function plClass(v) { return v > 0 ? "pl-pos" : v < 0 ? "pl-neg" : "pl-zero"; }
@@ -293,8 +303,8 @@ function esc(s) { return (s ?? "").toString().replace(/[&<>"]/g, c => ({ "&": "&
 function formatDt(iso) {
   if (!iso) return "—";
   const d = new Date(iso);
-  const date = d.toLocaleDateString(undefined, { day: "2-digit", month: "short", year: "numeric" });
-  const time = d.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
+  const date = i18n.formatLocaleDate(d, { day: "2-digit", month: "short", year: "numeric" });
+  const time = i18n.formatLocaleTime(d, { hour: "2-digit", minute: "2-digit" });
   return `${date} ${time}`;
 }
 
@@ -307,25 +317,30 @@ function toast(msg, isErr = false) {
   el._t = setTimeout(() => (el.hidden = true), 2600);
 }
 
-function clone(id) { return document.importNode($(`#${id}`).content, true); }
-
 /* -------------------------------- auth -------------------------------- */
 function showAuthLoading() {
-  $("#app").hidden = true;
-  $("#auth").hidden = true;
-  $("#authLoading").hidden = false;
+  const app = $("#app"), auth = $("#auth"), loading = $("#authLoading");
+  if (app) app.hidden = true;
+  if (auth) auth.hidden = true;
+  if (loading) loading.hidden = false;
 }
 function showAuth(message = null) {
-  $("#app").hidden = true;
-  $("#authLoading").hidden = true;
-  $("#auth").hidden = false;
+  const app = $("#app"), auth = $("#auth"), loading = $("#authLoading");
+  if (app) app.hidden = true;
+  if (loading) loading.hidden = true;
+  if (!auth) return;
+  auth.hidden = false;
+  if (window.i18n) i18n.applyI18n(auth);
   const err = $("#authError");
-  if (message) { err.textContent = message; err.hidden = false; }
+  if (message && err) { err.textContent = message; err.hidden = false; }
 }
 function showApp() {
-  $("#auth").hidden = true;
-  $("#authLoading").hidden = true;
-  $("#app").hidden = false;
+  const auth = $("#auth"), loading = $("#authLoading"), app = $("#app");
+  if (auth) auth.hidden = true;
+  if (loading) loading.hidden = true;
+  if (!app) return;
+  app.hidden = false;
+  if (window.i18n) i18n.applyI18n(app);
   updateAdminNav();
 }
 
@@ -334,46 +349,53 @@ function updateAdminNav() {
   if (tab) tab.hidden = !state.user?.is_admin;
 }
 
-$$("[data-auth-tab]").forEach(btn => btn.addEventListener("click", () => {
-  $$("[data-auth-tab]").forEach(b => b.classList.toggle("is-active", b === btn));
-  const tab = btn.dataset.authTab;
-  $("#loginForm").hidden = tab !== "login";
-  $("#registerForm").hidden = tab !== "register";
-  $("#authError").hidden = true;
-}));
+function bindEvents() {
+  $$("[data-auth-tab]").forEach(btn => btn.addEventListener("click", () => {
+    $$("[data-auth-tab]").forEach(b => b.classList.toggle("is-active", b === btn));
+    const tab = btn.dataset.authTab;
+    const login = $("#loginForm"), reg = $("#registerForm"), err = $("#authError");
+    if (login) login.hidden = tab !== "login";
+    if (reg) reg.hidden = tab !== "register";
+    if (err) err.hidden = true;
+  }));
 
-$("#loginForm").addEventListener("submit", async e => {
-  e.preventDefault();
-  const f = Object.fromEntries(new FormData(e.target));
-  $("#authError").hidden = true;
-  showAuthLoading();
-  try {
-    const { access_token } = await api("/auth/login", { method: "POST", body: f, allow401: true });
-    setToken(access_token);
-    await boot({ loading: true });
-  } catch {
-    showAuth("Login failed");
-  }
-});
-
-$("#registerForm").addEventListener("submit", async e => {
-  e.preventDefault();
-  const f = Object.fromEntries(new FormData(e.target));
-  if (!f.display_name) delete f.display_name;
-  try {
+  const loginForm = $("#loginForm");
+  if (loginForm) loginForm.addEventListener("submit", async e => {
+    e.preventDefault();
+    const f = Object.fromEntries(new FormData(e.target));
+    $("#authError").hidden = true;
     showAuthLoading();
-    const { access_token } = await api("/auth/register", { method: "POST", body: f });
-    setToken(access_token);
-    await boot({ loading: true });
-  } catch (err) {
-    showAuth();
-    authError(err.message);
-  }
-});
+    try {
+      const { access_token } = await api("/auth/login", { method: "POST", body: f, allow401: true });
+      setToken(access_token);
+      await boot({ loading: true });
+    } catch {
+      showAuth(t("auth.loginFailed"));
+    }
+  });
+
+  const registerForm = $("#registerForm");
+  if (registerForm) registerForm.addEventListener("submit", async e => {
+    e.preventDefault();
+    const f = Object.fromEntries(new FormData(e.target));
+    if (!f.display_name) delete f.display_name;
+    try {
+      showAuthLoading();
+      const { access_token } = await api("/auth/register", { method: "POST", body: f });
+      setToken(access_token);
+      await boot({ loading: true });
+    } catch (err) {
+      showAuth();
+      authError(err.message);
+    }
+  });
+
+  const logoutBtn = $("#logoutBtn");
+  if (logoutBtn) logoutBtn.addEventListener("click", () => { setToken(null); showAuth(); location.hash = "#/bets"; });
+  window.addEventListener("hashchange", route);
+}
 
 function authError(msg) { const el = $("#authError"); el.textContent = msg; el.hidden = false; }
-
-$("#logoutBtn").addEventListener("click", () => { setToken(null); showAuth(); location.hash = "#/bets"; });
 
 /* ------------------------------- ticker ------------------------------- */
 async function refreshTicker() {
@@ -384,7 +406,7 @@ async function refreshTicker() {
     pl.textContent = money(s.profit, true);
     pl.className = "num " + plClass(s.profit);
     const plLabel = pl.closest(".ticker__item")?.querySelector(".ticker__label");
-    if (plLabel) plLabel.textContent = s.currency ? `P/L (${s.currency})` : "P/L";
+    if (plLabel) plLabel.textContent = s.currency ? t("ticker.plCurrency", { currency: s.currency }) : t("ticker.pl");
     $("#tkYield").textContent = pct(s.yield_pct);
   } catch {}
 }
@@ -412,13 +434,13 @@ async function route() {
   const handler = routes[path] || renderBets;
   await handler();
 }
-window.addEventListener("hashchange", route);
 
 /* -------------------------------- boot -------------------------------- */
 async function boot({ loading = false } = {}) {
   if (loading) showAuthLoading();
   try {
     state.user = await api("/auth/me");
+    await i18n.setLocale(state.user.preferred_locale || "en", { persistCookie: true });
     showApp();
     await refreshTicker();
     if (!location.hash) location.hash = "#/bets";
@@ -458,21 +480,21 @@ function qs(f) {
 function buildBetFilters() {
   const root = $("#betsFilters");
   root.innerHTML = `
-    <label>Sport<select name="sport"><option value="">All</option>${state.sports.map(s => `<option>${esc(s)}</option>`).join("")}</select></label>
-    <label>Result<select name="outcome"><option value="">All</option><option value="win">Win</option><option value="loss">Loss</option><option value="void">Void</option><option value="pending">Pending</option></select></label>
-    <label>Type<select name="bet_type">${betTypeFilterOptions()}</select></label>
-    <label>From<input type="date" name="date_from" /></label>
-    <label>To<input type="date" name="date_to" /></label>`;
+    <label>${t("bets.sport")}<select name="sport"><option value="">${t("bets.all")}</option>${state.sports.map(s => `<option>${esc(s)}</option>`).join("")}</select></label>
+    <label>${t("bets.result")}<select name="outcome"><option value="">${t("bets.all")}</option><option value="win">${t("outcomes.win")}</option><option value="loss">${t("outcomes.loss")}</option><option value="void">${t("outcomes.void")}</option><option value="pending">${t("outcomes.pending")}</option></select></label>
+    <label>${t("bets.type")}<select name="bet_type">${betTypeFilterOptions()}</select></label>
+    <label>${t("bets.from")}<input type="date" name="date_from" /></label>
+    <label>${t("bets.to")}<input type="date" name="date_to" /></label>`;
   $$("select, input", root).forEach(el => el.addEventListener("change", loadBets));
 }
 
-const BET_OUTCOMES = [
-  { value: "pending", label: "Pending" },
-  { value: "win", label: "Win" },
-  { value: "loss", label: "Loss" },
-  { value: "void", label: "Void" },
-  { value: "half_win", label: "Half win" },
-  { value: "half_loss", label: "Half loss" },
+const BET_OUTCOMES = () => [
+  { value: "pending", label: t("outcomes.pending") },
+  { value: "win", label: t("outcomes.win") },
+  { value: "loss", label: t("outcomes.loss") },
+  { value: "void", label: t("outcomes.void") },
+  { value: "half_win", label: t("outcomes.half_win") },
+  { value: "half_loss", label: t("outcomes.half_loss") },
 ];
 
 async function loadBets() {
@@ -494,10 +516,10 @@ function outcomeTone(o) {
 
 function outcomeSelect(b) {
   const tone = outcomeTone(b.outcome);
-  const opts = BET_OUTCOMES.map(o =>
+  const opts = BET_OUTCOMES().map(o =>
     `<option value="${o.value}"${o.value === b.outcome ? " selected" : ""}>${esc(o.label)}</option>`
   ).join("");
-  return `<select class="mini-select outcome-select outcome-select--${tone}" data-outcome="${b.id}" aria-label="Result for ${esc(b.selection)}">${opts}</select>`;
+  return `<select class="mini-select outcome-select outcome-select--${tone}" data-outcome="${b.id}" aria-label="${esc(t("bets.resultAria", { name: b.selection }))}">${opts}</select>`;
 }
 
 const ICON_EDIT = `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`;
@@ -505,7 +527,7 @@ const ICON_DELETE = `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="c
 
 function betRow(b) {
   const d = new Date(b.placed_at);
-  const date = d.toLocaleDateString(undefined, { day: "2-digit", month: "short", year: "2-digit" });
+  const date = i18n.formatLocaleDate(d, { day: "2-digit", month: "short", year: "2-digit" });
   const label = esc(b.selection);
   return `<tr>
     <td class="num">${date}</td>
@@ -518,8 +540,8 @@ function betRow(b) {
     <td class="r ${plClass(b.profit)}">${money(b.profit, true)}</td>
     <td class="r">${b.clv_pct == null ? "—" : pct(b.clv_pct)}</td>
     <td class="r"><div class="row-actions">
-      <a class="icon-btn icon-btn--edit" href="#/edit/${b.id}" aria-label="Edit ${label}">${ICON_EDIT}</a>
-      <button type="button" class="icon-btn icon-btn--delete" data-del="${b.id}" aria-label="Delete ${label}">${ICON_DELETE}</button>
+      <a class="icon-btn icon-btn--edit" href="#/edit/${b.id}" aria-label="${esc(t("bets.editAria", { name: b.selection }))}">${ICON_EDIT}</a>
+      <button type="button" class="icon-btn icon-btn--delete" data-del="${b.id}" aria-label="${esc(t("bets.deleteAria", { name: b.selection }))}">${ICON_DELETE}</button>
     </div></td>
   </tr>`;
 }
@@ -541,9 +563,9 @@ async function quickSetOutcome(sel) {
 }
 
 async function deleteBet(id) {
-  if (!confirm("Delete this bet? This can't be undone.")) return;
+  if (!confirm(t("bets.deleteConfirm"))) return;
   await api(`/bets/${id}`, { method: "DELETE" });
-  toast("Bet deleted");
+  toast(t("bets.deleted"));
   await Promise.all([loadBets(), refreshTicker()]);
 }
 
@@ -574,8 +596,8 @@ async function renderForm(id) {
 
   let editing = null;
   if (id) {
-    $("#formTitle").textContent = "Edit bet";
-    $("#saveBtn").textContent = "Save changes";
+    $("#formTitle").textContent = t("form.editTitle");
+    $("#saveBtn").textContent = t("form.saveChanges");
     editing = await api(`/bets/${id}`);
     fillForm(form, editing);
     syncOddsFormat(); syncEachWay(); updateKellyHint();
@@ -585,27 +607,27 @@ async function renderForm(id) {
     e.preventDefault();
     const payload = readForm(form);
     if (!payload.currency || !/^[A-Z]{3}$/.test(payload.currency)) {
-      toast("Enter a valid 3-letter currency code", true);
+      toast(t("form.invalidCurrency"), true);
       return;
     }
     try {
       if (editing) await api(`/bets/${editing.id}`, { method: "PATCH", body: payload });
       else await api("/bets", { method: "POST", body: payload });
-      toast(editing ? "Bet updated" : "Bet recorded");
+      toast(editing ? t("form.betUpdated") : t("form.betRecorded"));
       await refreshTicker();
       location.hash = "#/bets";
     } catch (err) { toast(err.message, true); }
   });
 }
 
-const ODDS_LABELS = {
-  decimal: "Decimal odds",
-  american: "American odds",
-  fractional: "Numerator",
-  hong_kong: "Hong Kong odds",
-  malaysian: "Malaysian odds",
-  indonesian: "Indonesian odds",
-};
+const ODDS_LABELS = () => ({
+  decimal: t("form.decimalOdds"),
+  american: t("form.americanOdds"),
+  fractional: t("form.numerator"),
+  hong_kong: t("form.hongKongOdds"),
+  malaysian: t("form.malaysianOdds"),
+  indonesian: t("form.indonesianOdds"),
+});
 
 function parseSignedOdds(raw) {
   const text = String(raw || "").trim().replace(/^\+/, "");
@@ -710,27 +732,27 @@ function syncOddsFormat() {
   const fields = form.querySelector("#oddsValueFields");
   fields.className = `odds-value-fields odds-value-fields--${fmt}`;
   const oddsInput = form.odds;
-  form.querySelector("#oddsFieldLabel").textContent = ODDS_LABELS[fmt] || "Odds";
+  form.querySelector("#oddsFieldLabel").textContent = ODDS_LABELS()[fmt] || t("bets.odds");
   oddsInput.required = true;
   form.odds_denominator.required = frac;
   if (!frac) form.odds_denominator.value = "";
   if (fmt === "american") {
-    oddsInput.placeholder = "+150 or -200";
+    oddsInput.placeholder = t("form.oddsPlaceholderAmerican");
     oddsInput.inputMode = "text";
   } else if (fmt === "malaysian") {
-    oddsInput.placeholder = "+0.85 or -0.85";
+    oddsInput.placeholder = t("form.oddsPlaceholderMalaysian");
     oddsInput.inputMode = "text";
   } else if (fmt === "indonesian") {
-    oddsInput.placeholder = "+1.50 or -1.50";
+    oddsInput.placeholder = t("form.oddsPlaceholderIndonesian");
     oddsInput.inputMode = "text";
   } else if (fmt === "hong_kong") {
-    oddsInput.placeholder = "0.85";
+    oddsInput.placeholder = t("form.oddsPlaceholderHongKong");
     oddsInput.inputMode = "decimal";
   } else if (frac) {
-    oddsInput.placeholder = "6";
+    oddsInput.placeholder = t("form.oddsPlaceholderFractional");
     oddsInput.inputMode = "decimal";
   } else {
-    oddsInput.placeholder = "2.50";
+    oddsInput.placeholder = t("form.oddsPlaceholderDecimal");
     oddsInput.inputMode = "decimal";
   }
 }
@@ -751,8 +773,8 @@ function updateKellyHint() {
     const stake = (f * bankroll).toFixed(2);
     hint.hidden = false;
     hint.textContent = f > 0
-      ? `Kelly suggests ${money(stake)} ${ccy()} (${(f * 100).toFixed(1)}% of bankroll).`
-      : "No edge at these odds — Kelly suggests no bet.";
+      ? t("form.kellySuggest", { stake: money(stake), currency: ccy(), pct: (f * 100).toFixed(1) })
+      : t("form.kellyNoEdge");
   } else {
     hint.hidden = true;
   }
@@ -834,15 +856,15 @@ async function renderReports() {
 function buildReportFilters() {
   const root = $("#reportFilters");
   const currencyOpts = [
-    `<option value="">All currencies</option>`,
+    `<option value="">${t("reports.allCurrencies")}</option>`,
     ...state.currencies.map(c => `<option value="${esc(c)}">${esc(c)}</option>`),
   ].join("");
   root.innerHTML = `
-    <label>Sport<select name="sport"><option value="">All</option>${state.sports.map(s => `<option>${esc(s)}</option>`).join("")}</select></label>
-    <label>Type<select name="bet_type">${betTypeFilterOptions()}</select></label>
-    <label>Currency<select name="currency">${currencyOpts}</select></label>
-    <label>From<input type="date" name="date_from" /></label>
-    <label>To<input type="date" name="date_to" /></label>`;
+    <label>${t("bets.sport")}<select name="sport"><option value="">${t("bets.all")}</option>${state.sports.map(s => `<option>${esc(s)}</option>`).join("")}</select></label>
+    <label>${t("bets.type")}<select name="bet_type">${betTypeFilterOptions()}</select></label>
+    <label>${t("form.currency")}<select name="currency">${currencyOpts}</select></label>
+    <label>${t("bets.from")}<input type="date" name="date_from" /></label>
+    <label>${t("bets.to")}<input type="date" name="date_to" /></label>`;
   const currencySelect = root.querySelector('[name="currency"]');
   if (state.currencies.length) currencySelect.value = state.currencies[0];
   $$("select, input", root).forEach(el => el.addEventListener("change", loadReports));
@@ -855,13 +877,13 @@ async function loadReports() {
 async function loadSummary() {
   const f = currentFilters("reportFilters");
   const s = await api("/reports/summary" + qs(f));
-  const currencyNote = s.currency ? `${s.currency} only` : "all currencies";
+  const currencyNote = s.currency ? t("reports.currencyOnly", { currency: s.currency }) : t("reports.allCurrenciesNote");
   const cards = [
-    ["Profit / Loss", `<span class="${plClass(s.profit)}">${money(s.profit, true)}</span>`, `${s.settled_bets} settled · ${currencyNote}`],
-    ["ROI", pct(s.roi_pct), s.roi_vs_bankroll_pct != null ? `${pct(s.roi_vs_bankroll_pct)} of bankroll` : "per unit staked"],
-    ["Yield", pct(s.yield_pct), `${money(s.turnover)} turnover`],
-    ["Strike rate", pct(s.strike_rate_pct), `${s.wins}W / ${s.losses}L / ${s.voids}V`],
-    ["Total bets", String(s.total_bets), currencyNote],
+    [t("reports.profitLoss"), `<span class="${plClass(s.profit)}">${money(s.profit, true)}</span>`, t("reports.settled", { count: s.settled_bets, note: currencyNote })],
+    [t("reports.roi"), pct(s.roi_pct), s.roi_vs_bankroll_pct != null ? t("reports.ofBankroll", { pct: pct(s.roi_vs_bankroll_pct) }) : t("reports.perUnitStaked")],
+    [t("reports.yield"), pct(s.yield_pct), t("reports.turnover", { amount: money(s.turnover) })],
+    [t("reports.strikeRate"), pct(s.strike_rate_pct), t("reports.wlv", { wins: s.wins, losses: s.losses, voids: s.voids })],
+    [t("reports.totalBets"), String(s.total_bets), currencyNote],
   ];
   $("#metricCards").innerHTML = cards.map(([l, v, sub]) =>
     `<div class="card"><div class="card__label">${l}</div><div class="card__value">${v}</div><div class="card__sub">${sub}</div></div>`).join("");
@@ -869,16 +891,35 @@ async function loadSummary() {
 
 function destroyChart(name) { if (state.charts[name]) { state.charts[name].destroy(); delete state.charts[name]; } }
 
+function ensureChartJs() {
+  if (typeof Chart !== "undefined") return Promise.resolve();
+  if (window._chartJsLoading) return window._chartJsLoading;
+  window._chartJsLoading = new Promise((resolve, reject) => {
+    const s = document.createElement("script");
+    s.src = "https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js";
+    s.onload = () => resolve();
+    s.onerror = () => reject(new Error("Failed to load Chart.js"));
+    document.head.appendChild(s);
+  });
+  return window._chartJsLoading;
+}
+
 async function loadEquity() {
   const f = currentFilters("reportFilters");
   const pts = await api("/reports/equity-curve" + qs(f));
   destroyChart("equity");
   const ctx = $("#equityChart");
-  if (!ctx || typeof Chart === "undefined") return;
+  if (!ctx) return;
+  try {
+    await ensureChartJs();
+  } catch {
+    return;
+  }
+  if (typeof Chart === "undefined") return;
   state.charts.equity = new Chart(ctx, {
     type: "line",
     data: {
-      labels: pts.map(p => new Date(p.date).toLocaleDateString(undefined, { day: "2-digit", month: "short" })),
+      labels: pts.map(p => i18n.formatLocaleDate(new Date(p.date), { day: "2-digit", month: "short" })),
       datasets: [{
         data: pts.map(p => p.cumulative),
         borderColor: "#a9791f", backgroundColor: "rgba(169,121,31,.10)",
@@ -901,7 +942,13 @@ async function loadMonthly() {
   const keys = Object.keys(byMonth).sort();
   destroyChart("monthly");
   const ctx = $("#monthlyChart");
-  if (!ctx || typeof Chart === "undefined") return;
+  if (!ctx) return;
+  try {
+    await ensureChartJs();
+  } catch {
+    return;
+  }
+  if (typeof Chart === "undefined") return;
   state.charts.monthly = new Chart(ctx, {
     type: "bar",
     data: {
@@ -929,7 +976,8 @@ function chartOpts() {
 
 async function loadBreakdown() {
   const dim = $("#breakdownDim").value;
-  $("#dimHead").textContent = dim.replace("_", " ").replace(/^\w/, c => c.toUpperCase());
+  const dimLabels = { sport: t("reports.dimSport"), tipster: t("reports.dimTipster"), bet_type: t("reports.dimBetType"), bookmaker: t("reports.dimBookmaker") };
+  $("#dimHead").textContent = dimLabels[dim] || dim;
   const f = currentFilters("reportFilters");
   f.dimension = dim;
   const rows = await api("/reports/breakdown" + qs(f));
@@ -940,7 +988,7 @@ async function loadBreakdown() {
     <td class="r num">${pct(r.strike_rate_pct)}</td>
     <td class="r num">${pct(r.yield_pct)}</td>
     <td class="r num ${plClass(r.profit)}">${money(r.profit, true)}</td></tr>`).join("")
-    || `<tr><td colspan="5" class="empty">No settled bets yet.</td></tr>`;
+    || `<tr><td colspan="5" class="empty">${t("reports.noSettled")}</td></tr>`;
 }
 
 async function downloadExport(kind) {
@@ -962,6 +1010,8 @@ async function renderSettings() {
 
   const form = $("#settingsForm");
   const u = state.user;
+  await i18n.loadCatalog();
+  $("#localeSelect").innerHTML = i18n.languageOptions(u.preferred_locale || "en");
   form.default_odds_format.value = u.default_odds_format;
   fillCurrencySelect(form.base_currency, 20, u.base_currency);
   form.bankroll.value = u.bankroll;
@@ -972,6 +1022,7 @@ async function renderSettings() {
     e.preventDefault();
     const data = Object.fromEntries(new FormData(form));
     const payload = {
+      preferred_locale: data.preferred_locale,
       default_odds_format: data.default_odds_format,
       base_currency: data.base_currency.toUpperCase(),
       bankroll: Number(data.bankroll || 0),
@@ -980,8 +1031,10 @@ async function renderSettings() {
     };
     try {
       state.user = await api("/auth/settings", { method: "PATCH", body: payload });
-      toast("Settings saved");
+      await i18n.setLocale(state.user.preferred_locale || "en", { persistCookie: true });
+      toast(t("settings.saved"));
       await refreshTicker();
+      await route();
     } catch (err) { toast(err.message, true); }
   });
 
@@ -994,23 +1047,23 @@ async function loadKeys() {
   $("#keysBody").innerHTML = keys.map(k => `
     <tr><td>${esc(k.name)}</td>
     <td class="num">${esc(k.prefix)}…</td>
-    <td class="num">${k.last_used_at ? new Date(k.last_used_at).toLocaleDateString() : "never"}</td>
-    <td class="r"><button class="btn btn--danger" data-revoke="${k.id}">Revoke</button></td></tr>`).join("")
-    || `<tr><td colspan="4" class="empty">No keys yet.</td></tr>`;
+    <td class="num">${k.last_used_at ? i18n.formatLocaleDate(new Date(k.last_used_at)) : t("settings.never")}</td>
+    <td class="r"><button class="btn btn--danger" data-revoke="${k.id}">${t("settings.revoke")}</button></td></tr>`).join("")
+    || `<tr><td colspan="4" class="empty">${t("settings.noKeys")}</td></tr>`;
   $$("[data-revoke]").forEach(b => b.addEventListener("click", async () => {
-    if (!confirm("Revoke this key? Anything using it will stop working.")) return;
+    if (!confirm(t("settings.revokeConfirm"))) return;
     await api(`/auth/api-keys/${b.dataset.revoke}`, { method: "DELETE" });
-    toast("Key revoked"); loadKeys();
+    toast(t("settings.keyRevoked")); loadKeys();
   }));
 }
 
 async function createKey() {
-  const name = prompt("Name this key (e.g. 'laptop script')", "default");
+  const name = prompt(t("settings.keyPrompt"), "default");
   if (name == null) return;
   const k = await api(`/auth/api-keys?name=${encodeURIComponent(name || "default")}`, { method: "POST" });
   const reveal = $("#newKeyReveal");
   reveal.hidden = false;
-  reveal.textContent = `Copy this now — it won't be shown again:  ${k.api_key}`;
+  reveal.textContent = t("settings.keyReveal", { key: k.api_key });
   await loadKeys();
 }
 
@@ -1033,11 +1086,11 @@ async function renderAdmin() {
 async function loadAdminStats() {
   const s = await api("/auth/admin/stats");
   const cards = [
-    ["Users", String(s.total_users), `${s.active_users} active · ${s.admin_users} admins`],
-    ["Total bets", String(s.total_bets), "across all accounts"],
-    ["Signups today", String(s.signups_today), "new accounts"],
-    ["Logins today", String(s.logins_today), "successful sign-ins"],
-    ["Events today", String(s.events_today), "all activity"],
+    [t("admin.statUsers"), String(s.total_users), t("admin.statUsersSub", { active: s.active_users, admins: s.admin_users })],
+    [t("admin.statBets"), String(s.total_bets), t("admin.statBetsSub")],
+    [t("admin.statSignups"), String(s.signups_today), t("admin.statSignupsSub")],
+    [t("admin.statLogins"), String(s.logins_today), t("admin.statLoginsSub")],
+    [t("admin.statEvents"), String(s.events_today), t("admin.statEventsSub")],
   ];
   $("#adminStats").innerHTML = cards.map(([l, v, sub]) =>
     `<div class="card"><div class="card__label">${l}</div><div class="card__value">${v}</div><div class="card__sub">${sub}</div></div>`
@@ -1046,14 +1099,14 @@ async function loadAdminStats() {
 
 function adminStatusBadge(active) {
   return active
-    ? `<span class="outcome-select outcome-select--win">Active</span>`
-    : `<span class="outcome-select outcome-select--loss">Disabled</span>`;
+    ? `<span class="outcome-select outcome-select--win">${t("admin.active")}</span>`
+    : `<span class="outcome-select outcome-select--loss">${t("admin.disabled")}</span>`;
 }
 
 function adminRoleBadge(isAdmin) {
   return isAdmin
-    ? `<span class="outcome-select outcome-select--win">Admin</span>`
-    : `<span class="outcome-select outcome-select--pending">User</span>`;
+    ? `<span class="outcome-select outcome-select--win">${t("admin.adminRole")}</span>`
+    : `<span class="outcome-select outcome-select--pending">${t("admin.userRole")}</span>`;
 }
 
 async function loadAdminUsers() {
@@ -1072,14 +1125,14 @@ async function loadAdminUsers() {
       <td class="r num">${u.api_key_count}</td>
       <td class="r">
         <button class="btn btn--ghost btn--sm" data-toggle-active="${u.id}" data-active="${u.is_active}">
-          ${u.is_active ? "Disable" : "Enable"}
+          ${u.is_active ? t("admin.disable") : t("admin.enable")}
         </button>
         <button class="btn btn--ghost btn--sm" data-toggle-admin="${u.id}" data-admin="${u.is_admin}">
-          ${u.is_admin ? "Revoke admin" : "Make admin"}
+          ${u.is_admin ? t("admin.revokeAdmin") : t("admin.makeAdmin")}
         </button>
       </td>
     </tr>`).join("")
-    || `<tr><td colspan="9" class="empty">No users found.</td></tr>`;
+    || `<tr><td colspan="9" class="empty">${t("admin.noUsers")}</td></tr>`;
 
   $$("[data-toggle-active]").forEach(btn => btn.addEventListener("click", () =>
     adminToggleUser(btn.dataset.toggleActive, { is_active: btn.dataset.active !== "true" })
@@ -1091,12 +1144,12 @@ async function loadAdminUsers() {
 
 async function adminToggleUser(userId, payload) {
   const label = payload.is_active != null
-    ? (payload.is_active ? "Enable this account?" : "Disable this account?")
-    : (payload.is_admin ? "Grant admin access?" : "Revoke admin access?");
+    ? (payload.is_active ? t("admin.enableConfirm") : t("admin.disableConfirm"))
+    : (payload.is_admin ? t("admin.grantAdminConfirm") : t("admin.revokeAdminConfirm"));
   if (!confirm(label)) return;
   try {
     await api(`/auth/admin/users/${userId}`, { method: "PATCH", body: payload });
-    toast("User updated");
+    toast(t("admin.userUpdated"));
     await Promise.all([loadAdminUsers(), loadAdminEvents(), loadAdminStats()]);
   } catch (err) {
     toast(err.message, true);
@@ -1115,14 +1168,47 @@ async function loadAdminEvents() {
       <td>${esc(e.detail || "—")}</td>
       <td class="num">${esc(e.ip_address || "—")}</td>
     </tr>`).join("")
-    || `<tr><td colspan="5" class="empty">No events yet.</td></tr>`;
+    || `<tr><td colspan="5" class="empty">${t("admin.noEvents")}</td></tr>`;
 }
 
 /* -------------------------------- start -------------------------------- */
-function start() {
-  if (token()) boot();
-  else showAuth();
+async function start() {
+  try {
+    if (token()) {
+      showAuthLoading();
+      await i18n.initI18n("en");
+      await boot({ loading: false });
+    } else {
+      showAuthLoading();
+      await i18n.initI18n(i18n.getLoginLocale());
+      document.title = t("meta.title");
+      i18n.applyI18n(document);
+      showAuth();
+    }
+  } catch (err) {
+    console.error("Startup failed:", err);
+    showAuth();
+  }
 }
-start();
-// Bfcache can restore the page with the loading spinner still visible without re-running scripts.
-window.addEventListener("pageshow", e => { if (e.persisted) start(); });
+
+function onReady() {
+  try { bindEvents(); } catch (err) { console.error("bindEvents failed:", err); }
+  if (token()) {
+    start().catch(() => showAuth());
+  }
+}
+
+window.mbrAttach = function () {
+  if (window.__mbrAttached) return;
+  window.__mbrAttached = true;
+  onReady();
+};
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", () => window.mbrAttach());
+} else if (document.querySelector('script[src="/app.js"]')) {
+  // Loaded via static tag (e.g. tests)
+  window.mbrAttach();
+}
+window.addEventListener("pageshow", e => { if (e.persisted) onReady(); });
+})();
