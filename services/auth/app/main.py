@@ -64,8 +64,8 @@ def _start_of_today() -> datetime:
 
 @app.on_event("startup")
 def _startup() -> None:
-    if settings.environment != "production":
-        init_db()
+    # Bootstrap shared tables on first boot (pg advisory lock; safe on restarts).
+    init_db()
 
 
 @app.get("/health")

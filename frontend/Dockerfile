@@ -7,10 +7,10 @@ COPY frontend/nginx.conf /etc/nginx/templates/default.conf.template
 COPY frontend/public /usr/share/nginx/html
 
 # Defaults suit docker-compose; Azure overrides these with the internal FQDNs.
-ENV AUTH_UPSTREAM=auth:8001 \
-    BETS_UPSTREAM=bets:8002 \
-    REPORTS_UPSTREAM=reports:8003 \
-    PAYMENTS_UPSTREAM=payments:8004 \
+ENV AUTH_UPSTREAM=http://auth:8001 \
+    BETS_UPSTREAM=http://bets:8002 \
+    REPORTS_UPSTREAM=http://reports:8003 \
+    PAYMENTS_UPSTREAM=http://payments:8004 \
     NGINX_ENVSUBST_OUTPUT_DIR=/etc/nginx/conf.d
 
 EXPOSE 8080

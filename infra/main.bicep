@@ -168,6 +168,21 @@ var registries = [
   }
 ]
 
+var stripeSecrets = empty(stripeSecretKey)
+  ? []
+  : [
+      { name: 'stripe-secret', value: stripeSecretKey }
+      { name: 'stripe-webhook', value: stripeWebhookSecret }
+    ]
+
+var stripeEnv = empty(stripeSecretKey)
+  ? []
+  : [
+      { name: 'STRIPE_SECRET_KEY', secretRef: 'stripe-secret' }
+      { name: 'STRIPE_WEBHOOK_SECRET', secretRef: 'stripe-webhook' }
+      { name: 'STRIPE_PRICE_ID', value: stripePriceId }
+    ]
+
 // ---------------------------------------------------------------------
 //  Backend microservices (internal ingress)
 // ---------------------------------------------------------------------
@@ -254,10 +269,7 @@ resource paymentsApp 'Microsoft.App/containerApps@2024-03-01' = {
     managedEnvironmentId: env.id
     configuration: {
       ingress: { external: false, targetPort: 8004, transport: 'auto' }
-      secrets: concat(commonSecrets, [
-        { name: 'stripe-secret', value: stripeSecretKey }
-        { name: 'stripe-webhook', value: stripeWebhookSecret }
-      ])
+      secrets: concat(commonSecrets, stripeSecrets)
       registries: registries
     }
     template: {
@@ -266,11 +278,7 @@ resource paymentsApp 'Microsoft.App/containerApps@2024-03-01' = {
           name: 'payments'
           image: '${registryServer}/payments:${imageTag}'
           resources: { cpu: json('0.25'), memory: '0.5Gi' }
-          env: concat(commonEnv, [
-            { name: 'STRIPE_SECRET_KEY', secretRef: 'stripe-secret' }
-            { name: 'STRIPE_WEBHOOK_SECRET', secretRef: 'stripe-webhook' }
-            { name: 'STRIPE_PRICE_ID', value: stripePriceId }
-          ])
+          env: concat(commonEnv, stripeEnv)
         }
       ]
       scale: { minReplicas: 0, maxReplicas: 2 }
@@ -306,10 +314,10 @@ resource frontendApp 'Microsoft.App/containerApps@2024-03-01' = {
           image: '${registryServer}/frontend:${imageTag}'
           resources: { cpu: json('0.25'), memory: '0.5Gi' }
           env: [
-            { name: 'AUTH_UPSTREAM', value: authApp.properties.configuration.ingress.fqdn }
-            { name: 'BETS_UPSTREAM', value: betsApp.properties.configuration.ingress.fqdn }
-            { name: 'REPORTS_UPSTREAM', value: reportsApp.properties.configuration.ingress.fqdn }
-            { name: 'PAYMENTS_UPSTREAM', value: paymentsApp.properties.configuration.ingress.fqdn }
+            { name: 'AUTH_UPSTREAM', value: 'https://${authApp.properties.configuration.ingress.fqdn}' }
+            { name: 'BETS_UPSTREAM', value: 'https://${betsApp.properties.configuration.ingress.fqdn}' }
+            { name: 'REPORTS_UPSTREAM', value: 'https://${reportsApp.properties.configuration.ingress.fqdn}' }
+            { name: 'PAYMENTS_UPSTREAM', value: 'https://${paymentsApp.properties.configuration.ingress.fqdn}' }
           ]
         }
       ]

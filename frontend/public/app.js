@@ -258,8 +258,16 @@ async function api(path, { method = "GET", body, raw = false, allow401 = false, 
   }
   if (res.status === 401 && !allow401) { setToken(null); showAuth(); throw new Error("Session expired"); }
   if (!res.ok) {
-    let detail = res.statusText;
-    try { detail = (await res.json()).detail || detail; } catch {}
+    let detail = res.statusText || `Request failed (${res.status})`;
+    const text = await res.text();
+    if (text) {
+      try {
+        const data = JSON.parse(text);
+        detail = data.detail || detail;
+      } catch {
+        detail = text;
+      }
+    }
     throw new Error(typeof detail === "string" ? detail : "Request failed");
   }
   if (raw) return res;

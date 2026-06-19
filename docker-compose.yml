@@ -59,10 +59,10 @@ services:
   frontend:
     build: { context: ., dockerfile: frontend/Dockerfile }
     environment:
-      AUTH_UPSTREAM: auth:8001
-      BETS_UPSTREAM: bets:8002
-      REPORTS_UPSTREAM: reports:8003
-      PAYMENTS_UPSTREAM: payments:8004
+      AUTH_UPSTREAM: http://auth:8001
+      BETS_UPSTREAM: http://bets:8002
+      REPORTS_UPSTREAM: http://reports:8003
+      PAYMENTS_UPSTREAM: http://payments:8004
     depends_on: [auth, bets, reports, payments]
     ports: ["8080:8080"]
 
