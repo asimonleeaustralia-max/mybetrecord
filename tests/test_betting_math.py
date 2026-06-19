@@ -139,6 +139,17 @@ def test_portfolio_metrics():
     assert m["strike_rate_pct"] == pytest.approx(25.0)
 
 
+def test_portfolio_metrics_pending_cash_out():
+    rows = [
+        {"stake": 100, "profit": 10, "outcome": "pending", "cash_out_amount": 110},
+        {"stake": 100, "profit": 20, "outcome": "loss", "cash_out_amount": 120},
+    ]
+    m = bm.portfolio_metrics(rows)
+    assert m["settled_bets"] == 2
+    assert m["profit"] == pytest.approx(30.0)
+    assert m["wins"] == 2
+
+
 def test_clv():
     # took 2.50, closed 2.30 -> beat the close
     assert bm.closing_line_value(2.5, 2.3) == pytest.approx(8.7, abs=0.1)

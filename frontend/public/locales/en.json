@@ -48,7 +48,21 @@
     "deleted": "Bet deleted",
     "editAria": "Edit {{name}}",
     "deleteAria": "Delete {{name}}",
+    "shareAria": "Share {{name}}",
     "resultAria": "Result for {{name}}"
+  },
+  "share": {
+    "title": "Shared bet",
+    "publicNote": "Read-only view",
+    "linkCopied": "Share link copied",
+    "shareBet": "Share",
+    "copyLink": "Copy link",
+    "revokeLink": "Revoke link",
+    "revokeConfirm": "Revoke this share link? Anyone with the link will no longer be able to view this bet.",
+    "linkRevoked": "Share link revoked",
+    "notFound": "This shared bet could not be found.",
+    "shareSection": "Share link",
+    "shareHint": "Create a read-only link others can open without signing in."
   },
   "outcomes": {
     "pending": "Pending",
@@ -101,6 +115,8 @@
     "settledAt": "Date & time settled",
     "cashOut": "Cash-out amount",
     "cashOutHint": "total returned, if cashed out",
+    "settlementProfit": "Recorded P/L",
+    "cashOutExceedsMax": "Cash-out exceeds the maximum return (stake × odds). The amount will still be saved.",
     "optional": "optional",
     "modelling": "Modelling & edge",
     "betModel": "Bet model",

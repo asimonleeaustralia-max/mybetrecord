@@ -45,6 +45,15 @@
     </div>
   </section>
 
+  <!-- ───────────────────────── Public share view ───────────────── -->
+  <section id="shareView" class="share-view" hidden>
+    <div class="share-view__panel">
+      <div class="wordmark wordmark--lg">my<span>bet</span>record</div>
+      <p class="share-view__tag" data-i18n="share.publicNote">Read-only view</p>
+      <main id="shareMain"></main>
+    </div>
+  </section>
+
   <!-- ───────────────────────── App shell ──────────────────────── -->
   <div id="app" class="app" hidden>
     <header class="topbar">
@@ -175,6 +184,11 @@
             <label><span data-i18n="form.cashOut">Cash-out amount</span> <span class="hint" data-i18n="form.cashOutHint">total returned, if cashed out</span>
               <input name="cash_out_amount" inputmode="decimal" data-i18n-placeholder="form.optional" /></label>
           </div>
+          <p class="settlement-preview" id="settlementPreview" hidden>
+            <span data-i18n="form.settlementProfit">Recorded P/L</span>:
+            <span class="settlement-preview__value" data-role="profit"></span>
+          </p>
+          <p class="form-warning" id="cashOutWarning" hidden data-i18n="form.cashOutExceedsMax"></p>
         </fieldset>
 
         <fieldset>
@@ -228,6 +242,13 @@
     </div>
   </template>
 
+  <template id="tpl-share">
+    <div class="view view--narrow">
+      <div class="view__head"><h1 data-i18n="share.title">Shared bet</h1></div>
+      <dl class="share-detail" id="shareDetail"></dl>
+    </div>
+  </template>
+
   <template id="tpl-reports">
     <div class="view">
       <div class="view__head">
@@ -242,7 +263,7 @@
       <div class="cards" id="metricCards"></div>
       <div class="panel">
         <div class="panel__head"><h2 data-i18n="reports.equityCurve">Equity curve</h2><span class="panel__sub" data-i18n="reports.equitySub">cumulative profit/loss</span></div>
-        <canvas id="equityChart" height="120"></canvas>
+        <div class="chart-wrap chart-wrap--equity"><canvas id="equityChart"></canvas></div>
       </div>
       <div class="split">
         <div class="panel">
@@ -263,7 +284,7 @@
         </div>
         <div class="panel">
           <div class="panel__head"><h2 data-i18n="reports.profitByMonth">Profit by month</h2></div>
-          <canvas id="monthlyChart" height="160"></canvas>
+          <div class="chart-wrap chart-wrap--monthly"><canvas id="monthlyChart"></canvas></div>
         </div>
       </div>
     </div>

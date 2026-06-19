@@ -317,9 +317,8 @@ def portfolio_metrics(rows: Iterable[dict]) -> dict:
     """Aggregate ROI, yield, strike rate, profit and turnover.
 
     Each row is expected to expose: stake (float), profit (float),
-    outcome (str), and optionally settled (bool). Pending/unsettled bets
-    are excluded from strike-rate denominators but their stake still counts
-    as committed turnover only once settled.
+    outcome (str), and optionally cash_out_amount (float). Pending bets are
+    excluded unless a cash-out amount is recorded (early settlement).
 
     Definitions used (and shown to users on the reports page):
       turnover     = sum of stakes on settled bets
@@ -337,14 +336,23 @@ def portfolio_metrics(rows: Iterable[dict]) -> dict:
 
     for r in rows:
         outcome = (r.get("outcome") or PENDING).lower()
-        if outcome in (PENDING,):
+        cash_out = r.get("cash_out_amount")
+        has_cash_out = cash_out is not None
+        if outcome in (PENDING,) and not has_cash_out:
             continue
         stake = float(r.get("stake") or 0.0)
         pl = float(r.get("profit") or 0.0)
         turnover += stake
         profit += pl
         settled += 1
-        if outcome in (WIN, HALF_WIN, CASHED_OUT) and pl > 0:
+        if has_cash_out:
+            if pl > 0:
+                wins += 1
+            elif pl < 0:
+                losses += 1
+            elif outcome == VOID:
+                voids += 1
+        elif outcome in (WIN, HALF_WIN, CASHED_OUT) and pl > 0:
             wins += 1
         elif outcome == VOID:
             voids += 1

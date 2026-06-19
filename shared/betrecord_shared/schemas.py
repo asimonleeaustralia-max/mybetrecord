@@ -252,3 +252,26 @@ class BetOut(BaseModel):
     # Derived, computed at serialisation time by the service.
     clv_pct: Optional[float] = None
     edge_pct: Optional[float] = None
+
+    # Present when the owner has enabled a public share link.
+    share_token: Optional[str] = None
+
+
+class PublicBetOut(BaseModel):
+    """Read-only bet payload for unauthenticated share links."""
+    model_config = ConfigDict(from_attributes=True)
+    sport: str
+    bet_type: str
+    event: str
+    event_at: Optional[datetime] = None
+    selection: str
+    stake: float
+    odds_decimal: float
+    odds_format: str
+    currency: str
+    personal_implied_odds: Optional[float] = None
+    notes: Optional[str] = None
+
+
+class BetShareOut(BaseModel):
+    share_token: str

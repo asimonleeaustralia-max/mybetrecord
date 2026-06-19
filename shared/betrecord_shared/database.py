@@ -54,6 +54,7 @@ def init_db() -> None:
         _ensure_settled_at_column,
         _ensure_event_at_column,
         _ensure_modelling_edge_columns,
+        _ensure_share_token_column,
     )
 
     if settings.database_url.startswith("postgresql"):
@@ -79,4 +80,5 @@ def init_db() -> None:
     _ensure_preferred_locale_column()
     _ensure_timezone_column()
     _ensure_modelling_edge_columns()
+    _ensure_share_token_column()
     seed_dev_admin()

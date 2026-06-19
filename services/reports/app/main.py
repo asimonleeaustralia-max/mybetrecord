@@ -111,7 +111,10 @@ def summary(
         display_currency = _dominant_currency(db, user.id) or user.base_currency
         filters["currency"] = display_currency
     bets = _filtered(db, user.id, filters)
-    rows = [{"stake": b.stake, "profit": b.profit, "outcome": b.outcome} for b in bets]
+    rows = [
+        {"stake": b.stake, "profit": b.profit, "outcome": b.outcome, "cash_out_amount": b.cash_out_amount}
+        for b in bets
+    ]
     metrics = bm.portfolio_metrics(rows)
     base = (user.base_currency or "GBP").upper()
     if display_currency and display_currency.upper() == base:
@@ -134,7 +137,10 @@ def equity_curve(
     f: dict = Depends(_common_filters),
 ):
     """Cumulative profit over time — the equity curve for the charts page."""
-    bets = [b for b in _filtered(db, user.id, f) if b.outcome not in ("pending",)]
+    bets = [
+        b for b in _filtered(db, user.id, f)
+        if b.outcome not in ("pending",) or b.cash_out_amount is not None
+    ]
     points = []
     running = 0.0
     for b in bets:
@@ -159,7 +165,12 @@ def breakdown(
     groups: dict[str, list] = defaultdict(list)
     for b in bets:
         key = getattr(b, dimension) or "—"
-        groups[key].append({"stake": b.stake, "profit": b.profit, "outcome": b.outcome})
+        groups[key].append({
+            "stake": b.stake,
+            "profit": b.profit,
+            "outcome": b.outcome,
+            "cash_out_amount": b.cash_out_amount,
+        })
     result = []
     for key, rows in groups.items():
         m = bm.portfolio_metrics(rows)
@@ -265,7 +276,10 @@ def export_xlsx(
         ws.append([_value(b, attr) for attr, _ in _EXPORT_COLUMNS])
 
     # Summary sheet.
-    rows = [{"stake": b.stake, "profit": b.profit, "outcome": b.outcome} for b in bets]
+    rows = [
+        {"stake": b.stake, "profit": b.profit, "outcome": b.outcome, "cash_out_amount": b.cash_out_amount}
+        for b in bets
+    ]
     m = bm.portfolio_metrics(rows)
     s = wb.create_sheet("Summary")
     s.append(["Metric", "Value"])

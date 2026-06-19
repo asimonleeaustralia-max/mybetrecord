@@ -2,11 +2,18 @@
 
 from __future__ import annotations
 
-from sqlalchemy import func, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session
 
 from . import betting_math as bm
 from .models import Bet, User
+
+
+def is_ledger_settled(bet: Bet) -> bool:
+    """True when the bet contributes to bankroll / ledger totals."""
+    if bet.cash_out_amount is not None:
+        return True
+    return (bet.outcome or bm.PENDING).lower() != bm.PENDING
 
 
 def current_bankroll(starting: float, settled_profit: float) -> float:
@@ -15,12 +22,17 @@ def current_bankroll(starting: float, settled_profit: float) -> float:
 
 
 def settled_profit(db: Session, user_id: str, currency: str) -> float:
-    """Sum of P/L on settled bets in one currency (pending excluded)."""
+    """Sum of P/L on settled bets in one currency (pending excluded unless cashed out)."""
     total = db.scalar(
         select(func.coalesce(func.sum(Bet.profit), 0.0))
         .where(Bet.user_id == user_id)
         .where(Bet.currency == currency.upper())
-        .where(Bet.outcome != bm.PENDING)
+        .where(
+            or_(
+                Bet.outcome != bm.PENDING,
+                Bet.cash_out_amount.isnot(None),
+            )
+        )
     )
     return float(total or 0.0)
 
@@ -32,7 +44,12 @@ def effective_bankroll(db: Session, user: User, bet: Bet | None = None) -> float
         select(func.coalesce(func.sum(Bet.profit), 0.0))
         .where(Bet.user_id == user.id)
         .where(Bet.currency == base.upper())
-        .where(Bet.outcome != bm.PENDING)
+        .where(
+            or_(
+                Bet.outcome != bm.PENDING,
+                Bet.cash_out_amount.isnot(None),
+            )
+        )
     )
     if bet and bet.id:
         stmt = stmt.where(Bet.id != bet.id)
@@ -46,6 +63,6 @@ def _bet_in_currency(bet: Bet, currency: str) -> bool:
 
 
 def _bet_contribution(bet: Bet) -> float:
-    if (bet.outcome or bm.PENDING).lower() == bm.PENDING:
+    if not is_ledger_settled(bet):
         return 0.0
     return float(bet.profit or 0.0)

@@ -359,6 +359,54 @@ function toast(msg, isErr = false) {
   el._t = setTimeout(() => (el.hidden = true), 2600);
 }
 
+function getShareTokenFromHash() {
+  const parts = (location.hash || "").slice(1).split("/").filter(Boolean);
+  return parts[0] === "share" && parts[1] ? parts[1] : null;
+}
+
+function shareLink(token) {
+  return `${location.origin}${location.pathname}#/share/${token}`;
+}
+
+async function publicApi(path) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 15000);
+  let res;
+  try {
+    res = await fetch(path, { signal: ctrl.signal });
+  } catch (err) {
+    if (err.name === "AbortError") throw new Error(t("errors.requestTimeout"));
+    throw err;
+  } finally {
+    clearTimeout(timer);
+  }
+  if (!res.ok) {
+    let detail = res.statusText || t("errors.requestFailed");
+    const text = await res.text();
+    if (text) {
+      try { detail = JSON.parse(text).detail || detail; } catch { detail = text; }
+    }
+    throw new Error(typeof detail === "string" ? detail : t("errors.requestFailed"));
+  }
+  return res.json();
+}
+
+function hideAllShells() {
+  const app = $("#app"), auth = $("#auth"), loading = $("#authLoading"), share = $("#shareView");
+  if (app) app.hidden = true;
+  if (auth) auth.hidden = true;
+  if (loading) loading.hidden = true;
+  if (share) share.hidden = true;
+}
+
+function showShareView() {
+  hideAllShells();
+  const share = $("#shareView");
+  if (!share) return;
+  share.hidden = false;
+  if (window.i18n) i18n.applyI18n(share);
+}
+
 /* -------------------------------- auth -------------------------------- */
 function showAuthLoading() {
   const app = $("#app"), auth = $("#auth"), loading = $("#authLoading");
@@ -465,7 +513,13 @@ const routes = {
 };
 
 async function route() {
+  const shareToken = getShareTokenFromHash();
+  if (shareToken) {
+    await renderPublicShare(shareToken);
+    return;
+  }
   if (!state.user) return;
+  showApp();
   const hash = location.hash || "#/bets";
   const [path, id] = hash.slice(1).split("/").filter(Boolean).reduce((a, p, i) => (i === 0 ? ["/" + p] : [a[0], p]), ["", ""]);
   if (path === "/admin" && !state.user.is_admin) {
@@ -547,6 +601,7 @@ async function loadBets() {
   $("#betsEmpty").hidden = bets.length > 0;
   body.innerHTML = bets.map(betRow).join("");
   $$("[data-del]", body).forEach(b => b.addEventListener("click", () => deleteBet(b.dataset.del)));
+  $$("[data-share]", body).forEach(b => b.addEventListener("click", () => copyShareLinkForBet(b.dataset.share, b)));
   $$("[data-outcome]", body).forEach(sel => {
     sel.dataset.prev = sel.value;
     sel.addEventListener("change", () => quickSetOutcome(sel));
@@ -568,6 +623,7 @@ function outcomeSelect(b) {
 
 const ICON_EDIT = `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`;
 const ICON_DELETE = `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>`;
+const ICON_SHARE = `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>`;
 
 function betRow(b) {
   const d = new Date(b.placed_at);
@@ -584,6 +640,7 @@ function betRow(b) {
     <td class="r ${plClass(b.profit)}">${money(b.profit, true)}</td>
     <td class="r">${b.clv_pct == null ? "—" : pct(b.clv_pct)}</td>
     <td class="r"><div class="row-actions">
+      <button type="button" class="icon-btn icon-btn--share" data-share="${b.id}" aria-label="${esc(t("bets.shareAria", { name: b.selection }))}">${ICON_SHARE}</button>
       <a class="icon-btn icon-btn--edit" href="#/edit/${b.id}" aria-label="${esc(t("bets.editAria", { name: b.selection }))}">${ICON_EDIT}</a>
       <button type="button" class="icon-btn icon-btn--delete" data-del="${b.id}" aria-label="${esc(t("bets.deleteAria", { name: b.selection }))}">${ICON_DELETE}</button>
     </div></td>
@@ -613,6 +670,134 @@ async function deleteBet(id) {
   await Promise.all([loadBets(), refreshTicker()]);
 }
 
+async function enableBetShare(id) {
+  const { share_token } = await api(`/bets/${id}/share`, { method: "POST" });
+  return share_token;
+}
+
+async function copyShareLinkForBet(id, btn) {
+  if (btn) btn.disabled = true;
+  try {
+    const token = await enableBetShare(id);
+    await copyText(shareLink(token));
+    toast(t("share.linkCopied"));
+  } catch (err) {
+    toast(err.message, true);
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+}
+
+async function copyText(text) {
+  if (navigator.clipboard?.writeText) {
+    await navigator.clipboard.writeText(text);
+    return;
+  }
+  const ta = document.createElement("textarea");
+  ta.value = text;
+  ta.setAttribute("readonly", "");
+  ta.style.position = "fixed";
+  ta.style.left = "-9999px";
+  document.body.appendChild(ta);
+  ta.select();
+  document.execCommand("copy");
+  document.body.removeChild(ta);
+}
+
+async function revokeBetShare(id) {
+  if (!confirm(t("share.revokeConfirm"))) return;
+  try {
+    await api(`/bets/${id}/share`, { method: "DELETE" });
+    toast(t("share.linkRevoked"));
+    return true;
+  } catch (err) {
+    toast(err.message, true);
+    return false;
+  }
+}
+
+function formatPublicOdds(b) {
+  const fmt = b.odds_format || "decimal";
+  const formatted = formatOddsFromDecimal(Number(b.odds_decimal), fmt);
+  if (fmt === "fractional" && formatted.denominator) {
+    return `${formatted.odds}/${formatted.denominator}`;
+  }
+  return formatted.odds || Number(b.odds_decimal).toFixed(2);
+}
+
+function formatPublicDt(iso) {
+  if (!iso) return "—";
+  const d = new Date(iso);
+  const date = i18n.formatLocaleDate(d, { day: "2-digit", month: "short", year: "numeric" });
+  const time = i18n.formatLocaleTime(d, { hour: "2-digit", minute: "2-digit" });
+  return `${date} ${time}`;
+}
+
+function shareDetailRow(label, value, { mono = false, notes = false } = {}) {
+  const cls = [mono ? "num" : "", notes ? "share-detail__notes" : ""].filter(Boolean).join(" ");
+  return `<div class="share-detail__row"><dt>${esc(label)}</dt><dd class="${cls}">${value}</dd></div>`;
+}
+
+async function renderPublicShare(token) {
+  showShareView();
+  const main = $("#shareMain");
+  main.innerHTML = "";
+  main.appendChild(clone("tpl-share"));
+  const detail = $("#shareDetail");
+  try {
+    const b = await publicApi(`/bets/public/${encodeURIComponent(token)}`);
+    detail.innerHTML = [
+      shareDetailRow(t("form.sport"), esc(b.sport)),
+      shareDetailRow(t("form.betType"), esc(betTypeLabel(b.bet_type))),
+      shareDetailRow(t("form.event"), esc(b.event)),
+      shareDetailRow(t("form.eventAt"), esc(formatPublicDt(b.event_at))),
+      shareDetailRow(t("form.selection"), esc(b.selection)),
+      shareDetailRow(t("form.stake"), esc(`${money(b.stake)} ${b.currency}`), { mono: true }),
+      shareDetailRow(t("bets.odds"), esc(formatPublicOdds(b)), { mono: true }),
+      shareDetailRow(t("form.currency"), esc(b.currency)),
+      shareDetailRow(
+        t("form.personalImplied"),
+        b.personal_implied_odds == null ? "—" : esc(Number(b.personal_implied_odds).toFixed(2)),
+        { mono: true }
+      ),
+      shareDetailRow(t("form.notes"), esc(b.notes || "—"), { notes: true }),
+    ].join("");
+  } catch {
+    detail.innerHTML = `<p class="empty">${esc(t("share.notFound"))}</p>`;
+  }
+}
+
+function mountShareControls(container, betId, shareToken) {
+  container.innerHTML = `
+    <fieldset>
+      <legend data-i18n="share.shareSection">Share link</legend>
+      <p class="hint" data-i18n="share.shareHint">Create a read-only link others can open without signing in.</p>
+      <div class="share-actions">
+        <button type="button" class="btn btn--ghost btn--sm" id="shareCopyBtn" data-i18n="share.copyLink">Copy link</button>
+        <button type="button" class="btn btn--ghost btn--sm" id="shareRevokeBtn" data-i18n="share.revokeLink" ${shareToken ? "" : "hidden"}>Revoke link</button>
+      </div>
+    </fieldset>`;
+  if (window.i18n) i18n.applyI18n(container);
+  let token = shareToken;
+  $("#shareCopyBtn", container).addEventListener("click", async () => {
+    try {
+      if (!token) token = await enableBetShare(betId);
+      await copyText(shareLink(token));
+      toast(t("share.linkCopied"));
+      $("#shareRevokeBtn", container).hidden = false;
+    } catch (err) {
+      toast(err.message, true);
+    }
+  });
+  $("#shareRevokeBtn", container).addEventListener("click", async () => {
+    const ok = await revokeBetShare(betId);
+    if (ok) {
+      token = null;
+      $("#shareRevokeBtn", container).hidden = true;
+    }
+  });
+}
+
 /* ============================ Bet form ============================ */
 async function renderForm(id) {
   const main = $("#main");
@@ -635,12 +820,24 @@ async function renderForm(id) {
   syncEachWay();
 
   form.odds_format.addEventListener("change", onOddsFormatChange);
-  form.each_way.addEventListener("change", syncEachWay);
+  form.each_way.addEventListener("change", () => { syncEachWay(); updateSettlementPreview(form); });
   ["odds", "odds_denominator", "personal_implied_odds", "model_implied_odds"].forEach(n => {
     const el = form.elements.namedItem(n);
     if (el) el.addEventListener("input", () => updateModellingCalcs(form));
   });
+  ["stake", "cash_out_amount", "place_fraction", "exchange_commission_pct"].forEach(n => {
+    const el = form.elements.namedItem(n);
+    if (el) el.addEventListener("input", () => updateSettlementPreview(form));
+  });
+  form.outcome?.addEventListener("change", () => {
+    autoFillSettledDate(form);
+    updateSettlementPreview(form);
+  });
+  form.placed?.addEventListener("change", () => updateSettlementPreview(form));
   updateModellingCalcs(form);
+  updateSettlementPreview(form);
+
+  if (!id) form.placed_at.value = localDatetimeInputValue();
 
   let editing = null;
   if (id) {
@@ -648,7 +845,10 @@ async function renderForm(id) {
     $("#saveBtn").textContent = t("form.saveChanges");
     editing = await api(`/bets/${id}`);
     fillForm(form, editing);
-    syncOddsFormat(); syncEachWay(); updateModellingCalcs(form);
+    syncOddsFormat(); syncEachWay(); updateModellingCalcs(form); updateSettlementPreview(form);
+    const shareHost = document.createElement("div");
+    form.querySelector(".formactions").before(shareHost);
+    mountShareControls(shareHost, editing.id, editing.share_token);
   }
 
   form.addEventListener("submit", async e => {
@@ -657,6 +857,11 @@ async function renderForm(id) {
     if (!payload.currency || !/^[A-Z]{3}$/.test(payload.currency)) {
       toast(t("form.invalidCurrency"), true);
       return;
+    }
+    const cashOut = payload.cash_out_amount;
+    const maxReturn = maxCashOutReturn(form);
+    if (cashOut != null && maxReturn != null && cashOut > maxReturn + 0.001) {
+      toast(t("form.cashOutExceedsMax"), true);
     }
     try {
       if (editing) await api(`/bets/${editing.id}`, { method: "PATCH", body: payload });
@@ -772,6 +977,7 @@ function onOddsFormatChange() {
   form.odds_format.dataset.prev = next;
   syncOddsFormat();
   updateModellingCalcs($("#betForm"));
+  updateSettlementPreview($("#betForm"));
 }
 
 function syncOddsFormat() {
@@ -867,6 +1073,103 @@ function updateModellingCalcs(form = $("#betForm")) {
   updateCalcBlock(form, "model", model, oddsDec, bankroll, mult, currency);
 }
 
+function localDatetimeInputValue(d = new Date()) {
+  const pad = n => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+function isSettledOutcome(outcome) {
+  return Boolean(outcome && outcome !== "pending");
+}
+
+function autoFillSettledDate(form) {
+  if (!form?.settled_at || !isSettledOutcome(form.outcome?.value || "pending")) return;
+  if (!String(form.settled_at.value || "").trim()) {
+    form.settled_at.value = localDatetimeInputValue();
+  }
+}
+
+function computeSettlementProfit(form) {
+  const stake = parseFloat(form.stake?.value);
+  const cashOutRaw = String(form.cash_out_amount?.value || "").trim();
+  const cashOut = cashOutRaw ? parseFloat(cashOutRaw) : null;
+  const outcome = form.outcome?.value || "pending";
+  const eachWay = form.each_way?.checked;
+  const placed = form.placed?.checked;
+  const placeFraction = parseFloat(form.place_fraction?.value) || 0.25;
+  const commission = parseFloat(form.exchange_commission_pct?.value) || 0;
+  const oddsDec = parseOddsToDecimal(form);
+
+  if (!Number.isFinite(stake) || stake <= 0) return null;
+
+  if (cashOut != null && Number.isFinite(cashOut)) {
+    return Math.round((cashOut - stake) * 100) / 100;
+  }
+
+  if (outcome === "pending") return 0;
+  if (outcome === "void") return 0;
+  if (!Number.isFinite(oddsDec) || oddsDec <= 1) return 0;
+
+  let gross = 0;
+  if (!eachWay) {
+    if (outcome === "win") gross = stake * (oddsDec - 1);
+    else if (outcome === "half_win") gross = 0.5 * stake * (oddsDec - 1);
+    else if (outcome === "half_loss") gross = -0.5 * stake;
+    else if (outcome === "loss") gross = -stake;
+  } else {
+    const unit = stake / 2;
+    const placeOdds = 1 + (oddsDec - 1) * placeFraction;
+    if (outcome === "win") {
+      gross = unit * (oddsDec - 1) + unit * (placeOdds - 1);
+    } else {
+      const placePart = placed ? unit * (placeOdds - 1) : -unit;
+      gross = -unit + placePart;
+    }
+  }
+
+  if (gross > 0 && commission) gross -= gross * (commission / 100);
+  return Math.round(gross * 100) / 100;
+}
+
+function maxCashOutReturn(form) {
+  const stake = parseFloat(form.stake?.value);
+  const oddsDec = parseOddsToDecimal(form);
+  if (!Number.isFinite(stake) || stake <= 0 || !Number.isFinite(oddsDec) || oddsDec <= 1) return null;
+  return Math.round(stake * oddsDec * 100) / 100;
+}
+
+function updateSettlementPreview(form = $("#betForm")) {
+  if (!form) return;
+  const preview = form.querySelector("#settlementPreview");
+  const warning = form.querySelector("#cashOutWarning");
+  if (!preview) return;
+
+  const outcome = form.outcome?.value || "pending";
+  const cashOutRaw = String(form.cash_out_amount?.value || "").trim();
+  const hasCashOut = cashOutRaw !== "";
+  const settled = outcome !== "pending" || hasCashOut;
+  const profit = computeSettlementProfit(form);
+
+  if (!settled || profit == null) {
+    preview.hidden = true;
+    if (warning) warning.hidden = true;
+    return;
+  }
+
+  const valueEl = preview.querySelector('[data-role="profit"]');
+  if (valueEl) {
+    valueEl.textContent = money(profit, true);
+    valueEl.className = "settlement-preview__value " + plClass(profit);
+  }
+  preview.hidden = false;
+
+  if (warning) {
+    const cashOut = parseFloat(cashOutRaw);
+    const maxReturn = maxCashOutReturn(form);
+    warning.hidden = !(hasCashOut && Number.isFinite(cashOut) && maxReturn != null && cashOut > maxReturn + 0.001);
+  }
+}
+
 function readDatetimeField(form, name) {
   const v = String(form[name]?.value || "").trim();
   return v ? new Date(v).toISOString() : new Date().toISOString();
@@ -906,7 +1209,8 @@ function fillForm(form, b) {
   set("selection", b.selection);
   set("event_at", b.event_at ? new Date(b.event_at).toISOString().slice(0, 16) : "");
   set("placed_at", b.placed_at ? new Date(b.placed_at).toISOString().slice(0, 16) : "");
-  set("settled_at", b.settled_at ? new Date(b.settled_at).toISOString().slice(0, 16) : "");
+  set("settled_at", b.outcome !== "pending" && b.settled_at
+    ? new Date(b.settled_at).toISOString().slice(0, 16) : "");
   const fmt = b.odds_format || "decimal";
   form.odds_format.value = fmt;
   form.odds_format.dataset.prev = fmt;
@@ -1270,6 +1574,13 @@ async function loadAdminEvents() {
 /* -------------------------------- start -------------------------------- */
 async function start() {
   try {
+    const shareToken = getShareTokenFromHash();
+    if (shareToken) {
+      await i18n.initI18n(i18n.getLoginLocale?.() || "en");
+      document.title = t("share.title");
+      await renderPublicShare(shareToken);
+      return;
+    }
     if (token()) {
       showAuthLoading();
       await i18n.initI18n("en");
@@ -1289,8 +1600,8 @@ async function start() {
 
 function onReady() {
   try { bindEvents(); } catch (err) { console.error("bindEvents failed:", err); }
-  if (token()) {
-    start().catch(() => showAuth());
+  if (getShareTokenFromHash() || token()) {
+    start().catch(() => (getShareTokenFromHash() ? renderPublicShare(getShareTokenFromHash()) : showAuth()));
   }
 }
 

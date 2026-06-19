@@ -137,6 +137,9 @@ class Bet(Base):
     tipster: Mapped[str | None] = mapped_column(String(120), nullable=True)
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
 
+    # Public share link (unguessable token; null when sharing is disabled)
+    share_token: Mapped[str | None] = mapped_column(String(32), unique=True, index=True, nullable=True)
+
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=_now, onupdate=_now

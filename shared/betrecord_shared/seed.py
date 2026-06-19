@@ -159,6 +159,23 @@ def _ensure_preferred_locale_column() -> None:
             )
 
 
+def _ensure_share_token_column() -> None:
+    """Add share_token to existing databases created before the column existed."""
+    if "bets" not in inspect(engine).get_table_names():
+        return
+    columns = {c["name"] for c in inspect(engine).get_columns("bets")}
+    if "share_token" in columns:
+        return
+    dialect = engine.dialect.name
+    with engine.begin() as conn:
+        if dialect == "postgresql":
+            conn.execute(text("ALTER TABLE bets ADD COLUMN IF NOT EXISTS share_token VARCHAR(32)"))
+            conn.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS ix_bets_share_token ON bets (share_token)"))
+        else:
+            conn.execute(text("ALTER TABLE bets ADD COLUMN share_token VARCHAR(32)"))
+            conn.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS ix_bets_share_token ON bets (share_token)"))
+
+
 def _ensure_modelling_edge_columns() -> None:
     """Add edge and model Kelly columns to existing databases."""
     if "bets" not in inspect(engine).get_table_names():

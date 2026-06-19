@@ -7,6 +7,7 @@ from the bettor's settings, so the stored row is always self-consistent.
 
 from __future__ import annotations
 
+import secrets
 from collections import Counter
 from datetime import datetime, timezone
 from typing import Optional
@@ -22,7 +23,7 @@ from betrecord_shared.bankroll import effective_bankroll
 from betrecord_shared.config import get_settings
 from betrecord_shared.database import get_db, init_db
 from betrecord_shared.models import Bet, User
-from betrecord_shared.schemas import BetCreate, BetOut, BetUpdate
+from betrecord_shared.schemas import BetCreate, BetOut, BetShareOut, BetUpdate, PublicBetOut
 from betrecord_shared.security import get_current_user
 
 settings = get_settings()
@@ -58,6 +59,7 @@ def _normalise_odds(value: float, fmt: str, denominator: Optional[float]) -> flo
 
 def _recompute(bet: Bet, user: User, db: Session) -> None:
     """Recompute profit + kelly stake from the bet's own fields and user bankroll."""
+    # Cash-out amount always drives stored P/L when set, overriding win/loss outcome math.
     bet.profit = bm.settle_profit(
         stake=bet.stake,
         decimal_odds=bet.odds_decimal,
@@ -97,7 +99,22 @@ def _serialise(bet: Bet) -> BetOut:
     if bet.closing_odds:
         out.clv_pct = bm.closing_line_value(bet.odds_decimal, bet.closing_odds)
     out.edge_pct = bet.personal_edge_pct
+    out.share_token = bet.share_token
     return out
+
+
+def _serialise_public(bet: Bet) -> PublicBetOut:
+    return PublicBetOut.model_validate(bet)
+
+
+def _new_share_token(db: Session) -> str:
+    """Generate a unique, URL-safe share token."""
+    for _ in range(10):
+        token = secrets.token_urlsafe(16)
+        existing = db.scalar(select(Bet.id).where(Bet.share_token == token))
+        if not existing:
+            return token
+    raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Could not create share link")
 
 
 # -------------------------------- routes ---------------------------------- #
@@ -159,6 +176,46 @@ def list_bets(
         stmt = stmt.where(Bet.placed_at <= date_to)
     stmt = stmt.order_by(Bet.placed_at.desc()).limit(limit).offset(offset)
     return [_serialise(b) for b in db.scalars(stmt).all()]
+
+
+@app.get("/bets/public/{share_token}", response_model=PublicBetOut)
+def get_public_bet(share_token: str, db: Session = Depends(get_db)):
+    """Read-only view of a bet via its share link. No authentication required."""
+    bet = db.scalar(select(Bet).where(Bet.share_token == share_token))
+    if not bet:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Bet not found")
+    return _serialise_public(bet)
+
+
+@app.post("/bets/{bet_id}/share", response_model=BetShareOut)
+def enable_bet_share(
+    bet_id: str,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> BetShareOut:
+    bet = db.get(Bet, bet_id)
+    if not bet or bet.user_id != user.id:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Bet not found")
+    if not bet.share_token:
+        bet.share_token = _new_share_token(db)
+        db.commit()
+        db.refresh(bet)
+    return BetShareOut(share_token=bet.share_token)
+
+
+@app.delete("/bets/{bet_id}/share", status_code=status.HTTP_204_NO_CONTENT, response_class=Response)
+def disable_bet_share(
+    bet_id: str,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> Response:
+    bet = db.get(Bet, bet_id)
+    if not bet or bet.user_id != user.id:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Bet not found")
+    if bet.share_token:
+        bet.share_token = None
+        db.commit()
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 @app.post("/bets", response_model=BetOut, status_code=201)
@@ -227,6 +284,7 @@ def update_bet(
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Bet not found")
 
     data = payload.model_dump(exclude_unset=True)
+    prev_outcome = (bet.outcome or bm.PENDING).lower()
 
     # Odds need normalisation if any odds field changed.
     if "odds" in data or "odds_format" in data or "odds_denominator" in data:
@@ -249,6 +307,11 @@ def update_bet(
             if field == "currency" and value:
                 value = value.upper()
             setattr(bet, field, value)
+
+    if "outcome" in data:
+        new_outcome = (bet.outcome or bm.PENDING).lower()
+        if prev_outcome == bm.PENDING and new_outcome != bm.PENDING and "settled_at" not in data:
+            bet.settled_at = datetime.now(timezone.utc)
 
     _recompute(bet, user, db)
     db.commit()

@@ -202,6 +202,32 @@ def test_pl_cash_out_overrides_outcome(clients, auth_headers):
     assert b["profit"] == pytest.approx(20.0)
 
 
+def test_pl_cash_out_overrides_settled_win_on_patch(clients, auth_headers):
+    headers, _ = auth_headers
+    bet = _make_bet(clients, headers, odds=2.0, stake=100, outcome="win")
+    assert bet["profit"] == pytest.approx(100.0)
+
+    upd = clients["bets"].patch(
+        f"/bets/{bet['id']}", headers=headers, json={"cash_out_amount": 85}
+    )
+    assert upd.status_code == 200
+    body = upd.json()
+    assert body["profit"] == pytest.approx(-15.0)
+    assert body["outcome"] == "win"
+
+    summary = clients["reports"].get("/reports/summary?use_primary_currency=true", headers=headers).json()
+    assert summary["profit"] == pytest.approx(-15.0)
+
+
+def test_bankroll_includes_pending_cash_out(clients, auth_headers):
+    headers, _ = auth_headers
+    clients["auth"].patch("/auth/settings", headers=headers, json={"bankroll": 1000, "base_currency": "GBP"})
+    _make_bet(clients, headers, odds=2.0, stake=100, outcome="pending", cash_out_amount=110, currency="GBP")
+    summary = clients["reports"].get("/reports/summary?use_primary_currency=true", headers=headers).json()
+    assert summary["profit"] == pytest.approx(10.0)
+    assert summary["bankroll"] == pytest.approx(1010.0)
+
+
 def test_pl_each_way_winner(clients, auth_headers):
     b = _make_bet(clients, auth_headers[0], odds=5.0, stake=100, outcome="win",
                   each_way=True, place_fraction=0.25)
@@ -255,7 +281,13 @@ def test_update_and_delete_bet(clients, auth_headers):
 
     upd = clients["bets"].patch(f"/bets/{bet_id}", headers=headers, json={"outcome": "win"})
     assert upd.status_code == 200
-    assert upd.json()["profit"] == pytest.approx(100.0)  # recomputed on settle
+    settled = upd.json()
+    assert settled["profit"] == pytest.approx(100.0)  # recomputed on settle
+    assert settled["settled_at"]
+
+    # Changing between settled outcomes keeps the existing settled_at.
+    loss = clients["bets"].patch(f"/bets/{bet_id}", headers=headers, json={"outcome": "loss"})
+    assert loss.json()["settled_at"] == settled["settled_at"]
 
     assert clients["bets"].delete(f"/bets/{bet_id}", headers=headers).status_code == 204
     assert clients["bets"].get(f"/bets/{bet_id}", headers=headers).status_code == 404
@@ -472,4 +504,61 @@ def test_admin_cannot_disable_self(clients):
         json={"is_active": False},
     )
     assert r.status_code == 400
+
+
+# --------------------------- public bet share ----------------------------- #
+
+def test_bet_share_lifecycle(clients, auth_headers):
+    headers, _ = auth_headers
+    bet = _make_bet(
+        clients,
+        headers,
+        event="Ascot 14:30",
+        selection="Galileo Gold",
+        sport="Horse racing",
+        bet_type="Win",
+        event_at="2026-06-20T14:30:00+00:00",
+        personal_implied_odds=2.2,
+        notes="Good ground, drawn well",
+    )
+    assert bet.get("share_token") is None
+
+    enabled = clients["bets"].post(f"/bets/{bet['id']}/share", headers=headers)
+    assert enabled.status_code == 200, enabled.text
+    token = enabled.json()["share_token"]
+    assert token
+
+    again = clients["bets"].post(f"/bets/{bet['id']}/share", headers=headers)
+    assert again.status_code == 200
+    assert again.json()["share_token"] == token
+
+    fetched = clients["bets"].get(f"/bets/{bet['id']}", headers=headers)
+    assert fetched.json()["share_token"] == token
+
+    public = clients["bets"].get(f"/bets/public/{token}")
+    assert public.status_code == 200, public.text
+    body = public.json()
+    assert body["sport"] == "Horse racing"
+    assert body["bet_type"] == "Win"
+    assert body["event"] == "Ascot 14:30"
+    assert body["selection"] == "Galileo Gold"
+    assert body["stake"] == pytest.approx(100)
+    assert body["currency"] == "GBP"
+    assert body["personal_implied_odds"] == pytest.approx(2.2)
+    assert body["notes"] == "Good ground, drawn well"
+    assert "profit" not in body
+    assert "bookmaker" not in body
+    assert "id" not in body
+
+    revoked = clients["bets"].delete(f"/bets/{bet['id']}/share", headers=headers)
+    assert revoked.status_code == 204
+    assert clients["bets"].get(f"/bets/public/{token}").status_code == 404
+
+
+def test_public_bet_requires_no_auth(clients, auth_headers):
+    headers, _ = auth_headers
+    bet = _make_bet(clients, headers)
+    token = clients["bets"].post(f"/bets/{bet['id']}/share", headers=headers).json()["share_token"]
+    assert clients["bets"].get(f"/bets/public/{token}").status_code == 200
+    assert clients["bets"].get("/bets/public/not-a-real-token").status_code == 404
 
