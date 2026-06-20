@@ -74,6 +74,11 @@ a { color: inherit; }
 .seg__btn.is-active { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
 .auth__form { display: grid; gap: 14px; }
 .auth__form[hidden] { display: none !important; }
+.auth__hint { color: var(--muted); font-size: .88rem; margin: 0; line-height: 1.45; }
+.auth__links { margin: 0; text-align: right; font-size: .85rem; }
+.auth__links a { color: var(--brass-deep); text-decoration: none; }
+.auth__links a:hover { text-decoration: underline; }
+.form-success { color: var(--win); font-size: .85rem; margin-top: 14px; }
 /* .auth sets display:grid; reinforce [hidden] so panels don't stack visibly */
 .auth[hidden], #app[hidden], #shareView[hidden] { display: none !important; }
 

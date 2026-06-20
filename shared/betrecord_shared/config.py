@@ -17,6 +17,16 @@ class Settings:
     jwt_secret: str = os.getenv("JWT_SECRET", "dev-only-change-me")
     jwt_algorithm: str = os.getenv("JWT_ALGORITHM", "HS256")
     access_token_minutes: int = int(os.getenv("ACCESS_TOKEN_MINUTES", "1440"))
+    password_reset_minutes: int = int(os.getenv("PASSWORD_RESET_MINUTES", "60"))
+    frontend_url: str = os.getenv("FRONTEND_URL", "http://localhost:8080")
+
+    # Email (optional — password reset falls back to logging in development)
+    smtp_host: str = os.getenv("SMTP_HOST", "")
+    smtp_port: int = int(os.getenv("SMTP_PORT", "587"))
+    smtp_user: str = os.getenv("SMTP_USER", "")
+    smtp_password: str = os.getenv("SMTP_PASSWORD", "")
+    smtp_from: str = os.getenv("SMTP_FROM", "noreply@mybetrecord.com")
+    smtp_use_tls: bool = os.getenv("SMTP_USE_TLS", "true").lower() in ("1", "true", "yes")
 
     # CORS
     cors_origins: list[str] = [

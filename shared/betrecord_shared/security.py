@@ -84,6 +84,18 @@ def hash_api_key(full_key: str) -> str:
     return hashlib.sha256(full_key.encode()).hexdigest()
 
 
+# ------------------------- Password reset tokens -------------------------- #
+
+def generate_password_reset_token() -> tuple[str, str]:
+    """Return (raw_token, token_hash). The raw token is sent to the user once."""
+    raw = secrets.token_urlsafe(32)
+    return raw, hashlib.sha256(raw.encode()).hexdigest()
+
+
+def hash_password_reset_token(raw_token: str) -> str:
+    return hashlib.sha256(raw_token.encode()).hexdigest()
+
+
 # --------------------------- Auth dependency ------------------------------ #
 
 def _extract_token(authorization: Optional[str], x_api_key: Optional[str]) -> Optional[str]:

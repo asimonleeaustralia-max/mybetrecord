@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 from fastapi import Depends, FastAPI, HTTPException, Query, Request, status
 from fastapi.middleware.cors import CORSMiddleware
@@ -12,8 +12,9 @@ from sqlalchemy.orm import Session
 
 from betrecord_shared.config import get_settings
 from betrecord_shared.database import get_db, init_db
+from betrecord_shared.email import send_password_reset_email
 from betrecord_shared.events import log_event
-from betrecord_shared.models import ApiKey, AppEvent, Bet, User
+from betrecord_shared.models import ApiKey, AppEvent, Bet, PasswordResetToken, User
 from betrecord_shared.schemas import (
     AdminStatsOut,
     AdminUserOut,
@@ -21,6 +22,9 @@ from betrecord_shared.schemas import (
     ApiKeyCreated,
     ApiKeyOut,
     AppEventOut,
+    PasswordResetConfirm,
+    PasswordResetRequest,
+    PasswordResetResponse,
     SettingsUpdate,
     TokenResponse,
     UserLogin,
@@ -30,9 +34,11 @@ from betrecord_shared.schemas import (
 from betrecord_shared.security import (
     create_access_token,
     generate_api_key,
+    generate_password_reset_token,
     get_current_admin,
     get_current_user,
     hash_password,
+    hash_password_reset_token,
     verify_password,
 )
 
@@ -60,6 +66,12 @@ def _client_ip(request: Request) -> str | None:
 def _start_of_today() -> datetime:
     now = datetime.now(timezone.utc)
     return now.replace(hour=0, minute=0, second=0, microsecond=0)
+
+
+def _as_utc(dt: datetime) -> datetime:
+    if dt.tzinfo is None:
+        return dt.replace(tzinfo=timezone.utc)
+    return dt.astimezone(timezone.utc)
 
 
 @app.on_event("startup")
@@ -125,6 +137,126 @@ def login(payload: UserLogin, request: Request, db: Session = Depends(get_db)) -
     db.commit()
     token, expires = create_access_token(user.id)
     return TokenResponse(access_token=token, expires_in=expires)
+
+
+_PASSWORD_RESET_MESSAGE = (
+    "If an account exists for that email, a password reset link has been sent."
+)
+
+
+def _reset_url(raw_token: str) -> str:
+    base = settings.frontend_url.rstrip("/")
+    return f"{base}/#/reset-password/{raw_token}"
+
+
+def _invalidate_reset_tokens(db: Session, user_id: str) -> None:
+    now = datetime.now(timezone.utc)
+    for row in db.scalars(
+        select(PasswordResetToken).where(
+            PasswordResetToken.user_id == user_id,
+            PasswordResetToken.used_at.is_(None),
+        )
+    ):
+        row.used_at = now
+
+
+@app.post("/auth/password-reset/request", response_model=PasswordResetResponse)
+def request_password_reset(
+    payload: PasswordResetRequest,
+    request: Request,
+    db: Session = Depends(get_db),
+) -> PasswordResetResponse:
+    email = payload.email.lower()
+    user = db.scalar(select(User).where(User.email == email))
+    ip = _client_ip(request)
+    raw_token: str | None = None
+
+    if user and user.is_active:
+        _invalidate_reset_tokens(db, user.id)
+        raw_token, token_hash = generate_password_reset_token()
+        expires_at = datetime.now(timezone.utc) + timedelta(minutes=settings.password_reset_minutes)
+        db.add(
+            PasswordResetToken(
+                user_id=user.id,
+                token_hash=token_hash,
+                expires_at=expires_at,
+            )
+        )
+        send_password_reset_email(
+            user.email,
+            _reset_url(raw_token),
+            settings.password_reset_minutes,
+        )
+        log_event(
+            db,
+            "password_reset_requested",
+            user_id=user.id,
+            detail=user.email,
+            ip_address=ip,
+        )
+        db.commit()
+    elif user and not user.is_active:
+        log_event(
+            db,
+            "password_reset_blocked",
+            user_id=user.id,
+            detail="account disabled",
+            ip_address=ip,
+        )
+        db.commit()
+
+    response = PasswordResetResponse(message=_PASSWORD_RESET_MESSAGE)
+    if raw_token and settings.environment != "production":
+        response.reset_token = raw_token
+    return response
+
+
+@app.post("/auth/password-reset/confirm", response_model=PasswordResetResponse)
+def confirm_password_reset(
+    payload: PasswordResetConfirm,
+    request: Request,
+    db: Session = Depends(get_db),
+) -> PasswordResetResponse:
+    token_hash = hash_password_reset_token(payload.token)
+    now = datetime.now(timezone.utc)
+    reset_row = db.scalar(
+        select(PasswordResetToken).where(PasswordResetToken.token_hash == token_hash)
+    )
+    ip = _client_ip(request)
+
+    if (
+        not reset_row
+        or reset_row.used_at is not None
+        or _as_utc(reset_row.expires_at) <= now
+    ):
+        log_event(db, "password_reset_failed", detail="invalid or expired token", ip_address=ip)
+        db.commit()
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Invalid or expired reset link")
+
+    user = db.get(User, reset_row.user_id)
+    if not user or not user.is_active:
+        log_event(
+            db,
+            "password_reset_failed",
+            user_id=reset_row.user_id,
+            detail="account missing or disabled",
+            ip_address=ip,
+        )
+        db.commit()
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Invalid or expired reset link")
+
+    user.password_hash = hash_password(payload.password)
+    reset_row.used_at = now
+    _invalidate_reset_tokens(db, user.id)
+    log_event(
+        db,
+        "password_reset_completed",
+        user_id=user.id,
+        detail=user.email,
+        ip_address=ip,
+    )
+    db.commit()
+    return PasswordResetResponse(message="Password updated. You can sign in with your new password.")
 
 
 @app.get("/auth/me", response_model=UserOut)

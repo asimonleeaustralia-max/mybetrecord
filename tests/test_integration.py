@@ -25,6 +25,50 @@ def test_login_rejects_bad_password(clients, auth_headers):
     assert r.status_code == 401
 
 
+def test_password_reset_flow(clients):
+    email = "reset-flow@example.com"
+    password = "password123"
+    new_password = "new-password456"
+    r = clients["auth"].post("/auth/register", json={"email": email, "password": password})
+    assert r.status_code == 201
+
+    r = clients["auth"].post("/auth/password-reset/request", json={"email": email})
+    assert r.status_code == 200
+    body = r.json()
+    assert "message" in body
+    reset_token = body.get("reset_token")
+    assert reset_token, "development mode should return reset_token for tests"
+
+    r = clients["auth"].post(
+        "/auth/password-reset/confirm",
+        json={"token": reset_token, "password": new_password},
+    )
+    assert r.status_code == 200
+
+    r = clients["auth"].post("/auth/login", json={"email": email, "password": password})
+    assert r.status_code == 401
+
+    r = clients["auth"].post("/auth/login", json={"email": email, "password": new_password})
+    assert r.status_code == 200
+
+
+def test_password_reset_request_unknown_email(clients):
+    r = clients["auth"].post(
+        "/auth/password-reset/request",
+        json={"email": "nobody-here@example.com"},
+    )
+    assert r.status_code == 200
+    assert "message" in r.json()
+
+
+def test_password_reset_confirm_rejects_invalid_token(clients):
+    r = clients["auth"].post(
+        "/auth/password-reset/confirm",
+        json={"token": "not-a-valid-token", "password": "password123"},
+    )
+    assert r.status_code == 400
+
+
 def test_settings_update(clients, auth_headers):
     headers, _ = auth_headers
     r = clients["auth"].patch("/auth/settings", headers=headers,

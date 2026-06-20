@@ -12,7 +12,19 @@
     "passwordHint": "8+ characters",
     "displayName": "Display name",
     "loginFailed": "Login failed",
-    "sessionExpired": "Session expired"
+    "sessionExpired": "Session expired",
+    "forgotPassword": "Forgot password?",
+    "forgotPasswordHint": "Enter your email and we'll send you a link to reset your password.",
+    "sendResetLink": "Send reset link",
+    "resetPasswordHint": "Choose a new password for your account.",
+    "newPassword": "New password",
+    "confirmPassword": "Confirm password",
+    "updatePassword": "Update password",
+    "backToSignIn": "Back to sign in",
+    "passwordMismatch": "Passwords do not match",
+    "resetLinkSent": "If an account exists for that email, a password reset link has been sent.",
+    "passwordUpdated": "Password updated. You can sign in with your new password.",
+    "resetLinkInvalid": "This reset link is invalid or has expired."
   },
   "nav": {
     "bets": "Bets",

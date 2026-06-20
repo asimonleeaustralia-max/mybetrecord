@@ -284,7 +284,10 @@ function fillBookmakerDatalist(datalist, extra = []) {
 
 /* ----------------------------- API client ----------------------------- */
 function token() { return localStorage.getItem(TOKEN_KEY); }
-function setToken(t) { t ? localStorage.setItem(TOKEN_KEY, t) : localStorage.removeItem(TOKEN_KEY); }
+function setToken(value) {
+  if (value) localStorage.setItem(TOKEN_KEY, value);
+  else localStorage.removeItem(TOKEN_KEY);
+}
 
 async function api(path, { method = "GET", body, raw = false, allow401 = false, timeoutMs = 15000 } = {}) {
   const headers = {};
@@ -364,6 +367,20 @@ function getShareTokenFromHash() {
   return parts[0] === "share" && parts[1] ? parts[1] : null;
 }
 
+function getResetTokenFromHash() {
+  const parts = (location.hash || "").slice(1).split("/").filter(Boolean);
+  return parts[0] === "reset-password" && parts[1] ? parts[1] : null;
+}
+
+function getAuthRouteFromHash() {
+  const parts = (location.hash || "").slice(1).split("/").filter(Boolean);
+  const route = parts[0] || "login";
+  if (route === "forgot-password") return "forgot";
+  if (route === "reset-password") return "reset";
+  if (route === "register") return "register";
+  return "login";
+}
+
 function shareLink(token) {
   return `${location.origin}${location.pathname}#/share/${token}`;
 }
@@ -414,15 +431,37 @@ function showAuthLoading() {
   if (auth) auth.hidden = true;
   if (loading) loading.hidden = false;
 }
-function showAuth(message = null) {
+function showAuth(message = null, { success = null } = {}) {
   const app = $("#app"), auth = $("#auth"), loading = $("#authLoading");
   if (app) app.hidden = true;
   if (loading) loading.hidden = true;
   if (!auth) return;
   auth.hidden = false;
   if (window.i18n) i18n.applyI18n(auth);
+  showAuthMode(getAuthRouteFromHash());
   const err = $("#authError");
+  const ok = $("#authSuccess");
+  if (err) err.hidden = true;
+  if (ok) ok.hidden = true;
   if (message && err) { err.textContent = message; err.hidden = false; }
+  if (success && ok) { ok.textContent = success; ok.hidden = false; }
+}
+
+function showAuthMode(mode) {
+  const seg = document.querySelector("#auth .seg");
+  const login = $("#loginForm"), reg = $("#registerForm");
+  const forgot = $("#forgotPasswordForm"), reset = $("#resetPasswordForm");
+  const showTabs = mode === "login" || mode === "register";
+  if (seg) seg.hidden = !showTabs;
+  if (login) login.hidden = mode !== "login";
+  if (reg) reg.hidden = mode !== "register";
+  if (forgot) forgot.hidden = mode !== "forgot";
+  if (reset) reset.hidden = mode !== "reset";
+  if (showTabs) {
+    $$("[data-auth-tab]").forEach(btn => {
+      btn.classList.toggle("is-active", btn.dataset.authTab === mode);
+    });
+  }
 }
 function showApp() {
   const auth = $("#auth"), loading = $("#authLoading"), app = $("#app");
@@ -441,19 +480,30 @@ function updateAdminNav() {
 
 function bindEvents() {
   $$("[data-auth-tab]").forEach(btn => btn.addEventListener("click", () => {
-    $$("[data-auth-tab]").forEach(b => b.classList.toggle("is-active", b === btn));
     const tab = btn.dataset.authTab;
-    const login = $("#loginForm"), reg = $("#registerForm"), err = $("#authError");
-    if (login) login.hidden = tab !== "login";
-    if (reg) reg.hidden = tab !== "register";
-    if (err) err.hidden = true;
+    location.hash = tab === "register" ? "#/register" : "#/login";
   }));
+
+  document.querySelector("#auth")?.addEventListener("click", e => {
+    const back = e.target.closest("[data-auth-back]");
+    if (back) {
+      e.preventDefault();
+      location.hash = "#/login";
+    }
+  });
+
+  window.addEventListener("hashchange", () => {
+    if (getShareTokenFromHash()) return;
+    if (state.user) route();
+    else showAuth();
+  });
 
   const loginForm = $("#loginForm");
   if (loginForm) loginForm.addEventListener("submit", async e => {
     e.preventDefault();
     const f = Object.fromEntries(new FormData(e.target));
     $("#authError").hidden = true;
+    $("#authSuccess").hidden = true;
     showAuthLoading();
     try {
       const { access_token } = await api("/auth/login", { method: "POST", body: f, allow401: true });
@@ -481,12 +531,67 @@ function bindEvents() {
     }
   });
 
+  const forgotPasswordForm = $("#forgotPasswordForm");
+  if (forgotPasswordForm) forgotPasswordForm.addEventListener("submit", async e => {
+    e.preventDefault();
+    const f = Object.fromEntries(new FormData(e.target));
+    $("#authError").hidden = true;
+    $("#authSuccess").hidden = true;
+    try {
+      showAuthLoading();
+      const res = await api("/auth/password-reset/request", { method: "POST", body: f, allow401: true });
+      showAuth(null, { success: res.message || t("auth.resetLinkSent") });
+      e.target.reset();
+    } catch (err) {
+      showAuth();
+      authError(err.message);
+    }
+  });
+
+  const resetPasswordForm = $("#resetPasswordForm");
+  if (resetPasswordForm) resetPasswordForm.addEventListener("submit", async e => {
+    e.preventDefault();
+    const f = Object.fromEntries(new FormData(e.target));
+    if (f.password !== f.password_confirm) {
+      showAuth();
+      authError(t("auth.passwordMismatch"));
+      return;
+    }
+    const token = getResetTokenFromHash();
+    if (!token) {
+      showAuth();
+      authError(t("auth.resetLinkInvalid"));
+      return;
+    }
+    $("#authError").hidden = true;
+    $("#authSuccess").hidden = true;
+    try {
+      showAuthLoading();
+      const res = await api("/auth/password-reset/confirm", {
+        method: "POST",
+        body: { token, password: f.password },
+        allow401: true,
+      });
+      location.hash = "#/login";
+      showAuth(null, { success: res.message || t("auth.passwordUpdated") });
+      e.target.reset();
+    } catch (err) {
+      showAuth();
+      authError(err.message || t("auth.resetLinkInvalid"));
+    }
+  });
+
   const logoutBtn = $("#logoutBtn");
-  if (logoutBtn) logoutBtn.addEventListener("click", () => { setToken(null); showAuth(); location.hash = "#/bets"; });
-  window.addEventListener("hashchange", route);
+  if (logoutBtn) logoutBtn.addEventListener("click", () => { setToken(null); showAuth(); location.hash = "#/login"; });
 }
 
-function authError(msg) { const el = $("#authError"); el.textContent = msg; el.hidden = false; }
+function authError(msg) {
+  const el = $("#authError"), ok = $("#authSuccess");
+  if (ok) ok.hidden = true;
+  if (!el) return;
+  el.textContent = msg;
+  el.hidden = false;
+}
 
 /* ------------------------------- ticker ------------------------------- */
 async function refreshTicker() {
@@ -1590,6 +1695,7 @@ async function start() {
       await i18n.initI18n(i18n.getLoginLocale());
       document.title = t("meta.title");
       i18n.applyI18n(document);
+      if (!location.hash || location.hash === "#/bets") location.hash = "#/login";
       showAuth();
     }
   } catch (err) {

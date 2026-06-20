@@ -51,6 +51,20 @@ class TokenResponse(BaseModel):
     expires_in: int
 
 
+class PasswordResetRequest(BaseModel):
+    email: EmailStr
+
+
+class PasswordResetConfirm(BaseModel):
+    token: str = Field(min_length=16, max_length=256)
+    password: str = Field(min_length=8, max_length=128)
+
+
+class PasswordResetResponse(BaseModel):
+    message: str
+    reset_token: Optional[str] = None  # populated in non-production for local testing
+
+
 LOCALE_PATTERN = r"^[a-z]{2,3}(-[A-Z]{2})?$"
 
 

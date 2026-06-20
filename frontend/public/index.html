@@ -31,6 +31,7 @@
       <form id="loginForm" class="auth__form">
         <label><span data-i18n="auth.email">Email</span><input type="email" name="email" autocomplete="email" required /></label>
         <label><span data-i18n="auth.password">Password</span><input type="password" name="password" autocomplete="current-password" required /></label>
+        <p class="auth__links"><a href="#/forgot-password" data-i18n="auth.forgotPassword">Forgot password?</a></p>
         <button class="btn btn--brass" type="submit" data-i18n="auth.signIn">Sign in</button>
       </form>
 
@@ -41,7 +42,23 @@
         <button class="btn btn--brass" type="submit" data-i18n="auth.createAccount">Create account</button>
       </form>
 
+      <form id="forgotPasswordForm" class="auth__form" hidden>
+        <p class="auth__hint" data-i18n="auth.forgotPasswordHint">Enter your email and we'll send you a link to reset your password.</p>
+        <label><span data-i18n="auth.email">Email</span><input type="email" name="email" autocomplete="email" required /></label>
+        <button class="btn btn--brass" type="submit" data-i18n="auth.sendResetLink">Send reset link</button>
+        <p class="auth__links"><a href="#/login" data-auth-back="login" data-i18n="auth.backToSignIn">Back to sign in</a></p>
+      </form>
+
+      <form id="resetPasswordForm" class="auth__form" hidden>
+        <p class="auth__hint" data-i18n="auth.resetPasswordHint">Choose a new password for your account.</p>
+        <label><span data-i18n="auth.newPassword">New password</span> <span class="hint" data-i18n="auth.passwordHint">8+ characters</span><input type="password" name="password" autocomplete="new-password" minlength="8" required /></label>
+        <label><span data-i18n="auth.confirmPassword">Confirm password</span><input type="password" name="password_confirm" autocomplete="new-password" minlength="8" required /></label>
+        <button class="btn btn--brass" type="submit" data-i18n="auth.updatePassword">Update password</button>
+        <p class="auth__links"><a href="#/login" data-auth-back="login" data-i18n="auth.backToSignIn">Back to sign in</a></p>
+      </form>
+
       <p id="authError" class="form-error" hidden></p>
+      <p id="authSuccess" class="form-success" hidden></p>
     </div>
   </section>
 
