@@ -392,6 +392,24 @@ def test_reports_summary_and_breakdown(clients, auth_headers):
     assert by_sport["Darts"] == pytest.approx(0.0)
 
 
+def test_reports_tipster_filter(clients, auth_headers):
+    headers, _ = auth_headers
+    _make_bet(clients, headers, tipster="Alice", odds=2.0, stake=100, outcome="win")   # +100
+    _make_bet(clients, headers, tipster="Bob", odds=2.0, stake=100, outcome="loss")     # -100
+    _make_bet(clients, headers, tipster="Alice", odds=2.0, stake=50, outcome="win")   # +50
+
+    tipsters = clients["bets"].get("/bets/tipsters", headers=headers).json()
+    assert tipsters == ["Alice", "Bob"]
+
+    alice = clients["reports"].get("/reports/summary?tipster=Alice", headers=headers).json()
+    assert alice["profit"] == pytest.approx(150.0)
+    assert alice["settled_bets"] == 2
+
+    bob = clients["reports"].get("/reports/summary?tipster=Bob", headers=headers).json()
+    assert bob["profit"] == pytest.approx(-100.0)
+    assert bob["settled_bets"] == 1
+
+
 def test_reports_currency_filter_and_primary_currency(clients, auth_headers):
     headers, _ = auth_headers
     _make_bet(clients, headers, currency="GBP", odds=2.0, stake=100, outcome="win")   # +100 GBP

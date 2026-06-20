@@ -137,6 +137,15 @@ def bet_types_used(user: User = Depends(get_current_user), db: Session = Depends
     return [t for t in rows if t]
 
 
+@app.get("/bets/tipsters", response_model=list[str])
+def tipsters_used(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Distinct tipsters the user has entered before, for report filters."""
+    rows = db.scalars(
+        select(distinct(Bet.tipster)).where(Bet.user_id == user.id).order_by(Bet.tipster)
+    ).all()
+    return [t for t in rows if t]
+
+
 @app.get("/bets/currencies", response_model=list[str])
 def currencies_used(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     """Currencies the user has bet in, most-used first (for report filters)."""

@@ -5,7 +5,7 @@
 "use strict";
 
 const TOKEN_KEY = "mbr_token";
-const state = { user: null, sports: [], betTypes: [], currencies: [], charts: {} };
+const state = { user: null, sports: [], betTypes: [], tipsters: [], currencies: [], charts: {} };
 
 const translate = (key, vars) => window.i18n?.t(key, vars) ?? key;
 const t = translate;
@@ -1393,9 +1393,10 @@ async function renderReports() {
   main.innerHTML = "";
   main.appendChild(clone("tpl-reports"));
 
-  [state.sports, state.betTypes, state.currencies] = await Promise.all([
+  [state.sports, state.betTypes, state.tipsters, state.currencies] = await Promise.all([
     api("/bets/sports").catch(() => []),
     api("/bets/bet-types").catch(() => []),
+    api("/bets/tipsters").catch(() => []),
     api("/bets/currencies").catch(() => []),
   ]);
   buildReportFilters();
@@ -1415,6 +1416,7 @@ function buildReportFilters() {
   root.innerHTML = `
     <label>${t("bets.sport")}<select name="sport"><option value="">${t("bets.all")}</option>${state.sports.map(s => `<option>${esc(s)}</option>`).join("")}</select></label>
     <label>${t("bets.type")}<select name="bet_type">${betTypeFilterOptions()}</select></label>
+    <label>${t("form.tipster")}<select name="tipster"><option value="">${t("bets.all")}</option>${state.tipsters.map(s => `<option>${esc(s)}</option>`).join("")}</select></label>
     <label>${t("form.currency")}<select name="currency">${currencyOpts}</select></label>
     <label>${t("bets.from")}<input type="date" name="date_from" /></label>
     <label>${t("bets.to")}<input type="date" name="date_to" /></label>`;
