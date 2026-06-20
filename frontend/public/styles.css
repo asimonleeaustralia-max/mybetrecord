@@ -249,6 +249,15 @@ input:focus, select:focus, textarea:focus {
 .ticker__item { display: flex; flex-direction: column; line-height: 1.15; }
 .ticker__label { font-size: .62rem; text-transform: uppercase; letter-spacing: .08em; color: #7f8694; }
 .ticker .num { font-size: .95rem; color: #f2ead8; font-weight: 500; }
+.topbar .btn--ghost {
+  color: #cfd3da;
+  border-color: #4a5060;
+}
+.topbar .btn--ghost:hover {
+  color: #f2ead8;
+  border-color: #7f8694;
+  background: rgba(255, 255, 255, .06);
+}
 
 .tabs {
   position: sticky; top: 0; z-index: 20;
