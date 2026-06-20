@@ -164,7 +164,15 @@
               </select>
             </label>
             <div id="oddsValueFields" class="odds-value-fields odds-value-fields--decimal">
-              <label id="oddsField"><span id="oddsFieldLabel" data-i18n="form.decimalOdds">Decimal odds</span><input name="odds" inputmode="decimal" required placeholder="2.50" /></label>
+              <label id="oddsField">
+                <span class="odds-field-head">
+                  <span id="oddsFieldLabel" data-i18n="form.decimalOdds">Decimal odds</span>
+                  <span class="hint effective-odds" id="effectiveOddsHint" hidden>
+                    (<span data-i18n="form.effectiveOdds">effective</span> <span class="effective-odds__value" data-role="effective-odds"></span>)
+                  </span>
+                </span>
+                <input name="odds" inputmode="decimal" required placeholder="2.50" />
+              </label>
               <label class="odds-den-field"><span data-i18n="form.denominator">Denominator</span><input name="odds_denominator" inputmode="decimal" placeholder="4" /></label>
             </div>
           </div>

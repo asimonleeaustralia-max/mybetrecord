@@ -294,6 +294,22 @@ def returns_including_stake(stake: float, profit: float) -> float:
     return round(float(stake) + float(profit), 2)
 
 
+def effective_decimal_odds(
+    decimal_odds: float,
+    exchange_commission_pct: float = 0.0,
+) -> Optional[float]:
+    """Decimal odds after a winnings deduction on net profit (e.g. exchange commission).
+
+    Matches settle_profit on a straight win: net profit per unit staked is
+    (D - 1) * (1 - commission/100), so effective D' = 1 + (D - 1) * (1 - c/100).
+    """
+    d = float(decimal_odds)
+    c = float(exchange_commission_pct)
+    if d <= 1.0 or c <= 0:
+        return None
+    return round(1.0 + (d - 1.0) * (1.0 - c / 100.0), 4)
+
+
 # --------------------------------------------------------------------------- #
 # Closing line value — were you beating the closing price?
 # --------------------------------------------------------------------------- #

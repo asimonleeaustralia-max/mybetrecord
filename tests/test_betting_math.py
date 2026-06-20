@@ -102,6 +102,15 @@ def test_exchange_commission_on_winner():
     pl = bm.settle_profit(stake=100, decimal_odds=2.5, outcome="win", exchange_commission_pct=5)
     assert pl == pytest.approx(142.5)
 
+
+def test_effective_decimal_odds():
+    eff = bm.effective_decimal_odds(2.5, 5)
+    assert eff == pytest.approx(2.425)
+    assert bm.effective_decimal_odds(2.5, 0) is None
+    assert bm.effective_decimal_odds(1.0, 5) is None
+    pl = bm.settle_profit(stake=100, decimal_odds=2.5, outcome="win", exchange_commission_pct=5)
+    assert pl == pytest.approx(100 * (eff - 1))
+
 def test_cash_out_overrides_outcome():
     pl = bm.settle_profit(stake=100, decimal_odds=2.5, outcome="loss", cash_out_amount=120)
     assert pl == pytest.approx(20.0)

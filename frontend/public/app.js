@@ -939,11 +939,17 @@ async function renderForm(id) {
   form.each_way.addEventListener("change", () => { syncEachWay(); updateSettlementPreview(form); });
   ["odds", "odds_denominator", "personal_implied_odds", "model_implied_odds"].forEach(n => {
     const el = form.elements.namedItem(n);
-    if (el) el.addEventListener("input", () => updateModellingCalcs(form));
+    if (el) el.addEventListener("input", () => {
+      updateModellingCalcs(form);
+      updateEffectiveOddsPreview(form);
+    });
   });
   ["stake", "cash_out_amount", "place_fraction", "exchange_commission_pct"].forEach(n => {
     const el = form.elements.namedItem(n);
-    if (el) el.addEventListener("input", () => updateSettlementPreview(form));
+    if (el) el.addEventListener("input", () => {
+      updateSettlementPreview(form);
+      if (n === "exchange_commission_pct") updateEffectiveOddsPreview(form);
+    });
   });
   form.outcome?.addEventListener("change", () => {
     autoFillSettledDate(form);
@@ -951,6 +957,7 @@ async function renderForm(id) {
   });
   form.placed?.addEventListener("change", () => updateSettlementPreview(form));
   updateModellingCalcs(form);
+  updateEffectiveOddsPreview(form);
   updateSettlementPreview(form);
 
   if (!id) form.placed_at.value = localDatetimeInputValue();
@@ -961,7 +968,7 @@ async function renderForm(id) {
     $("#saveBtn").textContent = t("form.saveChanges");
     editing = await api(`/bets/${id}`);
     fillForm(form, editing);
-    syncOddsFormat(); syncEachWay(); updateModellingCalcs(form); updateSettlementPreview(form);
+    syncOddsFormat(); syncEachWay(); updateModellingCalcs(form); updateEffectiveOddsPreview(form); updateSettlementPreview(form);
     const shareHost = document.createElement("div");
     form.querySelector(".formactions").before(shareHost);
     mountShareControls(shareHost, editing.id, editing.share_token);
@@ -1093,7 +1100,37 @@ function onOddsFormatChange() {
   form.odds_format.dataset.prev = next;
   syncOddsFormat();
   updateModellingCalcs($("#betForm"));
+  updateEffectiveOddsPreview($("#betForm"));
   updateSettlementPreview($("#betForm"));
+}
+
+function effectiveDecimalOdds(oddsDec, commissionPct) {
+  if (!(oddsDec > 1) || !Number.isFinite(commissionPct) || commissionPct <= 0) return NaN;
+  return 1 + (oddsDec - 1) * (1 - commissionPct / 100);
+}
+
+function updateEffectiveOddsPreview(form = $("#betForm")) {
+  if (!form) return;
+  const hint = form.querySelector("#effectiveOddsHint");
+  if (!hint) return;
+  const valueEl = hint.querySelector('[data-role="effective-odds"]');
+  const commission = parseFloat(form.exchange_commission_pct?.value);
+  const oddsDec = parseOddsToDecimal(form);
+  const effDec = effectiveDecimalOdds(oddsDec, commission);
+
+  if (!Number.isFinite(effDec) || !(effDec > 1)) {
+    hint.hidden = true;
+    return;
+  }
+
+  const fmt = form.odds_format.value;
+  const formatted = formatOddsFromDecimal(effDec, fmt);
+  if (valueEl) {
+    valueEl.textContent = fmt === "fractional" && formatted.denominator
+      ? `${formatted.odds}/${formatted.denominator}`
+      : formatted.odds;
+  }
+  hint.hidden = false;
 }
 
 function syncOddsFormat() {
