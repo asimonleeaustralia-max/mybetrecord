@@ -24,9 +24,30 @@ jobs:
       - name: Run unit + integration tests
         run: pytest -q
 
+  # Secrets can't be referenced in job-level `if:`, so we expose their presence
+  # as an output here and gate `build-and-deploy` on that. Missing secrets =>
+  # deploy is skipped (not failed), so CI stays green until Azure is wired up.
+  preflight:
+    runs-on: ubuntu-latest
+    outputs:
+      can-deploy: ${{ steps.check.outputs.ok }}
+    steps:
+      - id: check
+        env:
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        run: |
+          if [ -n "$AZURE_CLIENT_ID" ] && [ -n "$AZURE_TENANT_ID" ] && [ -n "$AZURE_SUBSCRIPTION_ID" ]; then
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::Azure OIDC secrets (AZURE_CLIENT_ID / AZURE_TENANT_ID / AZURE_SUBSCRIPTION_ID) are not set; skipping deploy."
+          fi
+
   build-and-deploy:
-    needs: test
-    if: github.ref == 'refs/heads/main'
+    needs: [test, preflight]
+    if: github.ref == 'refs/heads/main' && needs.preflight.outputs.can-deploy == 'true'
     runs-on: ubuntu-latest
     permissions:
       id-token: write   # OIDC login to Azure
