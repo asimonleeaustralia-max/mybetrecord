@@ -56,6 +56,7 @@ def init_db() -> None:
         _ensure_tournament_column,
         _ensure_modelling_edge_columns,
         _ensure_share_token_column,
+        _ensure_bet_broker_column,
     )
 
     if settings.database_url.startswith("postgresql"):
@@ -83,4 +84,5 @@ def init_db() -> None:
     _ensure_timezone_column()
     _ensure_modelling_edge_columns()
     _ensure_share_token_column()
+    _ensure_bet_broker_column()
     seed_dev_admin()

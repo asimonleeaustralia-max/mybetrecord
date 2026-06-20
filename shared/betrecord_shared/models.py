@@ -152,6 +152,7 @@ class Bet(Base):
 
     # Meta
     tipster: Mapped[str | None] = mapped_column(String(120), nullable=True)
+    bet_broker: Mapped[str | None] = mapped_column(String(120), nullable=True)
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
 
     # Public share link (unguessable token; null when sharing is disabled)

@@ -191,6 +191,7 @@ class BetBase(BaseModel):
     exchange_commission_pct: float = 0.0
 
     tipster: Optional[str] = None
+    bet_broker: Optional[str] = None
     notes: Optional[str] = None
 
 
@@ -226,6 +227,7 @@ class BetUpdate(BaseModel):
     bookmaker: Optional[str] = None
     exchange_commission_pct: Optional[float] = None
     tipster: Optional[str] = None
+    bet_broker: Optional[str] = None
     notes: Optional[str] = None
 
 
@@ -262,6 +264,7 @@ class BetOut(BaseModel):
     bookmaker: Optional[str]
     exchange_commission_pct: float
     tipster: Optional[str]
+    bet_broker: Optional[str]
     notes: Optional[str]
     created_at: datetime
     updated_at: datetime

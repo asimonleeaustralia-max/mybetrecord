@@ -213,6 +213,21 @@ def _ensure_modelling_edge_columns() -> None:
                 conn.execute(text(f"ALTER TABLE bets ADD COLUMN {name} {sql_type}"))
 
 
+def _ensure_bet_broker_column() -> None:
+    """Add bet_broker to existing databases created before the column existed."""
+    if "bets" not in inspect(engine).get_table_names():
+        return
+    columns = {c["name"] for c in inspect(engine).get_columns("bets")}
+    if "bet_broker" in columns:
+        return
+    dialect = engine.dialect.name
+    with engine.begin() as conn:
+        if dialect == "postgresql":
+            conn.execute(text("ALTER TABLE bets ADD COLUMN IF NOT EXISTS bet_broker VARCHAR(120)"))
+        else:
+            conn.execute(text("ALTER TABLE bets ADD COLUMN bet_broker VARCHAR(120)"))
+
+
 def _ensure_last_login_at_column() -> None:
     """Add last_login_at to existing databases created before the column existed."""
     if "users" not in inspect(engine).get_table_names():
