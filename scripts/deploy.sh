@@ -50,6 +50,9 @@ Required in .env.deploy or the environment:
 
 Optional:
   RESOURCE_GROUP, LOCATION, CORS_ORIGINS
+  CUSTOM_HOSTNAMES (comma-separated, default: www.mybetrecord.com,mybetrecord.com)
+  FRONTEND_APP (default: mybetrec-frontend)
+  CONTAINERAPPS_ENV (default: derived from the frontend app)
   STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, STRIPE_PRICE_ID
   AZURE_SUBSCRIPTION_ID (validates active subscription)
 EOF
@@ -213,6 +216,65 @@ print_outputs() {
   fi
 }
 
+bind_custom_hostnames() {
+  local hostnames="${CUSTOM_HOSTNAMES:-www.mybetrecord.com,mybetrecord.com}"
+  local frontend_app="${FRONTEND_APP:-mybetrec-frontend}"
+
+  if [[ -z "$hostnames" ]]; then
+    return
+  fi
+
+  if [[ "$DRY_RUN" -eq 1 ]]; then
+    echo "[dry-run] bind custom hostnames: $hostnames"
+    return
+  fi
+
+  local env_name="${CONTAINERAPPS_ENV:-}"
+  if [[ -z "$env_name" ]]; then
+    local env_id
+    env_id="$(az containerapp show \
+      -g "$RESOURCE_GROUP" -n "$frontend_app" \
+      --query properties.managedEnvironmentId -o tsv)"
+    env_name="${env_id##*/}"
+  fi
+
+  echo "Ensuring custom hostnames on $frontend_app..."
+  local hostname validation binding
+  IFS=',' read -ra hosts <<< "$hostnames"
+  for hostname in "${hosts[@]}"; do
+    hostname="${hostname#"${hostname%%[![:space:]]*}"}"
+    hostname="${hostname%"${hostname##*[![:space:]]}"}"
+    [[ -z "$hostname" ]] && continue
+
+    if [[ "$hostname" == www.* ]]; then
+      validation="CNAME"
+    else
+      validation="HTTP"
+    fi
+
+    binding="$(az containerapp hostname list \
+      -g "$RESOURCE_GROUP" -n "$frontend_app" \
+      --query "[?name=='${hostname}'].bindingType | [0]" -o tsv 2>/dev/null || true)"
+
+    if [[ -z "$binding" || "$binding" == "None" ]]; then
+      run az containerapp hostname add \
+        -g "$RESOURCE_GROUP" -n "$frontend_app" \
+        --hostname "$hostname"
+    fi
+
+    if [[ "$binding" != "SniEnabled" ]]; then
+      echo "Binding managed certificate for $hostname ($validation)..."
+      run az containerapp hostname bind \
+        -g "$RESOURCE_GROUP" -n "$frontend_app" \
+        --hostname "$hostname" \
+        --environment "$env_name" \
+        --validation-method "$validation"
+    else
+      echo "Hostname already bound: $hostname"
+    fi
+  done
+}
+
 # --- main ---
 ensure_az
 run_tests
@@ -238,3 +300,4 @@ else
 fi
 
 print_outputs
+bind_custom_hostnames
