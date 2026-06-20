@@ -12,6 +12,7 @@
     "passwordHint": "8+ characters",
     "displayName": "Display name",
     "loginFailed": "Login failed",
+    "emailAlreadyRegistered": "An account with this email already exists. Sign in instead.",
     "sessionExpired": "Session expired",
     "forgotPassword": "Forgot password?",
     "forgotPasswordHint": "Enter your email and we'll send you a link to reset your password.",

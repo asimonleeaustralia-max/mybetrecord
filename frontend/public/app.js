@@ -7,7 +7,17 @@
 const TOKEN_KEY = "mbr_token";
 const state = { user: null, sports: [], betTypes: [], currencies: [], charts: {} };
 
-const t = (key, vars) => window.i18n?.t(key, vars) ?? key;
+const translate = (key, vars) => window.i18n?.t(key, vars) ?? key;
+const t = translate;
+
+function apiErrorMessage(detail) {
+  if (typeof detail === "string" && detail) return detail;
+  if (Array.isArray(detail)) {
+    const msg = detail.map(e => (e && e.msg) || "").filter(Boolean).join("; ");
+    if (msg) return msg;
+  }
+  return translate("errors.requestFailed");
+}
 
 function clone(id) {
   const node = document.importNode($(`#${id}`).content, true);
@@ -205,9 +215,9 @@ function fillBetTypeDatalist(datalist, extra = []) {
 
 function betTypeFilterOptions(selected = "") {
   const types = betTypeChoices(state.betTypes || []);
-  const opts = types.map(t => {
-    const sel = t === selected ? " selected" : "";
-    return `<option value="${esc(t)}"${sel}>${esc(betTypeLabel(t))}</option>`;
+  const opts = types.map(betType => {
+    const sel = betType === selected ? " selected" : "";
+    return `<option value="${esc(betType)}"${sel}>${esc(betTypeLabel(betType))}</option>`;
   }).join("");
   return `<option value="">${t("bets.all")}</option>${opts}`;
 }
@@ -305,24 +315,23 @@ async function api(path, { method = "GET", body, raw = false, allow401 = false, 
       signal: ctrl.signal,
     });
   } catch (err) {
-    if (err.name === "AbortError") throw new Error(t("errors.requestTimeout"));
+    if (err.name === "AbortError") throw new Error(translate("errors.requestTimeout"));
     throw err;
   } finally {
     clearTimeout(timer);
   }
-  if (res.status === 401 && !allow401) { setToken(null); showAuth(); throw new Error(t("auth.sessionExpired")); }
+  if (res.status === 401 && !allow401) { setToken(null); showAuth(); throw new Error(translate("auth.sessionExpired")); }
   if (!res.ok) {
-    let detail = res.statusText || t("errors.requestFailed");
+    let detail = res.statusText;
     const text = await res.text();
     if (text) {
       try {
-        const data = JSON.parse(text);
-        detail = data.detail || detail;
+        detail = JSON.parse(text).detail ?? detail;
       } catch {
         detail = text;
       }
     }
-    throw new Error(typeof detail === "string" ? detail : t("errors.requestFailed"));
+    throw new Error(apiErrorMessage(detail));
   }
   if (raw) return res;
   if (res.status === 204) return null;
@@ -392,18 +401,18 @@ async function publicApi(path) {
   try {
     res = await fetch(path, { signal: ctrl.signal });
   } catch (err) {
-    if (err.name === "AbortError") throw new Error(t("errors.requestTimeout"));
+    if (err.name === "AbortError") throw new Error(translate("errors.requestTimeout"));
     throw err;
   } finally {
     clearTimeout(timer);
   }
   if (!res.ok) {
-    let detail = res.statusText || t("errors.requestFailed");
+    let detail = res.statusText;
     const text = await res.text();
     if (text) {
-      try { detail = JSON.parse(text).detail || detail; } catch { detail = text; }
+      try { detail = JSON.parse(text).detail ?? detail; } catch { detail = text; }
     }
-    throw new Error(typeof detail === "string" ? detail : t("errors.requestFailed"));
+    throw new Error(apiErrorMessage(detail));
   }
   return res.json();
 }
@@ -526,8 +535,10 @@ function bindEvents() {
       setToken(access_token);
       await boot({ loading: true });
     } catch (err) {
-      showAuth();
-      authError(err.message);
+      const msg = err.message === "Email already registered"
+        ? t("auth.emailAlreadyRegistered")
+        : (err.message || t("errors.requestFailed"));
+      showAuth(msg);
     }
   });
 
