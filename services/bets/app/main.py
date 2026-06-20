@@ -231,6 +231,7 @@ def create_bet(
 
     bet = Bet(
         user_id=user.id,
+        tournament=payload.tournament,
         event=payload.event,
         selection=payload.selection,
         sport=payload.sport,
@@ -295,7 +296,7 @@ def update_bet(
         bet.odds_format = new_fmt
 
     for field in (
-        "event", "selection", "sport", "bet_type", "placed_at", "event_at", "settled_at", "stake", "currency",
+        "tournament", "event", "selection", "sport", "bet_type", "placed_at", "event_at", "settled_at", "stake", "currency",
         "each_way", "place_fraction", "placed", "outcome", "cash_out_amount",
         "bet_model", "model_implied_odds", "personal_implied_odds", "closing_odds", "closing_odds_exchange",
         "bookmaker", "exchange_commission_pct", "tipster", "notes",

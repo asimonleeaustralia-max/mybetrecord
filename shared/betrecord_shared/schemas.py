@@ -156,6 +156,7 @@ class AppEventOut(BaseModel):
 # -------------------------------- Bets ------------------------------------ #
 
 class BetBase(BaseModel):
+    tournament: Optional[str] = None
     event: str
     selection: str
     sport: str
@@ -199,6 +200,7 @@ class BetCreate(BetBase):
 
 class BetUpdate(BaseModel):
     # Every field optional for PATCH-style edits.
+    tournament: Optional[str] = None
     event: Optional[str] = None
     selection: Optional[str] = None
     sport: Optional[str] = None
@@ -230,6 +232,7 @@ class BetUpdate(BaseModel):
 class BetOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: str
+    tournament: Optional[str] = None
     event: str
     selection: str
     sport: str
@@ -276,6 +279,7 @@ class PublicBetOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     sport: str
     bet_type: str
+    tournament: Optional[str] = None
     event: str
     event_at: Optional[datetime] = None
     selection: str

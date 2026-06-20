@@ -53,6 +53,7 @@ def init_db() -> None:
         _ensure_timezone_column,
         _ensure_settled_at_column,
         _ensure_event_at_column,
+        _ensure_tournament_column,
         _ensure_modelling_edge_columns,
         _ensure_share_token_column,
     )
@@ -75,6 +76,7 @@ def init_db() -> None:
     _migrate_exchange_to_bookmaker()
     _ensure_settled_at_column()
     _ensure_event_at_column()
+    _ensure_tournament_column()
     _ensure_closing_odds_exchange_column()
     _ensure_last_login_at_column()
     _ensure_preferred_locale_column()

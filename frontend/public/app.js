@@ -865,6 +865,7 @@ async function renderPublicShare(token) {
     detail.innerHTML = [
       shareDetailRow(t("form.sport"), esc(b.sport)),
       shareDetailRow(t("form.betType"), esc(betTypeLabel(b.bet_type))),
+      ...(b.tournament ? [shareDetailRow(t("form.tournament"), esc(b.tournament))] : []),
       shareDetailRow(t("form.event"), esc(b.event)),
       shareDetailRow(t("form.eventAt"), esc(formatPublicDt(b.event_at))),
       shareDetailRow(t("form.selection"), esc(b.selection)),
@@ -1358,6 +1359,7 @@ function fillForm(form, b) {
   const set = (n, v) => { if (form[n] != null && v != null) form[n].value = v; };
   set("sport", b.sport);
   set("bet_type", BET_TYPE_LABELS[b.bet_type] || BET_TYPE_LABELS[b.bet_type?.toLowerCase()] || b.bet_type);
+  set("tournament", b.tournament);
   set("event", b.event);
   set("selection", b.selection);
   set("event_at", b.event_at ? new Date(b.event_at).toISOString().slice(0, 16) : "");

@@ -185,6 +185,7 @@ _EXPORT_COLUMNS = [
     ("placed_at", "Date/Time placed"),
     ("settled_at", "Date/Time settled"),
     ("sport", "Sport"),
+    ("tournament", "Tournament"),
     ("event", "Event"),
     ("event_at", "Event date/time"),
     ("selection", "Selection"),

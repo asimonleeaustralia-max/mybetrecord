@@ -108,6 +108,7 @@ class Bet(Base):
     user_id: Mapped[str] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
 
     # What was bet
+    tournament: Mapped[str | None] = mapped_column(String(255), nullable=True)
     event: Mapped[str] = mapped_column(String(255), nullable=False)
     selection: Mapped[str] = mapped_column(String(255), nullable=False)
     sport: Mapped[str] = mapped_column(String(80), index=True, nullable=False)

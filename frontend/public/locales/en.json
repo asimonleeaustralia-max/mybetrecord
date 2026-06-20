@@ -97,6 +97,8 @@
     "bookmakerPlaceholder": "e.g. Ladbrokes, Betfair",
     "commission": "Winnings deduction %",
     "commissionHint": "e.g. exchange commission",
+    "tournament": "Tournament",
+    "tournamentPlaceholder": "e.g. Premier League, The Open",
     "event": "Event",
     "eventPlaceholder": "e.g. 14:30 Ascot",
     "selection": "Selection",

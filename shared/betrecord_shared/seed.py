@@ -64,6 +64,21 @@ def _ensure_event_at_column() -> None:
             conn.execute(text("ALTER TABLE bets ADD COLUMN event_at DATETIME"))
 
 
+def _ensure_tournament_column() -> None:
+    """Add tournament to existing databases created before the column existed."""
+    if "bets" not in inspect(engine).get_table_names():
+        return
+    columns = {c["name"] for c in inspect(engine).get_columns("bets")}
+    if "tournament" in columns:
+        return
+    dialect = engine.dialect.name
+    with engine.begin() as conn:
+        if dialect == "postgresql":
+            conn.execute(text("ALTER TABLE bets ADD COLUMN IF NOT EXISTS tournament VARCHAR(255)"))
+        else:
+            conn.execute(text("ALTER TABLE bets ADD COLUMN tournament VARCHAR(255)"))
+
+
 def _ensure_settled_at_column() -> None:
     """Add settled_at to existing databases created before the column existed."""
     if "bets" not in inspect(engine).get_table_names():
