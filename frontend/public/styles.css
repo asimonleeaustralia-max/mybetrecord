@@ -245,7 +245,13 @@ input:focus, select:focus, textarea:focus {
   color: #cfd3da;
   padding-top: max(12px, env(safe-area-inset-top));
 }
-.ticker { display: flex; gap: 22px; margin-left: 8px; flex: 1; overflow-x: auto; }
+.ticker {
+  display: flex; gap: 22px; margin-left: 8px; flex: 1; min-width: 0;
+  overflow-x: auto; overflow-y: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.ticker::-webkit-scrollbar { display: none; }
 .ticker__item { display: flex; flex-direction: column; line-height: 1.15; }
 .ticker__label { font-size: .62rem; text-transform: uppercase; letter-spacing: .08em; color: #7f8694; }
 .ticker .num { font-size: .95rem; color: #f2ead8; font-weight: 500; }
