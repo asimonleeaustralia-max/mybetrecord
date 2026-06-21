@@ -113,6 +113,16 @@ ensure_az() {
   echo "Azure subscription: $(az account show --query name -o tsv)"
 }
 
+build_blog() {
+  echo "Building blog and sitemap..."
+  if [[ "$DRY_RUN" -eq 1 ]]; then
+    echo "[dry-run] python3 scripts/build_blog.py"
+    return
+  fi
+  python3 -m pip install -q -r requirements-dev.txt
+  python3 scripts/build_blog.py
+}
+
 run_tests() {
   if [[ "$SKIP_TESTS" -eq 1 ]]; then
     echo "Skipping tests (--skip-tests)."
@@ -180,6 +190,7 @@ deploy_bicep() {
 }
 
 build_and_push_images() {
+  build_blog
   resolve_acr
   if [[ -z "${ACR_NAME:-}" ]]; then
     if [[ "$DRY_RUN" -eq 1 ]]; then

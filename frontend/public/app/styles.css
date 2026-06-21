@@ -349,6 +349,9 @@ textarea { font-family: var(--sans); resize: vertical; }
 .panel__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
 .panel__head h2 { font-size: 1.02rem; margin: 0; }
 .panel__sub { font-size: .8rem; color: var(--muted); }
+.settings-legal { font-size: .85rem; color: var(--muted); margin: 0 0 20px; text-align: center; }
+.settings-legal a { color: var(--brass-deep); text-decoration: none; }
+.settings-legal a:hover { text-decoration: underline; }
 .exports { display: flex; gap: 8px; }
 .split { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
 .mini-select { width: auto; padding: 6px 10px; font-size: .82rem; }

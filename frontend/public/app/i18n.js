@@ -2,6 +2,7 @@
 
 const LOCALE_COOKIE = "mbr_locale";
 const LOCALE_COOKIE_MAX_AGE = 365 * 24 * 60 * 60; // 1 year
+const LOCALE_BASE = "/app/locales";
 
 let _catalog = null;
 let _strings = {};
@@ -9,7 +10,7 @@ let _locale = "en";
 
 async function loadCatalog() {
   if (_catalog) return _catalog;
-  const res = await fetch("/locales/languages.json");
+  const res = await fetch(`${LOCALE_BASE}/languages.json`);
   _catalog = await res.json();
   return _catalog;
 }
@@ -78,7 +79,7 @@ function localeTag() {
 async function loadLocale(locale) {
   const code = normalizeLocale(locale) || "en";
   if (!_strings.en) {
-    const enRes = await fetch("/locales/en.json");
+    const enRes = await fetch(`${LOCALE_BASE}/en.json`);
     if (enRes.ok) _strings.en = await enRes.json();
   }
   if (_strings[code]) {
@@ -86,7 +87,7 @@ async function loadLocale(locale) {
     document.documentElement.lang = localeTag();
     return;
   }
-  const res = await fetch(`/locales/${code}.json`);
+  const res = await fetch(`${LOCALE_BASE}/${code}.json`);
   if (!res.ok && code !== "en") return loadLocale("en");
   let data;
   try {

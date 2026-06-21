@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#16181d"/>
+  <text x="600" y="280" text-anchor="middle" font-family="system-ui,sans-serif" font-size="72" font-weight="700" fill="#f2ead8">my<tspan fill="#a9791f">bet</tspan>record</text>
+  <text x="600" y="360" text-anchor="middle" font-family="system-ui,sans-serif" font-size="32" fill="#b8b0a0">Sports betting tracker &amp; ledger</text>
+</svg>

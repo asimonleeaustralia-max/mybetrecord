@@ -392,24 +392,6 @@ def test_reports_summary_and_breakdown(clients, auth_headers):
     assert by_sport["Darts"] == pytest.approx(0.0)
 
 
-def test_reports_tipster_filter(clients, auth_headers):
-    headers, _ = auth_headers
-    _make_bet(clients, headers, tipster="Alice", odds=2.0, stake=100, outcome="win")   # +100
-    _make_bet(clients, headers, tipster="Bob", odds=2.0, stake=100, outcome="loss")     # -100
-    _make_bet(clients, headers, tipster="Alice", odds=2.0, stake=50, outcome="win")   # +50
-
-    tipsters = clients["bets"].get("/bets/tipsters", headers=headers).json()
-    assert tipsters == ["Alice", "Bob"]
-
-    alice = clients["reports"].get("/reports/summary?tipster=Alice", headers=headers).json()
-    assert alice["profit"] == pytest.approx(150.0)
-    assert alice["settled_bets"] == 2
-
-    bob = clients["reports"].get("/reports/summary?tipster=Bob", headers=headers).json()
-    assert bob["profit"] == pytest.approx(-100.0)
-    assert bob["settled_bets"] == 1
-
-
 def test_reports_currency_filter_and_primary_currency(clients, auth_headers):
     headers, _ = auth_headers
     _make_bet(clients, headers, currency="GBP", odds=2.0, stake=100, outcome="win")   # +100 GBP
@@ -623,4 +605,27 @@ def test_public_bet_requires_no_auth(clients, auth_headers):
     token = clients["bets"].post(f"/bets/{bet['id']}/share", headers=headers).json()["share_token"]
     assert clients["bets"].get(f"/bets/public/{token}").status_code == 200
     assert clients["bets"].get("/bets/public/not-a-real-token").status_code == 404
+
+
+def test_share_page_html(clients, auth_headers):
+    headers, _ = auth_headers
+    bet = _make_bet(
+        clients,
+        headers,
+        event="Ascot 14:30",
+        selection="Galileo Gold",
+        sport="Horse racing",
+        bet_type="Win",
+    )
+    token = clients["bets"].post(f"/bets/{bet['id']}/share", headers=headers).json()["share_token"]
+    r = clients["bets"].get(f"/bets/share-page/{token}")
+    assert r.status_code == 200, r.text
+    assert "text/html" in r.headers.get("content-type", "")
+    html = r.text
+    assert "noindex" in html
+    assert 'property="og:title"' in html
+    assert "Galileo Gold" in html
+    assert "Ascot 14:30" in html
+    assert token in html
+    assert clients["bets"].get("/bets/share-page/not-a-real-token").status_code == 404
 

@@ -371,7 +371,10 @@ function toast(msg, isErr = false) {
   el._t = setTimeout(() => (el.hidden = true), 2600);
 }
 
-function getShareTokenFromHash() {
+function getShareToken() {
+  if (window.__MBR_SHARE_TOKEN) return window.__MBR_SHARE_TOKEN;
+  const pathMatch = location.pathname.match(/\/share\/([^/]+)/);
+  if (pathMatch) return pathMatch[1];
   const parts = (location.hash || "").slice(1).split("/").filter(Boolean);
   return parts[0] === "share" && parts[1] ? parts[1] : null;
 }
@@ -391,7 +394,7 @@ function getAuthRouteFromHash() {
 }
 
 function shareLink(token) {
-  return `${location.origin}${location.pathname}#/share/${token}`;
+  return `${location.origin}/share/${token}`;
 }
 
 async function publicApi(path) {
@@ -502,7 +505,7 @@ function bindEvents() {
   });
 
   window.addEventListener("hashchange", () => {
-    if (getShareTokenFromHash()) return;
+    if (getShareToken()) return;
     if (state.user) route();
     else showAuth();
   });
@@ -629,7 +632,7 @@ const routes = {
 };
 
 async function route() {
-  const shareToken = getShareTokenFromHash();
+  const shareToken = getShareToken();
   if (shareToken) {
     await renderPublicShare(shareToken);
     return;
@@ -1731,7 +1734,7 @@ async function loadAdminEvents() {
 /* -------------------------------- start -------------------------------- */
 async function start() {
   try {
-    const shareToken = getShareTokenFromHash();
+    const shareToken = getShareToken();
     if (shareToken) {
       await i18n.initI18n(i18n.getLoginLocale?.() || "en");
       document.title = t("share.title");
@@ -1758,8 +1761,8 @@ async function start() {
 
 function onReady() {
   try { bindEvents(); } catch (err) { console.error("bindEvents failed:", err); }
-  if (getShareTokenFromHash() || token()) {
-    start().catch(() => (getShareTokenFromHash() ? renderPublicShare(getShareTokenFromHash()) : showAuth()));
+  if (getShareToken() || token()) {
+    start().catch(() => (getShareToken() ? renderPublicShare(getShareToken()) : showAuth()));
   }
 }
 
@@ -1771,7 +1774,7 @@ window.mbrAttach = function () {
 
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", () => window.mbrAttach());
-} else if (document.querySelector('script[src="/app.js"]')) {
+} else if (document.querySelector('script[src="/app/app.js"]')) {
   // Loaded via static tag (e.g. tests)
   window.mbrAttach();
 }

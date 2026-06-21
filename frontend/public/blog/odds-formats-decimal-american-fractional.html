@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Odds Formats — Decimal, American, and Fractional — mybetrecord</title>
+  <meta name="description" content="Convert between decimal, American, and fractional odds. Reference table and formulas for Hong Kong, Malaysian, and Indonesian formats." />
+  <meta name="keywords" content="odds converter, decimal odds, American odds, fractional odds" />
+  <link rel="canonical" href="https://mybetrecord.com/blog/odds-formats-decimal-american-fractional.html" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Odds Formats — Decimal, American, and Fractional" />
+  <meta property="og:description" content="Convert between decimal, American, and fractional odds. Reference table and formulas for Hong Kong, Malaysian, and Indonesian formats." />
+  <meta property="og:url" content="https://mybetrecord.com/blog/odds-formats-decimal-american-fractional.html" />
+  <meta property="og:image" content="https://mybetrecord.com/og-default.svg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/marketing.css" />
+  <link rel="stylesheet" href="/blog/blog.css" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Odds Formats \u2014 Decimal, American, and Fractional",
+    "description": "Convert between decimal, American, and fractional odds. Reference table and formulas for Hong Kong, Malaysian, and Indonesian formats.",
+    "datePublished": "2026-02-12",
+    "author": {"@type": "Organization", "name": "mybetrecord"},
+    "publisher": {"@type": "Organization", "name": "mybetrecord", "logo": {"@type": "ImageObject", "url": "https://mybetrecord.com/favicon.svg"}},
+    "mainEntityOfPage": "https://mybetrecord.com/blog/odds-formats-decimal-american-fractional.html"
+  }
+  </script>
+</head>
+<body>
+  <div class="m-site">
+    <header class="m-header">
+      <a class="wordmark" href="/">my<span>bet</span>record</a>
+      <nav class="m-nav"><a href="/blog/">Blog</a><a class="m-btn m-btn--primary" href="/app/#/register">Create account</a></nav>
+    </header>
+    <article class="blog-post">
+      <header class="blog-post__head">
+        <p class="blog-post__meta"><time datetime="2026-02-12">2026-02-12</time></p>
+        <h1>Odds Formats — Decimal, American, and Fractional</h1>
+        <p class="blog-post__deck">Convert between decimal, American, and fractional odds. Reference table and formulas for Hong Kong, Malaysian, and Indonesian formats.</p>
+      </header>
+      <div class="blog-post__body"><p>Bookmakers worldwide display prices differently. A disciplined ledger stores one <strong>canonical decimal</strong> internally while letting you enter bets in whatever format you see on screen.</p>
+<h2>Decimal (European)</h2>
+<p>Total return per unit stake including stake. Decimal 2.50 → win £1.50 profit on £1 staked.</p>
+<p><strong>Profit</strong> = stake × (decimal − 1)</p>
+<h2>American (moneyline)</h2>
+<p>Positive (+150): profit on a £100 stake. +150 → decimal 2.50.</p>
+<p>Negative (−200): stake needed to win £100. −200 → decimal 1.50.</p>
+<p>Conversion:</p>
+<ul>
+<li>If American &gt; 0: decimal = 1 + American/100</li>
+<li>If American &lt; 0: decimal = 1 + 100/|American|</li>
+</ul>
+<h2>Fractional (UK)</h2>
+<p>6/4 means win £6 for every £4 staked. Decimal = 1 + numerator/denominator = 2.50.</p>
+<p>Some sites show &ldquo;6/4&rdquo; as the win fraction only; always confirm whether stake is included in display.</p>
+<h2>Asian formats</h2>
+<table>
+<thead>
+<tr>
+<th>Format</th>
+<th>Example</th>
+<th>Decimal</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hong Kong</td>
+<td>0.85</td>
+<td>1.85</td>
+</tr>
+<tr>
+<td>Malaysian +</td>
+<td>0.85</td>
+<td>1.85</td>
+</tr>
+<tr>
+<td>Malaysian −</td>
+<td>−0.85</td>
+<td>1 + 1/0.85 ≈ 2.176</td>
+</tr>
+<tr>
+<td>Indonesian +</td>
+<td>1.50</td>
+<td>2.50</td>
+</tr>
+<tr>
+<td>Indonesian −</td>
+<td>−1.50</td>
+<td>1 + 1/1.50 ≈ 1.667</td>
+</tr>
+</tbody>
+</table>
+<h2>Why normalisation matters</h2>
+<p>Mixing formats in one spreadsheet causes silent errors — American minus signs, fractional denominators, or treating HK as decimal. Software should convert on input and never lose precision.</p>
+<h2>Practical tip</h2>
+<p>Set a <strong>default entry format</strong> in your tracker matching your primary bookmaker, but verify decimal equivalent on save until the habit sticks.</p>
+<p>mybetrecord accepts all listed formats and stores decimal odds for every report and Kelly calculation.</p></div>
+      <aside class="blog-cta">
+        <strong>Track this in mybetrecord</strong>
+        <p>Log bets, see ROI and yield, and size stakes with Kelly — free account.</p>
+        <a class="m-btn m-btn--primary" href="/app/#/register">Start your ledger</a>
+      </aside>
+      
+      <section class="blog-related">
+        <h2>Related guides</h2>
+        <ul>
+          
+          <li><a href="/blog/spreadsheet-vs-betting-tracker.html">Spreadsheet vs Dedicated Betting Tracker</a></li>
+          
+          <li><a href="/blog/betting-equity-curve.html">Reading Your Betting Equity Curve</a></li>
+          
+        </ul>
+      </section>
+      
+      <p class="blog-rg"><strong>Responsible gambling.</strong> Educational content only — not betting advice. Never stake more than you can afford to lose.</p>
+    </article>
+    <footer class="m-footer">
+      <nav><a href="/">Home</a><a href="/blog/">Blog</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a></nav>
+    </footer>
+  </div>
+</body>
+</html>

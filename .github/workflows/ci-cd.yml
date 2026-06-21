@@ -21,6 +21,8 @@ jobs:
         run: |
           pip install ./shared
           pip install -r requirements-dev.txt
+      - name: Build blog and sitemap
+        run: python scripts/build_blog.py
       - name: Run unit + integration tests
         run: pytest -q
 

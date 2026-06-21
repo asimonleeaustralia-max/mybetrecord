@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <url>
+    <loc>https://mybetrecord.com/</loc>
+    
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <url>
+    <loc>https://mybetrecord.com/login</loc>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <url>
+    <loc>https://mybetrecord.com/privacy</loc>
+    
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>https://mybetrecord.com/terms</loc>
+    
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>https://mybetrecord.com/blog/</loc>
+    
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://mybetrecord.com/blog/spreadsheet-vs-betting-tracker.html</loc>
+    <lastmod>2026-03-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://mybetrecord.com/blog/betting-equity-curve.html</loc>
+    <lastmod>2026-02-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://mybetrecord.com/blog/each-way-bet-settlement.html</loc>
+    <lastmod>2026-02-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://mybetrecord.com/blog/odds-formats-decimal-american-fractional.html</loc>
+    <lastmod>2026-02-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://mybetrecord.com/blog/closing-line-value-clv.html</loc>
+    <lastmod>2026-02-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://mybetrecord.com/blog/kelly-criterion-explained.html</loc>
+    <lastmod>2026-01-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://mybetrecord.com/blog/roi-vs-yield-sports-betting.html</loc>
+    <lastmod>2026-01-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://mybetrecord.com/blog/what-is-a-betting-ledger.html</loc>
+    <lastmod>2026-01-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+</urlset>

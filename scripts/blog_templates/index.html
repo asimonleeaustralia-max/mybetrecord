@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Blog — mybetrecord</title>
+  <meta name="description" content="Guides on betting ledgers, ROI, Kelly criterion, closing line value, and sports betting analytics." />
+  <link rel="canonical" href="{{ site_url }}/blog/" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/marketing.css" />
+  <link rel="stylesheet" href="/blog/blog.css" />
+</head>
+<body>
+  <div class="m-site">
+    <header class="m-header">
+      <a class="wordmark" href="/">my<span>bet</span>record</a>
+      <nav class="m-nav"><a href="/login">Sign in</a><a class="m-btn m-btn--primary" href="/app/#/register">Create account</a></nav>
+    </header>
+    <main class="blog-index">
+      <h1>Betting analytics guides</h1>
+      <p class="sub">Learn the maths behind the metrics — then track them in your ledger.</p>
+      <ul class="blog-list">
+        {% for post in posts %}
+        <li>
+          <a href="/blog/{{ post.slug }}.html">
+            <span class="blog-list__title">{{ post.title }}</span>
+            <span class="blog-list__desc">{{ post.description }}</span>
+            <time datetime="{{ post.date }}">{{ post.date }}</time>
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+    </main>
+    <footer class="m-footer">
+      <nav><a href="/">Home</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a></nav>
+    </footer>
+  </div>
+</body>
+</html>

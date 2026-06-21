@@ -12,9 +12,11 @@ from collections import Counter
 from datetime import datetime, timezone
 from typing import Optional
 
+import html as html_module
+
 from fastapi import Depends, FastAPI, HTTPException, Query, status
 from fastapi.middleware.cors import CORSMiddleware
-from starlette.responses import Response
+from starlette.responses import HTMLResponse, Response
 from sqlalchemy import distinct, select
 from sqlalchemy.orm import Session
 
@@ -107,6 +109,67 @@ def _serialise_public(bet: Bet) -> PublicBetOut:
     return PublicBetOut.model_validate(bet)
 
 
+def _format_share_odds(bet: Bet) -> str:
+    if bet.odds_format == "american":
+        dec = bet.odds_decimal
+        if dec >= 2.0:
+            return f"+{round((dec - 1) * 100)}"
+        return str(round(-100 / (dec - 1)))
+    if bet.odds_format == "fractional":
+        num = round((bet.odds_decimal - 1) * 100)
+        return f"{num}/100"
+    return f"{bet.odds_decimal:.2f}"
+
+
+def _share_page_html(bet: Bet, token: str, base_url: str = "https://mybetrecord.com") -> str:
+    title = f"{bet.selection} — {bet.event}"
+    og_title = html_module.escape(f"{bet.selection} @ {bet.event} — mybetrecord")
+    og_desc = html_module.escape(
+        f"{bet.sport} · {bet.bet_type} · stake {bet.stake:g} {bet.currency} @ {_format_share_odds(bet)}"
+    )
+    share_url = f"{base_url}/share/{token}"
+    esc = html_module.escape
+    return f"""<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>{esc(title)} — mybetrecord</title>
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="{og_title}" />
+  <meta property="og:description" content="{og_desc}" />
+  <meta property="og:url" content="{esc(share_url)}" />
+  <meta property="og:image" content="{base_url}/og-default.svg" />
+  <meta name="twitter:card" content="summary" />
+  <link rel="stylesheet" href="/app/styles.css" />
+  <script>window.__MBR_SHARE_TOKEN = {token!r};</script>
+</head>
+<body>
+  <section class="share-view">
+    <div class="share-view__panel">
+      <div class="wordmark wordmark--lg">my<span>bet</span>record</div>
+      <p class="share-view__tag">Read-only view</p>
+      <main id="shareMain">
+        <article class="share-detail">
+          <dl class="share-detail__list">
+            <div class="share-detail__row"><dt>Sport</dt><dd>{esc(bet.sport)}</dd></div>
+            <div class="share-detail__row"><dt>Bet type</dt><dd>{esc(bet.bet_type)}</dd></div>
+            <div class="share-detail__row"><dt>Event</dt><dd>{esc(bet.event)}</dd></div>
+            <div class="share-detail__row"><dt>Selection</dt><dd>{esc(bet.selection)}</dd></div>
+            <div class="share-detail__row"><dt>Stake</dt><dd class="num">{bet.stake:g} {esc(bet.currency)}</dd></div>
+            <div class="share-detail__row"><dt>Odds</dt><dd class="num">{esc(_format_share_odds(bet))}</dd></div>
+          </dl>
+        </article>
+      </main>
+    </div>
+  </section>
+  <script src="/app/i18n.js"></script>
+  <script src="/app/app.js"></script>
+</body>
+</html>"""
+
+
 def _new_share_token(db: Session) -> str:
     """Generate a unique, URL-safe share token."""
     for _ in range(10):
@@ -194,6 +257,15 @@ def get_public_bet(share_token: str, db: Session = Depends(get_db)):
     if not bet:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Bet not found")
     return _serialise_public(bet)
+
+
+@app.get("/bets/share-page/{share_token}", response_class=HTMLResponse)
+def share_page(share_token: str, db: Session = Depends(get_db)) -> HTMLResponse:
+    """Server-rendered share page with Open Graph tags (noindex)."""
+    bet = db.scalar(select(Bet).where(Bet.share_token == share_token))
+    if not bet:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Bet not found")
+    return HTMLResponse(_share_page_html(bet, share_token))
 
 
 @app.post("/bets/{bet_id}/share", response_model=BetShareOut)

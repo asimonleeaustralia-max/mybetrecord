@@ -2,456 +2,218 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#16181D" />
-  <title>mybetrecord · your betting ledger</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>mybetrecord — Sports Betting Tracker, ROI &amp; Kelly Stake Ledger</title>
+  <meta name="description" content="Track every bet in one disciplined ledger. ROI, yield, Kelly stakes, CLV, equity curves, and exports — built for people who bet to a number." />
+  <link rel="canonical" href="https://mybetrecord.com/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="mybetrecord — Sports Betting Tracker, ROI &amp; Kelly Stake Ledger" />
+  <meta property="og:description" content="Track every bet in one disciplined ledger. ROI, yield, Kelly stakes, CLV, equity curves, and exports." />
+  <meta property="og:url" content="https://mybetrecord.com/" />
+  <meta property="og:image" content="https://mybetrecord.com/og-default.svg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="mybetrecord — Sports Betting Tracker" />
+  <meta name="twitter:description" content="Track every bet in one disciplined ledger. ROI, yield, Kelly stakes, CLV, and equity curves." />
+  <meta name="twitter:image" content="https://mybetrecord.com/og-default.svg" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/marketing.css" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "mybetrecord",
+    "applicationCategory": "FinanceApplication",
+    "operatingSystem": "Web",
+    "description": "Sports betting tracker and ledger with ROI, yield, Kelly stake recommendations, and closing line value tracking.",
+    "url": "https://mybetrecord.com/"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "mybetrecord",
+    "url": "https://mybetrecord.com/",
+    "logo": "https://mybetrecord.com/favicon.svg"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is a sports betting tracker?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "A sports betting tracker is a structured ledger where you record stakes, odds, outcomes, and profit for every wager. mybetrecord replaces spreadsheets with automatic ROI, yield, Kelly stake suggestions, and breakdowns by sport or tipster."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Does mybetrecord support decimal, American, and fractional odds?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. Log bets in decimal, American, fractional, Hong Kong, Malaysian, or Indonesian format. The app stores canonical decimal odds for consistent reporting."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What is Kelly stake and how does mybetrecord calculate it?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Kelly criterion recommends a stake size based on your edge and bankroll. Enter your personal implied odds on a bet and mybetrecord suggests a Kelly stake using your bankroll and multiplier settings."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I export my betting history?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. Export your full record as CSV, Excel, or JSON. API keys let scripts push or pull bets programmatically."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Is mybetrecord free?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Create a free account to start logging bets. Premium features may be offered later; core ledger and reporting are available at launch."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Does mybetrecord give betting tips?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "No. mybetrecord is analytics and record-keeping only. It does not provide picks, guarantees, or gambling advice."
+        }
+      }
+    ]
+  }
+  </script>
 </head>
 <body>
-
-  <!-- ───────────────────────── Auth loading ────────────────────── -->
-  <section id="authLoading" class="auth auth-loading" hidden>
-    <div class="auth-loading__spinner" role="status" data-i18n="meta.signingIn" data-i18n-attr="aria-label"></div>
-  </section>
-
-  <!-- ───────────────────────── Auth gate ───────────────────────── -->
-  <section id="auth" class="auth" hidden>
-    <div class="auth__panel">
-      <div class="wordmark wordmark--lg">my<span>bet</span>record</div>
-      <p class="auth__tag" data-i18n="auth.tagline">A disciplined ledger for people who bet to a number.</p>
-
-      <div class="seg" role="tablist">
-        <button class="seg__btn is-active" data-auth-tab="login" role="tab" data-i18n="auth.signIn">Sign in</button>
-        <button class="seg__btn" data-auth-tab="register" role="tab" data-i18n="auth.createAccount">Create account</button>
-      </div>
-
-      <form id="loginForm" class="auth__form">
-        <label><span data-i18n="auth.email">Email</span><input type="email" name="email" autocomplete="email" required /></label>
-        <label><span data-i18n="auth.password">Password</span><input type="password" name="password" autocomplete="current-password" required /></label>
-        <p class="auth__links"><a href="#/forgot-password" data-i18n="auth.forgotPassword">Forgot password?</a></p>
-        <button class="btn btn--brass" type="submit" data-i18n="auth.signIn">Sign in</button>
-      </form>
-
-      <form id="registerForm" class="auth__form" hidden>
-        <label><span data-i18n="auth.displayName">Display name</span><input type="text" name="display_name" autocomplete="name" /></label>
-        <label><span data-i18n="auth.email">Email</span><input type="email" name="email" autocomplete="email" required /></label>
-        <label><span data-i18n="auth.password">Password</span> <span class="hint" data-i18n="auth.passwordHint">8+ characters</span><input type="password" name="password" autocomplete="new-password" minlength="8" required /></label>
-        <button class="btn btn--brass" type="submit" data-i18n="auth.createAccount">Create account</button>
-      </form>
-
-      <form id="forgotPasswordForm" class="auth__form" hidden>
-        <p class="auth__hint" data-i18n="auth.forgotPasswordHint">Enter your email and we'll send you a link to reset your password.</p>
-        <label><span data-i18n="auth.email">Email</span><input type="email" name="email" autocomplete="email" required /></label>
-        <button class="btn btn--brass" type="submit" data-i18n="auth.sendResetLink">Send reset link</button>
-        <p class="auth__links"><a href="#/login" data-auth-back="login" data-i18n="auth.backToSignIn">Back to sign in</a></p>
-      </form>
-
-      <form id="resetPasswordForm" class="auth__form" hidden>
-        <p class="auth__hint" data-i18n="auth.resetPasswordHint">Choose a new password for your account.</p>
-        <label><span data-i18n="auth.newPassword">New password</span> <span class="hint" data-i18n="auth.passwordHint">8+ characters</span><input type="password" name="password" autocomplete="new-password" minlength="8" required /></label>
-        <label><span data-i18n="auth.confirmPassword">Confirm password</span><input type="password" name="password_confirm" autocomplete="new-password" minlength="8" required /></label>
-        <button class="btn btn--brass" type="submit" data-i18n="auth.updatePassword">Update password</button>
-        <p class="auth__links"><a href="#/login" data-auth-back="login" data-i18n="auth.backToSignIn">Back to sign in</a></p>
-      </form>
-
-      <p id="authError" class="form-error" hidden></p>
-      <p id="authSuccess" class="form-success" hidden></p>
-    </div>
-  </section>
-
-  <!-- ───────────────────────── Public share view ───────────────── -->
-  <section id="shareView" class="share-view" hidden>
-    <div class="share-view__panel">
-      <div class="wordmark wordmark--lg">my<span>bet</span>record</div>
-      <p class="share-view__tag" data-i18n="share.publicNote">Read-only view</p>
-      <main id="shareMain"></main>
-    </div>
-  </section>
-
-  <!-- ───────────────────────── App shell ──────────────────────── -->
-  <div id="app" class="app" hidden>
-    <header class="topbar">
-      <div class="wordmark">my<span>bet</span>record</div>
-      <div class="ticker">
-        <div class="ticker__item"><span class="ticker__label" data-i18n="ticker.bankroll">Bankroll</span><span id="tkBankroll" class="num">—</span></div>
-        <div class="ticker__item"><span class="ticker__label" data-i18n="ticker.pl">P/L</span><span id="tkPL" class="num">—</span></div>
-        <div class="ticker__item"><span class="ticker__label" data-i18n="ticker.yield">Yield</span><span id="tkYield" class="num">—</span></div>
-      </div>
-      <button id="logoutBtn" class="btn btn--ghost btn--sm" data-i18n="nav.signOut">Sign out</button>
+  <div class="m-site">
+    <header class="m-header">
+      <a class="wordmark" href="/">my<span>bet</span>record</a>
+      <nav class="m-nav">
+        <a href="/blog/">Blog</a>
+        <a href="/login">Sign in</a>
+        <a class="m-btn m-btn--primary" href="/app/#/register">Create account</a>
+      </nav>
     </header>
 
-    <nav class="tabs">
-      <a href="#/bets" class="tab" data-view="bets" data-i18n="nav.bets">Bets</a>
-      <a href="#/new" class="tab" data-view="new" data-i18n="nav.recordBet">Record a bet</a>
-      <a href="#/reports" class="tab" data-view="reports" data-i18n="nav.reports">Reports</a>
-      <a href="#/settings" class="tab" data-view="settings" data-i18n="nav.settings">Settings</a>
-      <a href="#/admin" class="tab" data-view="admin" hidden data-i18n="nav.admin">Admin</a>
-    </nav>
+    <section class="m-hero">
+      <h1>Sports betting tracker for people who bet to a number</h1>
+      <p class="lead">Stop juggling spreadsheets. Log every wager, track ROI and yield, size stakes with Kelly, and see where your edge really lives.</p>
+      <div class="m-hero__actions">
+        <a class="m-btn m-btn--primary" href="/app/#/register">Start free ledger</a>
+        <a class="m-btn m-btn--ghost" href="/blog/what-is-a-betting-ledger.html">What is a betting ledger?</a>
+      </div>
+    </section>
 
-    <main id="main" class="main"></main>
+    <section class="m-section">
+      <h2>From spreadsheet chaos to a disciplined ledger</h2>
+      <p class="sub">Most bettors outgrow notes apps and Excel tabs. mybetrecord gives you one place to record bets, settle outcomes, and read honest performance numbers.</p>
+      <div class="m-features">
+        <article class="m-feature">
+          <h3>Any odds format</h3>
+          <p>Decimal, American, fractional, and Asian formats — normalised automatically so reports stay consistent.</p>
+        </article>
+        <article class="m-feature">
+          <h3>Kelly stake suggestions</h3>
+          <p>Set bankroll and edge inputs; get recommended stake sizes based on the Kelly criterion.</p>
+        </article>
+        <article class="m-feature">
+          <h3>ROI, yield &amp; equity curve</h3>
+          <p>Strike rate, turnover, profit by month, and a cumulative equity curve for settled bets.</p>
+        </article>
+        <article class="m-feature">
+          <h3>Breakdowns that matter</h3>
+          <p>Slice performance by sport, bet type, tipster, or bookmaker to find where you win and leak.</p>
+        </article>
+        <article class="m-feature">
+          <h3>Closing line value</h3>
+          <p>Record closing odds and measure CLV — a sharper signal than short-term results alone.</p>
+        </article>
+        <article class="m-feature">
+          <h3>Export &amp; API</h3>
+          <p>Download CSV, Excel, or JSON. Generate API keys for scripts and automation.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="m-section m-section--alt">
+      <h2>Guides from the mybetrecord blog</h2>
+      <p class="sub">Learn the maths behind the metrics — then track them in your ledger.</p>
+      <div class="m-features">
+        <article class="m-feature">
+          <h3><a href="/blog/roi-vs-yield-sports-betting.html">ROI vs yield</a></h3>
+          <p>Two headline numbers, often confused. Know which one answers which question.</p>
+        </article>
+        <article class="m-feature">
+          <h3><a href="/blog/kelly-criterion-explained.html">Kelly criterion explained</a></h3>
+          <p>How optimal stake sizing works — and why most bettors use a fraction of full Kelly.</p>
+        </article>
+        <article class="m-feature">
+          <h3><a href="/blog/spreadsheet-vs-betting-tracker.html">Spreadsheet vs tracker</a></h3>
+          <p>When Excel is enough — and when a dedicated ledger saves hours and errors.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="m-section">
+      <h2>Frequently asked questions</h2>
+      <div class="m-faq">
+        <details>
+          <summary>What is a sports betting tracker?</summary>
+          <p>A structured ledger for every wager — stakes, odds, outcomes, and profit — with automatic ROI, yield, and breakdowns instead of manual spreadsheet formulas.</p>
+        </details>
+        <details>
+          <summary>Which odds formats are supported?</summary>
+          <p>Decimal, American, fractional, Hong Kong, Malaysian, and Indonesian. All bets are stored with canonical decimal odds for reporting.</p>
+        </details>
+        <details>
+          <summary>How does Kelly stake work here?</summary>
+          <p>Enter personal implied odds on a bet. With bankroll and Kelly multiplier set in settings, the app recommends a stake based on your stated edge.</p>
+        </details>
+        <details>
+          <summary>Can I export or use an API?</summary>
+          <p>Yes — CSV, Excel, and JSON exports plus API keys for programmatic access to your record.</p>
+        </details>
+        <details>
+          <summary>Is this a tipster service?</summary>
+          <p>No. mybetrecord is record-keeping and analytics only. We do not sell picks or promise profits.</p>
+        </details>
+      </div>
+    </section>
+
+    <section class="m-section">
+      <div class="m-rg">
+        <strong>Responsible gambling.</strong> Betting should be entertainment, not income. Never stake more than you can afford to lose. If gambling is affecting your life, seek help from organisations such as <a href="https://www.begambleaware.org/" rel="noopener noreferrer">BeGambleAware</a> or <a href="https://www.gamblingtherapy.org/" rel="noopener noreferrer">Gambling Therapy</a>. mybetrecord does not facilitate placing bets — it helps you understand your own history.
+      </div>
+    </section>
+
+    <section class="m-cta">
+      <h2>Ready to bet to a number?</h2>
+      <p>Create a free account and log your first bet in under a minute.</p>
+      <a class="m-btn m-btn--primary" href="/app/#/register">Create free account</a>
+    </section>
+
+    <footer class="m-footer">
+      <nav>
+        <a href="/blog/">Blog</a>
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Terms</a>
+        <a href="/login">Sign in</a>
+      </nav>
+      <p>&copy; mybetrecord. Analytics and record-keeping — not gambling advice.</p>
+    </footer>
   </div>
-
-  <div id="toast" class="toast" hidden></div>
-
-  <!-- ───────────────────── view templates ─────────────────────── -->
-  <template id="tpl-bets">
-    <div class="view">
-      <div class="view__head">
-        <h1 data-i18n="bets.title">Your bets</h1>
-        <a href="#/new" class="btn btn--brass btn--sm" data-i18n="bets.recordBet">+ Record a bet</a>
-      </div>
-      <div class="filters" id="betsFilters"></div>
-      <div class="table-wrap">
-        <table class="ledger">
-          <thead>
-            <tr>
-              <th data-i18n="bets.date">Date</th><th data-i18n="bets.sport">Sport</th><th data-i18n="bets.eventSelection">Event / Selection</th><th data-i18n="bets.type">Type</th>
-              <th class="r" data-i18n="bets.odds">Odds</th><th class="r" data-i18n="bets.stake">Stake</th><th data-i18n="bets.result">Result</th>
-              <th class="r" data-i18n="bets.pl">P/L</th><th class="r" data-i18n="bets.clv">CLV</th><th></th>
-            </tr>
-          </thead>
-          <tbody id="betsBody"></tbody>
-        </table>
-      </div>
-      <p id="betsEmpty" class="empty" hidden data-i18n="bets.empty">No bets match these filters yet. Record your first one to start the ledger.</p>
-    </div>
-  </template>
-
-  <template id="tpl-form">
-    <div class="view view--narrow">
-      <div class="view__head"><h1 id="formTitle" data-i18n="form.recordTitle">Record a bet</h1></div>
-      <form id="betForm" class="betform">
-        <fieldset>
-          <legend data-i18n="form.whatYouBacked">What you backed</legend>
-          <div class="grid2">
-            <label><span data-i18n="form.sport">Sport</span>
-              <input list="sportList" name="sport" required data-i18n-placeholder="form.sportPlaceholder" />
-              <datalist id="sportList"></datalist>
-            </label>
-            <label><span data-i18n="form.betType">Bet type</span>
-              <input list="betTypeList" name="bet_type" required value="Win" data-i18n-placeholder="form.betTypePlaceholder" />
-              <datalist id="betTypeList"></datalist>
-            </label>
-          </div>
-          <div class="grid2">
-            <label><span data-i18n="form.bookmaker">Bookmaker</span>
-              <input list="bookmakerList" name="bookmaker" data-i18n-placeholder="form.bookmakerPlaceholder" />
-              <datalist id="bookmakerList"></datalist>
-            </label>
-            <label><span data-i18n="form.commission">Winnings deduction %</span> <span class="hint" data-i18n="form.commissionHint">e.g. exchange commission</span>
-              <input name="exchange_commission_pct" inputmode="decimal" placeholder="0" /></label>
-          </div>
-          <label><span data-i18n="form.tournament">Tournament</span> <span class="hint" data-i18n="form.optional">optional</span><input name="tournament" data-i18n-placeholder="form.tournamentPlaceholder" /></label>
-          <label><span data-i18n="form.event">Event</span><input name="event" required data-i18n-placeholder="form.eventPlaceholder" /></label>
-          <label><span data-i18n="form.selection">Selection</span><input name="selection" required data-i18n-placeholder="form.selectionPlaceholder" /></label>
-          <label><span data-i18n="form.eventAt">Event date &amp; time</span> <span class="hint" data-i18n="form.optional">optional</span><input type="datetime-local" name="event_at" /></label>
-          <label><span data-i18n="form.placedAt">Date &amp; time placed</span><input type="datetime-local" name="placed_at" /></label>
-        </fieldset>
-
-        <fieldset>
-          <legend data-i18n="form.oddsStake">Odds &amp; stake</legend>
-          <div class="grid2" id="oddsEntryRow">
-            <label><span data-i18n="form.oddsFormat">Odds format</span>
-              <select name="odds_format" id="oddsFormat">
-                <option value="decimal" data-i18n="form.decimal">Decimal</option>
-                <option value="american" data-i18n="form.american">American</option>
-                <option value="fractional" data-i18n="form.fractional">Fractional</option>
-                <option value="hong_kong" data-i18n="form.hong_kong">Hong Kong</option>
-                <option value="malaysian" data-i18n="form.malaysian">Malaysian</option>
-                <option value="indonesian" data-i18n="form.indonesian">Indonesian</option>
-              </select>
-            </label>
-            <div id="oddsValueFields" class="odds-value-fields odds-value-fields--decimal">
-              <label id="oddsField">
-                <span class="odds-field-head">
-                  <span id="oddsFieldLabel" data-i18n="form.decimalOdds">Decimal odds</span>
-                  <span class="hint effective-odds" id="effectiveOddsHint" hidden>
-                    (<span data-i18n="form.effectiveOdds">effective</span> <span class="effective-odds__value" data-role="effective-odds"></span>)
-                  </span>
-                </span>
-                <input name="odds" inputmode="decimal" required placeholder="2.50" />
-              </label>
-              <label class="odds-den-field"><span data-i18n="form.denominator">Denominator</span><input name="odds_denominator" inputmode="decimal" placeholder="4" /></label>
-            </div>
-          </div>
-          <div class="grid3">
-            <label><span data-i18n="form.stake">Stake</span><input name="stake" inputmode="decimal" required placeholder="50" /></label>
-            <label><span data-i18n="form.currency">Currency</span>
-              <input list="currencyList" name="currency" maxlength="3" placeholder="GBP" autocapitalize="characters" required />
-              <datalist id="currencyList"></datalist>
-            </label>
-            <label class="check"><input type="checkbox" name="each_way" /> <span data-i18n="form.eachWay">Each way</span></label>
-          </div>
-          <div class="grid2" id="ewFields" hidden>
-            <label><span data-i18n="form.placeFraction">Place fraction</span><input name="place_fraction" inputmode="decimal" placeholder="0.25" /></label>
-            <label class="check"><input type="checkbox" name="placed" /> <span data-i18n="form.placed">Placed</span></label>
-          </div>
-        </fieldset>
-
-        <fieldset>
-          <legend data-i18n="form.settlement">Settlement</legend>
-          <div class="grid2">
-            <label><span data-i18n="form.result">Result</span>
-              <select name="outcome">
-                <option value="pending" data-i18n="outcomes.pending">Pending</option>
-                <option value="win" data-i18n="outcomes.win">Win</option>
-                <option value="loss" data-i18n="outcomes.loss">Loss</option>
-                <option value="void" data-i18n="outcomes.void">Void</option>
-                <option value="half_win" data-i18n="outcomes.half_win">Half win</option>
-                <option value="half_loss" data-i18n="outcomes.half_loss">Half loss</option>
-              </select>
-            </label>
-            <label><span data-i18n="form.settledAt">Date &amp; time settled</span><input type="datetime-local" name="settled_at" /></label>
-          </div>
-          <div class="grid2">
-            <label><span data-i18n="form.cashOut">Cash-out amount</span> <span class="hint" data-i18n="form.cashOutHint">total returned, if cashed out</span>
-              <input name="cash_out_amount" inputmode="decimal" data-i18n-placeholder="form.optional" /></label>
-          </div>
-          <p class="settlement-preview" id="settlementPreview" hidden>
-            <span data-i18n="form.settlementProfit">Recorded P/L</span>:
-            <span class="settlement-preview__value" data-role="profit"></span>
-          </p>
-          <p class="form-warning" id="cashOutWarning" hidden data-i18n="form.cashOutExceedsMax"></p>
-        </fieldset>
-
-        <fieldset>
-          <legend data-i18n="form.modelling">Modelling &amp; edge</legend>
-          <label><span data-i18n="form.betModel">Bet model</span><input name="bet_model" data-i18n-placeholder="form.betModelPlaceholder" /></label>
-          <div class="grid2">
-            <label><span data-i18n="form.closingBookmaker">Closing odds bookmaker (decimal)</span><input name="closing_odds" inputmode="decimal" placeholder="2.30" /></label>
-            <label><span data-i18n="form.closingExchange">Closing odds exchange (decimal)</span><input name="closing_odds_exchange" inputmode="decimal" placeholder="2.28" /></label>
-          </div>
-          <div class="grid2 implied-grid">
-            <div class="implied-col">
-              <label><span data-i18n="form.modelImplied">Model implied odds (decimal)</span><input name="model_implied_odds" inputmode="decimal" placeholder="2.20" /></label>
-              <div class="calc-results" data-calc="model" hidden>
-                <p class="kelly calc-field">
-                  <span class="calc-field__label" data-i18n="form.modelEdge">Model edge</span>
-                  <span class="calc-field__value" data-role="edge"></span>
-                </p>
-                <p class="kelly calc-field" data-role="kelly-wrap" hidden>
-                  <span class="calc-field__label" data-i18n="form.modelKellyStake">Model Kelly stake</span>
-                  <span class="calc-field__value" data-role="kelly"></span>
-                </p>
-              </div>
-            </div>
-            <div class="implied-col">
-              <label><span data-i18n="form.personalImplied">Personal implied odds (decimal)</span><input name="personal_implied_odds" inputmode="decimal" placeholder="2.10" /></label>
-              <div class="calc-results" data-calc="personal" hidden>
-                <p class="kelly calc-field">
-                  <span class="calc-field__label" data-i18n="form.personalEdge">Personal edge</span>
-                  <span class="calc-field__value" data-role="edge"></span>
-                </p>
-                <p class="kelly calc-field" data-role="kelly-wrap" hidden>
-                  <span class="calc-field__label" data-i18n="form.personalKellyStake">Personal Kelly stake</span>
-                  <span class="calc-field__value" data-role="kelly"></span>
-                </p>
-              </div>
-            </div>
-          </div>
-        </fieldset>
-
-        <fieldset>
-          <legend data-i18n="form.notes">Notes</legend>
-          <label><span data-i18n="form.tipster">Tipster</span><input name="tipster" data-i18n-placeholder="form.optional" /></label>
-          <label><span data-i18n="form.betBroker">Bet Broker</span><input name="bet_broker" data-i18n-placeholder="form.optional" /></label>
-          <label><span data-i18n="form.notes">Notes</span><textarea name="notes" rows="2" data-i18n-placeholder="form.notesPlaceholder"></textarea></label>
-        </fieldset>
-
-        <div class="formactions">
-          <a href="#/bets" class="btn btn--ghost" data-i18n="form.cancel">Cancel</a>
-          <button class="btn btn--brass" type="submit" id="saveBtn" data-i18n="form.saveBet">Save bet</button>
-        </div>
-      </form>
-    </div>
-  </template>
-
-  <template id="tpl-share">
-    <div class="view view--narrow">
-      <div class="view__head"><h1 data-i18n="share.title">Shared bet</h1></div>
-      <dl class="share-detail" id="shareDetail"></dl>
-    </div>
-  </template>
-
-  <template id="tpl-reports">
-    <div class="view">
-      <div class="view__head">
-        <h1 data-i18n="reports.title">Reports</h1>
-        <div class="exports">
-          <button class="btn btn--ghost btn--sm" id="exportCsv" data-i18n="reports.exportCsv">Export CSV</button>
-          <button class="btn btn--ghost btn--sm" id="exportXlsx" data-i18n="reports.exportXlsx">Export Excel</button>
-          <button class="btn btn--ghost btn--sm" id="exportJson" data-i18n="reports.exportJson">Export JSON</button>
-        </div>
-      </div>
-      <div class="filters" id="reportFilters"></div>
-      <div class="cards" id="metricCards"></div>
-      <div class="panel">
-        <div class="panel__head"><h2 data-i18n="reports.equityCurve">Equity curve</h2><span class="panel__sub" data-i18n="reports.equitySub">cumulative profit/loss</span></div>
-        <div class="chart-wrap chart-wrap--equity"><canvas id="equityChart"></canvas></div>
-      </div>
-      <div class="split">
-        <div class="panel">
-          <div class="panel__head"><h2 data-i18n="reports.byDimension">By dimension</h2>
-            <select id="breakdownDim" class="mini-select">
-              <option value="sport" data-i18n="reports.dimSport">Sport</option>
-              <option value="tipster" data-i18n="reports.dimTipster">Tipster</option>
-              <option value="bet_type" data-i18n="reports.dimBetType">Bet type</option>
-              <option value="bookmaker" data-i18n="reports.dimBookmaker">Bookmaker</option>
-            </select>
-          </div>
-          <div class="table-wrap">
-            <table class="ledger ledger--compact">
-              <thead><tr><th id="dimHead" data-i18n="reports.dimSport">Sport</th><th class="r" data-i18n="reports.bets">Bets</th><th class="r" data-i18n="reports.strike">Strike</th><th class="r" data-i18n="reports.yield">Yield</th><th class="r" data-i18n="reports.pl">P/L</th></tr></thead>
-              <tbody id="breakdownBody"></tbody>
-            </table>
-          </div>
-        </div>
-        <div class="panel">
-          <div class="panel__head"><h2 data-i18n="reports.profitByMonth">Profit by month</h2></div>
-          <div class="chart-wrap chart-wrap--monthly"><canvas id="monthlyChart"></canvas></div>
-        </div>
-      </div>
-    </div>
-  </template>
-
-  <template id="tpl-settings">
-    <div class="view view--narrow">
-      <div class="view__head"><h1 data-i18n="settings.title">Settings</h1></div>
-      <form id="settingsForm" class="betform">
-        <fieldset>
-          <legend data-i18n="settings.preferences">Preferences</legend>
-          <label><span data-i18n="settings.language">Preferred language</span>
-            <select name="preferred_locale" id="localeSelect"></select>
-          </label>
-          <label><span data-i18n="settings.timezone">Time zone</span> <span class="hint" data-i18n="settings.timezoneHint">used for dates and times in the app</span>
-            <select name="timezone" id="timezoneSelect"></select>
-          </label>
-          <div class="grid2">
-            <label><span data-i18n="settings.defaultOdds">Default entry odds</span> <span class="hint" data-i18n="settings.defaultOddsHint">pre-selected when logging a bet</span>
-              <select name="default_odds_format">
-                <option value="decimal" data-i18n="settings.oddsDecimal">Decimal (e.g. 2.50)</option>
-                <option value="american" data-i18n="settings.oddsAmerican">American (e.g. +150)</option>
-                <option value="fractional" data-i18n="settings.oddsFractional">Fractional (e.g. 6/4)</option>
-                <option value="hong_kong" data-i18n="settings.oddsHongKong">Hong Kong (e.g. 0.85)</option>
-                <option value="malaysian" data-i18n="settings.oddsMalaysian">Malaysian (e.g. +0.85 or -0.85)</option>
-                <option value="indonesian" data-i18n="settings.oddsIndonesian">Indonesian (e.g. +1.50 or -1.50)</option>
-              </select>
-            </label>
-            <label><span data-i18n="settings.defaultCurrency">Default currency</span><select name="base_currency"></select></label>
-          </div>
-          <div class="grid2">
-            <label><span data-i18n="settings.bankroll">Bankroll</span> <span class="hint" data-i18n="settings.bankrollHint">used for Kelly</span><input name="bankroll" inputmode="decimal" /></label>
-            <label><span data-i18n="settings.kellyMultiplier">Kelly multiplier</span> <span class="hint" data-i18n="settings.kellyHint">1 = full, 0.5 = half</span><input name="kelly_multiplier" inputmode="decimal" placeholder="1" /></label>
-          </div>
-          <label><span data-i18n="settings.displayName">Display name</span><input name="display_name" /></label>
-          <div class="formactions"><button class="btn btn--brass" type="submit" data-i18n="settings.save">Save settings</button></div>
-        </fieldset>
-      </form>
-
-      <div class="panel">
-        <div class="panel__head"><h2 data-i18n="settings.apiAccess">API access</h2>
-          <button class="btn btn--ghost btn--sm" id="newKeyBtn" data-i18n="settings.generateKey">Generate key</button>
-        </div>
-        <p class="panel__sub" data-i18n="settings.apiHelp" data-i18n-html>Use a key to push or pull your record from scripts. Send it as <code>Authorization: Bearer mbr_…</code> or <code>X-API-Key</code>.</p>
-        <div id="newKeyReveal" class="reveal" hidden></div>
-        <table class="ledger ledger--compact">
-          <thead><tr><th data-i18n="settings.keyName">Name</th><th data-i18n="settings.keyPrefix">Prefix</th><th data-i18n="settings.keyLastUsed">Last used</th><th></th></tr></thead>
-          <tbody id="keysBody"></tbody>
-        </table>
-      </div>
-    </div>
-  </template>
-
-  <template id="tpl-admin">
-    <div class="view">
-      <div class="view__head">
-        <h1 data-i18n="admin.title">Admin</h1>
-        <span class="panel__sub" data-i18n="admin.subtitle">Monitor users and application activity</span>
-      </div>
-      <div class="cards" id="adminStats"></div>
-
-      <div class="panel">
-        <div class="panel__head">
-          <h2 data-i18n="admin.users">Users</h2>
-          <input type="search" id="adminUserSearch" class="mini-select" data-i18n-placeholder="admin.searchPlaceholder" />
-        </div>
-        <div class="table-wrap">
-          <table class="ledger ledger--compact">
-            <thead>
-              <tr>
-                <th data-i18n="admin.email">Email</th><th data-i18n="admin.name">Name</th><th data-i18n="admin.status">Status</th><th data-i18n="admin.role">Role</th>
-                <th data-i18n="admin.lastLogin">Last login</th><th data-i18n="admin.joined">Joined</th>
-                <th class="r" data-i18n="admin.bets">Bets</th><th class="r" data-i18n="admin.keys">Keys</th><th></th>
-              </tr>
-            </thead>
-            <tbody id="adminUsersBody"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="panel">
-        <div class="panel__head">
-          <h2 data-i18n="admin.events">App events</h2>
-          <select id="adminEventFilter" class="mini-select">
-            <option value="" data-i18n="admin.allEvents">All events</option>
-            <option value="login" data-i18n="admin.eventLogin">Login</option>
-            <option value="login_failed" data-i18n="admin.eventLoginFailed">Login failed</option>
-            <option value="login_blocked" data-i18n="admin.eventLoginBlocked">Login blocked</option>
-            <option value="register" data-i18n="admin.eventRegister">Register</option>
-            <option value="settings_updated" data-i18n="admin.eventSettingsUpdated">Settings updated</option>
-            <option value="api_key_created" data-i18n="admin.eventApiKeyCreated">API key created</option>
-            <option value="api_key_revoked" data-i18n="admin.eventApiKeyRevoked">API key revoked</option>
-            <option value="admin.user_update" data-i18n="admin.eventAdminUserUpdate">Admin user update</option>
-          </select>
-        </div>
-        <div class="table-wrap">
-          <table class="ledger ledger--compact">
-            <thead>
-              <tr>
-                <th data-i18n="admin.when">When</th><th data-i18n="admin.event">Event</th><th data-i18n="admin.user">User</th><th data-i18n="admin.detail">Detail</th><th data-i18n="admin.ip">IP</th>
-              </tr>
-            </thead>
-            <tbody id="adminEventsBody"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </template>
-
-  <script src="/i18n.js"></script>
-  <script>
-    document.addEventListener("DOMContentLoaded", async function () {
-      var auth = document.getElementById("auth");
-      var loading = document.getElementById("authLoading");
-      try {
-        if (loading) loading.hidden = false;
-        var loc = localStorage.getItem("mbr_token")
-          ? "en"
-          : (window.i18n.getLocaleCookie() || window.i18n.getLoginLocale());
-        await window.i18n.initI18n(loc);
-        document.title = window.i18n.t("meta.title");
-        if (!localStorage.getItem("mbr_token") && auth) {
-          window.i18n.applyI18n(auth);
-          if (loading) loading.hidden = true;
-          auth.hidden = false;
-        }
-      } catch (e) {
-        console.error("Boot failed:", e);
-        if (loading) loading.hidden = true;
-        if (auth) auth.hidden = false;
-      }
-      var s = document.createElement("script");
-      s.src = "/app.js";
-      s.onload = function () { if (window.mbrAttach) window.mbrAttach(); };
-      s.onerror = function () {
-        if (loading) loading.hidden = true;
-        if (auth) auth.hidden = false;
-      };
-      document.body.appendChild(s);
-    });
-  </script>
 </body>
 </html>

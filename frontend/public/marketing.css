@@ -1,0 +1,107 @@
+/* Marketing site — landing, legal, blog chrome */
+
+:root {
+  --ink: #16181d;
+  --ink-soft: #3a3f4a;
+  --muted: #6b7280;
+  --line: #e4e7ec;
+  --surface: #ffffff;
+  --canvas: #f4f5f7;
+  --brass: #a9791f;
+  --brass-deep: #815a12;
+  --brass-wash: #f6efe0;
+  --hero-bg: #16181d;
+  --sans: "Inter", system-ui, -apple-system, sans-serif;
+  --display: "Space Grotesk", var(--sans);
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--sans);
+  color: var(--ink);
+  background: var(--canvas);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--brass-deep); }
+a:hover { text-decoration: none; }
+
+.m-site { min-height: 100dvh; display: flex; flex-direction: column; }
+.m-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 24px; background: var(--hero-bg); color: #f2ead8;
+}
+.m-header .wordmark { font-family: var(--display); font-weight: 700; font-size: 1.1rem; color: inherit; text-decoration: none; }
+.m-header .wordmark span { color: var(--brass); }
+.m-nav { display: flex; gap: 20px; align-items: center; font-size: .9rem; }
+.m-nav a { color: #d4cbb8; text-decoration: none; }
+.m-nav a:hover { color: #fff; }
+.m-btn {
+  display: inline-block; padding: 10px 18px; border-radius: 8px;
+  font: 600 .9rem var(--sans); text-decoration: none; border: 0; cursor: pointer;
+}
+.m-btn--primary { background: var(--brass); color: #fff; }
+.m-btn--primary:hover { background: var(--brass-deep); color: #fff; }
+.m-btn--ghost { background: transparent; color: #f2ead8; border: 1px solid rgba(242,234,216,.25); }
+.m-btn--ghost:hover { border-color: rgba(242,234,216,.5); color: #fff; }
+
+.m-hero {
+  background: radial-gradient(120% 80% at 50% -10%, #20242c 0%, var(--hero-bg) 55%, #101216 100%);
+  color: #f2ead8; padding: 72px 24px 80px; text-align: center;
+}
+.m-hero h1 {
+  font-family: var(--display); font-size: clamp(1.9rem, 4vw, 2.75rem);
+  max-width: 720px; margin: 0 auto 16px; line-height: 1.15; letter-spacing: -.02em;
+}
+.m-hero p.lead { color: #b8b0a0; font-size: 1.08rem; max-width: 560px; margin: 0 auto 28px; }
+.m-hero__actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+.m-section { padding: 64px 24px; max-width: 960px; margin: 0 auto; width: 100%; }
+.m-section--alt { background: var(--surface); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.m-section h2 { font-family: var(--display); font-size: 1.65rem; margin: 0 0 12px; letter-spacing: -.01em; }
+.m-section > p.sub { color: var(--muted); margin: 0 0 32px; max-width: 640px; }
+
+.m-features { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+.m-feature {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 22px;
+}
+.m-feature h3 { font-family: var(--display); font-size: 1.05rem; margin: 0 0 8px; }
+.m-feature p { margin: 0; color: var(--ink-soft); font-size: .92rem; }
+
+.m-faq { display: grid; gap: 12px; }
+.m-faq details {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 18px;
+}
+.m-faq summary { font-weight: 600; cursor: pointer; }
+.m-faq p { margin: 10px 0 0; color: var(--ink-soft); font-size: .92rem; }
+
+.m-rg {
+  background: var(--brass-wash); border: 1px solid #e8dcc0; border-radius: 12px;
+  padding: 20px 22px; font-size: .9rem; color: var(--ink-soft);
+}
+.m-rg strong { color: var(--ink); }
+
+.m-cta {
+  text-align: center; padding: 56px 24px;
+  background: var(--hero-bg); color: #f2ead8;
+}
+.m-cta h2 { font-family: var(--display); margin: 0 0 10px; }
+.m-cta p { color: #b8b0a0; margin: 0 0 20px; }
+
+.m-footer {
+  margin-top: auto; padding: 28px 24px; background: var(--hero-bg); color: #8a8274;
+  font-size: .85rem; text-align: center;
+}
+.m-footer a { color: #c4baa8; margin: 0 8px; }
+.m-footer nav { margin-bottom: 10px; }
+
+.m-legal { max-width: 720px; margin: 0 auto; padding: 48px 24px 64px; }
+.m-legal h1 { font-family: var(--display); font-size: 1.75rem; }
+.m-legal h2 { font-family: var(--display); font-size: 1.15rem; margin-top: 28px; }
+.m-legal p, .m-legal li { color: var(--ink-soft); font-size: .95rem; }
+
+@media (max-width: 640px) {
+  .m-nav { gap: 12px; font-size: .82rem; }
+  .m-header { flex-wrap: wrap; gap: 12px; }
+}

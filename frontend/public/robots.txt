@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /app/
+Disallow: /auth/
+Disallow: /bets
+Disallow: /reports/
+Disallow: /payments/
+Disallow: /share/
+
+Sitemap: https://mybetrecord.com/sitemap.xml

@@ -145,7 +145,48 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(msg)
 
+    def _share_token(self, path: str) -> str | None:
+        if path.startswith("/share/"):
+            token = path[len("/share/"):].split("/")[0].split("?")[0]
+            return token or None
+        return None
+
+    def _rewrite_path(self, path: str) -> str:
+        """Map public URLs to static files or SPA fallbacks."""
+        if path in ("/privacy", "/terms", "/login"):
+            return f"{path}.html"
+        if path.startswith("/app/"):
+            rel = path.lstrip("/")
+            target = PUBLIC / rel
+            if path != "/app/" and not target.is_file():
+                return "/app/index.html"
+            return path
+        if path.startswith("/blog/"):
+            if path.endswith("/"):
+                return "/blog/index.html"
+            rel = path.lstrip("/")
+            target = PUBLIC / rel
+            if target.is_file():
+                return path
+            html_target = PUBLIC / f"{rel}.html"
+            if html_target.is_file():
+                return f"/{rel}.html"
+            return "/blog/index.html"
+        if path != "/" and not (PUBLIC / path.lstrip("/")).is_file():
+            # Marketing root only — do not SPA-fallback unknown paths to ledger.
+            if path.endswith((".css", ".js", ".svg", ".txt", ".xml", ".json", ".html")):
+                return path
+        return path
+
     def _dispatch(self):
+        path = self.path.split("?")[0]
+        share = self._share_token(path)
+        if share:
+            saved = self.path
+            self.path = f"/bets/share-page/{share}"
+            self._do_proxy(8002)
+            self.path = saved
+            return True
         port = self._proxy_target()
         if port:
             self._do_proxy(port)
@@ -155,11 +196,8 @@ class Handler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
         if self._dispatch():
             return
-        # SPA fallback: serve index.html for non-file routes.
         path = self.path.split("?")[0]
-        target = PUBLIC / path.lstrip("/")
-        if path != "/" and not target.is_file():
-            self.path = "/index.html"
+        self.path = self._rewrite_path(path)
         super().do_GET()
 
     def do_POST(self):
@@ -176,7 +214,9 @@ class Handler(http.server.SimpleHTTPRequestHandler):
 
     def end_headers(self):
         path = self.path.split("?")[0]
-        if path in ("/", "/index.html") or path.endswith((".html", ".js", ".css")):
+        if path.startswith("/app/") or path in ("/app/index.html",):
+            self.send_header("Cache-Control", "no-cache, no-store, must-revalidate")
+        elif path.endswith((".html", ".js", ".css")):
             self.send_header("Cache-Control", "no-cache, no-store, must-revalidate")
         super().end_headers()
 
