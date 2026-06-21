@@ -46,6 +46,29 @@ param stripePriceId string = ''
 @secure()
 param stripeWebhookSecret string = ''
 
+@description('Public site origin for password-reset links (e.g. https://www.mybetrecord.com).')
+param frontendUrl string = ''
+
+@description('SMTP server hostname (optional — leave blank to disable outbound email).')
+param smtpHost string = ''
+
+@description('SMTP server port.')
+param smtpPort int = 587
+
+@description('From address for outbound email.')
+param smtpFrom string = 'noreply@mybetrecord.com'
+
+@description('Use STARTTLS when connecting to SMTP (true/false).')
+param smtpUseTls string = 'true'
+
+@secure()
+@description('SMTP username (optional).')
+param smtpUser string = ''
+
+@secure()
+@description('SMTP password (optional).')
+param smtpPassword string = ''
+
 // ---------------------------------------------------------------------
 var tags = { app: 'mybetrecord', managedBy: 'bicep' }
 var acrName = toLower('${namePrefix}acr${uniqueString(resourceGroup().id)}')
@@ -183,6 +206,33 @@ var stripeEnv = empty(stripeSecretKey)
       { name: 'STRIPE_PRICE_ID', value: stripePriceId }
     ]
 
+var smtpSecrets = empty(smtpHost)
+  ? []
+  : concat(
+      empty(smtpUser) ? [] : [{ name: 'smtp-user', value: smtpUser }],
+      empty(smtpPassword) ? [] : [{ name: 'smtp-password', value: smtpPassword }]
+    )
+
+var smtpEnv = empty(smtpHost)
+  ? []
+  : concat(
+      [
+        { name: 'SMTP_HOST', value: smtpHost }
+        { name: 'SMTP_PORT', value: string(smtpPort) }
+        { name: 'SMTP_FROM', value: smtpFrom }
+        { name: 'SMTP_USE_TLS', value: smtpUseTls }
+      ],
+      empty(smtpUser) ? [] : [{ name: 'SMTP_USER', secretRef: 'smtp-user' }],
+      empty(smtpPassword) ? [] : [{ name: 'SMTP_PASSWORD', secretRef: 'smtp-password' }]
+    )
+
+var frontendEnv = empty(frontendUrl)
+  ? []
+  : [{ name: 'FRONTEND_URL', value: frontendUrl }]
+
+var authSecrets = concat(commonSecrets, smtpSecrets)
+var authEnv = concat(commonEnv, frontendEnv, smtpEnv)
+
 // ---------------------------------------------------------------------
 //  Backend microservices (internal ingress)
 // ---------------------------------------------------------------------
@@ -194,7 +244,7 @@ resource authApp 'Microsoft.App/containerApps@2024-03-01' = {
     managedEnvironmentId: env.id
     configuration: {
       ingress: { external: false, targetPort: 8001, transport: 'auto' }
-      secrets: commonSecrets
+      secrets: authSecrets
       registries: registries
     }
     template: {
@@ -203,7 +253,7 @@ resource authApp 'Microsoft.App/containerApps@2024-03-01' = {
           name: 'auth'
           image: '${registryServer}/auth:${imageTag}'
           resources: { cpu: json('0.25'), memory: '0.5Gi' }
-          env: commonEnv
+          env: authEnv
         }
       ]
       scale: { minReplicas: 1, maxReplicas: 3 }

@@ -32,7 +32,7 @@ frontend, deployed to Azure Container Apps with Bicep.
 
 | Service | Owns | Key endpoints |
 |---|---|---|
-| **auth** | users, login, settings, API keys | `/auth/register`, `/auth/login`, `/auth/me`, `/auth/settings`, `/auth/api-keys` |
+| **auth** | users, login, settings, API keys, password reset | `/auth/register`, `/auth/login`, `/auth/me`, `/auth/settings`, `/auth/api-keys`, `/auth/password-reset/request`, `/auth/password-reset/confirm` |
 | **bets** | bet CRUD, odds normalisation, P/L + Kelly on write, sports list | `/bets`, `/bets/{id}`, `/bets/sports` |
 | **reports** | analytics, exports | `/reports/summary`, `/reports/equity-curve`, `/reports/breakdown`, `/reports/export.csv`, `/reports/export.xlsx` |
 | **payments** | Stripe scaffold (off by default) | `/payments/checkout-session`, `/payments/webhook` |
@@ -74,6 +74,33 @@ docker compose up --build
 
 That starts Postgres, all four services, and the frontend. Create an account, set your **default entry odds** format and bankroll under
 **Settings** (bankroll is used for the Kelly recommendation), and record a bet.
+
+### Password reset
+
+Users can reset their password from the sign-in screen (**Forgot password?**). The
+auth service emails a single-use link valid for 60 minutes (configurable via
+`PASSWORD_RESET_MINUTES`). Links are built as `{FRONTEND_URL}/app/#/reset-password/{token}`.
+
+**Local development:** without SMTP configured, reset emails are printed to the
+auth service container logs (`docker compose logs auth`). In non-production mode
+the API also returns a `reset_token` field for testing.
+
+**Production:** set `FRONTEND_URL` to your public site origin (e.g.
+`https://www.mybetrecord.com`) and configure SMTP on the auth service. Any SMTP
+provider works — SendGrid (`smtp.sendgrid.net`), Mailgun, etc. See
+`.env.deploy.example` for the full variable list.
+
+```bash
+# Request a reset link
+curl -X POST https://<your-site>/auth/password-reset/request \
+  -H "Content-Type: application/json" \
+  -d '{"email":"you@example.com"}'
+
+# Confirm with the token from the email
+curl -X POST https://<your-site>/auth/password-reset/confirm \
+  -H "Content-Type: application/json" \
+  -d '{"token":"<token-from-email>","password":"new-password123"}'
+```
 
 ### Without Docker
 
@@ -117,7 +144,7 @@ rule in `.cursor/rules/azure-deploy.mdc`.
 
 ```bash
 cp .env.deploy.example .env.deploy   # once
-# Edit .env.deploy: PG_ADMIN_PASSWORD, JWT_SECRET, optional CORS / Stripe
+# Edit .env.deploy: PG_ADMIN_PASSWORD, JWT_SECRET, FRONTEND_URL, SMTP_*, optional CORS / Stripe
 
 az login
 ./scripts/deploy.sh                  # first time auto-bootstraps if no ACR yet
@@ -158,7 +185,8 @@ records Azure shows you at your registrar. Set `corsOrigins` to that URL.
 `.github/workflows/ci-cd.yml` runs the tests on every push/PR, then on `main`
 calls `./scripts/deploy.sh --skip-tests` after Azure OIDC login. Configure these
 repo secrets: `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID`,
-`PG_ADMIN_PASSWORD`, `JWT_SECRET`, and (optionally) `STRIPE_SECRET_KEY`.
+`PG_ADMIN_PASSWORD`, `JWT_SECRET`, and (optionally) `FRONTEND_URL`, `SMTP_HOST`,
+`SMTP_USER`, `SMTP_PASSWORD`, `STRIPE_SECRET_KEY`.
 
 ### Why Container Apps instead of bare Container Instances
 

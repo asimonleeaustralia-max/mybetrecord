@@ -146,7 +146,7 @@ _PASSWORD_RESET_MESSAGE = (
 
 def _reset_url(raw_token: str) -> str:
     base = settings.frontend_url.rstrip("/")
-    return f"{base}/#/reset-password/{raw_token}"
+    return f"{base}/app/#/reset-password/{raw_token}"
 
 
 def _invalidate_reset_tokens(db: Session, user_id: str) -> None:

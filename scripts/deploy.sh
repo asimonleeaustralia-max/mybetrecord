@@ -53,6 +53,8 @@ Optional:
   CUSTOM_HOSTNAMES (comma-separated, default: www.mybetrecord.com,mybetrecord.com)
   FRONTEND_APP (default: mybetrec-frontend)
   CONTAINERAPPS_ENV (default: derived from the frontend app)
+  FRONTEND_URL (public site origin for password-reset links, e.g. https://www.mybetrecord.com)
+  SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASSWORD, SMTP_FROM, SMTP_USE_TLS
   STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, STRIPE_PRICE_ID
   AZURE_SUBSCRIPTION_ID (validates active subscription)
 EOF
@@ -179,6 +181,27 @@ deploy_bicep() {
   fi
   if [[ -n "${STRIPE_PRICE_ID:-}" ]]; then
     extra_params+=("stripePriceId=${STRIPE_PRICE_ID}")
+  fi
+  if [[ -n "${FRONTEND_URL:-}" ]]; then
+    extra_params+=("frontendUrl=${FRONTEND_URL}")
+  fi
+  if [[ -n "${SMTP_HOST:-}" ]]; then
+    extra_params+=("smtpHost=${SMTP_HOST}")
+  fi
+  if [[ -n "${SMTP_PORT:-}" ]]; then
+    extra_params+=("smtpPort=${SMTP_PORT}")
+  fi
+  if [[ -n "${SMTP_FROM:-}" ]]; then
+    extra_params+=("smtpFrom=${SMTP_FROM}")
+  fi
+  if [[ -n "${SMTP_USE_TLS:-}" ]]; then
+    extra_params+=("smtpUseTls=${SMTP_USE_TLS}")
+  fi
+  if [[ -n "${SMTP_USER:-}" ]]; then
+    extra_params+=("smtpUser=${SMTP_USER}")
+  fi
+  if [[ -n "${SMTP_PASSWORD:-}" ]]; then
+    extra_params+=("smtpPassword=${SMTP_PASSWORD}")
   fi
 
   run az deployment group create \
