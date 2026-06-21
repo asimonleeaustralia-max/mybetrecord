@@ -8,6 +8,7 @@ x-service-env: &service-env
   JWT_SECRET: dev-only-change-me
   ENVIRONMENT: development
   CORS_ORIGINS: "*"
+  FREE_DAILY_BET_LIMIT: ${FREE_DAILY_BET_LIMIT:-5}
 
 services:
   db:
@@ -58,9 +59,10 @@ services:
     build: { context: ., dockerfile: services/payments/Dockerfile }
     environment:
       <<: *service-env
-      STRIPE_SECRET_KEY: ""        # set to enable billing
-      STRIPE_PRICE_ID: ""
-      STRIPE_WEBHOOK_SECRET: ""
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}          # set to enable billing
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
+      STRIPE_PRODUCT_ID: ${STRIPE_PRODUCT_ID:-}
+      STRIPE_PRICE_ID: ${STRIPE_PRICE_ID:-}
     depends_on:
       db: { condition: service_healthy }
     ports: ["8004:8004"]

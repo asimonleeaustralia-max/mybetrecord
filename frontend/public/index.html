@@ -102,118 +102,124 @@
     <header class="m-header">
       <a class="wordmark" href="/">my<span>bet</span>record</a>
       <nav class="m-nav">
-        <a href="/blog/">Blog</a>
-        <a href="/login">Sign in</a>
-        <a class="m-btn m-btn--primary" href="/app/#/register">Create account</a>
+        <label class="m-locale-wrap">
+          <span class="visually-hidden" data-i18n="home.language">Language</span>
+          <select id="localeSelect" class="m-locale" data-i18n-attr="aria-label" data-i18n="home.language"></select>
+        </label>
+        <a href="/blog/" data-i18n="home.blog">Blog</a>
+        <a href="/login" data-i18n="auth.signIn">Sign in</a>
+        <a class="m-btn m-btn--primary" href="/app/#/register" data-i18n="auth.createAccount">Create account</a>
       </nav>
     </header>
 
     <section class="m-hero">
-      <h1>Sports betting tracker for people who bet to a number</h1>
-      <p class="lead">Stop juggling spreadsheets. Log every wager, track ROI and yield, size stakes with Kelly, and see where your edge really lives.</p>
+      <h1 data-i18n="home.heroTitle">Sports betting tracker for people who bet to a number</h1>
+      <p class="lead" data-i18n="home.heroLead">Stop juggling spreadsheets. Log every wager, track ROI and yield, size stakes with Kelly, and see where your edge really lives.</p>
       <div class="m-hero__actions">
-        <a class="m-btn m-btn--primary" href="/app/#/register">Start free ledger</a>
-        <a class="m-btn m-btn--ghost" href="/blog/what-is-a-betting-ledger.html">What is a betting ledger?</a>
+        <a class="m-btn m-btn--primary" href="/app/#/register" data-i18n="home.startFreeLedger">Start free ledger</a>
+        <a class="m-btn m-btn--ghost" href="/blog/what-is-a-betting-ledger.html" data-i18n="home.whatIsLedger">What is a betting ledger?</a>
       </div>
     </section>
 
     <section class="m-section">
-      <h2>From spreadsheet chaos to a disciplined ledger</h2>
-      <p class="sub">Most bettors outgrow notes apps and Excel tabs. mybetrecord gives you one place to record bets, settle outcomes, and read honest performance numbers.</p>
+      <h2 data-i18n="home.section1Title">From spreadsheet chaos to a disciplined ledger</h2>
+      <p class="sub" data-i18n="home.section1Sub">Most bettors outgrow notes apps and Excel tabs. mybetrecord gives you one place to record bets, settle outcomes, and read honest performance numbers.</p>
       <div class="m-features">
         <article class="m-feature">
-          <h3>Any odds format</h3>
-          <p>Decimal, American, fractional, and Asian formats — normalised automatically so reports stay consistent.</p>
+          <h3 data-i18n="home.featureOddsTitle">Any odds format</h3>
+          <p data-i18n="home.featureOddsDesc">Decimal, American, fractional, and Asian formats — normalised automatically so reports stay consistent.</p>
         </article>
         <article class="m-feature">
-          <h3>Kelly stake suggestions</h3>
-          <p>Set bankroll and edge inputs; get recommended stake sizes based on the Kelly criterion.</p>
+          <h3 data-i18n="home.featureKellyTitle">Kelly stake suggestions</h3>
+          <p data-i18n="home.featureKellyDesc">Set bankroll and edge inputs; get recommended stake sizes based on the Kelly criterion.</p>
         </article>
         <article class="m-feature">
-          <h3>ROI, yield &amp; equity curve</h3>
-          <p>Strike rate, turnover, profit by month, and a cumulative equity curve for settled bets.</p>
+          <h3 data-i18n="home.featureRoiTitle">ROI, yield &amp; equity curve</h3>
+          <p data-i18n="home.featureRoiDesc">Strike rate, turnover, profit by month, and a cumulative equity curve for settled bets.</p>
         </article>
         <article class="m-feature">
-          <h3>Breakdowns that matter</h3>
-          <p>Slice performance by sport, bet type, tipster, or bookmaker to find where you win and leak.</p>
+          <h3 data-i18n="home.featureBreakdownsTitle">Breakdowns that matter</h3>
+          <p data-i18n="home.featureBreakdownsDesc">Slice performance by sport, bet type, tipster, or bookmaker to find where you win and leak.</p>
         </article>
         <article class="m-feature">
-          <h3>Closing line value</h3>
-          <p>Record closing odds and measure CLV — a sharper signal than short-term results alone.</p>
+          <h3 data-i18n="home.featureClvTitle">Closing line value</h3>
+          <p data-i18n="home.featureClvDesc">Record closing odds and measure CLV — a sharper signal than short-term results alone.</p>
         </article>
         <article class="m-feature">
-          <h3>Export &amp; API</h3>
-          <p>Download CSV, Excel, or JSON. Generate API keys for scripts and automation.</p>
+          <h3 data-i18n="home.featureExportTitle">Export &amp; API</h3>
+          <p data-i18n="home.featureExportDesc">Download CSV, Excel, or JSON. Generate API keys for scripts and automation.</p>
         </article>
       </div>
     </section>
 
     <section class="m-section m-section--alt">
-      <h2>Guides from the mybetrecord blog</h2>
-      <p class="sub">Learn the maths behind the metrics — then track them in your ledger.</p>
+      <h2 data-i18n="home.section2Title">Guides from the mybetrecord blog</h2>
+      <p class="sub" data-i18n="home.section2Sub">Learn the maths behind the metrics — then track them in your ledger.</p>
       <div class="m-features">
         <article class="m-feature">
-          <h3><a href="/blog/roi-vs-yield-sports-betting.html">ROI vs yield</a></h3>
-          <p>Two headline numbers, often confused. Know which one answers which question.</p>
+          <h3><a href="/blog/roi-vs-yield-sports-betting.html" data-i18n="home.blogRoiTitle">ROI vs yield</a></h3>
+          <p data-i18n="home.blogRoiDesc">Two headline numbers, often confused. Know which one answers which question.</p>
         </article>
         <article class="m-feature">
-          <h3><a href="/blog/kelly-criterion-explained.html">Kelly criterion explained</a></h3>
-          <p>How optimal stake sizing works — and why most bettors use a fraction of full Kelly.</p>
+          <h3><a href="/blog/kelly-criterion-explained.html" data-i18n="home.blogKellyTitle">Kelly criterion explained</a></h3>
+          <p data-i18n="home.blogKellyDesc">How optimal stake sizing works — and why most bettors use a fraction of full Kelly.</p>
         </article>
         <article class="m-feature">
-          <h3><a href="/blog/spreadsheet-vs-betting-tracker.html">Spreadsheet vs tracker</a></h3>
-          <p>When Excel is enough — and when a dedicated ledger saves hours and errors.</p>
+          <h3><a href="/blog/spreadsheet-vs-betting-tracker.html" data-i18n="home.blogSpreadsheetTitle">Spreadsheet vs tracker</a></h3>
+          <p data-i18n="home.blogSpreadsheetDesc">When Excel is enough — and when a dedicated ledger saves hours and errors.</p>
         </article>
       </div>
     </section>
 
     <section class="m-section">
-      <h2>Frequently asked questions</h2>
+      <h2 data-i18n="home.faqTitle">Frequently asked questions</h2>
       <div class="m-faq">
         <details>
-          <summary>What is a sports betting tracker?</summary>
-          <p>A structured ledger for every wager — stakes, odds, outcomes, and profit — with automatic ROI, yield, and breakdowns instead of manual spreadsheet formulas.</p>
+          <summary data-i18n="home.faqTrackerQ">What is a sports betting tracker?</summary>
+          <p data-i18n="home.faqTrackerA">A structured ledger for every wager — stakes, odds, outcomes, and profit — with automatic ROI, yield, and breakdowns instead of manual spreadsheet formulas.</p>
         </details>
         <details>
-          <summary>Which odds formats are supported?</summary>
-          <p>Decimal, American, fractional, Hong Kong, Malaysian, and Indonesian. All bets are stored with canonical decimal odds for reporting.</p>
+          <summary data-i18n="home.faqOddsQ">Which odds formats are supported?</summary>
+          <p data-i18n="home.faqOddsA">Decimal, American, fractional, Hong Kong, Malaysian, and Indonesian. All bets are stored with canonical decimal odds for reporting.</p>
         </details>
         <details>
-          <summary>How does Kelly stake work here?</summary>
-          <p>Enter personal implied odds on a bet. With bankroll and Kelly multiplier set in settings, the app recommends a stake based on your stated edge.</p>
+          <summary data-i18n="home.faqKellyQ">How does Kelly stake work here?</summary>
+          <p data-i18n="home.faqKellyA">Enter personal implied odds on a bet. With bankroll and Kelly multiplier set in settings, the app recommends a stake based on your stated edge.</p>
         </details>
         <details>
-          <summary>Can I export or use an API?</summary>
-          <p>Yes — CSV, Excel, and JSON exports plus API keys for programmatic access to your record.</p>
+          <summary data-i18n="home.faqExportQ">Can I export or use an API?</summary>
+          <p data-i18n="home.faqExportA">Yes — CSV, Excel, and JSON exports plus API keys for programmatic access to your record.</p>
         </details>
         <details>
-          <summary>Is this a tipster service?</summary>
-          <p>No. mybetrecord is record-keeping and analytics only. We do not sell picks or promise profits.</p>
+          <summary data-i18n="home.faqTipsterQ">Is this a tipster service?</summary>
+          <p data-i18n="home.faqTipsterA">No. mybetrecord is record-keeping and analytics only. We do not sell picks or promise profits.</p>
         </details>
       </div>
     </section>
 
     <section class="m-section">
-      <div class="m-rg">
+      <div class="m-rg" data-i18n="home.rg" data-i18n-html>
         <strong>Responsible gambling.</strong> Betting should be entertainment, not income. Never stake more than you can afford to lose. If gambling is affecting your life, seek help from organisations such as <a href="https://www.begambleaware.org/" rel="noopener noreferrer">BeGambleAware</a> or <a href="https://www.gamblingtherapy.org/" rel="noopener noreferrer">Gambling Therapy</a>. mybetrecord does not facilitate placing bets — it helps you understand your own history.
       </div>
     </section>
 
     <section class="m-cta">
-      <h2>Ready to bet to a number?</h2>
-      <p>Create a free account and log your first bet in under a minute.</p>
-      <a class="m-btn m-btn--primary" href="/app/#/register">Create free account</a>
+      <h2 data-i18n="home.ctaTitle">Ready to bet to a number?</h2>
+      <p data-i18n="home.ctaLead">Create a free account and log your first bet in under a minute.</p>
+      <a class="m-btn m-btn--primary" href="/app/#/register" data-i18n="home.createFreeAccount">Create free account</a>
     </section>
 
     <footer class="m-footer">
       <nav>
-        <a href="/blog/">Blog</a>
-        <a href="/privacy">Privacy</a>
-        <a href="/terms">Terms</a>
-        <a href="/login">Sign in</a>
+        <a href="/blog/" data-i18n="home.blog">Blog</a>
+        <a href="/privacy" data-i18n="home.privacy">Privacy</a>
+        <a href="/terms" data-i18n="home.terms">Terms</a>
+        <a href="/login" data-i18n="auth.signIn">Sign in</a>
       </nav>
-      <p>&copy; mybetrecord. Analytics and record-keeping — not gambling advice.</p>
+      <p data-i18n="home.footerCopy">&copy; mybetrecord. Analytics and record-keeping — not gambling advice.</p>
     </footer>
   </div>
+  <script src="/app/i18n.js"></script>
+  <script src="/marketing.js"></script>
 </body>
 </html>

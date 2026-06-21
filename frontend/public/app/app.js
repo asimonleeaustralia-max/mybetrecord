@@ -677,7 +677,29 @@ async function renderBets() {
   state.sports = await api("/bets/sports").catch(() => []);
   state.betTypes = await api("/bets/bet-types").catch(() => []);
   buildBetFilters();
-  await loadBets();
+  await Promise.all([loadBets(), loadUsageBanner()]);
+}
+
+async function loadUsageBanner() {
+  const banner = $("#usageBanner");
+  if (!banner) return;
+  let usage;
+  try {
+    usage = await api("/bets/usage");
+  } catch {
+    banner.hidden = true;
+    return;
+  }
+  if (!usage || usage.limit == null) {  // Pro / unlimited
+    banner.hidden = true;
+    return;
+  }
+  const reached = usage.remaining <= 0;
+  banner.className = "usage-banner" + (reached ? " usage-banner--full" : "");
+  banner.innerHTML = `
+    <span>${esc(t("plan.betsToday", { count: usage.count, limit: usage.limit }))}</span>
+    <a href="#/settings" class="usage-banner__cta">${esc(t(reached ? "plan.limitReached" : "plan.upgradeCta"))}</a>`;
+  banner.hidden = false;
 }
 
 function currentFilters(prefix) {
@@ -1695,8 +1717,196 @@ async function renderSettings() {
     } catch (err) { toast(err.message, true); }
   });
 
+  await handleBillingReturn();
+  await renderPlan();
+
   $("#newKeyBtn").addEventListener("click", createKey);
   await loadKeys();
+}
+
+/* ----------------------------- Plan & billing ----------------------------- */
+function formatPrice(amount, currency) {
+  try {
+    return i18n.formatLocaleNumber(amount, { style: "currency", currency });
+  } catch {
+    return `${amount} ${currency}`;
+  }
+}
+
+function planDateLabel(iso) {
+  if (!iso) return "";
+  const d = new Date(iso);
+  const tzOpt = state.user?.timezone ? { timeZone: state.user.timezone } : {};
+  return i18n.formatLocaleDate(d, { day: "2-digit", month: "short", year: "numeric", ...tzOpt });
+}
+
+async function handleBillingReturn() {
+  const params = new URLSearchParams(location.search);
+  const billing = params.get("billing");
+  if (!billing) return;
+  // Strip the query param but keep the SPA hash route.
+  const clean = location.pathname + location.hash;
+  history.replaceState(null, "", clean);
+  if (billing === "success") {
+    // The webhook confirms Pro server-side; refresh the cached user.
+    try { state.user = await api("/auth/me"); } catch {}
+    await refreshTicker();
+    toast(t(state.user?.plan === "pro" ? "plan.upgradeSuccess" : "plan.processing"));
+  } else if (billing === "cancel") {
+    toast(t("plan.upgradeCanceled"), true);
+  }
+}
+
+async function renderPlan() {
+  const body = $("#planBody");
+  const badge = $("#planBadge");
+  if (!body) return;
+  body.innerHTML = `<p class="muted">${esc(t("plan.loading"))}</p>`;
+
+  let plan, pricing;
+  try {
+    [plan, pricing] = await Promise.all([
+      api("/payments/plan"),
+      api("/payments/pricing"),
+    ]);
+  } catch {
+    body.innerHTML = `<p class="muted">${esc(t("plan.unavailable"))}</p>`;
+    if (badge) badge.hidden = true;
+    return;
+  }
+
+  const isPro = plan.plan === "pro";
+  if (badge) {
+    badge.hidden = false;
+    badge.textContent = t(isPro ? "plan.pro" : "plan.free");
+    badge.className = "plan-badge " + (isPro ? "plan-badge--pro" : "plan-badge--free");
+  }
+
+  if (isPro) {
+    renderProPlan(body, plan);
+  } else {
+    renderFreePlan(body, plan, pricing);
+  }
+}
+
+function renderProPlan(body, plan) {
+  const periodEnd = plan.subscription_current_period_end;
+  const cancelling = plan.subscription_cancel_at_period_end;
+  const lines = [`<p class="plan-desc">${esc(t("plan.proDesc"))}</p>`];
+  if (cancelling && periodEnd) {
+    lines.push(`<p class="plan-note plan-note--warn">${esc(t("plan.cancelsOn", { date: planDateLabel(periodEnd) }))}</p>`);
+  } else if (periodEnd) {
+    lines.push(`<p class="plan-note">${esc(t("plan.renewsOn", { date: planDateLabel(periodEnd) }))}</p>`);
+  }
+
+  if (!plan.stripe_configured) {
+    body.innerHTML = lines.join("");
+    return;
+  }
+
+  if (cancelling) {
+    lines.push(`<div class="plan-actions"><button type="button" class="btn btn--brass btn--sm" id="resumeBtn">${esc(t("plan.resume"))}</button></div>`);
+  } else {
+    lines.push(`<div class="plan-actions"><button type="button" class="btn btn--ghost btn--sm" id="cancelBtn">${esc(t("plan.cancel"))}</button></div>`);
+  }
+  body.innerHTML = lines.join("");
+
+  const cancelBtn = $("#cancelBtn");
+  if (cancelBtn) cancelBtn.addEventListener("click", async () => {
+    if (!confirm(t("plan.cancelConfirm"))) return;
+    cancelBtn.disabled = true;
+    try {
+      await api("/payments/cancel", { method: "POST" });
+      toast(t("plan.cancelRequested"));
+      await renderPlan();
+    } catch (err) {
+      toast(err.message, true);
+      cancelBtn.disabled = false;
+    }
+  });
+
+  const resumeBtn = $("#resumeBtn");
+  if (resumeBtn) resumeBtn.addEventListener("click", async () => {
+    resumeBtn.disabled = true;
+    try {
+      await api("/payments/resume", { method: "POST" });
+      toast(t("plan.resumed"));
+      await renderPlan();
+    } catch (err) {
+      toast(err.message, true);
+      resumeBtn.disabled = false;
+    }
+  });
+}
+
+function renderFreePlan(body, plan, pricing) {
+  const limit = plan.free_daily_bet_limit;
+  const blocks = [`<p class="plan-desc">${esc(t("plan.freeDesc", { limit }))}</p>`];
+
+  if (!plan.stripe_configured) {
+    blocks.push(`<p class="plan-note">${esc(t("plan.billingUnavailable"))}</p>`);
+    body.innerHTML = blocks.join("");
+    return;
+  }
+
+  const prices = pricing.prices || [];
+  const codes = prices.map(p => p.currency);
+  const preferred = (state.user?.base_currency || pricing.default_currency || "USD").toUpperCase();
+  const selected = codes.includes(preferred) ? preferred : (pricing.default_currency || "USD");
+  const options = prices.map(p =>
+    `<option value="${esc(p.currency)}"${p.currency === selected ? " selected" : ""}>${esc(p.currency)}</option>`
+  ).join("");
+
+  blocks.push(`
+    <div class="upgrade-card">
+      <h3 class="upgrade-card__title">${esc(t("plan.upgradeTitle"))}</h3>
+      <p class="upgrade-card__blurb">${esc(t("plan.upgradeBlurb"))}</p>
+      <div class="upgrade-card__row">
+        <label class="upgrade-card__ccy"><span>${esc(t("plan.payCurrency"))}</span>
+          <select id="planCurrency" class="mini-select">${options}</select>
+        </label>
+        <div class="upgrade-card__price" id="planPrice"></div>
+      </div>
+      <button type="button" class="btn btn--brass" id="upgradeBtn">${esc(t("plan.upgrade"))}</button>
+    </div>`);
+  body.innerHTML = blocks.join("");
+
+  const priceFor = code => {
+    const p = prices.find(x => x.currency === code);
+    return p ? formatPrice(p.amount, p.currency) : "";
+  };
+  const updatePrice = () => {
+    const code = $("#planCurrency").value;
+    $("#planPrice").textContent = t("plan.perMonth", { price: priceFor(code) });
+  };
+  $("#planCurrency").addEventListener("change", updatePrice);
+  updatePrice();
+
+  $("#upgradeBtn").addEventListener("click", async () => {
+    const btn = $("#upgradeBtn");
+    btn.disabled = true;
+    const currency = $("#planCurrency").value;
+    const base = `${location.origin}/app/`;
+    try {
+      const session = await api("/payments/checkout-session", {
+        method: "POST",
+        body: {
+          currency,
+          success_url: `${base}?billing=success#/settings`,
+          cancel_url: `${base}?billing=cancel#/settings`,
+        },
+      });
+      if (session.url) {
+        window.location.assign(session.url);
+      } else {
+        toast(t("plan.checkoutFailed"), true);
+        btn.disabled = false;
+      }
+    } catch (err) {
+      toast(err.message || t("plan.checkoutFailed"), true);
+      btn.disabled = false;
+    }
+  });
 }
 
 async function loadKeys() {
@@ -1736,8 +1946,21 @@ async function renderAdmin() {
     userSearchTimer = setTimeout(loadAdminUsers, 300);
   });
   $("#adminEventFilter").addEventListener("change", loadAdminEvents);
+  $("#adminAddForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = $("#adminAddEmail").value.trim();
+    if (!email) return;
+    try {
+      await api("/auth/admin/admins", { method: "POST", body: { email } });
+      $("#adminAddEmail").value = "";
+      toast(t("admin.adminAdded"));
+      await Promise.all([loadAdminAdmins(), loadAdminUsers(), loadAdminStats()]);
+    } catch (err) {
+      toast(err.message, true);
+    }
+  });
 
-  await Promise.all([loadAdminStats(), loadAdminUsers(), loadAdminEvents()]);
+  await Promise.all([loadAdminStats(), loadAdminAdmins(), loadAdminUsers(), loadAdminEvents()]);
 }
 
 async function loadAdminStats() {
@@ -1760,10 +1983,35 @@ function adminStatusBadge(active) {
     : `<span class="outcome-select outcome-select--loss">${t("admin.disabled")}</span>`;
 }
 
-function adminRoleBadge(isAdmin) {
-  return isAdmin
-    ? `<span class="outcome-select outcome-select--win">${t("admin.adminRole")}</span>`
-    : `<span class="outcome-select outcome-select--pending">${t("admin.userRole")}</span>`;
+async function loadAdminAdmins() {
+  const admins = await api("/auth/admin/admins");
+  $("#adminAdminsBody").innerHTML = admins.map(u => `
+    <tr data-admin="${u.id}">
+      <td>${esc(u.email)}</td>
+      <td>${esc(u.display_name || "—")}</td>
+      <td class="num">${formatDt(u.created_at)}</td>
+      <td class="r">
+        <button class="btn btn--ghost btn--sm" data-remove-admin="${u.id}" ${u.id === state.user?.id ? "disabled" : ""}>
+          ${t("admin.removeAdmin")}
+        </button>
+      </td>
+    </tr>`).join("")
+    || `<tr><td colspan="4" class="empty">${t("admin.noAdmins")}</td></tr>`;
+
+  $$("[data-remove-admin]").forEach(btn => btn.addEventListener("click", () =>
+    adminRemoveAdmin(btn.dataset.removeAdmin)
+  ));
+}
+
+async function adminRemoveAdmin(userId) {
+  if (!confirm(t("admin.revokeAdminConfirm"))) return;
+  try {
+    await api(`/auth/admin/admins/${userId}`, { method: "DELETE" });
+    toast(t("admin.adminRemoved"));
+    await Promise.all([loadAdminAdmins(), loadAdminUsers(), loadAdminEvents(), loadAdminStats()]);
+  } catch (err) {
+    toast(err.message, true);
+  }
 }
 
 async function loadAdminUsers() {
@@ -1775,7 +2023,6 @@ async function loadAdminUsers() {
       <td>${esc(u.email)}</td>
       <td>${esc(u.display_name || "—")}</td>
       <td>${adminStatusBadge(u.is_active)}</td>
-      <td>${adminRoleBadge(u.is_admin)}</td>
       <td class="num">${formatDt(u.last_login_at)}</td>
       <td class="num">${formatDt(u.created_at)}</td>
       <td class="r num">${u.bet_count}</td>
@@ -1784,25 +2031,17 @@ async function loadAdminUsers() {
         <button class="btn btn--ghost btn--sm" data-toggle-active="${u.id}" data-active="${u.is_active}">
           ${u.is_active ? t("admin.disable") : t("admin.enable")}
         </button>
-        <button class="btn btn--ghost btn--sm" data-toggle-admin="${u.id}" data-admin="${u.is_admin}">
-          ${u.is_admin ? t("admin.revokeAdmin") : t("admin.makeAdmin")}
-        </button>
       </td>
     </tr>`).join("")
-    || `<tr><td colspan="9" class="empty">${t("admin.noUsers")}</td></tr>`;
+    || `<tr><td colspan="8" class="empty">${t("admin.noUsers")}</td></tr>`;
 
   $$("[data-toggle-active]").forEach(btn => btn.addEventListener("click", () =>
     adminToggleUser(btn.dataset.toggleActive, { is_active: btn.dataset.active !== "true" })
   ));
-  $$("[data-toggle-admin]").forEach(btn => btn.addEventListener("click", () =>
-    adminToggleUser(btn.dataset.toggleAdmin, { is_admin: btn.dataset.admin !== "true" })
-  ));
 }
 
 async function adminToggleUser(userId, payload) {
-  const label = payload.is_active != null
-    ? (payload.is_active ? t("admin.enableConfirm") : t("admin.disableConfirm"))
-    : (payload.is_admin ? t("admin.grantAdminConfirm") : t("admin.revokeAdminConfirm"));
+  const label = payload.is_active ? t("admin.enableConfirm") : t("admin.disableConfirm");
   if (!confirm(label)) return;
   try {
     await api(`/auth/admin/users/${userId}`, { method: "PATCH", body: payload });

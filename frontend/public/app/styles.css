@@ -356,6 +356,8 @@ textarea { font-family: var(--sans); resize: vertical; }
 .exports { display: flex; gap: 8px; }
 .split { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
 .mini-select { width: auto; padding: 6px 10px; font-size: .82rem; }
+.admin-add-form { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.admin-add-form .mini-select { min-width: 220px; }
 .outcome-select { min-width: 108px; font-weight: 600; cursor: pointer; }
 .outcome-select--win { background: #e7f4ee; color: var(--win); border-color: #c5e6d6; }
 .outcome-select--loss { background: #fbecea; color: var(--loss); border-color: #f0ccc8; }
@@ -385,3 +387,57 @@ code { font-family: var(--mono); font-size: .82em; background: var(--canvas); pa
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }
 }
+
+/* ============================ Plan & billing ============================ */
+.plan-badge {
+  font-family: var(--display);
+  font-size: .72rem; font-weight: 600; text-transform: uppercase;
+  letter-spacing: .04em;
+  padding: 3px 10px; border-radius: 999px;
+  border: 1px solid var(--line);
+}
+.plan-badge--free { background: var(--canvas); color: var(--muted); }
+.plan-badge--pro {
+  background: var(--brass-wash); color: var(--brass-deep);
+  border-color: #e7d6ad;
+}
+.plan-body { display: grid; gap: 12px; }
+.plan-desc { margin: 0; color: var(--ink-soft); }
+.plan-note { margin: 0; color: var(--muted); font-size: .9rem; }
+.plan-note--warn { color: var(--brass-deep); }
+.plan-actions { margin-top: 4px; }
+.muted { color: var(--muted); }
+
+.upgrade-card {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: linear-gradient(180deg, var(--brass-wash) 0%, var(--surface) 60%);
+  padding: 16px;
+  display: grid; gap: 10px;
+}
+.upgrade-card__title { margin: 0; font-size: 1.05rem; }
+.upgrade-card__blurb { margin: 0; color: var(--muted); font-size: .9rem; }
+.upgrade-card__row {
+  display: flex; align-items: flex-end; gap: 16px; flex-wrap: wrap;
+}
+.upgrade-card__ccy { display: grid; gap: 4px; font-size: .85rem; color: var(--muted); }
+.upgrade-card__price {
+  font-family: var(--mono); font-variant-numeric: tabular-nums;
+  font-size: 1.2rem; font-weight: 700; color: var(--ink);
+}
+.upgrade-card .btn { justify-self: start; }
+
+.usage-banner {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; flex-wrap: wrap;
+  padding: 10px 14px; margin-bottom: 14px;
+  border: 1px solid var(--line); border-radius: var(--radius);
+  background: var(--canvas); color: var(--ink-soft);
+  font-size: .9rem;
+}
+.usage-banner--full { background: var(--brass-wash); border-color: #e7d6ad; }
+.usage-banner__cta {
+  font-weight: 600; color: var(--brass-deep); text-decoration: none;
+  white-space: nowrap;
+}
+.usage-banner__cta:hover { text-decoration: underline; }

@@ -45,6 +45,7 @@ def init_db() -> None:
 
     from . import models  # noqa: F401  (ensure models are registered)
     from .seed import (
+        seed_bootstrap_admins,
         seed_dev_admin,
         _migrate_exchange_to_bookmaker,
         _ensure_closing_odds_exchange_column,
@@ -58,6 +59,7 @@ def init_db() -> None:
         _ensure_share_token_column,
         _ensure_bet_broker_column,
         _ensure_side_column,
+        _ensure_billing_columns,
     )
 
     if settings.database_url.startswith("postgresql"):
@@ -87,4 +89,6 @@ def init_db() -> None:
     _ensure_share_token_column()
     _ensure_bet_broker_column()
     _ensure_side_column()
+    _ensure_billing_columns()
     seed_dev_admin()
+    seed_bootstrap_admins()

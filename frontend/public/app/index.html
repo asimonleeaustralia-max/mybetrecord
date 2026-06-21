@@ -104,6 +104,7 @@
         <h1 data-i18n="bets.title">Your bets</h1>
         <a href="#/new" class="btn btn--brass btn--sm" data-i18n="bets.recordBet">+ Record a bet</a>
       </div>
+      <div class="usage-banner" id="usageBanner" hidden></div>
       <div class="filters" id="betsFilters"></div>
       <div class="table-wrap">
         <table class="ledger">
@@ -360,6 +361,14 @@
       <p class="settings-legal"><a href="/privacy">Privacy</a> · <a href="/terms">Terms</a></p>
 
       <div class="panel">
+        <div class="panel__head">
+          <h2 data-i18n="plan.title">Plan &amp; billing</h2>
+          <span class="plan-badge" id="planBadge" hidden></span>
+        </div>
+        <div id="planBody" class="plan-body"></div>
+      </div>
+
+      <div class="panel">
         <div class="panel__head"><h2 data-i18n="settings.apiAccess">API access</h2>
           <button class="btn btn--ghost btn--sm" id="newKeyBtn" data-i18n="settings.generateKey">Generate key</button>
         </div>
@@ -383,6 +392,26 @@
 
       <div class="panel">
         <div class="panel__head">
+          <h2 data-i18n="admin.admins">Admin users</h2>
+          <form id="adminAddForm" class="admin-add-form">
+            <input type="email" id="adminAddEmail" class="mini-select" required data-i18n-placeholder="admin.addEmailPlaceholder" />
+            <button type="submit" class="btn btn--primary btn--sm" data-i18n="admin.addAdmin">Add admin</button>
+          </form>
+        </div>
+        <div class="table-wrap">
+          <table class="ledger ledger--compact">
+            <thead>
+              <tr>
+                <th data-i18n="admin.email">Email</th><th data-i18n="admin.name">Name</th><th data-i18n="admin.joined">Joined</th><th></th>
+              </tr>
+            </thead>
+            <tbody id="adminAdminsBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel__head">
           <h2 data-i18n="admin.users">Users</h2>
           <input type="search" id="adminUserSearch" class="mini-select" data-i18n-placeholder="admin.searchPlaceholder" />
         </div>
@@ -390,7 +419,7 @@
           <table class="ledger ledger--compact">
             <thead>
               <tr>
-                <th data-i18n="admin.email">Email</th><th data-i18n="admin.name">Name</th><th data-i18n="admin.status">Status</th><th data-i18n="admin.role">Role</th>
+                <th data-i18n="admin.email">Email</th><th data-i18n="admin.name">Name</th><th data-i18n="admin.status">Status</th>
                 <th data-i18n="admin.lastLogin">Last login</th><th data-i18n="admin.joined">Joined</th>
                 <th class="r" data-i18n="admin.bets">Bets</th><th class="r" data-i18n="admin.keys">Keys</th><th></th>
               </tr>

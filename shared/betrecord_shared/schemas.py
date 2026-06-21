@@ -97,6 +97,57 @@ class UserOut(BaseModel):
     is_admin: bool
     created_at: datetime
 
+    # Billing / subscription (cached from Stripe)
+    plan: str = "free"
+    plan_currency: Optional[str] = None
+    subscription_status: Optional[str] = None
+    subscription_cancel_at_period_end: bool = False
+    subscription_current_period_end: Optional[datetime] = None
+
+
+# ----------------------------- Billing / plans ---------------------------- #
+
+class PriceOut(BaseModel):
+    currency: str
+    amount: float
+    interval: str = "month"
+
+
+class PricingOut(BaseModel):
+    default_currency: str
+    prices: list[PriceOut]
+
+
+class PlanOut(BaseModel):
+    """Current subscription state for the signed-in user."""
+    plan: str = "free"
+    plan_currency: Optional[str] = None
+    subscription_status: Optional[str] = None
+    subscription_cancel_at_period_end: bool = False
+    subscription_current_period_end: Optional[datetime] = None
+    free_daily_bet_limit: int
+    stripe_configured: bool = False
+
+
+class CheckoutRequest(BaseModel):
+    currency: Optional[str] = Field(default=None, min_length=3, max_length=3)
+    success_url: str
+    cancel_url: str
+
+
+class CheckoutSessionOut(BaseModel):
+    id: str
+    url: Optional[str] = None
+
+
+class BetUsageOut(BaseModel):
+    """How many bets the user has entered today, against their plan's limit."""
+    plan: str
+    date: str
+    count: int
+    limit: Optional[int] = None  # null == unlimited (Pro)
+    remaining: Optional[int] = None  # null == unlimited (Pro)
+
 
 class ApiKeyOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
@@ -130,6 +181,10 @@ class AdminUserOut(BaseModel):
 class AdminUserUpdate(BaseModel):
     is_active: Optional[bool] = None
     is_admin: Optional[bool] = None
+
+
+class AdminAddIn(BaseModel):
+    email: EmailStr
 
 
 class AdminStatsOut(BaseModel):

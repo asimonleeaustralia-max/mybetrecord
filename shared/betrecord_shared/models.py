@@ -51,6 +51,23 @@ class User(Base):
     last_login_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
 
+    # Billing / subscription. Free is the default; Pro lifts the daily bet cap.
+    # Stripe is the source of truth — these fields cache its state so the rest
+    # of the app can gate features without calling Stripe on every request.
+    plan: Mapped[str] = mapped_column(String(16), default="free")  # free | pro
+    plan_currency: Mapped[str | None] = mapped_column(String(3), nullable=True)
+    stripe_customer_id: Mapped[str | None] = mapped_column(String(64), index=True, nullable=True)
+    stripe_subscription_id: Mapped[str | None] = mapped_column(String(64), index=True, nullable=True)
+    subscription_status: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    subscription_cancel_at_period_end: Mapped[bool] = mapped_column(Boolean, default=False)
+    subscription_current_period_end: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+
+    @property
+    def is_pro(self) -> bool:
+        return (self.plan or "free").lower() == "pro"
+
     api_keys: Mapped[list["ApiKey"]] = relationship(back_populates="user", cascade="all, delete-orphan")
     bets: Mapped[list["Bet"]] = relationship(back_populates="user", cascade="all, delete-orphan")
     password_reset_tokens: Mapped[list["PasswordResetToken"]] = relationship(

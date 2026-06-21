@@ -55,7 +55,8 @@ Optional:
   CONTAINERAPPS_ENV (default: derived from the frontend app)
   FRONTEND_URL (public site origin for password-reset links, e.g. https://www.mybetrecord.com)
   SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASSWORD, SMTP_FROM, SMTP_USE_TLS
-  STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, STRIPE_PRICE_ID
+  STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, STRIPE_PRODUCT_ID, STRIPE_PRICE_ID
+  FREE_DAILY_BET_LIMIT (max bets/day on the free plan; default 5)
   AZURE_SUBSCRIPTION_ID (validates active subscription)
 EOF
 }
@@ -181,6 +182,12 @@ deploy_bicep() {
   fi
   if [[ -n "${STRIPE_PRICE_ID:-}" ]]; then
     extra_params+=("stripePriceId=${STRIPE_PRICE_ID}")
+  fi
+  if [[ -n "${STRIPE_PRODUCT_ID:-}" ]]; then
+    extra_params+=("stripeProductId=${STRIPE_PRODUCT_ID}")
+  fi
+  if [[ -n "${FREE_DAILY_BET_LIMIT:-}" ]]; then
+    extra_params+=("freeDailyBetLimit=${FREE_DAILY_BET_LIMIT}")
   fi
   if [[ -n "${FRONTEND_URL:-}" ]]; then
     extra_params+=("frontendUrl=${FRONTEND_URL}")

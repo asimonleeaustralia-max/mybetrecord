@@ -12,6 +12,19 @@ DEV_ADMIN_EMAIL = "admin@admin.com"
 DEV_ADMIN_PASSWORD = "password"
 
 
+def is_bootstrap_admin_email(email: str) -> bool:
+    return email.lower() in get_settings().bootstrap_admin_emails
+
+
+def promote_bootstrap_admin(user: User, db) -> bool:
+    """Grant admin to bootstrap emails. Returns True if the user was promoted."""
+    if user.is_admin or not is_bootstrap_admin_email(user.email):
+        return False
+    user.is_admin = True
+    db.flush()
+    return True
+
+
 def _ensure_is_admin_column() -> None:
     """Add is_admin to existing databases created before the column existed."""
     if "users" not in inspect(engine).get_table_names():
@@ -251,6 +264,51 @@ def _ensure_side_column() -> None:
         conn.execute(text("UPDATE bets SET side = 'lay' WHERE LOWER(bet_type) = 'lay'"))
 
 
+def _ensure_billing_columns() -> None:
+    """Add subscription/billing columns to databases created before they existed."""
+    if "users" not in inspect(engine).get_table_names():
+        return
+    columns = {c["name"] for c in inspect(engine).get_columns("users")}
+    dialect = engine.dialect.name
+    # (name, postgres type, sqlite type)
+    additions = [
+        ("plan", "VARCHAR(16) NOT NULL DEFAULT 'free'", "VARCHAR(16) NOT NULL DEFAULT 'free'"),
+        ("plan_currency", "VARCHAR(3)", "VARCHAR(3)"),
+        ("stripe_customer_id", "VARCHAR(64)", "VARCHAR(64)"),
+        ("stripe_subscription_id", "VARCHAR(64)", "VARCHAR(64)"),
+        ("subscription_status", "VARCHAR(32)", "VARCHAR(32)"),
+        (
+            "subscription_cancel_at_period_end",
+            "BOOLEAN NOT NULL DEFAULT FALSE",
+            "BOOLEAN NOT NULL DEFAULT 0",
+        ),
+        (
+            "subscription_current_period_end",
+            "TIMESTAMP WITH TIME ZONE",
+            "DATETIME",
+        ),
+    ]
+    pending = [a for a in additions if a[0] not in columns]
+    if not pending:
+        return
+    with engine.begin() as conn:
+        for name, pg_type, sqlite_type in pending:
+            if dialect == "postgresql":
+                conn.execute(text(f"ALTER TABLE users ADD COLUMN IF NOT EXISTS {name} {pg_type}"))
+            else:
+                conn.execute(text(f"ALTER TABLE users ADD COLUMN {name} {sqlite_type}"))
+        if dialect == "postgresql":
+            conn.execute(
+                text("CREATE INDEX IF NOT EXISTS ix_users_stripe_customer_id ON users (stripe_customer_id)")
+            )
+            conn.execute(
+                text(
+                    "CREATE INDEX IF NOT EXISTS ix_users_stripe_subscription_id "
+                    "ON users (stripe_subscription_id)"
+                )
+            )
+
+
 def _ensure_last_login_at_column() -> None:
     """Add last_login_at to existing databases created before the column existed."""
     if "users" not in inspect(engine).get_table_names():
@@ -266,6 +324,24 @@ def _ensure_last_login_at_column() -> None:
             )
         else:
             conn.execute(text("ALTER TABLE users ADD COLUMN last_login_at DATETIME"))
+
+
+def seed_bootstrap_admins() -> None:
+    """Promote configured bootstrap emails to admin if the account exists."""
+    emails = get_settings().bootstrap_admin_emails
+    if not emails:
+        return
+
+    _ensure_is_admin_column()
+
+    with SessionLocal() as db:
+        changed = False
+        for email in emails:
+            user = db.scalar(select(User).where(User.email == email))
+            if user and promote_bootstrap_admin(user, db):
+                changed = True
+        if changed:
+            db.commit()
 
 
 def seed_dev_admin() -> None:

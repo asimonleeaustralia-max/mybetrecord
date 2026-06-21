@@ -9,15 +9,16 @@ from __future__ import annotations
 
 import secrets
 from collections import Counter
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Optional
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 import html as html_module
 
 from fastapi import Depends, FastAPI, HTTPException, Query, status
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import HTMLResponse, Response
-from sqlalchemy import distinct, select
+from sqlalchemy import distinct, func, select
 from sqlalchemy.orm import Session
 
 from betrecord_shared import betting_math as bm
@@ -25,7 +26,14 @@ from betrecord_shared.bankroll import effective_bankroll
 from betrecord_shared.config import get_settings
 from betrecord_shared.database import get_db, init_db
 from betrecord_shared.models import Bet, User
-from betrecord_shared.schemas import BetCreate, BetOut, BetShareOut, BetUpdate, PublicBetOut
+from betrecord_shared.schemas import (
+    BetCreate,
+    BetOut,
+    BetShareOut,
+    BetUpdate,
+    BetUsageOut,
+    PublicBetOut,
+)
 from betrecord_shared.security import get_current_user
 
 settings = get_settings()
@@ -215,7 +223,75 @@ def _new_share_token(db: Session) -> str:
     raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Could not create share link")
 
 
+# --------------------------- free-plan limits ----------------------------- #
+
+def _user_zone(user: User) -> ZoneInfo:
+    try:
+        return ZoneInfo(user.timezone or "UTC")
+    except (ZoneInfoNotFoundError, ValueError):
+        return ZoneInfo("UTC")
+
+
+def _local_day_bounds(user: User) -> tuple[datetime, datetime, str]:
+    """Start/end (UTC) of the user's current local day, plus the local date string."""
+    zone = _user_zone(user)
+    now_local = datetime.now(zone)
+    start_local = now_local.replace(hour=0, minute=0, second=0, microsecond=0)
+    end_local = start_local + timedelta(days=1)
+    return (
+        start_local.astimezone(timezone.utc),
+        end_local.astimezone(timezone.utc),
+        start_local.date().isoformat(),
+    )
+
+
+def _bets_entered_today(db: Session, user: User) -> int:
+    start_utc, end_utc, _ = _local_day_bounds(user)
+    return db.scalar(
+        select(func.count())
+        .select_from(Bet)
+        .where(
+            Bet.user_id == user.id,
+            Bet.created_at >= start_utc,
+            Bet.created_at < end_utc,
+        )
+    ) or 0
+
+
+def _usage(db: Session, user: User) -> BetUsageOut:
+    _, _, day = _local_day_bounds(user)
+    count = _bets_entered_today(db, user)
+    if user.is_pro:
+        return BetUsageOut(plan=user.plan or "free", date=day, count=count, limit=None, remaining=None)
+    limit = settings.free_daily_bet_limit
+    return BetUsageOut(
+        plan=user.plan or "free",
+        date=day,
+        count=count,
+        limit=limit,
+        remaining=max(0, limit - count),
+    )
+
+
+def _enforce_daily_limit(db: Session, user: User) -> None:
+    """Free users may enter at most `free_daily_bet_limit` bets per local day."""
+    if user.is_pro:
+        return
+    limit = settings.free_daily_bet_limit
+    if _bets_entered_today(db, user) >= limit:
+        raise HTTPException(
+            status.HTTP_402_PAYMENT_REQUIRED,
+            f"Free plan limit reached: you can enter up to {limit} bets per day. "
+            "Upgrade to Pro for unlimited bets.",
+        )
+
+
 # -------------------------------- routes ---------------------------------- #
+
+@app.get("/bets/usage", response_model=BetUsageOut)
+def bet_usage(user: User = Depends(get_current_user), db: Session = Depends(get_db)) -> BetUsageOut:
+    """Today's bet count against the user's plan limit (null limit == unlimited)."""
+    return _usage(db, user)
 
 @app.get("/bets/sports", response_model=list[str])
 def sports_used(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
@@ -340,6 +416,7 @@ def create_bet(
     user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ) -> BetOut:
+    _enforce_daily_limit(db, user)
     odds_format = payload.odds_format or user.default_odds_format or "decimal"
     odds_decimal = _normalise_odds(payload.odds, odds_format, payload.odds_denominator)
     if odds_decimal <= 1.0:

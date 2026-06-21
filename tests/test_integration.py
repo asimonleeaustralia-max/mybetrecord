@@ -6,6 +6,8 @@ from unittest.mock import patch
 
 import pytest
 
+from betrecord_shared.config import get_settings
+
 
 # ------------------------------- auth ------------------------------------- #
 
@@ -496,13 +498,120 @@ def test_payments_health_reports_stripe_off(clients):
     assert r.json()["stripe_configured"] is False
 
 
+def test_pricing_lists_top_twenty_currencies(clients):
+    r = clients["payments"].get("/payments/pricing")
+    assert r.status_code == 200
+    body = r.json()
+    assert body["default_currency"] == "USD"
+    codes = [p["currency"] for p in body["prices"]]
+    assert len(codes) == 20
+    # A representative spread of the top-20, including a zero-decimal currency.
+    for code in ("USD", "EUR", "GBP", "JPY", "AUD", "KRW"):
+        assert code in codes
+    usd = next(p for p in body["prices"] if p["currency"] == "USD")
+    assert usd["interval"] == "month"
+    assert usd["amount"] == pytest.approx(4.99)
+
+
+def test_plan_defaults_to_free(clients, auth_headers):
+    headers, _ = auth_headers
+    r = clients["payments"].get("/payments/plan", headers=headers)
+    assert r.status_code == 200
+    body = r.json()
+    assert body["plan"] == "free"
+    assert body["stripe_configured"] is False
+    assert body["free_daily_bet_limit"] == get_settings().free_daily_bet_limit
+    assert body["subscription_cancel_at_period_end"] is False
+
+
+def test_me_includes_plan(clients, auth_headers):
+    headers, _ = auth_headers
+    me = clients["auth"].get("/auth/me", headers=headers).json()
+    assert me["plan"] == "free"
+    assert me["subscription_status"] is None
+
+
 def test_checkout_requires_stripe_config(clients, auth_headers):
     headers, _ = auth_headers
     r = clients["payments"].post(
-        "/payments/checkout-session?success_url=https://x/ok&cancel_url=https://x/no",
+        "/payments/checkout-session",
         headers=headers,
+        json={"currency": "USD", "success_url": "https://x/ok", "cancel_url": "https://x/no"},
     )
     assert r.status_code == 503  # billing not configured
+
+
+def test_cancel_requires_stripe_config(clients, auth_headers):
+    headers, _ = auth_headers
+    r = clients["payments"].post("/payments/cancel", headers=headers)
+    assert r.status_code == 503
+
+
+# --------------------------- free / pro plan ----------------------------- #
+
+def _promote_to_pro(email: str) -> None:
+    """Mark a user Pro directly, as the Stripe webhook would in production."""
+    from sqlalchemy import select
+
+    from betrecord_shared.database import SessionLocal
+    from betrecord_shared.models import User
+
+    with SessionLocal() as db:
+        user = db.scalar(select(User).where(User.email == email))
+        user.plan = "pro"
+        user.subscription_status = "active"
+        db.commit()
+
+
+def test_bet_usage_tracks_daily_count(clients, auth_headers):
+    headers, _ = auth_headers
+    limit = get_settings().free_daily_bet_limit
+
+    usage = clients["bets"].get("/bets/usage", headers=headers).json()
+    assert usage["plan"] == "free"
+    assert usage["limit"] == limit
+    assert usage["count"] == 0
+    assert usage["remaining"] == limit
+
+    _make_bet(clients, headers)
+    usage = clients["bets"].get("/bets/usage", headers=headers).json()
+    assert usage["count"] == 1
+    assert usage["remaining"] == limit - 1
+
+
+def test_free_plan_blocks_after_daily_limit(clients, auth_headers):
+    headers, _ = auth_headers
+    limit = get_settings().free_daily_bet_limit
+
+    for _ in range(limit):
+        assert clients["bets"].post("/bets", headers=headers, json={
+            "event": "e", "selection": "s", "sport": "Soccer",
+            "odds": 2.0, "odds_format": "decimal", "stake": 10,
+        }).status_code == 201
+
+    # The next bet that day is rejected with 402 Payment Required.
+    blocked = clients["bets"].post("/bets", headers=headers, json={
+        "event": "e", "selection": "s", "sport": "Soccer",
+        "odds": 2.0, "odds_format": "decimal", "stake": 10,
+    })
+    assert blocked.status_code == 402
+
+
+def test_pro_plan_has_no_daily_limit(clients, auth_headers):
+    headers, email = auth_headers
+    _promote_to_pro(email)
+    limit = get_settings().free_daily_bet_limit
+
+    for _ in range(limit + 2):
+        assert clients["bets"].post("/bets", headers=headers, json={
+            "event": "e", "selection": "s", "sport": "Soccer",
+            "odds": 2.0, "odds_format": "decimal", "stake": 10,
+        }).status_code == 201
+
+    usage = clients["bets"].get("/bets/usage", headers=headers).json()
+    assert usage["plan"] == "pro"
+    assert usage["limit"] is None
+    assert usage["remaining"] is None
 
 
 # ------------------------------- admin ------------------------------------ #
@@ -590,6 +699,61 @@ def test_admin_cannot_disable_self(clients):
         json={"is_active": False},
     )
     assert r.status_code == 400
+
+
+def test_bootstrap_admin_promoted_on_login(clients, auth_headers):
+    _, email = auth_headers
+    with patch.dict("os.environ", {"BOOTSTRAP_ADMIN_EMAILS": email}):
+        get_settings.cache_clear()
+        try:
+            r = clients["auth"].post(
+                "/auth/login", json={"email": email, "password": "password123"}
+            )
+            assert r.status_code == 200
+            headers = {"Authorization": f"Bearer {r.json()['access_token']}"}
+            me = clients["auth"].get("/auth/me", headers=headers).json()
+            assert me["is_admin"] is True
+        finally:
+            get_settings.cache_clear()
+
+
+def test_admin_list_add_and_remove(clients, auth_headers):
+    admin_headers = _admin_headers(clients)
+    _, email = auth_headers
+
+    admins = clients["auth"].get("/auth/admin/admins", headers=admin_headers)
+    assert admins.status_code == 200
+    assert "admin@admin.com" in {a["email"] for a in admins.json()}
+
+    added = clients["auth"].post(
+        "/auth/admin/admins",
+        headers=admin_headers,
+        json={"email": email},
+    )
+    assert added.status_code == 201, added.text
+    assert added.json()["is_admin"] is True
+
+    dup = clients["auth"].post(
+        "/auth/admin/admins",
+        headers=admin_headers,
+        json={"email": email},
+    )
+    assert dup.status_code == 409
+
+    user_id = added.json()["id"]
+    removed = clients["auth"].delete(
+        f"/auth/admin/admins/{user_id}",
+        headers=admin_headers,
+    )
+    assert removed.status_code == 200
+    assert removed.json()["is_admin"] is False
+
+    me = clients["auth"].get("/auth/me", headers=admin_headers).json()
+    self_remove = clients["auth"].delete(
+        f"/auth/admin/admins/{me['id']}",
+        headers=admin_headers,
+    )
+    assert self_remove.status_code == 400
 
 
 # --------------------------- public bet share ----------------------------- #

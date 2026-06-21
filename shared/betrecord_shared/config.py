@@ -45,8 +45,22 @@ class Settings:
     stripe_secret_key: str = os.getenv("STRIPE_SECRET_KEY", "")
     stripe_webhook_secret: str = os.getenv("STRIPE_WEBHOOK_SECRET", "")
     stripe_price_id: str = os.getenv("STRIPE_PRICE_ID", "")
+    # Existing Stripe Product to attach Pro prices to. Optional — when unset the
+    # payments service creates the line item with inline product data instead.
+    stripe_product_id: str = os.getenv("STRIPE_PRODUCT_ID", "")
+
+    # Free plan limits. Free users may enter at most this many bets per day; Pro
+    # users are unlimited. The only functional difference between the plans.
+    free_daily_bet_limit: int = int(os.getenv("FREE_DAILY_BET_LIMIT", "5"))
 
     environment: str = os.getenv("ENVIRONMENT", "development")
+
+    # Comma-separated emails that are always granted admin on login/startup.
+    bootstrap_admin_emails: list[str] = [
+        e.strip().lower()
+        for e in os.getenv("BOOTSTRAP_ADMIN_EMAILS", "asimonlee@gmail.com").split(",")
+        if e.strip()
+    ]
 
 
 @lru_cache

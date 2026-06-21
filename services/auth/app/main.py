@@ -16,6 +16,7 @@ from betrecord_shared.email import send_password_reset_email
 from betrecord_shared.events import log_event
 from betrecord_shared.models import ApiKey, AppEvent, Bet, PasswordResetToken, User
 from betrecord_shared.schemas import (
+    AdminAddIn,
     AdminStatsOut,
     AdminUserOut,
     AdminUserUpdate,
@@ -31,6 +32,7 @@ from betrecord_shared.schemas import (
     UserOut,
     UserRegister,
 )
+from betrecord_shared.seed import promote_bootstrap_admin
 from betrecord_shared.security import (
     create_access_token,
     generate_api_key,
@@ -101,6 +103,7 @@ def register(
         timezone=payload.timezone or "UTC",
     )
     db.add(user)
+    promote_bootstrap_admin(user, db)
     log_event(
         db,
         "register",
@@ -133,6 +136,7 @@ def login(payload: UserLogin, request: Request, db: Session = Depends(get_db)) -
         db.commit()
         raise HTTPException(status.HTTP_403_FORBIDDEN, "Account disabled")
     user.last_login_at = datetime.now(timezone.utc)
+    promote_bootstrap_admin(user, db)
     log_event(db, "login", user_id=user.id, detail=user.email, ip_address=ip)
     db.commit()
     token, expires = create_access_token(user.id)
@@ -417,6 +421,74 @@ def admin_list_users(
     user_ids = [u.id for u in users]
     bet_counts, key_counts = _user_counts(db, user_ids)
     return [_admin_user_out(u, bet_counts, key_counts) for u in users]
+
+
+@app.get("/auth/admin/admins", response_model=list[AdminUserOut])
+def admin_list_admins(
+    admin: User = Depends(get_current_admin),
+    db: Session = Depends(get_db),
+) -> list[AdminUserOut]:
+    users = db.scalars(
+        select(User).where(User.is_admin.is_(True)).order_by(User.email)
+    ).all()
+    user_ids = [u.id for u in users]
+    bet_counts, key_counts = _user_counts(db, user_ids)
+    return [_admin_user_out(u, bet_counts, key_counts) for u in users]
+
+
+@app.post("/auth/admin/admins", response_model=AdminUserOut, status_code=201)
+def admin_add_admin(
+    payload: AdminAddIn,
+    request: Request,
+    admin: User = Depends(get_current_admin),
+    db: Session = Depends(get_db),
+) -> AdminUserOut:
+    email = payload.email.lower()
+    user = db.scalar(select(User).where(User.email == email))
+    if not user:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "User not found")
+    if user.is_admin:
+        raise HTTPException(status.HTTP_409_CONFLICT, "User is already an admin")
+    user.is_admin = True
+    log_event(
+        db,
+        "admin.user_update",
+        user_id=admin.id,
+        detail=f"target={user.email}; is_admin=True",
+        ip_address=_client_ip(request),
+    )
+    db.commit()
+    db.refresh(user)
+    bet_counts, key_counts = _user_counts(db, [user.id])
+    return _admin_user_out(user, bet_counts, key_counts)
+
+
+@app.delete("/auth/admin/admins/{user_id}", response_model=AdminUserOut)
+def admin_remove_admin(
+    user_id: str,
+    request: Request,
+    admin: User = Depends(get_current_admin),
+    db: Session = Depends(get_db),
+) -> AdminUserOut:
+    if user_id == admin.id:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Cannot remove your own admin access")
+    user = db.get(User, user_id)
+    if not user:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "User not found")
+    if not user.is_admin:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "User is not an admin")
+    user.is_admin = False
+    log_event(
+        db,
+        "admin.user_update",
+        user_id=admin.id,
+        detail=f"target={user.email}; is_admin=False",
+        ip_address=_client_ip(request),
+    )
+    db.commit()
+    db.refresh(user)
+    bet_counts, key_counts = _user_counts(db, [user.id])
+    return _admin_user_out(user, bet_counts, key_counts)
 
 
 @app.patch("/auth/admin/users/{user_id}", response_model=AdminUserOut)
