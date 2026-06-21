@@ -135,6 +135,35 @@ def test_each_way_outcome_placed():
     assert pl == pytest.approx(0.0)
 
 
+def test_lay_liability_helper():
+    assert bm.lay_liability(10, 3.0) == pytest.approx(20.0)
+
+
+def test_lay_win_no_commission():
+    assert bm.settle_profit(stake=10, decimal_odds=3.0, outcome="win", side="lay") == pytest.approx(10.0)
+
+
+def test_lay_win_with_commission():
+    pl = bm.settle_profit(stake=10, decimal_odds=3.0, outcome="win",
+                          exchange_commission_pct=5, side="lay")
+    assert pl == pytest.approx(9.5)
+
+
+def test_lay_loss():
+    pl = bm.settle_profit(stake=10, decimal_odds=3.0, outcome="loss", side="lay")
+    assert pl == pytest.approx(-20.0)
+
+
+def test_portfolio_metrics_lay_uses_liability_turnover():
+    rows = [
+        {"stake": 10, "profit": 10, "outcome": "win", "side": "lay", "decimal_odds": 3.0},
+        {"stake": 10, "profit": -20, "outcome": "loss", "side": "lay", "decimal_odds": 3.0},
+    ]
+    m = bm.portfolio_metrics(rows)
+    assert m["turnover"] == pytest.approx(40.0)  # 20 liability each
+    assert m["profit"] == pytest.approx(-10.0)
+
+
 # ------------------------------- metrics --------------------------------- #
 
 def test_portfolio_metrics():

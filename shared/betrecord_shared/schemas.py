@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Optional
+from typing import Literal, Optional
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from pydantic import BaseModel, EmailStr, Field, ConfigDict, field_validator
@@ -161,6 +161,7 @@ class BetBase(BaseModel):
     selection: str
     sport: str
     bet_type: str = "Win"
+    side: Literal["back", "lay"] = "back"
     placed_at: Optional[datetime] = None
     event_at: Optional[datetime] = None
     settled_at: Optional[datetime] = None
@@ -206,6 +207,7 @@ class BetUpdate(BaseModel):
     selection: Optional[str] = None
     sport: Optional[str] = None
     bet_type: Optional[str] = None
+    side: Optional[Literal["back", "lay"]] = None
     placed_at: Optional[datetime] = None
     event_at: Optional[datetime] = None
     settled_at: Optional[datetime] = None
@@ -239,6 +241,7 @@ class BetOut(BaseModel):
     selection: str
     sport: str
     bet_type: str
+    side: str
     placed_at: datetime
     event_at: Optional[datetime] = None
     settled_at: datetime

@@ -770,7 +770,8 @@ const ICON_SHARE = `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="cu
 function betRow(b) {
   const d = new Date(b.placed_at);
   const date = i18n.formatLocaleDate(d, { day: "2-digit", month: "short", year: "2-digit" });
-  const label = esc(b.selection);
+  const layBadge = b.side === "lay" ? ` <span class="pill pill--lay">${esc(t("form.sideLay"))}</span>` : "";
+  const label = esc(b.selection) + layBadge;
   return `<tr>
     <td class="num">${date}</td>
     <td>${esc(b.sport)}</td>
@@ -961,21 +962,31 @@ async function renderForm(id) {
   form.currency.value = state.user.base_currency || "GBP";
   syncOddsFormat();
   syncEachWay();
+  syncSideUI(form);
   syncOutcomeOptions(form);
 
   form.odds_format.addEventListener("change", onOddsFormatChange);
+  form.side?.addEventListener("change", () => {
+    syncSideUI(form);
+    syncEachWay();
+    syncOutcomeOptions(form);
+    updateEffectiveOddsPreview(form);
+    updateSettlementPreview(form);
+  });
   form.each_way.addEventListener("change", () => { syncEachWay(); syncOutcomeOptions(form); updateSettlementPreview(form); });
   ["odds", "odds_denominator", "personal_implied_odds", "model_implied_odds"].forEach(n => {
     const el = form.elements.namedItem(n);
     if (el) el.addEventListener("input", () => {
       updateModellingCalcs(form);
       updateEffectiveOddsPreview(form);
+      updateLiabilityPreview(form);
     });
   });
   ["stake", "cash_out_amount", "place_fraction", "exchange_commission_pct"].forEach(n => {
     const el = form.elements.namedItem(n);
     if (el) el.addEventListener("input", () => {
       updateSettlementPreview(form);
+      updateLiabilityPreview(form);
       if (n === "exchange_commission_pct") updateEffectiveOddsPreview(form);
     });
   });
@@ -985,6 +996,7 @@ async function renderForm(id) {
   });
   updateModellingCalcs(form);
   updateEffectiveOddsPreview(form);
+  updateLiabilityPreview(form);
   updateSettlementPreview(form);
 
   if (!id) form.placed_at.value = localDatetimeInputValue();
@@ -995,7 +1007,7 @@ async function renderForm(id) {
     $("#saveBtn").textContent = t("form.saveChanges");
     editing = await api(`/bets/${id}`);
     fillForm(form, editing);
-    syncOddsFormat(); syncEachWay(); syncOutcomeOptions(form); updateModellingCalcs(form); updateEffectiveOddsPreview(form); updateSettlementPreview(form);
+    syncOddsFormat(); syncEachWay(); syncSideUI(form); syncOutcomeOptions(form); updateModellingCalcs(form); updateEffectiveOddsPreview(form); updateLiabilityPreview(form); updateSettlementPreview(form);
     const shareHost = document.createElement("div");
     form.querySelector(".formactions").before(shareHost);
     mountShareControls(shareHost, editing.id, editing.share_token);
@@ -1128,6 +1140,7 @@ function onOddsFormatChange() {
   syncOddsFormat();
   updateModellingCalcs($("#betForm"));
   updateEffectiveOddsPreview($("#betForm"));
+  updateLiabilityPreview($("#betForm"));
   updateSettlementPreview($("#betForm"));
 }
 
@@ -1140,6 +1153,10 @@ function updateEffectiveOddsPreview(form = $("#betForm")) {
   if (!form) return;
   const hint = form.querySelector("#effectiveOddsHint");
   if (!hint) return;
+  if (isLaySide(form)) {
+    hint.hidden = true;
+    return;
+  }
   const valueEl = hint.querySelector('[data-role="effective-odds"]');
   const commission = parseFloat(form.exchange_commission_pct?.value);
   const oddsDec = parseOddsToDecimal(form);
@@ -1193,7 +1210,56 @@ function syncOddsFormat() {
 }
 function syncEachWay() {
   const form = $("#betForm");
+  const lay = isLaySide(form);
+  if (lay) {
+    form.each_way.checked = false;
+    form.each_way.disabled = true;
+  } else {
+    form.each_way.disabled = false;
+  }
   $("#ewFields").hidden = !form.each_way.checked;
+}
+
+function isLaySide(form) {
+  return (form?.side?.value || "back") === "lay";
+}
+
+function computeLayLiability(stake, oddsDec) {
+  if (!Number.isFinite(stake) || stake <= 0 || !Number.isFinite(oddsDec) || oddsDec <= 1) return null;
+  return Math.round(stake * (oddsDec - 1) * 100) / 100;
+}
+
+function syncSideUI(form = $("#betForm")) {
+  if (!form) return;
+  const lay = isLaySide(form);
+  const legend = form.querySelector("#betDetailsLegend");
+  if (legend) legend.textContent = t(lay ? "form.whatYouLay" : "form.whatYouBacked");
+  const stakeLabel = form.querySelector("#stakeFieldLabel");
+  const stakeHint = form.querySelector("#stakeFieldHint");
+  if (stakeLabel) stakeLabel.textContent = t(lay ? "form.backersStake" : "form.stake");
+  if (stakeHint) stakeHint.hidden = !lay;
+  updateLiabilityPreview(form);
+}
+
+function updateLiabilityPreview(form = $("#betForm")) {
+  if (!form) return;
+  const preview = form.querySelector("#liabilityPreview");
+  if (!preview) return;
+  if (!isLaySide(form)) {
+    preview.hidden = true;
+    return;
+  }
+  const stake = parseFloat(form.stake?.value);
+  const oddsDec = parseOddsToDecimal(form);
+  const liability = computeLayLiability(stake, oddsDec);
+  const valueEl = preview.querySelector('[data-role="liability"]');
+  if (liability == null || !valueEl) {
+    preview.hidden = true;
+    return;
+  }
+  const currency = (form.currency?.value || "GBP").trim().toUpperCase() || "GBP";
+  valueEl.textContent = `${liability.toFixed(2)} ${currency}`;
+  preview.hidden = false;
 }
 
 function edgePctFromImplied(oddsDec, impliedDec) {
@@ -1289,8 +1355,12 @@ function computeSettlementProfit(form) {
   if (outcome === "void") return 0;
   if (!Number.isFinite(oddsDec) || oddsDec <= 1) return 0;
 
+  const lay = isLaySide(form);
   let gross = 0;
-  if (!eachWay) {
+  if (lay) {
+    if (outcome === "win") gross = stake;
+    else if (outcome === "loss") gross = -(computeLayLiability(stake, oddsDec) || 0);
+  } else if (!eachWay) {
     if (outcome === "win") gross = stake * (oddsDec - 1);
     else if (outcome === "half_win") gross = 0.5 * stake * (oddsDec - 1);
     else if (outcome === "half_loss") gross = -0.5 * stake;
@@ -1385,6 +1455,7 @@ function readForm(form) {
 function fillForm(form, b) {
   const set = (n, v) => { if (form[n] != null && v != null) form[n].value = v; };
   set("sport", b.sport);
+  if (form.side) form.side.value = b.side || "back";
   set("bet_type", BET_TYPE_LABELS[b.bet_type] || BET_TYPE_LABELS[b.bet_type?.toLowerCase()] || b.bet_type);
   set("tournament", b.tournament);
   set("event", b.event);

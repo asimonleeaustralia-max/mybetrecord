@@ -113,6 +113,7 @@ class Bet(Base):
     selection: Mapped[str] = mapped_column(String(255), nullable=False)
     sport: Mapped[str] = mapped_column(String(80), index=True, nullable=False)
     bet_type: Mapped[str] = mapped_column(String(80), default="Win")
+    side: Mapped[str] = mapped_column(String(8), default="back", index=True)  # back | lay
     placed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now, index=True)
     event_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 

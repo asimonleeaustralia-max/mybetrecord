@@ -235,6 +235,22 @@ def test_pl_win_with_commission(clients, auth_headers):
     assert b["profit"] == pytest.approx(142.5)  # 150 gross - 7.5 commission
 
 
+def test_lay_win_with_commission(clients, auth_headers):
+    b = _make_bet(clients, auth_headers[0], odds=3.0, stake=10, outcome="win",
+                  side="lay", bookmaker="Betfair Exchange", exchange_commission_pct=5)
+    assert b["side"] == "lay"
+    assert b["profit"] == pytest.approx(9.5)
+
+
+def test_lay_each_way_rejected(clients, auth_headers):
+    r = clients["bets"].post("/bets", headers=auth_headers[0], json={
+        "event": "Test event", "selection": "Test pick", "sport": "Testball",
+        "bet_type": "win", "odds": 3.0, "odds_format": "decimal",
+        "stake": 10, "outcome": "pending", "side": "lay", "each_way": True,
+    })
+    assert r.status_code == 422
+
+
 def test_pl_loss_and_void(clients, auth_headers):
     h = auth_headers[0]
     assert _make_bet(clients, h, odds=2.5, stake=100, outcome="loss")["profit"] == pytest.approx(-100.0)

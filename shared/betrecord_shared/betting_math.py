@@ -212,6 +212,10 @@ def edge_pct_from_implied(decimal_odds: float, implied_odds_decimal: float) -> O
 # Settlement — profit / loss for a single bet.
 # --------------------------------------------------------------------------- #
 
+# Side constants
+BACK = "back"
+LAY = "lay"
+
 # Outcome constants
 WIN = "win"
 LOSS = "loss"
@@ -221,6 +225,18 @@ HALF_LOSS = "half_loss"
 PENDING = "pending"
 CASHED_OUT = "cashed_out"
 PLACED = "placed"           # each-way: win part loses, place part wins
+
+
+def lay_liability(stake: float, decimal_odds: float) -> float:
+    """Money at risk on a lay bet if the selection wins (backer's stake × (odds − 1))."""
+    return round(float(stake) * (float(decimal_odds) - 1.0), 2)
+
+
+def bet_turnover(stake: float, decimal_odds: float, side: str = BACK) -> float:
+    """Stake counted toward turnover — liability for lays, stake for backs."""
+    if (side or BACK).lower() == LAY:
+        return lay_liability(stake, decimal_odds)
+    return float(stake)
 
 
 def settle_profit(
@@ -233,6 +249,7 @@ def settle_profit(
     placed: bool = False,           # did the each-way 'place' part win?
     exchange_commission_pct: float = 0.0,   # % deducted from net winnings
     cash_out_amount: Optional[float] = None,
+    side: str = BACK,
 ) -> float:
     """Return profit/loss for one bet (negative = loss), net of winnings deductions.
 
@@ -240,12 +257,14 @@ def settle_profit(
     -----
     * stake is the TOTAL staked. For an each-way bet that is the combined
       win + place stake; the unit stake is stake / 2.
+    * For lay bets, stake is the backer's stake (your profit if the lay wins).
     * winnings deductions apply only to net winnings, and only when the bet
       shows a profit (e.g. exchange commission).
     * a non-null cash_out_amount overrides outcome: P/L = cash_out - stake.
     """
     stake = float(stake)
     d = float(decimal_odds)
+    is_lay = (side or BACK).lower() == LAY
 
     if cash_out_amount is not None:
         return round(float(cash_out_amount) - stake, 2)
@@ -256,7 +275,17 @@ def settle_profit(
     if outcome == VOID:
         return 0.0
 
-    if not each_way:
+    if is_lay:
+        if not each_way:
+            if outcome in (WIN,):
+                gross = stake
+            elif outcome in (LOSS,):
+                gross = -lay_liability(stake, d)
+            else:
+                gross = 0.0
+        else:
+            gross = 0.0
+    elif not each_way:
         if outcome in (WIN,):
             gross = stake * (d - 1.0)
         elif outcome in (HALF_WIN,):
@@ -334,8 +363,9 @@ def portfolio_metrics(rows: Iterable[dict]) -> dict:
     """Aggregate ROI, yield, strike rate, profit and turnover.
 
     Each row is expected to expose: stake (float), profit (float),
-    outcome (str), and optionally cash_out_amount (float). Pending bets are
-    excluded unless a cash-out amount is recorded (early settlement).
+    outcome (str), and optionally cash_out_amount (float), side (str),
+    and decimal_odds (float). Pending bets are excluded unless a cash-out
+    amount is recorded (early settlement).
 
     Definitions used (and shown to users on the reports page):
       turnover     = sum of stakes on settled bets
@@ -359,7 +389,9 @@ def portfolio_metrics(rows: Iterable[dict]) -> dict:
             continue
         stake = float(r.get("stake") or 0.0)
         pl = float(r.get("profit") or 0.0)
-        turnover += stake
+        odds = float(r.get("decimal_odds") or 0.0)
+        side = r.get("side") or BACK
+        turnover += bet_turnover(stake, odds, side) if odds > 1.0 else stake
         profit += pl
         settled += 1
         if has_cash_out:

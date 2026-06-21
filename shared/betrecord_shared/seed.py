@@ -228,6 +228,29 @@ def _ensure_bet_broker_column() -> None:
             conn.execute(text("ALTER TABLE bets ADD COLUMN bet_broker VARCHAR(120)"))
 
 
+def _ensure_side_column() -> None:
+    """Add side (back|lay) to existing databases created before the column existed."""
+    if "bets" not in inspect(engine).get_table_names():
+        return
+    columns = {c["name"] for c in inspect(engine).get_columns("bets")}
+    if "side" in columns:
+        return
+    dialect = engine.dialect.name
+    with engine.begin() as conn:
+        if dialect == "postgresql":
+            conn.execute(
+                text(
+                    "ALTER TABLE bets ADD COLUMN IF NOT EXISTS side VARCHAR(8) "
+                    "NOT NULL DEFAULT 'back'"
+                )
+            )
+        else:
+            conn.execute(
+                text("ALTER TABLE bets ADD COLUMN side VARCHAR(8) NOT NULL DEFAULT 'back'")
+            )
+        conn.execute(text("UPDATE bets SET side = 'lay' WHERE LOWER(bet_type) = 'lay'"))
+
+
 def _ensure_last_login_at_column() -> None:
     """Add last_login_at to existing databases created before the column existed."""
     if "users" not in inspect(engine).get_table_names():

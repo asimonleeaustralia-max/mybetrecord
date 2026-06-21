@@ -310,6 +310,7 @@ input:focus, select:focus, textarea:focus {
 .pill--win { background: #e7f4ee; color: var(--win); }
 .pill--loss { background: #fbecea; color: var(--loss); }
 .pill--void, .pill--pending { background: #eef0f3; color: var(--void); }
+.pill--lay { background: #eef2ff; color: #4338ca; margin-left: 4px; vertical-align: middle; }
 
 .empty { text-align: center; color: var(--muted); padding: 40px 16px; }
 

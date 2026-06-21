@@ -126,17 +126,23 @@
       <div class="view__head"><h1 id="formTitle" data-i18n="form.recordTitle">Record a bet</h1></div>
       <form id="betForm" class="betform">
         <fieldset>
-          <legend data-i18n="form.whatYouBacked">What you backed</legend>
+          <legend id="betDetailsLegend" data-i18n="form.whatYouBacked">What you backed</legend>
           <div class="grid2">
+            <label><span data-i18n="form.side">Side</span>
+              <select name="side" id="betSide">
+                <option value="back" data-i18n="form.sideBack">Back</option>
+                <option value="lay" data-i18n="form.sideLay">Lay</option>
+              </select>
+            </label>
             <label><span data-i18n="form.sport">Sport</span>
               <input list="sportList" name="sport" required data-i18n-placeholder="form.sportPlaceholder" />
               <datalist id="sportList"></datalist>
             </label>
-            <label><span data-i18n="form.betType">Bet type</span>
-              <input list="betTypeList" name="bet_type" required value="Win" data-i18n-placeholder="form.betTypePlaceholder" />
-              <datalist id="betTypeList"></datalist>
-            </label>
           </div>
+          <label><span data-i18n="form.betType">Bet type</span>
+            <input list="betTypeList" name="bet_type" required value="Win" data-i18n-placeholder="form.betTypePlaceholder" />
+            <datalist id="betTypeList"></datalist>
+          </label>
           <div class="grid2">
             <label><span data-i18n="form.bookmaker">Bookmaker</span>
               <input list="bookmakerList" name="bookmaker" data-i18n-placeholder="form.bookmakerPlaceholder" />
@@ -179,13 +185,20 @@
             </div>
           </div>
           <div class="grid3">
-            <label><span data-i18n="form.stake">Stake</span><input name="stake" inputmode="decimal" required placeholder="50" /></label>
+            <label><span class="odds-field-head">
+                <span id="stakeFieldLabel" data-i18n="form.stake">Stake</span>
+                <span class="hint" id="stakeFieldHint" hidden data-i18n="form.backersStakeHint">Your profit if the lay wins</span>
+              </span><input name="stake" inputmode="decimal" required placeholder="50" /></label>
             <label><span data-i18n="form.currency">Currency</span>
               <input list="currencyList" name="currency" maxlength="3" placeholder="GBP" autocapitalize="characters" required />
               <datalist id="currencyList"></datalist>
             </label>
             <label class="check"><input type="checkbox" name="each_way" /> <span data-i18n="form.eachWay">Each way</span></label>
           </div>
+          <p class="settlement-preview" id="liabilityPreview" hidden>
+            <span data-i18n="form.liability">Liability</span>:
+            <span class="settlement-preview__value" data-role="liability"></span>
+          </p>
           <div id="ewFields" hidden>
             <label><span data-i18n="form.placeFraction">Place fraction</span><input name="place_fraction" inputmode="decimal" placeholder="0.25" /></label>
           </div>

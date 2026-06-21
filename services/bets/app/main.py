@@ -77,6 +77,14 @@ def _sync_each_way_fields(bet: Bet) -> None:
         bet.placed = False
 
 
+def _validate_side_fields(side: str, each_way: bool) -> None:
+    if (side or bm.BACK).lower() == bm.LAY and each_way:
+        raise HTTPException(
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+            "Each-way bets are not supported for lay bets",
+        )
+
+
 def _recompute(bet: Bet, user: User, db: Session) -> None:
     """Recompute profit + kelly stake from the bet's own fields and user bankroll."""
     _sync_each_way_fields(bet)
@@ -90,7 +98,15 @@ def _recompute(bet: Bet, user: User, db: Session) -> None:
         placed=bet.placed,
         exchange_commission_pct=bet.exchange_commission_pct or 0.0,
         cash_out_amount=bet.cash_out_amount,
+        side=bet.side or bm.BACK,
     )
+    if (bet.side or bm.BACK).lower() == bm.LAY:
+        bet.personal_edge_pct = None
+        bet.kelly_stake = None
+        bet.model_edge_pct = None
+        bet.model_kelly_stake = None
+        return
+
     multiplier = user.kelly_multiplier or 1.0
     bankroll = effective_bankroll(db, user, bet)
 
@@ -328,6 +344,7 @@ def create_bet(
     odds_decimal = _normalise_odds(payload.odds, odds_format, payload.odds_denominator)
     if odds_decimal <= 1.0:
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, "Decimal odds must exceed 1.0")
+    _validate_side_fields(payload.side, payload.each_way)
 
     bet = Bet(
         user_id=user.id,
@@ -336,6 +353,7 @@ def create_bet(
         selection=payload.selection,
         sport=payload.sport,
         bet_type=payload.bet_type,
+        side=payload.side,
         placed_at=payload.placed_at or datetime.now(timezone.utc),
         event_at=payload.event_at,
         settled_at=payload.settled_at or datetime.now(timezone.utc),
@@ -397,7 +415,7 @@ def update_bet(
         bet.odds_format = new_fmt
 
     for field in (
-        "tournament", "event", "selection", "sport", "bet_type", "placed_at", "event_at", "settled_at", "stake", "currency",
+        "tournament", "event", "selection", "sport", "bet_type", "side", "placed_at", "event_at", "settled_at", "stake", "currency",
         "each_way", "place_fraction", "placed", "outcome", "cash_out_amount",
         "bet_model", "model_implied_odds", "personal_implied_odds", "closing_odds", "closing_odds_exchange",
         "bookmaker", "exchange_commission_pct", "tipster", "bet_broker", "notes",
@@ -409,6 +427,8 @@ def update_bet(
             if field == "currency" and value:
                 value = value.upper()
             setattr(bet, field, value)
+
+    _validate_side_fields(bet.side or bm.BACK, bet.each_way)
 
     if "outcome" in data:
         new_outcome = (bet.outcome or bm.PENDING).lower()

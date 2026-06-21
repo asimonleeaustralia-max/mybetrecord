@@ -98,6 +98,17 @@ def _common_filters(
 
 # ------------------------------- summary ---------------------------------- #
 
+def _metrics_row(bet: Bet) -> dict:
+    return {
+        "stake": bet.stake,
+        "profit": bet.profit,
+        "outcome": bet.outcome,
+        "cash_out_amount": bet.cash_out_amount,
+        "side": bet.side or bm.BACK,
+        "decimal_odds": bet.odds_decimal,
+    }
+
+
 @app.get("/reports/summary")
 def summary(
     user: User = Depends(get_current_user),
@@ -111,10 +122,7 @@ def summary(
         display_currency = _dominant_currency(db, user.id) or user.base_currency
         filters["currency"] = display_currency
     bets = _filtered(db, user.id, filters)
-    rows = [
-        {"stake": b.stake, "profit": b.profit, "outcome": b.outcome, "cash_out_amount": b.cash_out_amount}
-        for b in bets
-    ]
+    rows = [_metrics_row(b) for b in bets]
     metrics = bm.portfolio_metrics(rows)
     base = (user.base_currency or "GBP").upper()
     if display_currency and display_currency.upper() == base:
@@ -165,12 +173,7 @@ def breakdown(
     groups: dict[str, list] = defaultdict(list)
     for b in bets:
         key = getattr(b, dimension) or "—"
-        groups[key].append({
-            "stake": b.stake,
-            "profit": b.profit,
-            "outcome": b.outcome,
-            "cash_out_amount": b.cash_out_amount,
-        })
+        groups[key].append(_metrics_row(b))
     result = []
     for key, rows in groups.items():
         m = bm.portfolio_metrics(rows)
@@ -190,6 +193,7 @@ _EXPORT_COLUMNS = [
     ("event_at", "Event date/time"),
     ("selection", "Selection"),
     ("bet_type", "Bet type"),
+    ("side", "Side"),
     ("odds_decimal", "Odds (decimal)"),
     ("stake", "Stake"),
     ("currency", "Currency"),
@@ -277,10 +281,7 @@ def export_xlsx(
         ws.append([_value(b, attr) for attr, _ in _EXPORT_COLUMNS])
 
     # Summary sheet.
-    rows = [
-        {"stake": b.stake, "profit": b.profit, "outcome": b.outcome, "cash_out_amount": b.cash_out_amount}
-        for b in bets
-    ]
+    rows = [_metrics_row(b) for b in bets]
     m = bm.portfolio_metrics(rows)
     s = wb.create_sheet("Summary")
     s.append(["Metric", "Value"])
