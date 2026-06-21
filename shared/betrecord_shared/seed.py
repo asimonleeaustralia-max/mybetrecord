@@ -241,6 +241,28 @@ def _ensure_bet_broker_column() -> None:
             conn.execute(text("ALTER TABLE bets ADD COLUMN bet_broker VARCHAR(120)"))
 
 
+def _ensure_is_multiple_column() -> None:
+    """Add is_multiple to existing databases created before parlays existed."""
+    if "bets" not in inspect(engine).get_table_names():
+        return
+    columns = {c["name"] for c in inspect(engine).get_columns("bets")}
+    if "is_multiple" in columns:
+        return
+    dialect = engine.dialect.name
+    with engine.begin() as conn:
+        if dialect == "postgresql":
+            conn.execute(
+                text(
+                    "ALTER TABLE bets ADD COLUMN IF NOT EXISTS is_multiple "
+                    "BOOLEAN NOT NULL DEFAULT FALSE"
+                )
+            )
+        else:
+            conn.execute(
+                text("ALTER TABLE bets ADD COLUMN is_multiple BOOLEAN NOT NULL DEFAULT 0")
+            )
+
+
 def _ensure_side_column() -> None:
     """Add side (back|lay) to existing databases created before the column existed."""
     if "bets" not in inspect(engine).get_table_names():

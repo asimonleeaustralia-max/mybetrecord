@@ -6,7 +6,7 @@ from datetime import datetime
 from typing import Literal, Optional
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
-from pydantic import BaseModel, EmailStr, Field, ConfigDict, field_validator
+from pydantic import BaseModel, EmailStr, Field, ConfigDict, field_validator, model_validator
 
 ODDS_FORMAT_PATTERN = (
     "^(decimal|american|fractional|hong_kong|malaysian|indonesian)$"
@@ -141,12 +141,19 @@ class CheckoutSessionOut(BaseModel):
 
 
 class BetUsageOut(BaseModel):
-    """How many bets the user has entered today, against their plan's limit."""
+    """How many bets the user has entered today, against their plan's limit.
+
+    `count`/`limit`/`remaining` track single bets; the `multiple_*` fields track
+    multiple/parlay bets, which have their own separate daily allowance.
+    """
     plan: str
     date: str
     count: int
     limit: Optional[int] = None  # null == unlimited (Pro)
     remaining: Optional[int] = None  # null == unlimited (Pro)
+    multiple_count: int = 0
+    multiple_limit: Optional[int] = None  # null == unlimited (Pro)
+    multiple_remaining: Optional[int] = None  # null == unlimited (Pro)
 
 
 class ApiKeyOut(BaseModel):
@@ -210,10 +217,32 @@ class AppEventOut(BaseModel):
 
 # -------------------------------- Bets ------------------------------------ #
 
-class BetBase(BaseModel):
-    tournament: Optional[str] = None
+class BetLegCreate(BaseModel):
+    """One selection of a multiple / parlay bet."""
     event: str
     selection: str
+    # Accept odds in any format; the bets service normalises to decimal.
+    odds: float | str
+    odds_format: Optional[str] = Field(default=None, pattern=ODDS_FORMAT_PATTERN)
+    odds_denominator: Optional[float] = None  # for fractional when odds is the numerator
+
+
+class BetLegOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    leg_index: int
+    event: str
+    selection: str
+    odds_decimal: float
+    odds_format: str
+
+
+class BetBase(BaseModel):
+    tournament: Optional[str] = None
+    # event/selection/odds are optional on the wire because for a multiple the
+    # service derives them from the legs. A model validator enforces that single
+    # bets still provide them and multiples provide enough legs.
+    event: Optional[str] = None
+    selection: Optional[str] = None
     sport: str
     bet_type: str = "Win"
     side: Literal["back", "lay"] = "back"
@@ -221,9 +250,13 @@ class BetBase(BaseModel):
     event_at: Optional[datetime] = None
     settled_at: Optional[datetime] = None
 
+    # Multiple / parlay
+    is_multiple: bool = False
+    legs: Optional[list[BetLegCreate]] = None
+
     # Accept odds in any format; the bets service normalises to decimal.
     # A string is allowed so fractional odds can be sent as "11/8".
-    odds: float | str
+    odds: Optional[float | str] = None
     odds_format: Optional[str] = Field(default=None, pattern=ODDS_FORMAT_PATTERN)
     odds_denominator: Optional[float] = None  # for fractional when odds is the numerator
 
@@ -252,7 +285,30 @@ class BetBase(BaseModel):
 
 
 class BetCreate(BetBase):
-    pass
+    @model_validator(mode="after")
+    def _check_single_or_multiple(self) -> "BetCreate":
+        if self.is_multiple:
+            legs = self.legs or []
+            if len(legs) < 2:
+                raise ValueError("A multiple bet needs at least 2 selections")
+            # Each-way and lay are not supported for multiples.
+            if self.each_way:
+                raise ValueError("Each-way is not supported for multiple bets")
+            if self.side == "lay":
+                raise ValueError("Lay is not supported for multiple bets")
+        else:
+            missing = [
+                name
+                for name, value in (
+                    ("event", self.event),
+                    ("selection", self.selection),
+                    ("odds", self.odds),
+                )
+                if value is None or (isinstance(value, str) and not value.strip())
+            ]
+            if missing:
+                raise ValueError(f"Missing required field(s): {', '.join(missing)}")
+        return self
 
 
 class BetUpdate(BaseModel):
@@ -266,6 +322,8 @@ class BetUpdate(BaseModel):
     placed_at: Optional[datetime] = None
     event_at: Optional[datetime] = None
     settled_at: Optional[datetime] = None
+    is_multiple: Optional[bool] = None
+    legs: Optional[list[BetLegCreate]] = None
     odds: Optional[float | str] = None
     odds_format: Optional[str] = Field(default=None, pattern=ODDS_FORMAT_PATTERN)
     odds_denominator: Optional[float] = None
@@ -297,6 +355,8 @@ class BetOut(BaseModel):
     sport: str
     bet_type: str
     side: str
+    is_multiple: bool = False
+    legs: list[BetLegOut] = []
     placed_at: datetime
     event_at: Optional[datetime] = None
     settled_at: datetime

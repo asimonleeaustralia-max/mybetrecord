@@ -62,7 +62,8 @@
     "editAria": "Edit {{name}}",
     "deleteAria": "Delete {{name}}",
     "shareAria": "Share {{name}}",
-    "resultAria": "Result for {{name}}"
+    "resultAria": "Result for {{name}}",
+    "legsCount": "{{count}} legs"
   },
   "share": {
     "title": "Shared bet",
@@ -168,6 +169,17 @@
     "invalidCurrency": "Enter a valid 3-letter currency code",
     "betRecorded": "Bet recorded",
     "betUpdated": "Bet updated",
+    "multiple": "Multiple / Parlay",
+    "multipleHint": "combine 2–10 selections into one bet",
+    "selections": "Selections",
+    "legsHint": "Each selection must win for the multiple to win. Odds use the format chosen below.",
+    "addSelection": "+ Add selection",
+    "combinedOdds": "Combined odds",
+    "legLabel": "Selection {{n}}",
+    "maxLegs": "A multiple can have at most {{max}} selections.",
+    "needTwoLegs": "A multiple needs at least 2 selections.",
+    "legMissingFields": "Each selection needs an event and a selection.",
+    "legBadOdds": "Each selection needs valid odds greater than 1.",
     "oddsPlaceholderDecimal": "2.50",
     "oddsPlaceholderAmerican": "+150 or -200",
     "oddsPlaceholderMalaysian": "+0.85 or -0.85",
@@ -269,6 +281,7 @@
     "upgradeCanceled": "Checkout canceled.",
     "processing": "Your upgrade is being processed — this can take a moment.",
     "betsToday": "{{count}} of {{limit}} daily bets used",
+    "multiplesToday": "{{count}} of {{limit}} daily multiples used",
     "limitReached": "Daily limit reached — upgrade to Pro"
   },
   "admin": {

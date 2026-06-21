@@ -10,6 +10,10 @@ const state = { user: null, sports: [], betTypes: [], tipsters: [], currencies: 
 const translate = (key, vars) => window.i18n?.t(key, vars) ?? key;
 const t = translate;
 
+// Multiple / parlay leg bounds (kept in step with the bets service config).
+const MIN_LEGS = 2;
+const MAX_LEGS = 10;
+
 function apiErrorMessage(detail) {
   if (typeof detail === "string" && detail) return detail;
   if (Array.isArray(detail)) {
@@ -690,14 +694,23 @@ async function loadUsageBanner() {
     banner.hidden = true;
     return;
   }
-  if (!usage || usage.limit == null) {  // Pro / unlimited
+  if (!usage || (usage.limit == null && usage.multiple_limit == null)) {  // Pro / unlimited
     banner.hidden = true;
     return;
   }
-  const reached = usage.remaining <= 0;
+  const singleReached = usage.limit != null && usage.remaining <= 0;
+  const multipleReached = usage.multiple_limit != null && usage.multiple_remaining <= 0;
+  const reached = singleReached || multipleReached;
+  const counts = [];
+  if (usage.limit != null) {
+    counts.push(esc(t("plan.betsToday", { count: usage.count, limit: usage.limit })));
+  }
+  if (usage.multiple_limit != null) {
+    counts.push(esc(t("plan.multiplesToday", { count: usage.multiple_count, limit: usage.multiple_limit })));
+  }
   banner.className = "usage-banner" + (reached ? " usage-banner--full" : "");
   banner.innerHTML = `
-    <span>${esc(t("plan.betsToday", { count: usage.count, limit: usage.limit }))}</span>
+    <span>${counts.join(" · ")}</span>
     <a href="#/settings" class="usage-banner__cta">${esc(t(reached ? "plan.limitReached" : "plan.upgradeCta"))}</a>`;
   banner.hidden = false;
 }
@@ -793,7 +806,10 @@ function betRow(b) {
   const d = new Date(b.placed_at);
   const date = i18n.formatLocaleDate(d, { day: "2-digit", month: "short", year: "2-digit" });
   const layBadge = b.side === "lay" ? ` <span class="pill pill--lay">${esc(t("form.sideLay"))}</span>` : "";
-  const label = esc(b.selection) + layBadge;
+  const multiBadge = b.is_multiple
+    ? ` <span class="pill pill--multiple">${esc(t("bets.legsCount", { count: (b.legs || []).length }))}</span>`
+    : "";
+  const label = esc(b.selection) + layBadge + multiBadge;
   return `<tr>
     <td class="num">${date}</td>
     <td>${esc(b.sport)}</td>
@@ -986,6 +1002,18 @@ async function renderForm(id) {
   syncEachWay();
   syncSideUI(form);
   syncOutcomeOptions(form);
+  syncMultiple(form);
+
+  form.is_multiple.addEventListener("change", () => {
+    syncMultiple(form);
+    syncEachWay();
+    syncSideUI(form);
+    refreshPreviews(form);
+  });
+  $("#addLegBtn").addEventListener("click", () => {
+    addLeg(form);
+    refreshPreviews(form);
+  });
 
   form.odds_format.addEventListener("change", onOddsFormatChange);
   form.side?.addEventListener("change", () => {
@@ -1016,10 +1044,7 @@ async function renderForm(id) {
     autoFillSettledDate(form);
     updateSettlementPreview(form);
   });
-  updateModellingCalcs(form);
-  updateEffectiveOddsPreview(form);
-  updateLiabilityPreview(form);
-  updateSettlementPreview(form);
+  refreshPreviews(form);
 
   if (!id) form.placed_at.value = localDatetimeInputValue();
 
@@ -1029,7 +1054,7 @@ async function renderForm(id) {
     $("#saveBtn").textContent = t("form.saveChanges");
     editing = await api(`/bets/${id}`);
     fillForm(form, editing);
-    syncOddsFormat(); syncEachWay(); syncSideUI(form); syncOutcomeOptions(form); updateModellingCalcs(form); updateEffectiveOddsPreview(form); updateLiabilityPreview(form); updateSettlementPreview(form);
+    syncOddsFormat(); syncEachWay(); syncSideUI(form); syncOutcomeOptions(form); syncMultiple(form); refreshPreviews(form);
     const shareHost = document.createElement("div");
     form.querySelector(".formactions").before(shareHost);
     mountShareControls(shareHost, editing.id, editing.share_token);
@@ -1041,6 +1066,10 @@ async function renderForm(id) {
     if (!payload.currency || !/^[A-Z]{3}$/.test(payload.currency)) {
       toast(t("form.invalidCurrency"), true);
       return;
+    }
+    if (payload.is_multiple) {
+      const legErr = validateLegs(payload.legs);
+      if (legErr) { toast(legErr, true); return; }
     }
     const cashOut = payload.cash_out_amount;
     const maxReturn = maxCashOutReturn(form);
@@ -1055,6 +1084,210 @@ async function renderForm(id) {
       location.hash = "#/bets";
     } catch (err) { toast(err.message, true); }
   });
+}
+
+/* ----------------------- Multiple / parlay legs ----------------------- */
+function isMultiple(form = $("#betForm")) {
+  return Boolean(form?.is_multiple?.checked);
+}
+
+function betDecimalOdds(form = $("#betForm")) {
+  if (form && isMultiple(form)) return combinedDecimalOdds(form);
+  return parseOddsToDecimal(form);
+}
+
+function refreshPreviews(form = $("#betForm")) {
+  if (!form) return;
+  updateModellingCalcs(form);
+  updateEffectiveOddsPreview(form);
+  updateLiabilityPreview(form);
+  updateCombinedOddsPreview(form);
+  updateSettlementPreview(form);
+}
+
+function legRows(form = $("#betForm")) {
+  return $$("[data-leg]", form);
+}
+
+function syncMultiple(form = $("#betForm")) {
+  if (!form) return;
+  const multi = isMultiple(form);
+  const section = $("#legsSection");
+  if (section) section.hidden = !multi;
+  const toggle = (sel, hidden) => { const el = form.querySelector(sel); if (el) el.hidden = hidden; };
+  toggle("#eventField", multi);
+  toggle("#selectionField", multi);
+  toggle("#sideField", multi);
+  toggle("#oddsValueFields", multi);
+  // The single event/selection/odds inputs must not block submit while hidden.
+  form.event.required = !multi;
+  form.selection.required = !multi;
+  form.odds.required = !multi;
+  if (multi) {
+    form.side.value = "back";
+    while (legRows(form).length < MIN_LEGS) addLeg(form);
+    syncLegOddsFormat(form);
+    renumberLegs(form);
+    updateAddLegBtn(form);
+  }
+}
+
+function setLegField(row, field, value) {
+  const el = row.querySelector(`[data-leg-field="${field}"]`);
+  if (el && value != null) el.value = value;
+}
+
+function addLeg(form = $("#betForm"), data = null) {
+  const list = $("#legsList", form);
+  if (!list) return null;
+  if (legRows(form).length >= MAX_LEGS) {
+    toast(t("form.maxLegs", { max: MAX_LEGS }), true);
+    return null;
+  }
+  const node = document.importNode($("#tpl-leg").content, true);
+  if (window.i18n) i18n.applyI18n(node);
+  const row = node.querySelector("[data-leg]");
+  list.appendChild(node);
+  row.querySelector("[data-leg-remove]").addEventListener("click", () => removeLeg(form, row));
+  $$("[data-leg-field]", row).forEach(inp => inp.addEventListener("input", () => refreshPreviews(form)));
+  if (data) {
+    setLegField(row, "event", data.event);
+    setLegField(row, "selection", data.selection);
+    setLegField(row, "odds", data.odds);
+    setLegField(row, "odds_denominator", data.odds_denominator);
+  }
+  syncLegOddsFormat(form);
+  renumberLegs(form);
+  updateAddLegBtn(form);
+  return row;
+}
+
+function removeLeg(form, row) {
+  if (legRows(form).length <= MIN_LEGS) return;
+  row.remove();
+  renumberLegs(form);
+  updateAddLegBtn(form);
+  refreshPreviews(form);
+}
+
+function renumberLegs(form = $("#betForm")) {
+  const rows = legRows(form);
+  rows.forEach((row, i) => {
+    const num = row.querySelector('[data-role="leg-num"]');
+    if (num) num.textContent = t("form.legLabel", { n: i + 1 });
+    const rm = row.querySelector("[data-leg-remove]");
+    if (rm) rm.hidden = rows.length <= MIN_LEGS;
+  });
+}
+
+function updateAddLegBtn(form = $("#betForm")) {
+  const btn = $("#addLegBtn");
+  if (btn) btn.disabled = legRows(form).length >= MAX_LEGS;
+}
+
+function syncLegOddsFormat(form = $("#betForm")) {
+  const fmt = form.odds_format.value;
+  const label = ODDS_LABELS()[fmt] || t("bets.odds");
+  const textMode = fmt === "american" || fmt === "malaysian" || fmt === "indonesian";
+  legRows(form).forEach(row => {
+    const lbl = row.querySelector('[data-role="leg-odds-label"]');
+    if (lbl) lbl.textContent = label;
+    const oddsFields = row.querySelector(".leg__odds");
+    if (oddsFields) oddsFields.className = `leg__odds odds-value-fields odds-value-fields--${fmt}`;
+    const odds = row.querySelector('[data-leg-field="odds"]');
+    if (odds) odds.inputMode = textMode ? "text" : "decimal";
+  });
+}
+
+function parseLegOddsToDecimal(row, fmt) {
+  const raw = String(row.querySelector('[data-leg-field="odds"]')?.value || "").trim();
+  if (!raw) return NaN;
+  if (fmt === "decimal") return parseFloat(raw);
+  if (fmt === "american") {
+    const a = parseSignedOdds(raw);
+    if (!Number.isFinite(a) || a === 0) return NaN;
+    return a > 0 ? 1 + a / 100 : 1 + 100 / Math.abs(a);
+  }
+  if (fmt === "hong_kong") {
+    const hk = parseFloat(raw);
+    if (!Number.isFinite(hk) || hk < 0) return NaN;
+    return 1 + hk;
+  }
+  if (fmt === "malaysian" || fmt === "indonesian") return signedAsianToDecimal(parseSignedOdds(raw));
+  const num = parseFloat(raw);
+  const den = parseFloat(row.querySelector('[data-leg-field="odds_denominator"]')?.value);
+  if (!Number.isFinite(num) || !Number.isFinite(den) || den === 0) return NaN;
+  return 1 + num / den;
+}
+
+function combinedDecimalOdds(form = $("#betForm")) {
+  const fmt = form.odds_format.value;
+  const rows = legRows(form);
+  if (!rows.length) return NaN;
+  let combined = 1;
+  for (const row of rows) {
+    const d = parseLegOddsToDecimal(row, fmt);
+    if (!Number.isFinite(d) || d <= 1) return NaN;
+    combined *= d;
+  }
+  return combined;
+}
+
+function updateCombinedOddsPreview(form = $("#betForm")) {
+  const preview = $("#combinedOddsPreview");
+  if (!preview) return;
+  if (!isMultiple(form)) { preview.hidden = true; return; }
+  const valueEl = preview.querySelector('[data-role="combined-odds"]');
+  const combined = combinedDecimalOdds(form);
+  if (!Number.isFinite(combined) || combined <= 1 || !valueEl) { preview.hidden = true; return; }
+  valueEl.textContent = combined.toFixed(2);
+  preview.hidden = false;
+}
+
+function readLegs(form = $("#betForm")) {
+  const fmt = form.odds_format.value;
+  return legRows(form).map(row => {
+    const get = f => String(row.querySelector(`[data-leg-field="${f}"]`)?.value || "").trim();
+    const leg = { event: get("event"), selection: get("selection"), odds: get("odds"), odds_format: fmt };
+    if (fmt === "fractional") {
+      const den = get("odds_denominator");
+      if (den) leg.odds_denominator = Number(den);
+    }
+    return leg;
+  });
+}
+
+function legPayloadDecimal(leg) {
+  const fmt = leg.odds_format || "decimal";
+  const raw = String(leg.odds ?? "").trim();
+  if (!raw) return NaN;
+  if (fmt === "decimal") return parseFloat(raw);
+  if (fmt === "american") {
+    const a = parseSignedOdds(raw);
+    if (!Number.isFinite(a) || a === 0) return NaN;
+    return a > 0 ? 1 + a / 100 : 1 + 100 / Math.abs(a);
+  }
+  if (fmt === "hong_kong") {
+    const hk = parseFloat(raw);
+    if (!Number.isFinite(hk) || hk < 0) return NaN;
+    return 1 + hk;
+  }
+  if (fmt === "malaysian" || fmt === "indonesian") return signedAsianToDecimal(parseSignedOdds(raw));
+  const num = parseFloat(raw);
+  const den = parseFloat(leg.odds_denominator);
+  if (!Number.isFinite(num) || !Number.isFinite(den) || den === 0) return NaN;
+  return 1 + num / den;
+}
+
+function validateLegs(legs) {
+  if (!Array.isArray(legs) || legs.length < MIN_LEGS) return t("form.needTwoLegs");
+  if (legs.length > MAX_LEGS) return t("form.maxLegs", { max: MAX_LEGS });
+  for (const leg of legs) {
+    if (!leg.event || !leg.selection) return t("form.legMissingFields");
+    const d = legPayloadDecimal(leg);
+    if (!Number.isFinite(d) || d <= 1) return t("form.legBadOdds");
+  }
+  return null;
 }
 
 const ODDS_LABELS = () => ({
@@ -1160,10 +1393,8 @@ function onOddsFormatChange() {
   }
   form.odds_format.dataset.prev = next;
   syncOddsFormat();
-  updateModellingCalcs($("#betForm"));
-  updateEffectiveOddsPreview($("#betForm"));
-  updateLiabilityPreview($("#betForm"));
-  updateSettlementPreview($("#betForm"));
+  syncLegOddsFormat(form);
+  refreshPreviews(form);
 }
 
 function effectiveDecimalOdds(oddsDec, commissionPct) {
@@ -1181,7 +1412,7 @@ function updateEffectiveOddsPreview(form = $("#betForm")) {
   }
   const valueEl = hint.querySelector('[data-role="effective-odds"]');
   const commission = parseFloat(form.exchange_commission_pct?.value);
-  const oddsDec = parseOddsToDecimal(form);
+  const oddsDec = betDecimalOdds(form);
   const effDec = effectiveDecimalOdds(oddsDec, commission);
 
   if (!Number.isFinite(effDec) || !(effDec > 1)) {
@@ -1334,7 +1565,7 @@ function updateModellingCalcs(form = $("#betForm")) {
   const bankroll = Number(state.user?.bankroll) || 0;
   const mult = state.user?.kelly_multiplier || 1;
   const currency = ccy();
-  const oddsDec = parseOddsToDecimal(form);
+  const oddsDec = betDecimalOdds(form);
   const personal = parseFloat(form.elements.namedItem("personal_implied_odds")?.value);
   const model = parseFloat(form.elements.namedItem("model_implied_odds")?.value);
   updateCalcBlock(form, "personal", personal, oddsDec, bankroll, mult, currency);
@@ -1365,7 +1596,7 @@ function computeSettlementProfit(form) {
   const eachWay = form.each_way?.checked;
   const placeFraction = parseFloat(form.place_fraction?.value) || 0.25;
   const commission = parseFloat(form.exchange_commission_pct?.value) || 0;
-  const oddsDec = parseOddsToDecimal(form);
+  const oddsDec = betDecimalOdds(form);
 
   if (!Number.isFinite(stake) || stake <= 0) return null;
 
@@ -1405,7 +1636,7 @@ function computeSettlementProfit(form) {
 
 function maxCashOutReturn(form) {
   const stake = parseFloat(form.stake?.value);
-  const oddsDec = parseOddsToDecimal(form);
+  const oddsDec = betDecimalOdds(form);
   if (!Number.isFinite(stake) || stake <= 0 || !Number.isFinite(oddsDec) || oddsDec <= 1) return null;
   return Math.round(stake * oddsDec * 100) / 100;
 }
@@ -1471,12 +1702,26 @@ function readForm(form) {
   out.event_at = readOptionalDatetimeField(form, "event_at");
   out.settled_at = readDatetimeField(form, "settled_at");
   if (out.odds_format !== "fractional") delete out.odds_denominator;
+
+  out.is_multiple = isMultiple(form);
+  if (out.is_multiple) {
+    out.legs = readLegs(form);
+    out.side = "back";
+    out.each_way = false;
+    out.placed = false;
+    // The single event/selection/odds inputs are derived server-side for multiples.
+    delete out.event;
+    delete out.selection;
+    delete out.odds;
+    delete out.odds_denominator;
+  }
   return out;
 }
 
 function fillForm(form, b) {
   const set = (n, v) => { if (form[n] != null && v != null) form[n].value = v; };
   set("sport", b.sport);
+  form.is_multiple.checked = Boolean(b.is_multiple);
   if (form.side) form.side.value = b.side || "back";
   set("bet_type", BET_TYPE_LABELS[b.bet_type] || BET_TYPE_LABELS[b.bet_type?.toLowerCase()] || b.bet_type);
   set("tournament", b.tournament);
@@ -1493,6 +1738,22 @@ function fillForm(form, b) {
   set("odds", formatted.odds);
   if (fmt === "fractional") set("odds_denominator", formatted.denominator);
   else form.odds_denominator.value = "";
+  if (b.is_multiple && Array.isArray(b.legs) && b.legs.length) {
+    const list = $("#legsList", form);
+    if (list) list.innerHTML = "";
+    const legFmt = b.legs[0].odds_format || "decimal";
+    form.odds_format.value = legFmt;
+    form.odds_format.dataset.prev = legFmt;
+    b.legs.forEach(l => {
+      const f = formatOddsFromDecimal(Number(l.odds_decimal), legFmt);
+      addLeg(form, {
+        event: l.event,
+        selection: l.selection,
+        odds: f.odds,
+        odds_denominator: legFmt === "fractional" ? f.denominator : null,
+      });
+    });
+  }
   set("stake", b.stake);
   set("currency", b.currency);
   form.each_way.checked = b.each_way;

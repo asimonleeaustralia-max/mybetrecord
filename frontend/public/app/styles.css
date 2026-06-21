@@ -336,6 +336,24 @@ textarea { font-family: var(--sans); resize: vertical; }
 .calc-field__value { font-family: var(--mono); font-size: .9rem; }
 .formactions { display: flex; justify-content: flex-end; gap: 10px; }
 
+/* ---------- multiple / parlay legs ---------- */
+.check--multiple { font-weight: 600; color: var(--brass-deep); }
+.legs { display: grid; gap: 14px; }
+.leg {
+  border: 1px solid var(--line); border-radius: 10px;
+  padding: 14px; background: var(--canvas);
+  display: grid; gap: 12px;
+}
+.leg__head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.leg__num { font-family: var(--display); font-size: .82rem; font-weight: 600; color: var(--brass-deep); }
+.leg__remove { color: var(--muted); }
+.leg__remove:hover { color: var(--loss); }
+.leg__odds { gap: 12px; }
+.legs-actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 4px; }
+.combined-odds { margin: 0; font-size: .9rem; color: var(--ink-soft); }
+.combined-odds__value { font-family: var(--mono); font-weight: 600; color: var(--ink); }
+.pill--multiple { background: var(--brass-wash); color: var(--brass-deep); margin-left: 4px; vertical-align: middle; }
+
 /* ---------- reports ---------- */
 .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 18px; }
 .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; }

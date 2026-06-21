@@ -128,8 +128,9 @@
       <form id="betForm" class="betform">
         <fieldset>
           <legend id="betDetailsLegend" data-i18n="form.whatYouBacked">What you backed</legend>
+          <label class="check check--multiple"><input type="checkbox" name="is_multiple" id="isMultiple" /> <span data-i18n="form.multiple">Multiple / Parlay</span> <span class="hint" data-i18n="form.multipleHint">combine 2–10 selections into one bet</span></label>
           <div class="grid2">
-            <label><span data-i18n="form.side">Side</span>
+            <label id="sideField"><span data-i18n="form.side">Side</span>
               <select name="side" id="betSide">
                 <option value="back" data-i18n="form.sideBack">Back</option>
                 <option value="lay" data-i18n="form.sideLay">Lay</option>
@@ -153,10 +154,23 @@
               <input name="exchange_commission_pct" inputmode="decimal" placeholder="0" /></label>
           </div>
           <label><span data-i18n="form.tournament">Tournament</span> <span class="hint" data-i18n="form.optional">optional</span><input name="tournament" data-i18n-placeholder="form.tournamentPlaceholder" /></label>
-          <label><span data-i18n="form.event">Event</span><input name="event" required data-i18n-placeholder="form.eventPlaceholder" /></label>
-          <label><span data-i18n="form.selection">Selection</span><input name="selection" required data-i18n-placeholder="form.selectionPlaceholder" /></label>
+          <label id="eventField"><span data-i18n="form.event">Event</span><input name="event" required data-i18n-placeholder="form.eventPlaceholder" /></label>
+          <label id="selectionField"><span data-i18n="form.selection">Selection</span><input name="selection" required data-i18n-placeholder="form.selectionPlaceholder" /></label>
           <label><span data-i18n="form.eventAt">Event date &amp; time</span> <span class="hint" data-i18n="form.optional">optional</span><input type="datetime-local" name="event_at" /></label>
           <label><span data-i18n="form.placedAt">Date &amp; time placed</span><input type="datetime-local" name="placed_at" /></label>
+        </fieldset>
+
+        <fieldset id="legsSection" hidden>
+          <legend data-i18n="form.selections">Selections</legend>
+          <p class="hint" data-i18n="form.legsHint">Each selection must win for the multiple to win. Odds use the format chosen below.</p>
+          <div id="legsList" class="legs"></div>
+          <div class="legs-actions">
+            <button type="button" class="btn btn--ghost btn--sm" id="addLegBtn" data-i18n="form.addSelection">+ Add selection</button>
+            <p class="combined-odds" id="combinedOddsPreview" hidden>
+              <span data-i18n="form.combinedOdds">Combined odds</span>:
+              <span class="combined-odds__value" data-role="combined-odds"></span>
+            </p>
+          </div>
         </fieldset>
 
         <fieldset>
@@ -273,6 +287,23 @@
           <button class="btn btn--brass" type="submit" id="saveBtn" data-i18n="form.saveBet">Save bet</button>
         </div>
       </form>
+    </div>
+  </template>
+
+  <template id="tpl-leg">
+    <div class="leg" data-leg>
+      <div class="leg__head">
+        <span class="leg__num" data-role="leg-num"></span>
+        <button type="button" class="icon-btn icon-btn--delete leg__remove" data-leg-remove aria-label="Remove selection" hidden>
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+        </button>
+      </div>
+      <label><span data-i18n="form.event">Event</span><input data-leg-field="event" data-i18n-placeholder="form.eventPlaceholder" /></label>
+      <label><span data-i18n="form.selection">Selection</span><input data-leg-field="selection" data-i18n-placeholder="form.selectionPlaceholder" /></label>
+      <div class="leg__odds odds-value-fields">
+        <label><span data-role="leg-odds-label" data-i18n="form.decimalOdds">Decimal odds</span><input data-leg-field="odds" inputmode="decimal" placeholder="2.50" /></label>
+        <label class="odds-den-field"><span data-i18n="form.denominator">Denominator</span><input data-leg-field="odds_denominator" inputmode="decimal" placeholder="4" /></label>
+      </div>
     </div>
   </template>
 

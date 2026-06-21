@@ -152,6 +152,25 @@ def to_decimal(value: float | str, odds_format: str = "decimal",
     raise ValueError(f"Unknown odds format: {odds_format}")
 
 
+def parlay_decimal_odds(leg_decimal_odds: Iterable[float]) -> float:
+    """Combined decimal odds of a multiple / parlay = product of the legs.
+
+    e.g. a treble of 2.0, 1.5 and 3.0 returns 9.0. Raises if any leg price is
+    not greater than 1.0, or if there are no legs.
+    """
+    combined = 1.0
+    count = 0
+    for d in leg_decimal_odds:
+        value = float(d)
+        if value <= 1.0:
+            raise ValueError("Each leg's decimal odds must exceed 1.0")
+        combined *= value
+        count += 1
+    if count == 0:
+        raise ValueError("A multiple needs at least one leg")
+    return round(combined, 6)
+
+
 def implied_probability(decimal_odds: float) -> float:
     """Probability the price implies (includes the bookmaker's margin)."""
     d = float(decimal_odds)

@@ -25,9 +25,10 @@ from betrecord_shared import betting_math as bm
 from betrecord_shared.bankroll import effective_bankroll
 from betrecord_shared.config import get_settings
 from betrecord_shared.database import get_db, init_db
-from betrecord_shared.models import Bet, User
+from betrecord_shared.models import Bet, BetLeg, User
 from betrecord_shared.schemas import (
     BetCreate,
+    BetLegCreate,
     BetOut,
     BetShareOut,
     BetUpdate,
@@ -65,6 +66,57 @@ def _normalise_odds(value: float, fmt: str, denominator: Optional[float]) -> flo
     if fmt == "fractional" and denominator is not None:
         return bm.fractional_to_decimal(value, denominator)
     return bm.to_decimal(value, fmt)
+
+
+# --------------------------- multiple / parlay ---------------------------- #
+
+# (event, selection, decimal_odds, odds_format) for one leg.
+LegSpec = tuple[str, str, float, str]
+
+
+def _build_leg_specs(legs: Optional[list[BetLegCreate]], default_fmt: str) -> list[LegSpec]:
+    """Validate and normalise the legs of a multiple into decimal-odds specs."""
+    count = len(legs or [])
+    lo, hi = settings.min_parlay_legs, settings.max_parlay_legs
+    if not (lo <= count <= hi):
+        raise HTTPException(
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+            f"A multiple must have between {lo} and {hi} selections",
+        )
+    specs: list[LegSpec] = []
+    for leg in legs or []:
+        fmt = leg.odds_format or default_fmt
+        odds_decimal = _normalise_odds(leg.odds, fmt, leg.odds_denominator)
+        if odds_decimal <= 1.0:
+            raise HTTPException(
+                status.HTTP_422_UNPROCESSABLE_ENTITY,
+                "Each leg's decimal odds must exceed 1.0",
+            )
+        specs.append((leg.event.strip(), leg.selection.strip(), odds_decimal, fmt))
+    return specs
+
+
+def _multiple_summary(leg_specs: list[LegSpec]) -> tuple[str, str, float]:
+    """Parent event label, selection summary, and combined decimal odds."""
+    event = f"{len(leg_specs)}-leg multiple"
+    selection = " / ".join(s for (_, s, _, _) in leg_specs)[:255]
+    combined = bm.parlay_decimal_odds([d for (_, _, d, _) in leg_specs])
+    return event, selection, combined
+
+
+def _multiple_bet_type(bet_type: Optional[str]) -> str:
+    """Keep an explicit parlay label, else default the generic 'Win' to 'Multiple'."""
+    value = (bet_type or "").strip()
+    if value and value.lower() != "win":
+        return value
+    return "Multiple"
+
+
+def _leg_models(leg_specs: list[LegSpec]) -> list[BetLeg]:
+    return [
+        BetLeg(leg_index=i, event=e, selection=s, odds_decimal=d, odds_format=f)
+        for i, (e, s, d, f) in enumerate(leg_specs)
+    ]
 
 
 def _sync_each_way_fields(bet: Bet) -> None:
@@ -245,9 +297,9 @@ def _local_day_bounds(user: User) -> tuple[datetime, datetime, str]:
     )
 
 
-def _bets_entered_today(db: Session, user: User) -> int:
+def _bets_entered_today(db: Session, user: User, *, is_multiple: Optional[bool] = None) -> int:
     start_utc, end_utc, _ = _local_day_bounds(user)
-    return db.scalar(
+    stmt = (
         select(func.count())
         .select_from(Bet)
         .where(
@@ -255,30 +307,56 @@ def _bets_entered_today(db: Session, user: User) -> int:
             Bet.created_at >= start_utc,
             Bet.created_at < end_utc,
         )
-    ) or 0
+    )
+    if is_multiple is not None:
+        stmt = stmt.where(Bet.is_multiple == is_multiple)
+    return db.scalar(stmt) or 0
 
 
 def _usage(db: Session, user: User) -> BetUsageOut:
     _, _, day = _local_day_bounds(user)
-    count = _bets_entered_today(db, user)
+    single_count = _bets_entered_today(db, user, is_multiple=False)
+    multiple_count = _bets_entered_today(db, user, is_multiple=True)
     if user.is_pro:
-        return BetUsageOut(plan=user.plan or "free", date=day, count=count, limit=None, remaining=None)
+        return BetUsageOut(
+            plan=user.plan or "free",
+            date=day,
+            count=single_count,
+            limit=None,
+            remaining=None,
+            multiple_count=multiple_count,
+            multiple_limit=None,
+            multiple_remaining=None,
+        )
     limit = settings.free_daily_bet_limit
+    multiple_limit = settings.free_daily_multiple_limit
     return BetUsageOut(
         plan=user.plan or "free",
         date=day,
-        count=count,
+        count=single_count,
         limit=limit,
-        remaining=max(0, limit - count),
+        remaining=max(0, limit - single_count),
+        multiple_count=multiple_count,
+        multiple_limit=multiple_limit,
+        multiple_remaining=max(0, multiple_limit - multiple_count),
     )
 
 
-def _enforce_daily_limit(db: Session, user: User) -> None:
-    """Free users may enter at most `free_daily_bet_limit` bets per local day."""
+def _enforce_daily_limit(db: Session, user: User, *, is_multiple: bool = False) -> None:
+    """Free users get a separate daily allowance for single and multiple bets."""
     if user.is_pro:
         return
+    if is_multiple:
+        limit = settings.free_daily_multiple_limit
+        if _bets_entered_today(db, user, is_multiple=True) >= limit:
+            raise HTTPException(
+                status.HTTP_402_PAYMENT_REQUIRED,
+                f"Free plan limit reached: you can enter up to {limit} multiple/parlay "
+                "bets per day. Upgrade to Pro for unlimited bets.",
+            )
+        return
     limit = settings.free_daily_bet_limit
-    if _bets_entered_today(db, user) >= limit:
+    if _bets_entered_today(db, user, is_multiple=False) >= limit:
         raise HTTPException(
             status.HTTP_402_PAYMENT_REQUIRED,
             f"Free plan limit reached: you can enter up to {limit} bets per day. "
@@ -416,29 +494,47 @@ def create_bet(
     user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ) -> BetOut:
-    _enforce_daily_limit(db, user)
+    _enforce_daily_limit(db, user, is_multiple=payload.is_multiple)
     odds_format = payload.odds_format or user.default_odds_format or "decimal"
-    odds_decimal = _normalise_odds(payload.odds, odds_format, payload.odds_denominator)
-    if odds_decimal <= 1.0:
-        raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, "Decimal odds must exceed 1.0")
-    _validate_side_fields(payload.side, payload.each_way)
+
+    legs: list[BetLeg] = []
+    if payload.is_multiple:
+        leg_specs = _build_leg_specs(payload.legs, odds_format)
+        event, selection, odds_decimal = _multiple_summary(leg_specs)
+        legs = _leg_models(leg_specs)
+        bet_type = _multiple_bet_type(payload.bet_type)
+        side = bm.BACK
+        each_way = False
+        stored_format = "decimal"  # combined odds are an inherently decimal product
+    else:
+        odds_decimal = _normalise_odds(payload.odds, odds_format, payload.odds_denominator)
+        if odds_decimal <= 1.0:
+            raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, "Decimal odds must exceed 1.0")
+        _validate_side_fields(payload.side, payload.each_way)
+        event = payload.event
+        selection = payload.selection
+        bet_type = payload.bet_type
+        side = payload.side
+        each_way = payload.each_way
+        stored_format = odds_format
 
     bet = Bet(
         user_id=user.id,
         tournament=payload.tournament,
-        event=payload.event,
-        selection=payload.selection,
+        event=event,
+        selection=selection,
         sport=payload.sport,
-        bet_type=payload.bet_type,
-        side=payload.side,
+        bet_type=bet_type,
+        side=side,
+        is_multiple=payload.is_multiple,
         placed_at=payload.placed_at or datetime.now(timezone.utc),
         event_at=payload.event_at,
         settled_at=payload.settled_at or datetime.now(timezone.utc),
         odds_decimal=odds_decimal,
-        odds_format=odds_format,
+        odds_format=stored_format,
         stake=payload.stake,
         currency=(payload.currency or user.base_currency).upper(),
-        each_way=payload.each_way,
+        each_way=each_way,
         place_fraction=payload.place_fraction,
         placed=payload.placed,
         outcome=payload.outcome or "pending",
@@ -454,6 +550,7 @@ def create_bet(
         bet_broker=payload.bet_broker,
         notes=payload.notes,
     )
+    bet.legs = legs
     _recompute(bet, user, db)
     db.add(bet)
     db.commit()
@@ -483,13 +580,50 @@ def update_bet(
     data = payload.model_dump(exclude_unset=True)
     prev_outcome = (bet.outcome or bm.PENDING).lower()
 
-    # Odds need normalisation if any odds field changed.
-    if "odds" in data or "odds_format" in data or "odds_denominator" in data:
-        new_value = data.get("odds", bet.odds_decimal)
-        new_fmt = data.get("odds_format", bet.odds_format)
-        new_den = data.get("odds_denominator")
-        bet.odds_decimal = _normalise_odds(new_value, new_fmt, new_den)
-        bet.odds_format = new_fmt
+    target_multiple = payload.is_multiple if payload.is_multiple is not None else bet.is_multiple
+
+    # Fields whose values are derived (multiples) or handled out of the loop.
+    skip: set[str] = {"odds", "odds_format", "odds_denominator", "is_multiple", "legs"}
+
+    if target_multiple:
+        default_fmt = payload.odds_format or user.default_odds_format or "decimal"
+        if payload.legs is not None:
+            leg_specs = _build_leg_specs(payload.legs, default_fmt)
+        elif bet.legs:
+            leg_specs = [(l.event, l.selection, l.odds_decimal, l.odds_format) for l in bet.legs]
+        else:
+            raise HTTPException(
+                status.HTTP_422_UNPROCESSABLE_ENTITY,
+                "A multiple bet requires at least 2 selections",
+            )
+        event, selection, odds_decimal = _multiple_summary(leg_specs)
+        bet.is_multiple = True
+        bet.event = event
+        bet.selection = selection
+        bet.odds_decimal = odds_decimal
+        bet.odds_format = "decimal"
+        bet.side = bm.BACK
+        bet.each_way = False
+        bet.placed = False
+        bet.legs = _leg_models(leg_specs)
+        # event/selection/side/each_way/placed are derived for multiples.
+        skip |= {"event", "selection", "side", "each_way", "placed"}
+        if "bet_type" in data:
+            bet.bet_type = _multiple_bet_type(data["bet_type"])
+            skip.add("bet_type")
+        elif not bet.bet_type:
+            bet.bet_type = "Multiple"
+    else:
+        bet.is_multiple = False
+        if bet.legs:
+            bet.legs = []  # dropping legs when converting a multiple back to a single
+        # Odds need normalisation if any odds field changed.
+        if "odds" in data or "odds_format" in data or "odds_denominator" in data:
+            new_value = data.get("odds", bet.odds_decimal)
+            new_fmt = data.get("odds_format", bet.odds_format)
+            new_den = data.get("odds_denominator")
+            bet.odds_decimal = _normalise_odds(new_value, new_fmt, new_den)
+            bet.odds_format = new_fmt
 
     for field in (
         "tournament", "event", "selection", "sport", "bet_type", "side", "placed_at", "event_at", "settled_at", "stake", "currency",
@@ -497,6 +631,8 @@ def update_bet(
         "bet_model", "model_implied_odds", "personal_implied_odds", "closing_odds", "closing_odds_exchange",
         "bookmaker", "exchange_commission_pct", "tipster", "bet_broker", "notes",
     ):
+        if field in skip:
+            continue
         if field in data:
             value = data[field]
             if field in ("placed_at", "settled_at") and value is None:

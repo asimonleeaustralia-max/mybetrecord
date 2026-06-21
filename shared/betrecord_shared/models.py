@@ -134,6 +134,12 @@ class Bet(Base):
     placed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now, index=True)
     event_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
+    # Multiple / parlay: when true, the bet combines 2+ selections (see BetLeg).
+    # The single event/selection/odds fields below carry a summary and the
+    # combined decimal odds (the product of every leg's price) for back-compat
+    # with the ledger, reports, exports, and share links.
+    is_multiple: Mapped[bool] = mapped_column(Boolean, default=False, index=True)
+
     # Odds — stored canonically as decimal; the entry format is remembered for display.
     odds_decimal: Mapped[float] = mapped_column(Float, nullable=False)
     odds_format: Mapped[str] = mapped_column(String(16), default="decimal")
@@ -182,3 +188,33 @@ class Bet(Base):
     )
 
     user: Mapped["User"] = relationship(back_populates="bets")
+    legs: Mapped[list["BetLeg"]] = relationship(
+        back_populates="bet",
+        cascade="all, delete-orphan",
+        order_by="BetLeg.leg_index",
+        lazy="selectin",
+    )
+
+
+class BetLeg(Base):
+    """One selection (leg) of a multiple / parlay bet.
+
+    Singles have no legs. A multiple stores one row per selection here; the
+    parent Bet keeps the combined decimal odds (product of all leg prices) so
+    settlement, reporting, and sharing stay unchanged.
+    """
+
+    __tablename__ = "bet_legs"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
+    bet_id: Mapped[str] = mapped_column(ForeignKey("bets.id", ondelete="CASCADE"), index=True)
+    leg_index: Mapped[int] = mapped_column(Integer, default=0)  # 0-based order within the bet
+
+    event: Mapped[str] = mapped_column(String(255), nullable=False)
+    selection: Mapped[str] = mapped_column(String(255), nullable=False)
+
+    # Odds — stored canonically as decimal; the entry format is remembered for display.
+    odds_decimal: Mapped[float] = mapped_column(Float, nullable=False)
+    odds_format: Mapped[str] = mapped_column(String(16), default="decimal")
+
+    bet: Mapped["Bet"] = relationship(back_populates="legs")

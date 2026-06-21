@@ -49,9 +49,16 @@ class Settings:
     # payments service creates the line item with inline product data instead.
     stripe_product_id: str = os.getenv("STRIPE_PRODUCT_ID", "")
 
-    # Free plan limits. Free users may enter at most this many bets per day; Pro
-    # users are unlimited. The only functional difference between the plans.
+    # Free plan limits. Free users may enter at most this many single bets per
+    # day, plus a separate daily allowance of multiple/parlay bets; Pro users
+    # are unlimited. The main functional difference between the plans.
     free_daily_bet_limit: int = int(os.getenv("FREE_DAILY_BET_LIMIT", "5"))
+    free_daily_multiple_limit: int = int(os.getenv("FREE_DAILY_MULTIPLE_LIMIT", "5"))
+
+    # Multiple / parlay leg bounds. A multiple is at least a double (2 legs) and
+    # at most this many legs.
+    min_parlay_legs: int = 2
+    max_parlay_legs: int = int(os.getenv("MAX_PARLAY_LEGS", "10"))
 
     environment: str = os.getenv("ENVIRONMENT", "development")
 
