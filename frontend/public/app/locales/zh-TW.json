@@ -56,7 +56,8 @@
     "loss": "損失",
     "void": "空白",
     "half_win": "半勝",
-    "half_loss": "一半虧損"
+    "half_loss": "一半虧損",
+    "placed": "已放置"
   },
   "form": {
     "recordTitle": "記錄下注",

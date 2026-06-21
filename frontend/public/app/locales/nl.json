@@ -56,7 +56,8 @@
     "loss": "Verlies",
     "void": "Leegte",
     "half_win": "Halve overwinning",
-    "half_loss": "Half verlies"
+    "half_loss": "Half verlies",
+    "placed": "Geplaatst"
   },
   "form": {
     "recordTitle": "Registreer een weddenschap",

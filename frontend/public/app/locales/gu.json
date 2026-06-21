@@ -56,7 +56,8 @@
     "loss": "નુકશાન",
     "void": "રદબાતલ",
     "half_win": "અડધી જીત",
-    "half_loss": "અડધી ખોટ"
+    "half_loss": "અડધી ખોટ",
+    "placed": "મૂકેલ"
   },
   "form": {
     "recordTitle": "શરત રેકોર્ડ કરો",

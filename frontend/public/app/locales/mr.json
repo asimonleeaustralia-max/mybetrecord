@@ -56,7 +56,8 @@
     "loss": "तोटा",
     "void": "शून्य",
     "half_win": "अर्धा विजय",
-    "half_loss": "अर्धा तोटा"
+    "half_loss": "अर्धा तोटा",
+    "placed": "ठेवले"
   },
   "form": {
     "recordTitle": "पैज नोंदवा",

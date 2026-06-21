@@ -56,7 +56,8 @@
     "loss": "Colled",
     "void": "Gwag",
     "half_win": "Hanner ennill",
-    "half_loss": "Hanner colled"
+    "half_loss": "Hanner colled",
+    "placed": "Wedi'i osod"
   },
   "form": {
     "recordTitle": "Cofnodi bet",

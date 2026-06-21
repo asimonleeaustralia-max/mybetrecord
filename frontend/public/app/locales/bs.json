@@ -56,7 +56,8 @@
     "loss": "Gubitak",
     "void": "Void",
     "half_win": "Polu pobeda",
-    "half_loss": "Polu gubitak"
+    "half_loss": "Polu gubitak",
+    "placed": "Postavljeno"
   },
   "form": {
     "recordTitle": "Snimite opkladu",

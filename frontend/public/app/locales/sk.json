@@ -56,7 +56,8 @@
     "loss": "Strata",
     "void": "Void",
     "half_win": "Polovičná výhra",
-    "half_loss": "Polovičná strata"
+    "half_loss": "Polovičná strata",
+    "placed": "Umiestnené"
   },
   "form": {
     "recordTitle": "Zaznamenajte stávku",

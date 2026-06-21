@@ -56,7 +56,8 @@
     "loss": "Kayıp",
     "void": "Geçersiz",
     "half_win": "Yarı galibiyet",
-    "half_loss": "Yarı kayıp"
+    "half_loss": "Yarı kayıp",
+    "placed": "Yerleştirildi"
   },
   "form": {
     "recordTitle": "Bir bahis kaydedin",

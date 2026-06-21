@@ -56,7 +56,8 @@
     "loss": "Verloscht",
     "void": "Void",
     "half_win": "Halschent gewannen",
-    "half_loss": "Halschent Verloscht"
+    "half_loss": "Halschent Verloscht",
+    "placed": "Plaz gesat"
   },
   "form": {
     "recordTitle": "Rekord eng wetten",

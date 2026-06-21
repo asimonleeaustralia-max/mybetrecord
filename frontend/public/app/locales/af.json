@@ -56,7 +56,8 @@
     "loss": "Verlies",
     "void": "Nietig",
     "half_win": "Half wen",
-    "half_loss": "Halwe verlies"
+    "half_loss": "Halwe verlies",
+    "placed": "Geplaas"
   },
   "form": {
     "recordTitle": "Teken 'n weddenskap op",

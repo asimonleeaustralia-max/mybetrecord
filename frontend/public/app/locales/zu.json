@@ -56,7 +56,8 @@
     "loss": "Ukulahlekelwa",
     "void": "Ize",
     "half_win": "Ukuwina isigamu",
-    "half_loss": "Ukulahlekelwa ingxenye"
+    "half_loss": "Ukulahlekelwa ingxenye",
+    "placed": "Ibekiwe"
   },
   "form": {
     "recordTitle": "Qopha ukubheja",

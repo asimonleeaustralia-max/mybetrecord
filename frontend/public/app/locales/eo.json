@@ -56,7 +56,8 @@
     "loss": "Perdo",
     "void": "Malpleno",
     "half_win": "Duona venko",
-    "half_loss": "Duona perdo"
+    "half_loss": "Duona perdo",
+    "placed": "Lokita"
   },
   "form": {
     "recordTitle": "Registri veton",

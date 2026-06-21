@@ -56,7 +56,8 @@
     "loss": "Izguba",
     "void": "Praznina",
     "half_win": "Polovična zmaga",
-    "half_loss": "Polovična izguba"
+    "half_loss": "Polovična izguba",
+    "placed": "Postavljeno"
   },
   "form": {
     "recordTitle": "Posnemite stavo",

@@ -56,7 +56,8 @@
     "loss": "Zaudējums",
     "void": "Nederīgs",
     "half_win": "Pus uzvara",
-    "half_loss": "Puse zaudējums"
+    "half_loss": "Puse zaudējums",
+    "placed": "Novietots"
   },
   "form": {
     "recordTitle": "Ierakstiet likmi",

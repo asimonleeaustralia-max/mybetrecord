@@ -56,7 +56,8 @@
     "loss": "Perdita",
     "void": "Vuoto",
     "half_win": "Metà vittoria",
-    "half_loss": "Mezza perdita"
+    "half_loss": "Mezza perdita",
+    "placed": "Posizionato"
   },
   "form": {
     "recordTitle": "Registra una scommessa",

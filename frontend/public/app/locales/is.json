@@ -56,7 +56,8 @@
     "loss": "Tap",
     "void": "Ógilt",
     "half_win": "Hálfur sigur",
-    "half_loss": "Hálft tap"
+    "half_loss": "Hálft tap",
+    "placed": "Sett"
   },
   "form": {
     "recordTitle": "Taktu upp veðmál",

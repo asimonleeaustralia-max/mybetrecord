@@ -56,7 +56,8 @@
     "loss": "Ztráta",
     "void": "Neplatné",
     "half_win": "Poloviční výhra",
-    "half_loss": "Poloviční ztráta"
+    "half_loss": "Poloviční ztráta",
+    "placed": "Umístěno"
   },
   "form": {
     "recordTitle": "Nahrajte sázku",

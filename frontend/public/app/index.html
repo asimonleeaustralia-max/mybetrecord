@@ -186,9 +186,8 @@
             </label>
             <label class="check"><input type="checkbox" name="each_way" /> <span data-i18n="form.eachWay">Each way</span></label>
           </div>
-          <div class="grid2" id="ewFields" hidden>
+          <div id="ewFields" hidden>
             <label><span data-i18n="form.placeFraction">Place fraction</span><input name="place_fraction" inputmode="decimal" placeholder="0.25" /></label>
-            <label class="check"><input type="checkbox" name="placed" /> <span data-i18n="form.placed">Placed</span></label>
           </div>
         </fieldset>
 
@@ -196,14 +195,7 @@
           <legend data-i18n="form.settlement">Settlement</legend>
           <div class="grid2">
             <label><span data-i18n="form.result">Result</span>
-              <select name="outcome">
-                <option value="pending" data-i18n="outcomes.pending">Pending</option>
-                <option value="win" data-i18n="outcomes.win">Win</option>
-                <option value="loss" data-i18n="outcomes.loss">Loss</option>
-                <option value="void" data-i18n="outcomes.void">Void</option>
-                <option value="half_win" data-i18n="outcomes.half_win">Half win</option>
-                <option value="half_loss" data-i18n="outcomes.half_loss">Half loss</option>
-              </select>
+              <select name="outcome"></select>
             </label>
             <label><span data-i18n="form.settledAt">Date &amp; time settled</span><input type="datetime-local" name="settled_at" /></label>
           </div>

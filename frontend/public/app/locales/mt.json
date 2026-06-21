@@ -56,7 +56,8 @@
     "loss": "Telf",
     "void": "Void",
     "half_win": "Nofs rebħa",
-    "half_loss": "Nofs telfa"
+    "half_loss": "Nofs telfa",
+    "placed": "Imqiegħed"
   },
   "form": {
     "recordTitle": "Irreġistra bet",

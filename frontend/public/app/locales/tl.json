@@ -56,7 +56,8 @@
     "loss": "Pagkawala",
     "void": "walang bisa",
     "half_win": "Kalahating panalo",
-    "half_loss": "Half loss"
+    "half_loss": "Half loss",
+    "placed": "Nakalagay"
   },
   "form": {
     "recordTitle": "Magtala ng taya",

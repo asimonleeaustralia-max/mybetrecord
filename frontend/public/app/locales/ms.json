@@ -56,7 +56,8 @@
     "loss": "rugi",
     "void": "batal",
     "half_win": "Separuh menang",
-    "half_loss": "Separuh kerugian"
+    "half_loss": "Separuh kerugian",
+    "placed": "diletakkan"
   },
   "form": {
     "recordTitle": "Catat pertaruhan",

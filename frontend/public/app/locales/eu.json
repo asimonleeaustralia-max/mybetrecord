@@ -56,7 +56,8 @@
     "loss": "Galera",
     "void": "Hutsunea",
     "half_win": "Erdi irabazi",
-    "half_loss": "Erdi galera"
+    "half_loss": "Erdi galera",
+    "placed": "Jarri"
   },
   "form": {
     "recordTitle": "Apustu bat grabatu",

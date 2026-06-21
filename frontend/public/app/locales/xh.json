@@ -56,7 +56,8 @@
     "loss": "Ilahleko",
     "void": "Ilize",
     "half_win": "Ukuphumelela isiqingatha",
-    "half_loss": "Isiqingatha selahleko"
+    "half_loss": "Isiqingatha selahleko",
+    "placed": "Ibekiwe"
   },
   "form": {
     "recordTitle": "Rekhoda ukubheja",

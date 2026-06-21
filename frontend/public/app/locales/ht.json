@@ -56,7 +56,8 @@
     "loss": "Pèt",
     "void": "Anile",
     "half_win": "Mwatye genyen",
-    "half_loss": "Mwatye pèt"
+    "half_loss": "Mwatye pèt",
+    "placed": "Mete"
   },
   "form": {
     "recordTitle": "Ekri yon parye",

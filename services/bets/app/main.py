@@ -59,8 +59,27 @@ def _normalise_odds(value: float, fmt: str, denominator: Optional[float]) -> flo
     return bm.to_decimal(value, fmt)
 
 
+def _sync_each_way_fields(bet: Bet) -> None:
+    """Keep placed flag and outcome consistent for each-way bets."""
+    outcome = (bet.outcome or bm.PENDING).lower()
+    if not bet.each_way:
+        bet.placed = False
+        return
+    # Legacy: placed=true with outcome=loss → normalize to placed outcome.
+    if bet.placed and outcome == bm.LOSS:
+        bet.outcome = bm.PLACED
+        outcome = bm.PLACED
+    if outcome == bm.WIN or outcome == bm.PLACED:
+        bet.placed = True
+    elif outcome == bm.LOSS:
+        bet.placed = False
+    else:
+        bet.placed = False
+
+
 def _recompute(bet: Bet, user: User, db: Session) -> None:
     """Recompute profit + kelly stake from the bet's own fields and user bankroll."""
+    _sync_each_way_fields(bet)
     # Cash-out amount always drives stored P/L when set, overriding win/loss outcome math.
     bet.profit = bm.settle_profit(
         stake=bet.stake,

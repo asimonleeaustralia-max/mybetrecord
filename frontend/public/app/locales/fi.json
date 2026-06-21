@@ -56,7 +56,8 @@
     "loss": "Menetys",
     "void": "Tyhjä",
     "half_win": "Puolivoitto",
-    "half_loss": "Puoli tappiota"
+    "half_loss": "Puoli tappiota",
+    "placed": "Sijoitettu"
   },
   "form": {
     "recordTitle": "Tallenna veto",

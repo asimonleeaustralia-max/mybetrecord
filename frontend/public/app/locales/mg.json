@@ -56,7 +56,8 @@
     "loss": "very",
     "void": "foana",
     "half_win": "Fandresena antsasany",
-    "half_loss": "Fatiantoka antsasany"
+    "half_loss": "Fatiantoka antsasany",
+    "placed": "nametraka"
   },
   "form": {
     "recordTitle": "Manorata filokana",

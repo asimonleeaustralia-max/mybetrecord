@@ -56,7 +56,8 @@
     "loss": "Kaotus",
     "void": "Tühine",
     "half_win": "Pool võitu",
-    "half_loss": "Pool kaotust"
+    "half_loss": "Pool kaotust",
+    "placed": "Paigutatud"
   },
   "form": {
     "recordTitle": "Salvestage panus",

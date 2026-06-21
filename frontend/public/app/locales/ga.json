@@ -56,7 +56,8 @@
     "loss": "Caillteanas",
     "void": "Neamhní",
     "half_win": "Leath bua",
-    "half_loss": "Cailliúint leath"
+    "half_loss": "Cailliúint leath",
+    "placed": "Curtha"
   },
   "form": {
     "recordTitle": "Taifead geall",

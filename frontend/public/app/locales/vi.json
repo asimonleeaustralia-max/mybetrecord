@@ -56,7 +56,8 @@
     "loss": "Sự mất mát",
     "void": "Vô hiệu",
     "half_win": "Thắng một nửa",
-    "half_loss": "Mất một nửa"
+    "half_loss": "Mất một nửa",
+    "placed": "Đã đặt"
   },
   "form": {
     "recordTitle": "Ghi lại cược",

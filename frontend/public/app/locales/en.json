@@ -83,7 +83,8 @@
     "loss": "Loss",
     "void": "Void",
     "half_win": "Half win",
-    "half_loss": "Half loss"
+    "half_loss": "Half loss",
+    "placed": "Placed"
   },
   "form": {
     "recordTitle": "Record a bet",

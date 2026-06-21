@@ -56,7 +56,8 @@
     "loss": "نقصان",
     "void": "باطل",
     "half_win": "آدھی جیت",
-    "half_loss": "آدھا نقصان"
+    "half_loss": "آدھا نقصان",
+    "placed": "رکھا"
   },
   "form": {
     "recordTitle": "ایک شرط ریکارڈ کریں",

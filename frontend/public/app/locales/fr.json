@@ -56,7 +56,8 @@
     "loss": "Perte",
     "void": "Vide",
     "half_win": "Demi-victoire",
-    "half_loss": "Demi-perte"
+    "half_loss": "Demi-perte",
+    "placed": "Mis"
   },
   "form": {
     "recordTitle": "Enregistrer un pari",

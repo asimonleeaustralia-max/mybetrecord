@@ -56,7 +56,8 @@
     "loss": "mundhut",
     "void": "batal",
     "half_win": "Setengah menang",
-    "half_loss": "Setengah mundhut"
+    "half_loss": "Setengah mundhut",
+    "placed": "diselehake"
   },
   "form": {
     "recordTitle": "Rekam taruhan",

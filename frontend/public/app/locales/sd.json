@@ -56,7 +56,8 @@
     "loss": "نقصان",
     "void": "باطل",
     "half_win": "اڌ فتح",
-    "half_loss": "اڌ نقصان"
+    "half_loss": "اڌ نقصان",
+    "placed": "رکيل"
   },
   "form": {
     "recordTitle": "هڪ شرط رڪارڊ ڪريو",

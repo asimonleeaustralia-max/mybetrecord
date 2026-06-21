@@ -56,7 +56,8 @@
     "loss": "ኪሳራ",
     "void": "ባዶ",
     "half_win": "ግማሽ ያሸንፋል",
-    "half_loss": "ግማሽ ኪሳራ"
+    "half_loss": "ግማሽ ኪሳራ",
+    "placed": "ተቀምጧል"
   },
   "form": {
     "recordTitle": "ውርርድ ይመዝግቡ",

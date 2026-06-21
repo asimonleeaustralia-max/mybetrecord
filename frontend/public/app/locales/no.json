@@ -56,7 +56,8 @@
     "loss": "Tap",
     "void": "Ugyldig",
     "half_win": "Halv seier",
-    "half_loss": "Halvt tap"
+    "half_loss": "Halvt tap",
+    "placed": "Plassert"
   },
   "form": {
     "recordTitle": "Spill inn et veddemål",

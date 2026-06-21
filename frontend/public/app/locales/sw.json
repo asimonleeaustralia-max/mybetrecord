@@ -56,7 +56,8 @@
     "loss": "Hasara",
     "void": "Utupu",
     "half_win": "Ushindi wa nusu",
-    "half_loss": "Hasara ya nusu"
+    "half_loss": "Hasara ya nusu",
+    "placed": "Imewekwa"
   },
   "form": {
     "recordTitle": "Rekodi dau",

@@ -56,7 +56,8 @@
     "loss": "Ngaronga",
     "void": "Korekau",
     "half_win": "Hawhe wini",
-    "half_loss": "Te haurua mate"
+    "half_loss": "Te haurua mate",
+    "placed": "Whakanohoia"
   },
   "form": {
     "recordTitle": "Tuhia he peti",

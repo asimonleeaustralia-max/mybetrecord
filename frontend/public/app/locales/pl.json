@@ -56,7 +56,8 @@
     "loss": "Strata",
     "void": "Próżnia",
     "half_win": "Połowa wygranej",
-    "half_loss": "Połowa straty"
+    "half_loss": "Połowa straty",
+    "placed": "Umieszczony"
   },
   "form": {
     "recordTitle": "Zapisz zakład",

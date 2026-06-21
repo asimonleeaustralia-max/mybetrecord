@@ -56,7 +56,8 @@
     "loss": "Tab",
     "void": "Ugyldig",
     "half_win": "Halv sejr",
-    "half_loss": "Halvt tab"
+    "half_loss": "Halvt tab",
+    "placed": "Placeret"
   },
   "form": {
     "recordTitle": "Optag et væddemål",

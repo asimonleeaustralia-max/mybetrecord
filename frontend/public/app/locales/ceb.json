@@ -56,7 +56,8 @@
     "loss": "Kapildihan",
     "void": "walay sulod",
     "half_win": "Katunga daog",
-    "half_loss": "Katunga nga pagkawala"
+    "half_loss": "Katunga nga pagkawala",
+    "placed": "Gibutang"
   },
   "form": {
     "recordTitle": "Pagrekord og pusta",

@@ -56,7 +56,8 @@
     "loss": "Kutayika",
     "void": "Zopanda kanthu",
     "half_win": "Theka kupambana",
-    "half_loss": "Kutaya theka"
+    "half_loss": "Kutaya theka",
+    "placed": "Yoyikidwa"
   },
   "form": {
     "recordTitle": "Jambulani kubetcha",

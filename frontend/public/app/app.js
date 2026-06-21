@@ -705,14 +705,36 @@ function buildBetFilters() {
   $$("select, input", root).forEach(el => el.addEventListener("change", loadBets));
 }
 
-const BET_OUTCOMES = () => [
-  { value: "pending", label: t("outcomes.pending") },
-  { value: "win", label: t("outcomes.win") },
-  { value: "loss", label: t("outcomes.loss") },
-  { value: "void", label: t("outcomes.void") },
-  { value: "half_win", label: t("outcomes.half_win") },
-  { value: "half_loss", label: t("outcomes.half_loss") },
-];
+const BET_OUTCOMES = ({ eachWay = false } = {}) => {
+  const all = [
+    { value: "pending", label: t("outcomes.pending") },
+    { value: "win", label: t("outcomes.win") },
+    { value: "placed", label: t("outcomes.placed") },
+    { value: "loss", label: t("outcomes.loss") },
+    { value: "void", label: t("outcomes.void") },
+    { value: "half_win", label: t("outcomes.half_win") },
+    { value: "half_loss", label: t("outcomes.half_loss") },
+  ];
+  if (eachWay) return all.filter(o => o.value !== "half_win" && o.value !== "half_loss");
+  return all.filter(o => o.value !== "placed");
+};
+
+function displayOutcome(bet) {
+  const outcome = bet.outcome || "pending";
+  if (bet.each_way && bet.placed && outcome === "loss") return "placed";
+  return outcome;
+}
+
+function syncOutcomeOptions(form) {
+  if (!form?.outcome) return;
+  const eachWay = form.each_way?.checked;
+  const prev = form.outcome.value || "pending";
+  const valid = new Set(BET_OUTCOMES({ eachWay }).map(o => o.value));
+  form.outcome.innerHTML = BET_OUTCOMES({ eachWay }).map(o =>
+    `<option value="${esc(o.value)}">${esc(o.label)}</option>`
+  ).join("");
+  form.outcome.value = valid.has(prev) ? prev : "pending";
+}
 
 async function loadBets() {
   const bets = await api("/bets" + qs(currentFilters("betsFilters")));
@@ -728,14 +750,15 @@ async function loadBets() {
 }
 
 function outcomeTone(o) {
-  const map = { win: "win", loss: "loss", void: "void", pending: "pending", half_win: "win", half_loss: "loss", cashed_out: "void" };
+  const map = { win: "win", placed: "win", loss: "loss", void: "void", pending: "pending", half_win: "win", half_loss: "loss", cashed_out: "void" };
   return map[o] || "pending";
 }
 
 function outcomeSelect(b) {
-  const tone = outcomeTone(b.outcome);
-  const opts = BET_OUTCOMES().map(o =>
-    `<option value="${o.value}"${o.value === b.outcome ? " selected" : ""}>${esc(o.label)}</option>`
+  const shown = displayOutcome(b);
+  const tone = outcomeTone(shown);
+  const opts = BET_OUTCOMES({ eachWay: b.each_way }).map(o =>
+    `<option value="${o.value}"${o.value === shown ? " selected" : ""}>${esc(o.label)}</option>`
   ).join("");
   return `<select class="mini-select outcome-select outcome-select--${tone}" data-outcome="${b.id}" aria-label="${esc(t("bets.resultAria", { name: b.selection }))}">${opts}</select>`;
 }
@@ -938,9 +961,10 @@ async function renderForm(id) {
   form.currency.value = state.user.base_currency || "GBP";
   syncOddsFormat();
   syncEachWay();
+  syncOutcomeOptions(form);
 
   form.odds_format.addEventListener("change", onOddsFormatChange);
-  form.each_way.addEventListener("change", () => { syncEachWay(); updateSettlementPreview(form); });
+  form.each_way.addEventListener("change", () => { syncEachWay(); syncOutcomeOptions(form); updateSettlementPreview(form); });
   ["odds", "odds_denominator", "personal_implied_odds", "model_implied_odds"].forEach(n => {
     const el = form.elements.namedItem(n);
     if (el) el.addEventListener("input", () => {
@@ -959,7 +983,6 @@ async function renderForm(id) {
     autoFillSettledDate(form);
     updateSettlementPreview(form);
   });
-  form.placed?.addEventListener("change", () => updateSettlementPreview(form));
   updateModellingCalcs(form);
   updateEffectiveOddsPreview(form);
   updateSettlementPreview(form);
@@ -972,7 +995,7 @@ async function renderForm(id) {
     $("#saveBtn").textContent = t("form.saveChanges");
     editing = await api(`/bets/${id}`);
     fillForm(form, editing);
-    syncOddsFormat(); syncEachWay(); updateModellingCalcs(form); updateEffectiveOddsPreview(form); updateSettlementPreview(form);
+    syncOddsFormat(); syncEachWay(); syncOutcomeOptions(form); updateModellingCalcs(form); updateEffectiveOddsPreview(form); updateSettlementPreview(form);
     const shareHost = document.createElement("div");
     form.querySelector(".formactions").before(shareHost);
     mountShareControls(shareHost, editing.id, editing.share_token);
@@ -1252,7 +1275,6 @@ function computeSettlementProfit(form) {
   const cashOut = cashOutRaw ? parseFloat(cashOutRaw) : null;
   const outcome = form.outcome?.value || "pending";
   const eachWay = form.each_way?.checked;
-  const placed = form.placed?.checked;
   const placeFraction = parseFloat(form.place_fraction?.value) || 0.25;
   const commission = parseFloat(form.exchange_commission_pct?.value) || 0;
   const oddsDec = parseOddsToDecimal(form);
@@ -1278,9 +1300,10 @@ function computeSettlementProfit(form) {
     const placeOdds = 1 + (oddsDec - 1) * placeFraction;
     if (outcome === "win") {
       gross = unit * (oddsDec - 1) + unit * (placeOdds - 1);
+    } else if (outcome === "placed") {
+      gross = -unit + unit * (placeOdds - 1);
     } else {
-      const placePart = placed ? unit * (placeOdds - 1) : -unit;
-      gross = -unit + placePart;
+      gross = -stake;
     }
   }
 
@@ -1348,7 +1371,8 @@ function readForm(form) {
     out[k] = NUM_FIELDS.includes(k) ? Number(v) : v;
   }
   out.each_way = form.each_way.checked;
-  out.placed = form.placed.checked;
+  const eachWay = out.each_way;
+  out.placed = eachWay && (out.outcome === "win" || out.outcome === "placed");
   if (out.currency) out.currency = out.currency.trim().toUpperCase();
   if (out.bet_type) out.bet_type = out.bet_type.trim();
   out.placed_at = readDatetimeField(form, "placed_at");
@@ -1378,9 +1402,11 @@ function fillForm(form, b) {
   else form.odds_denominator.value = "";
   set("stake", b.stake);
   set("currency", b.currency);
-  form.each_way.checked = b.each_way; form.placed.checked = b.placed;
+  form.each_way.checked = b.each_way;
   set("place_fraction", b.place_fraction);
-  set("outcome", b.outcome); set("cash_out_amount", b.cash_out_amount);
+  syncEachWay();
+  syncOutcomeOptions(form);
+  set("outcome", displayOutcome(b)); set("cash_out_amount", b.cash_out_amount);
   set("bet_model", b.bet_model); set("closing_odds", b.closing_odds);
   set("closing_odds_exchange", b.closing_odds_exchange);
   set("model_implied_odds", b.model_implied_odds);

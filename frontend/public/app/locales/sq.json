@@ -56,7 +56,8 @@
     "loss": "Humbje",
     "void": "E pavlefshme",
     "half_win": "Gjysmë fitore",
-    "half_loss": "Gjysmë humbje"
+    "half_loss": "Gjysmë humbje",
+    "placed": "E vendosur"
   },
   "form": {
     "recordTitle": "Regjistroni një bast",

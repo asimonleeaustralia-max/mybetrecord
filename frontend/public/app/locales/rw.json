@@ -56,7 +56,8 @@
     "loss": "Igihombo",
     "void": "Ubusa",
     "half_win": "Igice cya kabiri",
-    "half_loss": "Igice cya kabiri"
+    "half_loss": "Igice cya kabiri",
+    "placed": "Bishyizwe"
   },
   "form": {
     "recordTitle": "Andika inshuti",

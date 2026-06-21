@@ -56,7 +56,8 @@
     "loss": "Yo'qotish",
     "void": "Bekor",
     "half_win": "Yarim g'alaba",
-    "half_loss": "Yarim yo'qotish"
+    "half_loss": "Yarim yo'qotish",
+    "placed": "Joylashtirilgan"
   },
   "form": {
     "recordTitle": "Tikishni yozib oling",

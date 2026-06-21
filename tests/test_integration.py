@@ -278,6 +278,14 @@ def test_pl_each_way_winner(clients, auth_headers):
     assert b["profit"] == pytest.approx(250.0)
 
 
+def test_pl_each_way_placed_only(clients, auth_headers):
+    b = _make_bet(clients, auth_headers[0], odds=5.0, stake=100, outcome="placed",
+                  each_way=True, place_fraction=0.25)
+    assert b["outcome"] == "placed"
+    assert b["placed"] is True
+    assert b["profit"] == pytest.approx(0.0)
+
+
 # -------------------------------- Kelly ----------------------------------- #
 
 def test_kelly_recommendation(clients, auth_headers):

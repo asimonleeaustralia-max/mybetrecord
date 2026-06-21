@@ -56,7 +56,8 @@
     "loss": "Gubitak",
     "void": "Poništiti",
     "half_win": "Polovična pobjeda",
-    "half_loss": "Pola gubitka"
+    "half_loss": "Pola gubitka",
+    "placed": "Postavljeno"
   },
   "form": {
     "recordTitle": "Snimite okladu",

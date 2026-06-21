@@ -56,7 +56,8 @@
     "loss": "損失",
     "void": "空所",
     "half_win": "半分勝ち",
-    "half_loss": "半減"
+    "half_loss": "半減",
+    "placed": "配置されました"
   },
   "form": {
     "recordTitle": "賭けを記録する",

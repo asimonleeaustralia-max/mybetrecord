@@ -220,6 +220,7 @@ HALF_WIN = "half_win"     # Asian handicap / push-on-half
 HALF_LOSS = "half_loss"
 PENDING = "pending"
 CASHED_OUT = "cashed_out"
+PLACED = "placed"           # each-way: win part loses, place part wins
 
 
 def settle_profit(
@@ -277,7 +278,7 @@ def settle_profit(
             win_part = -unit
         # Place part settles on whether it placed (a win implies a place).
         place_odds = 1.0 + (d - 1.0) * float(place_fraction)
-        if placed or outcome == WIN:
+        if placed or outcome in (WIN, PLACED):
             place_part = unit * (place_odds - 1.0)
         else:
             place_part = -unit
@@ -368,7 +369,7 @@ def portfolio_metrics(rows: Iterable[dict]) -> dict:
                 losses += 1
             elif outcome == VOID:
                 voids += 1
-        elif outcome in (WIN, HALF_WIN, CASHED_OUT) and pl > 0:
+        elif outcome in (WIN, HALF_WIN, CASHED_OUT, PLACED) and pl > 0:
             wins += 1
         elif outcome == VOID:
             voids += 1

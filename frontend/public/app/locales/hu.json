@@ -56,7 +56,8 @@
     "loss": "Veszteség",
     "void": "Üres",
     "half_win": "Fél győzelem",
-    "half_loss": "Fél veszteség"
+    "half_loss": "Fél veszteség",
+    "placed": "Elhelyezve"
   },
   "form": {
     "recordTitle": "Rögzítsen fogadást",

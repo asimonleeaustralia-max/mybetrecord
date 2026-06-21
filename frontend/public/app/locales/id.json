@@ -56,7 +56,8 @@
     "loss": "Kehilangan",
     "void": "Ruang kosong",
     "half_win": "Setengah menang",
-    "half_loss": "Setengah kerugian"
+    "half_loss": "Setengah kerugian",
+    "placed": "Ditempatkan"
   },
   "form": {
     "recordTitle": "Rekam taruhan",

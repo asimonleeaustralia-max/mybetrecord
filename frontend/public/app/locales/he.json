@@ -56,7 +56,8 @@
     "loss": "הֶפסֵד",
     "void": "בָּטֵל",
     "half_win": "חצי ניצחון",
-    "half_loss": "חצי הפסד"
+    "half_loss": "חצי הפסד",
+    "placed": "מוּצָב"
   },
   "form": {
     "recordTitle": "הקלט הימור",

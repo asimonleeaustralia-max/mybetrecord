@@ -56,7 +56,8 @@
     "loss": "Ferlies",
     "void": "Void",
     "half_win": "Heal winst",
-    "half_loss": "Heal ferlies"
+    "half_loss": "Heal ferlies",
+    "placed": "Pleatst"
   },
   "form": {
     "recordTitle": "Record in weddenskip",

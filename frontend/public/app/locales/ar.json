@@ -56,7 +56,8 @@
     "loss": "خسارة",
     "void": "فارغ",
     "half_win": "نصف الفوز",
-    "half_loss": "نصف الخسارة"
+    "half_loss": "نصف الخسارة",
+    "placed": "وضعت"
   },
   "form": {
     "recordTitle": "سجل رهانًا",

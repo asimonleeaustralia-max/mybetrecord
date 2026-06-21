@@ -56,7 +56,8 @@
     "loss": "손실",
     "void": "무효의",
     "half_win": "절반의 승리",
-    "half_loss": "절반 손실"
+    "half_loss": "절반 손실",
+    "placed": "배치됨"
   },
   "form": {
     "recordTitle": "베팅을 기록하세요",

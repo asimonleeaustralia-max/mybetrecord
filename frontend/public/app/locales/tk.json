@@ -56,7 +56,8 @@
     "loss": "Ossitgi",
     "void": "Boş",
     "half_win": "Halfarym ýeňiş",
-    "half_loss": "Halfarym ýitgi"
+    "half_loss": "Halfarym ýitgi",
+    "placed": "Acederleşdirildi"
   },
   "form": {
     "recordTitle": "Jedel ýazga alyň",

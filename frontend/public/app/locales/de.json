@@ -56,7 +56,8 @@
     "loss": "Verlust",
     "void": "Leere",
     "half_win": "Halber Sieg",
-    "half_loss": "Halber Verlust"
+    "half_loss": "Halber Verlust",
+    "placed": "Platziert"
   },
   "form": {
     "recordTitle": "Zeichnen Sie eine Wette auf",

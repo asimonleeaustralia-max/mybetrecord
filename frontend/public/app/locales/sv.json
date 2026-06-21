@@ -56,7 +56,8 @@
     "loss": "Förlust",
     "void": "Ogiltig",
     "half_win": "Halv vinst",
-    "half_loss": "Halv förlust"
+    "half_loss": "Halv förlust",
+    "placed": "Placerad"
   },
   "form": {
     "recordTitle": "Spela in en satsning",

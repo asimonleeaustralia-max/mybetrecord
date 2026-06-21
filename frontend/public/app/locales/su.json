@@ -56,7 +56,8 @@
     "loss": "Karugian",
     "void": "batal",
     "half_win": "Satengah meunang",
-    "half_loss": "Satengah rugi"
+    "half_loss": "Satengah rugi",
+    "placed": "Ditempatkeun"
   },
   "form": {
     "recordTitle": "Ngarekam alungan hiji",

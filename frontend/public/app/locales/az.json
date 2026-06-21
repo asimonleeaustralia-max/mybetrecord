@@ -56,7 +56,8 @@
     "loss": "itki",
     "void": "Boş",
     "half_win": "Yarım qalib",
-    "half_loss": "Yarım itki"
+    "half_loss": "Yarım itki",
+    "placed": "yerləşdirilmiş"
   },
   "form": {
     "recordTitle": "Bahis qeyd edin",

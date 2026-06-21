@@ -56,7 +56,8 @@
     "loss": "Pralaimėjimas",
     "void": "Tuščia",
     "half_win": "Pusė pergalė",
-    "half_loss": "Pusė nuostolio"
+    "half_loss": "Pusė nuostolio",
+    "placed": "Padėtas"
   },
   "form": {
     "recordTitle": "Įrašykite statymą",

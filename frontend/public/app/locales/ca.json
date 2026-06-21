@@ -56,7 +56,8 @@
     "loss": "Pèrdua",
     "void": "Buit",
     "half_win": "Mitja victòria",
-    "half_loss": "Mitja pèrdua"
+    "half_loss": "Mitja pèrdua",
+    "placed": "Col·locat"
   },
   "form": {
     "recordTitle": "Grava una aposta",

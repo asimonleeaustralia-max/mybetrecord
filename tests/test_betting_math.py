@@ -129,6 +129,12 @@ def test_each_way_placed_only():
     assert pl == pytest.approx(0.0)
 
 
+def test_each_way_outcome_placed():
+    pl = bm.settle_profit(stake=100, decimal_odds=5.0, outcome="placed",
+                          each_way=True, place_fraction=0.25)
+    assert pl == pytest.approx(0.0)
+
+
 # ------------------------------- metrics --------------------------------- #
 
 def test_portfolio_metrics():

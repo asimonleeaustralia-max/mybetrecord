@@ -56,7 +56,8 @@
     "loss": "تاوان",
     "void": "باطل",
     "half_win": "نیمه بریا",
-    "half_loss": "نیم زیان"
+    "half_loss": "نیم زیان",
+    "placed": "کیښودل"
   },
   "form": {
     "recordTitle": "یو شرط ثبت کړئ",

@@ -56,7 +56,8 @@
     "loss": "Perda",
     "void": "Baleiro",
     "half_win": "Media vitoria",
-    "half_loss": "Media perda"
+    "half_loss": "Media perda",
+    "placed": "Colocado"
   },
   "form": {
     "recordTitle": "Gravar unha aposta",

@@ -56,7 +56,8 @@
     "loss": "Pierderi",
     "void": "Vidul",
     "half_win": "Jumătate de victorie",
-    "half_loss": "Jumătate de pierdere"
+    "half_loss": "Jumătate de pierdere",
+    "placed": "Plasat"
   },
   "form": {
     "recordTitle": "Înregistrați un pariu",

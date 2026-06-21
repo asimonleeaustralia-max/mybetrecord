@@ -56,7 +56,8 @@
     "loss": "Cailleadh",
     "void": "Falamh",
     "half_win": "Bhuannaich leth",
-    "half_loss": "Half call"
+    "half_loss": "Half call",
+    "placed": "Air a chur"
   },
   "form": {
     "recordTitle": "Clàraich geall",
