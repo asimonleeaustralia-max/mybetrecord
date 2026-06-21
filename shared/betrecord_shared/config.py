@@ -63,11 +63,13 @@ class Settings:
     environment: str = os.getenv("ENVIRONMENT", "development")
 
     # Comma-separated emails that are always granted admin on login/startup.
-    bootstrap_admin_emails: list[str] = [
-        e.strip().lower()
-        for e in os.getenv("BOOTSTRAP_ADMIN_EMAILS", "asimonlee@gmail.com").split(",")
-        if e.strip()
-    ]
+    @property
+    def bootstrap_admin_emails(self) -> list[str]:
+        return [
+            e.strip().lower()
+            for e in os.getenv("BOOTSTRAP_ADMIN_EMAILS", "asimonlee@gmail.com").split(",")
+            if e.strip()
+        ]
 
 
 @lru_cache

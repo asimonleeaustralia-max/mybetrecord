@@ -34,7 +34,7 @@ def test_password_reset_email_url_points_at_spa(clients):
     r = clients["auth"].post("/auth/register", json={"email": email, "password": "password123"})
     assert r.status_code == 201
 
-    with patch("app.main.send_password_reset_email") as send_email:
+    with patch("betrecord_shared.email.send_password_reset_email") as send_email:
         r = clients["auth"].post("/auth/password-reset/request", json={"email": email})
         assert r.status_code == 200
         send_email.assert_called_once()
@@ -645,7 +645,7 @@ def test_admin_stats_users_and_events(clients, auth_headers):
     assert body["total_users"] >= 2
     assert body["logins_today"] >= 2
 
-    users = clients["auth"].get("/auth/admin/users", headers=admin_headers)
+    users = clients["auth"].get("/auth/admin/users?limit=200", headers=admin_headers)
     assert users.status_code == 200
     emails = {u["email"] for u in users.json()}
     assert "admin@admin.com" in emails
