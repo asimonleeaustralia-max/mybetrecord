@@ -29,20 +29,19 @@ def test_login_rejects_bad_password(clients, auth_headers):
     assert r.status_code == 401
 
 
-def test_password_reset_email_url_points_at_spa(clients):
+def test_password_reset_email_url_points_at_spa(clients, capsys):
     email = "reset-url@example.com"
     r = clients["auth"].post("/auth/register", json={"email": email, "password": "password123"})
     assert r.status_code == 201
 
-    with patch("betrecord_shared.email.send_password_reset_email") as send_email:
-        r = clients["auth"].post("/auth/password-reset/request", json={"email": email})
-        assert r.status_code == 200
-        send_email.assert_called_once()
-        reset_url = send_email.call_args[0][1]
-        assert "/app/#/reset-password/" in reset_url
-        token_from_response = r.json().get("reset_token")
-        if token_from_response:
-            assert reset_url.endswith(f"/{token_from_response}")
+    r = clients["auth"].post("/auth/password-reset/request", json={"email": email})
+    assert r.status_code == 200
+    token_from_response = r.json().get("reset_token")
+    assert token_from_response, "development mode should return reset_token for tests"
+
+    # Development mode prints the reset link when SMTP is not configured.
+    output = capsys.readouterr().out
+    assert f"/app/#/reset-password/{token_from_response}" in output
 
 
 def test_password_reset_flow(clients):
