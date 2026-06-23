@@ -173,7 +173,7 @@ input:focus, select:focus, textarea:focus {
   outline-offset: 1px;
   border-color: var(--brass);
 }
-.check { flex-direction: row; align-items: center; gap: 8px; }
+.check { display: flex; flex-direction: row; align-items: center; gap: 8px; }
 .check input { width: auto; }
 
 /* ---------- buttons ---------- */
