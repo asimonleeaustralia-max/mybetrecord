@@ -101,6 +101,7 @@ def register(
 
     for row in db.scalars(select(PendingRegistration).where(PendingRegistration.email == email)):
         db.delete(row)
+    db.flush()
 
     raw_token, token_hash = generate_password_reset_token()
     expires_at = datetime.now(timezone.utc) + timedelta(minutes=settings.email_verification_minutes)

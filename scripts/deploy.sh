@@ -32,6 +32,7 @@ SERVICES=(auth bets reports payments)
 SKIP_TESTS=0
 BOOTSTRAP=0
 DRY_RUN=0
+INFRA_ONLY=0
 
 usage() {
   cat <<'EOF'
@@ -39,6 +40,7 @@ Deploy mybetrecord to Azure.
 
 Options:
   --skip-tests     Skip pytest before deploy
+  --infra-only     Update Container Apps env/secrets only (no image rebuild)
   --bootstrap      First deploy: provision infra, push images, redeploy apps
   --dry-run        Print planned steps without executing az commands
   --tag TAG        Image tag (default: short git SHA, or "latest")
@@ -64,6 +66,7 @@ EOF
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --skip-tests) SKIP_TESTS=1; shift ;;
+    --infra-only) INFRA_ONLY=1; shift ;;
     --bootstrap) BOOTSTRAP=1; shift ;;
     --dry-run) DRY_RUN=1; shift ;;
     --tag)
@@ -321,7 +324,10 @@ ensure_az
 run_tests
 ensure_resource_group
 
-if [[ "$BOOTSTRAP" -eq 1 ]]; then
+if [[ "$INFRA_ONLY" -eq 1 ]]; then
+  echo "Infra-only deploy (no image rebuild)..."
+  deploy_bicep "$IMAGE_TAG"
+elif [[ "$BOOTSTRAP" -eq 1 ]]; then
   echo "Bootstrap: provisioning infrastructure..."
   deploy_bicep "$IMAGE_TAG"
   build_and_push_images
