@@ -544,11 +544,17 @@ function bindEvents() {
   if (registerForm) registerForm.addEventListener("submit", async e => {
     e.preventDefault();
     const f = Object.fromEntries(new FormData(e.target));
+    if (f.password !== f.password_confirm) {
+      showAuth();
+      authError(t("auth.passwordMismatch"));
+      return;
+    }
     if (!isValidPassword(f.password)) {
       showAuth();
       authError(t("auth.passwordInvalid"));
       return;
     }
+    delete f.password_confirm;
     if (!f.display_name) delete f.display_name;
     f.timezone = browserTimeZone();
     $("#authError").hidden = true;
