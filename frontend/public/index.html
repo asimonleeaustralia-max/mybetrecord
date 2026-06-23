@@ -82,7 +82,7 @@
         "name": "Is mybetrecord free?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Create a free account to start logging bets. Premium features may be offered later; core ledger and reporting are available at launch."
+          "text": "Yes. The Free plan includes the full ledger, reports, exports, and API — up to 5 bets and 5 multis per day. Pro removes the daily cap for about $5 USD per month."
         }
       },
       {
@@ -106,6 +106,7 @@
           <span class="visually-hidden" data-i18n="home.language">Language</span>
           <select id="localeSelect" class="m-locale" data-i18n-attr="aria-label" data-i18n="home.language"></select>
         </label>
+        <a href="#pricing" data-i18n="home.pricing">Pricing</a>
         <a href="/blog/" data-i18n="home.blog">Blog</a>
         <a href="/login" data-i18n="auth.signIn">Sign in</a>
         <a class="m-btn m-btn--primary" href="/app/#/register" data-i18n="auth.createAccount">Create account</a>
@@ -152,7 +153,55 @@
       </div>
     </section>
 
-    <section class="m-section m-section--alt">
+    <section id="pricing" class="m-section m-section--alt">
+      <h2 data-i18n="home.pricingTitle">Simple, honest pricing</h2>
+      <p class="sub" data-i18n="home.pricingSub">Every feature below is included on both plans. Pro removes the daily logging cap — about $5 USD per month in your local currency.</p>
+      <div class="m-pricing">
+        <article class="m-pricing__card">
+          <h3 class="m-pricing__tier" data-i18n="home.pricingFreeName">Free</h3>
+          <p class="m-pricing__price" data-i18n="home.pricingFreePrice">Free</p>
+          <p class="m-pricing__limit" data-i18n="home.pricingFreeLimit">Up to 5 bets and 5 multis per day</p>
+          <ul class="m-pricing__features">
+            <li data-i18n="home.pricingFeatureLedger">Full bet ledger — events, selections, stakes, outcomes &amp; P/L</li>
+            <li data-i18n="home.pricingFeatureOdds">All odds formats — decimal, American, fractional &amp; Asian</li>
+            <li data-i18n="home.pricingFeatureTypes">Every bet type — win, each-way, over-under, multis &amp; handicap</li>
+            <li data-i18n="home.pricingFeatureKelly">Kelly stake sizing from your bankroll &amp; stated edge</li>
+            <li data-i18n="home.pricingFeatureReports">ROI, yield, strike rate &amp; cumulative equity curve</li>
+            <li data-i18n="home.pricingFeatureBreakdowns">Breakdowns by sport, bet type, tipster &amp; bookmaker</li>
+            <li data-i18n="home.pricingFeatureClv">Closing line value (CLV) tracking</li>
+            <li data-i18n="home.pricingFeatureEdge">Model &amp; personal implied odds with per-unit edge</li>
+            <li data-i18n="home.pricingFeatureSettlement">Cash-out amounts &amp; winnings deductions on winners</li>
+            <li data-i18n="home.pricingFeatureExport">CSV, Excel &amp; JSON export</li>
+            <li data-i18n="home.pricingFeatureApi">API keys for scripts &amp; automation</li>
+            <li data-i18n="home.pricingFeatureLocale">Multi-language interface &amp; timezone support</li>
+          </ul>
+          <a class="m-btn m-btn--ghost m-pricing__cta" href="/app/#/register" data-i18n="home.pricingFreeCta">Start free</a>
+        </article>
+        <article class="m-pricing__card m-pricing__card--pro">
+          <h3 class="m-pricing__tier" data-i18n="home.pricingProName">Pro</h3>
+          <p class="m-pricing__price" id="proPrice"></p>
+          <p class="m-pricing__limit" data-i18n="home.pricingProLimit">Unlimited bets and multis every day</p>
+          <ul class="m-pricing__features">
+            <li data-i18n="home.pricingFeatureLedger">Full bet ledger — events, selections, stakes, outcomes &amp; P/L</li>
+            <li data-i18n="home.pricingFeatureOdds">All odds formats — decimal, American, fractional &amp; Asian</li>
+            <li data-i18n="home.pricingFeatureTypes">Every bet type — win, each-way, over-under, multis &amp; handicap</li>
+            <li data-i18n="home.pricingFeatureKelly">Kelly stake sizing from your bankroll &amp; stated edge</li>
+            <li data-i18n="home.pricingFeatureReports">ROI, yield, strike rate &amp; cumulative equity curve</li>
+            <li data-i18n="home.pricingFeatureBreakdowns">Breakdowns by sport, bet type, tipster &amp; bookmaker</li>
+            <li data-i18n="home.pricingFeatureClv">Closing line value (CLV) tracking</li>
+            <li data-i18n="home.pricingFeatureEdge">Model &amp; personal implied odds with per-unit edge</li>
+            <li data-i18n="home.pricingFeatureSettlement">Cash-out amounts &amp; winnings deductions on winners</li>
+            <li data-i18n="home.pricingFeatureExport">CSV, Excel &amp; JSON export</li>
+            <li data-i18n="home.pricingFeatureApi">API keys for scripts &amp; automation</li>
+            <li data-i18n="home.pricingFeatureLocale">Multi-language interface &amp; timezone support</li>
+          </ul>
+          <a class="m-btn m-btn--primary m-pricing__cta" href="/app/#/register" data-i18n="home.pricingProCta">Go Pro</a>
+        </article>
+      </div>
+      <p class="m-pricing__note" id="pricingNote" data-i18n="home.pricingNote">Pro is roughly $5 USD per month, shown in your local currency. Cancel anytime from Settings.</p>
+    </section>
+
+    <section class="m-section">
       <h2 data-i18n="home.section2Title">Guides from the mybetrecord blog</h2>
       <p class="sub" data-i18n="home.section2Sub">Learn the maths behind the metrics — then track them in your ledger.</p>
       <div class="m-features">
@@ -211,6 +260,7 @@
 
     <footer class="m-footer">
       <nav>
+        <a href="#pricing" data-i18n="home.pricing">Pricing</a>
         <a href="/blog/" data-i18n="home.blog">Blog</a>
         <a href="/privacy" data-i18n="home.privacy">Privacy</a>
         <a href="/terms" data-i18n="home.terms">Terms</a>

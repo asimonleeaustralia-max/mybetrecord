@@ -84,6 +84,87 @@ a:hover { text-decoration: none; }
 .m-feature h3 { font-family: var(--display); font-size: 1.05rem; margin: 0 0 8px; }
 .m-feature p { margin: 0; color: var(--ink-soft); font-size: .92rem; }
 
+.m-pricing {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  align-items: stretch;
+}
+.m-pricing__card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 28px 26px 24px;
+  display: flex;
+  flex-direction: column;
+}
+.m-pricing__card--pro {
+  border-color: #d4b86a;
+  box-shadow: 0 8px 28px rgba(129, 90, 18, .08);
+}
+.m-pricing__tier {
+  font-family: var(--display);
+  font-size: 1.1rem;
+  margin: 0 0 6px;
+  letter-spacing: -.01em;
+}
+.m-pricing__price {
+  font-family: var(--display);
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 6px;
+  line-height: 1.1;
+  color: var(--ink);
+}
+.m-pricing__card--pro .m-pricing__price { color: var(--brass-deep); }
+.m-pricing__limit {
+  margin: 0 0 18px;
+  font-size: .88rem;
+  font-weight: 600;
+  color: var(--brass-deep);
+}
+.m-pricing__features {
+  margin: 0 0 22px;
+  padding: 0;
+  list-style: none;
+  flex: 1;
+}
+.m-pricing__features li {
+  position: relative;
+  padding: 0 0 10px 22px;
+  font-size: .88rem;
+  color: var(--ink-soft);
+  line-height: 1.45;
+}
+.m-pricing__features li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: var(--brass);
+  font-weight: 700;
+}
+.m-pricing__cta {
+  align-self: flex-start;
+  margin-top: auto;
+}
+.m-pricing__card .m-btn--ghost {
+  color: var(--ink);
+  border-color: var(--line);
+}
+.m-pricing__card .m-btn--ghost:hover {
+  border-color: var(--brass);
+  color: var(--brass-deep);
+}
+.m-pricing__note {
+  margin: 28px 0 0;
+  text-align: center;
+  font-size: .85rem;
+  color: var(--muted);
+  max-width: 560px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .m-faq { display: grid; gap: 12px; }
 .m-faq details {
   background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 18px;
