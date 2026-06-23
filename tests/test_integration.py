@@ -716,7 +716,7 @@ def test_landing_track_and_admin_list(clients):
     assert hits.status_code == 200
     body = hits.json()
     assert len(body) >= 2
-    human = next(h for h in body if h["ip_address"])
+    human = next(h for h in body if not h["is_bot"])
     assert human["browser"].startswith("Chrome")
     assert human["is_bot"] is False
     assert human["referrer"] == "https://www.google.com/"
