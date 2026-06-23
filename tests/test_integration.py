@@ -9,18 +9,68 @@ import pytest
 from betrecord_shared.config import get_settings
 
 
+from helpers import register_and_verify
+
+
 # ------------------------------- auth ------------------------------------- #
 
 def test_register_login_me(clients):
     email = "login-flow@example.com"
-    r = clients["auth"].post("/auth/register", json={"email": email, "password": "password123"})
-    assert r.status_code == 201
+    register_and_verify(clients, email)
     r = clients["auth"].post("/auth/login", json={"email": email, "password": "password123"})
     assert r.status_code == 200
     headers = {"Authorization": f"Bearer {r.json()['access_token']}"}
     me = clients["auth"].get("/auth/me", headers=headers)
     assert me.status_code == 200
     assert me.json()["email"] == email
+
+
+def test_register_requires_email_verification(clients):
+    email = "pending-user@example.com"
+    password = "password123"
+    r = clients["auth"].post("/auth/register", json={"email": email, "password": password})
+    assert r.status_code == 200
+    assert "verification_token" in r.json()
+
+    r = clients["auth"].post("/auth/login", json={"email": email, "password": password})
+    assert r.status_code == 403
+    assert "verify" in r.json()["detail"].lower()
+
+    me = clients["auth"].get(
+        "/auth/me",
+        headers={"Authorization": "Bearer not-a-real-token"},
+    )
+    assert me.status_code == 401
+
+
+def test_register_verify_creates_account(clients):
+    email = "verify-flow@example.com"
+    r = clients["auth"].post("/auth/register", json={"email": email, "password": "password123"})
+    assert r.status_code == 200
+    verify_token = r.json()["verification_token"]
+
+    r = clients["auth"].post("/auth/register/verify", json={"token": verify_token})
+    assert r.status_code == 200
+    headers = {"Authorization": f"Bearer {r.json()['access_token']}"}
+    me = clients["auth"].get("/auth/me", headers=headers)
+    assert me.status_code == 200
+    assert me.json()["email"] == email
+
+
+def test_register_verify_rejects_invalid_token(clients):
+    r = clients["auth"].post("/auth/register/verify", json={"token": "not-a-valid-token"})
+    assert r.status_code == 400
+
+
+def test_register_verification_email_url_points_at_spa(clients, capsys):
+    email = "verify-url@example.com"
+    r = clients["auth"].post("/auth/register", json={"email": email, "password": "password123"})
+    assert r.status_code == 200
+    token_from_response = r.json().get("verification_token")
+    assert token_from_response, "development mode should return verification_token for tests"
+
+    output = capsys.readouterr().out
+    assert f"/app/#/verify-email/{token_from_response}" in output
 
 
 def test_login_rejects_bad_password(clients, auth_headers):
@@ -31,8 +81,7 @@ def test_login_rejects_bad_password(clients, auth_headers):
 
 def test_password_reset_email_url_points_at_spa(clients, capsys):
     email = "reset-url@example.com"
-    r = clients["auth"].post("/auth/register", json={"email": email, "password": "password123"})
-    assert r.status_code == 201
+    register_and_verify(clients, email)
 
     r = clients["auth"].post("/auth/password-reset/request", json={"email": email})
     assert r.status_code == 200
@@ -48,8 +97,7 @@ def test_password_reset_flow(clients):
     email = "reset-flow@example.com"
     password = "password123"
     new_password = "new-password456"
-    r = clients["auth"].post("/auth/register", json={"email": email, "password": password})
-    assert r.status_code == 201
+    register_and_verify(clients, email, password=password)
 
     r = clients["auth"].post("/auth/password-reset/request", json={"email": email})
     assert r.status_code == 200
@@ -118,12 +166,12 @@ def test_settings_update(clients, auth_headers):
 
 def test_register_captures_timezone(clients):
     email = "tz-user@example.com"
-    r = clients["auth"].post(
-        "/auth/register",
-        json={"email": email, "password": "password123", "timezone": "Europe/London"},
+    token = register_and_verify(
+        clients,
+        email,
+        timezone="Europe/London",
     )
-    assert r.status_code == 201, r.text
-    headers = {"Authorization": f"Bearer {r.json()['access_token']}"}
+    headers = {"Authorization": f"Bearer {token}"}
     me = clients["auth"].get("/auth/me", headers=headers)
     assert me.status_code == 200
     assert me.json()["timezone"] == "Europe/London"
@@ -131,9 +179,8 @@ def test_register_captures_timezone(clients):
 
 def test_register_defaults_timezone_to_utc(clients):
     email = "tz-default@example.com"
-    r = clients["auth"].post("/auth/register", json={"email": email, "password": "password123"})
-    assert r.status_code == 201, r.text
-    headers = {"Authorization": f"Bearer {r.json()['access_token']}"}
+    token = register_and_verify(clients, email)
+    headers = {"Authorization": f"Bearer {token}"}
     me = clients["auth"].get("/auth/me", headers=headers)
     assert me.json()["timezone"] == "UTC"
 
@@ -425,7 +472,8 @@ def test_cannot_touch_another_users_bet(clients, auth_headers):
     headers_a, _ = auth_headers
     bet = _make_bet(clients, headers_a, odds=2.0)
     # second user
-    r = clients["auth"].post("/auth/register", json={"email": "intruder@example.com", "password": "password123"})
+    register_and_verify(clients, "intruder@example.com")
+    r = clients["auth"].post("/auth/login", json={"email": "intruder@example.com", "password": "password123"})
     headers_b = {"Authorization": f"Bearer {r.json()['access_token']}"}
     assert clients["bets"].get(f"/bets/{bet['id']}", headers=headers_b).status_code == 404
     assert clients["bets"].delete(f"/bets/{bet['id']}", headers=headers_b).status_code == 404

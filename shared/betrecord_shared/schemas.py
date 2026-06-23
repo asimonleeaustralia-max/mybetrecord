@@ -67,6 +67,15 @@ class TokenResponse(BaseModel):
     expires_in: int
 
 
+class RegisterResponse(BaseModel):
+    message: str
+    verification_token: Optional[str] = None  # populated in non-production for local testing
+
+
+class VerifyEmailConfirm(BaseModel):
+    token: str = Field(min_length=16, max_length=256)
+
+
 class PasswordResetRequest(BaseModel):
     email: EmailStr
 

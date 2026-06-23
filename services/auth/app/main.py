@@ -12,9 +12,9 @@ from sqlalchemy.orm import Session
 
 from betrecord_shared.config import get_settings
 from betrecord_shared.database import get_db, init_db
-from betrecord_shared.email import send_password_reset_email
+from betrecord_shared.email import send_password_reset_email, send_verification_email
 from betrecord_shared.events import log_event
-from betrecord_shared.models import ApiKey, AppEvent, Bet, PasswordResetToken, User
+from betrecord_shared.models import ApiKey, AppEvent, Bet, PasswordResetToken, PendingRegistration, User
 from betrecord_shared.schemas import (
     AdminAddIn,
     AdminStatsOut,
@@ -26,11 +26,13 @@ from betrecord_shared.schemas import (
     PasswordResetConfirm,
     PasswordResetRequest,
     PasswordResetResponse,
+    RegisterResponse,
     SettingsUpdate,
     TokenResponse,
     UserLogin,
     UserOut,
     UserRegister,
+    VerifyEmailConfirm,
 )
 from betrecord_shared.seed import promote_bootstrap_admin
 from betrecord_shared.security import (
@@ -87,29 +89,96 @@ def health() -> dict:
     return {"status": "ok", "service": "auth"}
 
 
-@app.post("/auth/register", response_model=TokenResponse, status_code=201)
+@app.post("/auth/register", response_model=RegisterResponse)
 def register(
     payload: UserRegister,
     request: Request,
     db: Session = Depends(get_db),
-) -> TokenResponse:
-    existing = db.scalar(select(User).where(User.email == payload.email.lower()))
-    if existing:
+) -> RegisterResponse:
+    email = payload.email.lower()
+    if db.scalar(select(User).where(User.email == email)):
         raise HTTPException(status.HTTP_409_CONFLICT, "Email already registered")
+
+    for row in db.scalars(select(PendingRegistration).where(PendingRegistration.email == email)):
+        db.delete(row)
+
+    raw_token, token_hash = generate_password_reset_token()
+    expires_at = datetime.now(timezone.utc) + timedelta(minutes=settings.email_verification_minutes)
+    db.add(
+        PendingRegistration(
+            email=email,
+            password_hash=hash_password(payload.password),
+            display_name=payload.display_name,
+            timezone=payload.timezone or "UTC",
+            token_hash=token_hash,
+            expires_at=expires_at,
+        )
+    )
+    send_verification_email(
+        email,
+        _verification_url(raw_token),
+        settings.email_verification_minutes,
+    )
+    log_event(
+        db,
+        "register_pending",
+        detail=email,
+        ip_address=_client_ip(request),
+    )
+    db.commit()
+
+    response = RegisterResponse(
+        message="Check your email for a verification link to activate your account."
+    )
+    if settings.environment != "production":
+        response.verification_token = raw_token
+    return response
+
+
+def _verification_url(raw_token: str) -> str:
+    base = settings.frontend_url.rstrip("/")
+    return f"{base}/app/#/verify-email/{raw_token}"
+
+
+@app.post("/auth/register/verify", response_model=TokenResponse)
+def verify_registration(
+    payload: VerifyEmailConfirm,
+    request: Request,
+    db: Session = Depends(get_db),
+) -> TokenResponse:
+    token_hash = hash_password_reset_token(payload.token)
+    now = datetime.now(timezone.utc)
+    pending = db.scalar(
+        select(PendingRegistration).where(PendingRegistration.token_hash == token_hash)
+    )
+    ip = _client_ip(request)
+
+    if not pending or _as_utc(pending.expires_at) <= now:
+        log_event(db, "register_verify_failed", detail="invalid or expired token", ip_address=ip)
+        db.commit()
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Invalid or expired verification link")
+
+    if db.scalar(select(User).where(User.email == pending.email)):
+        db.delete(pending)
+        log_event(db, "register_verify_failed", detail="email already registered", ip_address=ip)
+        db.commit()
+        raise HTTPException(status.HTTP_409_CONFLICT, "Email already registered")
+
     user = User(
-        email=payload.email.lower(),
-        password_hash=hash_password(payload.password),
-        display_name=payload.display_name,
-        timezone=payload.timezone or "UTC",
+        email=pending.email,
+        password_hash=pending.password_hash,
+        display_name=pending.display_name,
+        timezone=pending.timezone,
     )
     db.add(user)
+    db.delete(pending)
     promote_bootstrap_admin(user, db)
     log_event(
         db,
         "register",
         user_id=user.id,
         detail=user.email,
-        ip_address=_client_ip(request),
+        ip_address=ip,
     )
     db.commit()
     db.refresh(user)
@@ -119,14 +188,28 @@ def register(
 
 @app.post("/auth/login", response_model=TokenResponse)
 def login(payload: UserLogin, request: Request, db: Session = Depends(get_db)) -> TokenResponse:
-    user = db.scalar(select(User).where(User.email == payload.email.lower()))
+    email = payload.email.lower()
+    user = db.scalar(select(User).where(User.email == email))
     ip = _client_ip(request)
     if not user or not verify_password(payload.password, user.password_hash):
+        pending = db.scalar(select(PendingRegistration).where(PendingRegistration.email == email))
+        if pending and verify_password(payload.password, pending.password_hash):
+            log_event(
+                db,
+                "login_blocked",
+                detail="email not verified",
+                ip_address=ip,
+            )
+            db.commit()
+            raise HTTPException(
+                status.HTTP_403_FORBIDDEN,
+                "Please verify your email before signing in. Check your inbox for the verification link.",
+            )
         log_event(
             db,
             "login_failed",
             user_id=user.id if user else None,
-            detail=payload.email.lower(),
+            detail=email,
             ip_address=ip,
         )
         db.commit()

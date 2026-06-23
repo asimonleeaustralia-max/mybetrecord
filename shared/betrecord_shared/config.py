@@ -18,6 +18,7 @@ class Settings:
     jwt_algorithm: str = os.getenv("JWT_ALGORITHM", "HS256")
     access_token_minutes: int = int(os.getenv("ACCESS_TOKEN_MINUTES", "1440"))
     password_reset_minutes: int = int(os.getenv("PASSWORD_RESET_MINUTES", "60"))
+    email_verification_minutes: int = int(os.getenv("EMAIL_VERIFICATION_MINUTES", "1440"))
     frontend_url: str = os.getenv("FRONTEND_URL", "http://localhost:8080")
 
     # Email (optional — password reset falls back to logging in development)

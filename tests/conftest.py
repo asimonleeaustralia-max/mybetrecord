@@ -29,6 +29,8 @@ from starlette.testclient import TestClient
 
 from betrecord_shared import database
 
+from helpers import register_and_verify
+
 # One in-memory DB shared by every service app.
 _engine = create_engine(
     "sqlite+pysqlite:///:memory:",
@@ -70,9 +72,5 @@ def clients() -> dict[str, TestClient]:
 def auth_headers(clients):
     """Register a fresh user and return (headers, email)."""
     email = f"user-{uuid.uuid4().hex[:10]}@example.com"
-    r = clients["auth"].post(
-        "/auth/register", json={"email": email, "password": "password123"}
-    )
-    assert r.status_code == 201, r.text
-    token = r.json()["access_token"]
+    token = register_and_verify(clients, email)
     return {"Authorization": f"Bearer {token}"}, email

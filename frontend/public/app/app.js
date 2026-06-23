@@ -392,11 +392,17 @@ function getResetTokenFromHash() {
   return parts[0] === "reset-password" && parts[1] ? parts[1] : null;
 }
 
+function getVerifyTokenFromHash() {
+  const parts = (location.hash || "").slice(1).split("/").filter(Boolean);
+  return parts[0] === "verify-email" && parts[1] ? parts[1] : null;
+}
+
 function getAuthRouteFromHash() {
   const parts = (location.hash || "").slice(1).split("/").filter(Boolean);
   const route = parts[0] || "login";
   if (route === "forgot-password") return "forgot";
   if (route === "reset-password") return "reset";
+  if (route === "verify-email") return "verify";
   if (route === "register") return "register";
   return "login";
 }
@@ -529,8 +535,8 @@ function bindEvents() {
       const { access_token } = await api("/auth/login", { method: "POST", body: f, allow401: true });
       setToken(access_token);
       await boot({ loading: true });
-    } catch {
-      showAuth(t("auth.loginFailed"));
+    } catch (err) {
+      showAuth(err.message || t("auth.loginFailed"));
     }
   });
 
@@ -545,11 +551,14 @@ function bindEvents() {
     }
     if (!f.display_name) delete f.display_name;
     f.timezone = browserTimeZone();
+    $("#authError").hidden = true;
+    $("#authSuccess").hidden = true;
     try {
       showAuthLoading();
-      const { access_token } = await api("/auth/register", { method: "POST", body: f });
-      setToken(access_token);
-      await boot({ loading: true });
+      const res = await api("/auth/register", { method: "POST", body: f, allow401: true });
+      location.hash = "#/login";
+      showAuth(null, { success: res.message || t("auth.verificationLinkSent") });
+      e.target.reset();
     } catch (err) {
       const msg = err.message === "Email already registered"
         ? t("auth.emailAlreadyRegistered")
@@ -623,6 +632,27 @@ function authError(msg) {
   if (!el) return;
   el.textContent = msg;
   el.hidden = false;
+}
+
+async function verifyEmailFromHash() {
+  const token = getVerifyTokenFromHash();
+  if (!token) return false;
+  showAuthLoading();
+  try {
+    const { access_token } = await api("/auth/register/verify", {
+      method: "POST",
+      body: { token },
+      allow401: true,
+    });
+    setToken(access_token);
+    location.hash = "#/bets";
+    await boot({ loading: true });
+    return true;
+  } catch (err) {
+    location.hash = "#/login";
+    showAuth(err.message || t("auth.verificationLinkInvalid"));
+    return true;
+  }
 }
 
 /* ------------------------------- ticker ------------------------------- */
@@ -2361,6 +2391,10 @@ async function start() {
       await i18n.initI18n(i18n.getLoginLocale());
       document.title = t("meta.title");
       i18n.applyI18n(document);
+      if (getVerifyTokenFromHash()) {
+        await verifyEmailFromHash();
+        return;
+      }
       if (!location.hash || location.hash === "#/bets") location.hash = "#/login";
       showAuth();
     }

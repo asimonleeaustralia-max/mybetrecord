@@ -26,7 +26,10 @@
     "passwordMismatch": "Passwords do not match",
     "resetLinkSent": "If an account exists for that email, a password reset link has been sent.",
     "passwordUpdated": "Password updated. You can sign in with your new password.",
-    "resetLinkInvalid": "This reset link is invalid or has expired."
+    "resetLinkInvalid": "This reset link is invalid or has expired.",
+    "verificationLinkSent": "Check your email for a verification link to activate your account.",
+    "verificationLinkInvalid": "This verification link is invalid or has expired.",
+    "emailNotVerified": "Please verify your email before signing in. Check your inbox for the verification link."
   },
   "nav": {
     "bets": "Bets",

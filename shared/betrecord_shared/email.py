@@ -34,6 +34,18 @@ def send_email(to: str, subject: str, body_text: str) -> None:
     logger.warning("SMTP not configured; email to %s was not sent", to)
 
 
+def send_verification_email(to: str, verify_url: str, expires_minutes: int) -> None:
+    subject = "Verify your mybetrecord email address"
+    body = (
+        "Thanks for signing up for mybetrecord.\n\n"
+        f"Open this link to verify your email and activate your account "
+        f"(valid for {expires_minutes} minutes):\n"
+        f"{verify_url}\n\n"
+        "If you did not create an account, you can ignore this email.\n"
+    )
+    send_email(to, subject, body)
+
+
 def send_password_reset_email(to: str, reset_url: str, expires_minutes: int) -> None:
     subject = "Reset your mybetrecord password"
     body = (
