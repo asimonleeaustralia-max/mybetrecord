@@ -88,6 +88,22 @@ def test_password_reset_confirm_rejects_invalid_token(clients):
     assert r.status_code == 400
 
 
+def test_register_rejects_weak_password(clients):
+    r = clients["auth"].post(
+        "/auth/register",
+        json={"email": "weak@example.com", "password": "password"},
+    )
+    assert r.status_code == 422
+
+
+def test_password_reset_confirm_rejects_weak_password(clients):
+    r = clients["auth"].post(
+        "/auth/password-reset/confirm",
+        json={"token": "a" * 32, "password": "password"},
+    )
+    assert r.status_code == 422
+
+
 def test_settings_update(clients, auth_headers):
     headers, _ = auth_headers
     r = clients["auth"].patch("/auth/settings", headers=headers,

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from datetime import datetime
 from typing import Literal, Optional
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
@@ -14,6 +15,16 @@ ODDS_FORMAT_PATTERN = (
 
 
 # ----------------------------- Auth / users ------------------------------- #
+
+_HAS_DIGIT = re.compile(r"\d")
+_HAS_SPECIAL = re.compile(r"[^a-zA-Z0-9]")
+
+
+def _validate_password(value: str) -> str:
+    if not (_HAS_DIGIT.search(value) or _HAS_SPECIAL.search(value)):
+        raise ValueError("Password must include at least one number or special character")
+    return value
+
 
 def _validate_iana_timezone(value: str | None) -> str | None:
     if value is None:
@@ -33,6 +44,11 @@ class UserRegister(BaseModel):
     password: str = Field(min_length=8, max_length=128)
     display_name: Optional[str] = None
     timezone: Optional[str] = Field(default=None, max_length=64)
+
+    @field_validator("password")
+    @classmethod
+    def _password(cls, v: str) -> str:
+        return _validate_password(v)
 
     @field_validator("timezone")
     @classmethod
@@ -58,6 +74,11 @@ class PasswordResetRequest(BaseModel):
 class PasswordResetConfirm(BaseModel):
     token: str = Field(min_length=16, max_length=256)
     password: str = Field(min_length=8, max_length=128)
+
+    @field_validator("password")
+    @classmethod
+    def _password(cls, v: str) -> str:
+        return _validate_password(v)
 
 
 class PasswordResetResponse(BaseModel):

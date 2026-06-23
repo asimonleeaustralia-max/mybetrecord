@@ -23,6 +23,10 @@ function apiErrorMessage(detail) {
   return translate("errors.requestFailed");
 }
 
+function isValidPassword(password) {
+  return password.length >= 8 && (/\d/.test(password) || /[^a-zA-Z0-9]/.test(password));
+}
+
 function clone(id) {
   const node = document.importNode($(`#${id}`).content, true);
   if (window.i18n) i18n.applyI18n(node);
@@ -534,6 +538,11 @@ function bindEvents() {
   if (registerForm) registerForm.addEventListener("submit", async e => {
     e.preventDefault();
     const f = Object.fromEntries(new FormData(e.target));
+    if (!isValidPassword(f.password)) {
+      showAuth();
+      authError(t("auth.passwordInvalid"));
+      return;
+    }
     if (!f.display_name) delete f.display_name;
     f.timezone = browserTimeZone();
     try {
@@ -573,6 +582,11 @@ function bindEvents() {
     if (f.password !== f.password_confirm) {
       showAuth();
       authError(t("auth.passwordMismatch"));
+      return;
+    }
+    if (!isValidPassword(f.password)) {
+      showAuth();
+      authError(t("auth.passwordInvalid"));
       return;
     }
     const token = getResetTokenFromHash();
