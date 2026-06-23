@@ -53,6 +53,25 @@
     return Object.entries(FALLBACK_PRICES).map(([currency, amount]) => ({ currency, amount }));
   }
 
+  function trackLandingVisit() {
+    const path = window.location.pathname;
+    if (path !== "/" && path !== "/index.html") return;
+    const payload = JSON.stringify({
+      path: "/",
+      referrer: document.referrer || null,
+    });
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon("/auth/track/landing", new Blob([payload], { type: "application/json" }));
+      return;
+    }
+    fetch("/auth/track/landing", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: payload,
+      keepalive: true,
+    }).catch(() => {});
+  }
+
   async function loadPricing() {
     if (_prices) return _prices;
     try {
@@ -85,6 +104,7 @@
   }
 
   async function boot() {
+    trackLandingVisit();
     const loc = window.i18n.getLoginLocale();
     await window.i18n.initI18n(loc);
     applyHomeTitle();

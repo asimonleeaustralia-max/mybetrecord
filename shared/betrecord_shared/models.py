@@ -118,6 +118,22 @@ class ApiKey(Base):
     user: Mapped["User"] = relationship(back_populates="api_keys")
 
 
+class LandingHit(Base):
+    """Anonymous visit to the marketing home page (no account required)."""
+
+    __tablename__ = "landing_hits"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
+    path: Mapped[str] = mapped_column(String(255), default="/", index=True, nullable=False)
+    ip_address: Mapped[str | None] = mapped_column(String(45), nullable=True, index=True)
+    user_agent: Mapped[str | None] = mapped_column(String(512), nullable=True)
+    browser: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    country: Mapped[str | None] = mapped_column(String(2), nullable=True, index=True)
+    is_bot: Mapped[bool] = mapped_column(Boolean, default=False, index=True)
+    referrer: Mapped[str | None] = mapped_column(String(512), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now, index=True)
+
+
 class AppEvent(Base):
     __tablename__ = "app_events"
 

@@ -692,6 +692,39 @@ def test_admin_endpoints_require_admin(clients, auth_headers):
     assert clients["auth"].get("/auth/admin/stats", headers=headers).status_code == 403
     assert clients["auth"].get("/auth/admin/users", headers=headers).status_code == 403
     assert clients["auth"].get("/auth/admin/events", headers=headers).status_code == 403
+    assert clients["auth"].get("/auth/admin/landing-hits", headers=headers).status_code == 403
+
+
+def test_landing_track_and_admin_list(clients):
+    admin_headers = _admin_headers(clients)
+    ua = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36"
+    r = clients["auth"].post(
+        "/auth/track/landing",
+        json={"path": "/", "referrer": "https://www.google.com/"},
+        headers={"User-Agent": ua},
+    )
+    assert r.status_code == 204
+
+    bot = clients["auth"].post(
+        "/auth/track/landing",
+        json={"path": "/"},
+        headers={"User-Agent": "Googlebot/2.1 (+http://www.google.com/bot.html)"},
+    )
+    assert bot.status_code == 204
+
+    hits = clients["auth"].get("/auth/admin/landing-hits", headers=admin_headers)
+    assert hits.status_code == 200
+    body = hits.json()
+    assert len(body) >= 2
+    human = next(h for h in body if h["ip_address"])
+    assert human["browser"].startswith("Chrome")
+    assert human["is_bot"] is False
+    assert human["referrer"] == "https://www.google.com/"
+    assert any(h["is_bot"] for h in body)
+
+    stats = clients["auth"].get("/auth/admin/stats", headers=admin_headers).json()
+    assert stats["landing_hits_today"] >= 2
+    assert stats["landing_unique_ips_today"] >= 1
 
 
 def test_admin_stats_users_and_events(clients, auth_headers):

@@ -119,9 +119,12 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             body = self.rfile.read(length)
         url = f"http://127.0.0.1:{port}{self.path}"
         req = urllib.request.Request(url, data=body, method=self.command)
-        for h in ("Authorization", "Content-Type", "X-API-Key", "Accept"):
+        for h in ("Authorization", "Content-Type", "X-API-Key", "Accept", "User-Agent"):
             if h in self.headers:
                 req.add_header(h, self.headers[h])
+        client_ip = self.client_address[0]
+        if client_ip:
+            req.add_header("X-Forwarded-For", client_ip)
         try:
             with urllib.request.urlopen(req, timeout=30) as resp:
                 self.send_response(resp.status)

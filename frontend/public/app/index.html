@@ -441,6 +441,28 @@
 
       <div class="panel">
         <div class="panel__head">
+          <h2 data-i18n="admin.landingTraffic">Landing page traffic</h2>
+          <span class="panel__sub" data-i18n="admin.landingTrafficSub">Home page visits including anonymous users and bots</span>
+        </div>
+        <div class="table-wrap">
+          <table class="ledger ledger--compact">
+            <thead>
+              <tr>
+                <th data-i18n="admin.when">When</th>
+                <th data-i18n="admin.ip">IP</th>
+                <th data-i18n="admin.country">Country</th>
+                <th data-i18n="admin.browser">Browser</th>
+                <th data-i18n="admin.visitorType">Type</th>
+                <th data-i18n="admin.referrer">Referrer</th>
+              </tr>
+            </thead>
+            <tbody id="adminLandingBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel__head">
           <h2 data-i18n="admin.admins">Admin users</h2>
           <form id="adminAddForm" class="admin-add-form">
             <input type="email" id="adminAddEmail" class="mini-select" required data-i18n-placeholder="admin.addEmailPlaceholder" />

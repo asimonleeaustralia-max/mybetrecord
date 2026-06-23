@@ -14,7 +14,7 @@ from betrecord_shared.config import get_settings
 from betrecord_shared.database import get_db, init_db
 from betrecord_shared.email import send_password_reset_email, send_verification_email
 from betrecord_shared.events import log_event
-from betrecord_shared.models import ApiKey, AppEvent, Bet, PasswordResetToken, PendingRegistration, User
+from betrecord_shared.models import ApiKey, AppEvent, Bet, LandingHit, PasswordResetToken, PendingRegistration, User
 from betrecord_shared.schemas import (
     AdminAddIn,
     AdminStatsOut,
@@ -23,6 +23,8 @@ from betrecord_shared.schemas import (
     ApiKeyCreated,
     ApiKeyOut,
     AppEventOut,
+    LandingHitOut,
+    LandingTrackIn,
     PasswordResetConfirm,
     PasswordResetRequest,
     PasswordResetResponse,
@@ -45,6 +47,7 @@ from betrecord_shared.security import (
     hash_password_reset_token,
     verify_password,
 )
+from betrecord_shared.visitor import client_country, is_bot, parse_browser
 
 settings = get_settings()
 app = FastAPI(title="mybetrecord · auth", version="0.1.0")
@@ -87,6 +90,27 @@ def _startup() -> None:
 @app.get("/health")
 def health() -> dict:
     return {"status": "ok", "service": "auth"}
+
+
+@app.post("/auth/track/landing", status_code=204)
+def track_landing(payload: LandingTrackIn, request: Request, db: Session = Depends(get_db)) -> Response:
+    """Record an anonymous home-page visit (called from marketing.js beacon)."""
+    ua = request.headers.get("user-agent")
+    path = (payload.path or "/").strip()[:255] or "/"
+    referrer = (payload.referrer or "").strip()[:512] or None
+    db.add(
+        LandingHit(
+            path=path,
+            ip_address=_client_ip(request),
+            user_agent=ua[:512] if ua else None,
+            browser=parse_browser(ua),
+            country=client_country(dict(request.headers)),
+            is_bot=is_bot(ua),
+            referrer=referrer,
+        )
+    )
+    db.commit()
+    return Response(status_code=204)
 
 
 @app.post("/auth/register", response_model=RegisterResponse)
@@ -481,6 +505,16 @@ def admin_stats(admin: User = Depends(get_current_admin), db: Session = Depends(
             select(func.count()).select_from(AppEvent).where(AppEvent.created_at >= today)
         )
         or 0,
+        landing_hits_today=db.scalar(
+            select(func.count()).select_from(LandingHit).where(LandingHit.created_at >= today)
+        )
+        or 0,
+        landing_unique_ips_today=db.scalar(
+            select(func.count(func.distinct(LandingHit.ip_address))).select_from(LandingHit).where(
+                LandingHit.created_at >= today, LandingHit.ip_address.isnot(None)
+            )
+        )
+        or 0,
     )
 
 
@@ -641,3 +675,16 @@ def admin_list_events(
         )
         for event, email in rows
     ]
+
+
+@app.get("/auth/admin/landing-hits", response_model=list[LandingHitOut])
+def admin_list_landing_hits(
+    admin: User = Depends(get_current_admin),
+    db: Session = Depends(get_db),
+    limit: int = Query(default=100, ge=1, le=500),
+    offset: int = Query(default=0, ge=0),
+) -> list[LandingHitOut]:
+    hits = db.scalars(
+        select(LandingHit).order_by(LandingHit.created_at.desc()).offset(offset).limit(limit)
+    ).all()
+    return [LandingHitOut.model_validate(h) for h in hits]

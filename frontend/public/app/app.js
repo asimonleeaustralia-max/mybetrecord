@@ -2338,7 +2338,7 @@ async function renderAdmin() {
     }
   });
 
-  await Promise.all([loadAdminStats(), loadAdminAdmins(), loadAdminUsers(), loadAdminEvents()]);
+  await Promise.all([loadAdminStats(), loadAdminAdmins(), loadAdminUsers(), loadAdminEvents(), loadAdminLandingHits()]);
 }
 
 async function loadAdminStats() {
@@ -2349,6 +2349,7 @@ async function loadAdminStats() {
     [t("admin.statSignups"), String(s.signups_today), t("admin.statSignupsSub")],
     [t("admin.statLogins"), String(s.logins_today), t("admin.statLoginsSub")],
     [t("admin.statEvents"), String(s.events_today), t("admin.statEventsSub")],
+    [t("admin.statLandingHits"), String(s.landing_hits_today), t("admin.statLandingHitsSub", { unique: s.landing_unique_ips_today })],
   ];
   $("#adminStats").innerHTML = cards.map(([l, v, sub]) =>
     `<div class="card"><div class="card__label">${l}</div><div class="card__value">${v}</div><div class="card__sub">${sub}</div></div>`
@@ -2441,6 +2442,36 @@ async function loadAdminEvents() {
       <td class="num">${esc(e.ip_address || "—")}</td>
     </tr>`).join("")
     || `<tr><td colspan="5" class="empty">${t("admin.noEvents")}</td></tr>`;
+}
+
+function landingVisitorBadge(isBot) {
+  return isBot
+    ? `<span class="outcome-select outcome-select--loss">${t("admin.visitorBot")}</span>`
+    : `<span class="outcome-select outcome-select--win">${t("admin.visitorUser")}</span>`;
+}
+
+function shortReferrer(ref) {
+  if (!ref) return "—";
+  try {
+    const u = new URL(ref);
+    return u.hostname + (u.pathname !== "/" ? u.pathname : "");
+  } catch {
+    return ref.length > 48 ? ref.slice(0, 45) + "…" : ref;
+  }
+}
+
+async function loadAdminLandingHits() {
+  const hits = await api("/auth/admin/landing-hits");
+  $("#adminLandingBody").innerHTML = hits.map(h => `
+    <tr>
+      <td class="num">${formatDt(h.created_at)}</td>
+      <td class="num">${esc(h.ip_address || "—")}</td>
+      <td>${esc(h.country || "—")}</td>
+      <td>${esc(h.browser || "—")}</td>
+      <td>${landingVisitorBadge(h.is_bot)}</td>
+      <td title="${esc(h.referrer || "")}">${esc(shortReferrer(h.referrer))}</td>
+    </tr>`).join("")
+    || `<tr><td colspan="6" class="empty">${t("admin.noLandingHits")}</td></tr>`;
 }
 
 /* -------------------------------- start -------------------------------- */
