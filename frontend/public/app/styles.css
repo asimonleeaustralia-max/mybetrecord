@@ -42,6 +42,9 @@ a { color: inherit; }
 
 /* ---------- wordmark ---------- */
 .wordmark { font-weight: 700; font-size: 1.05rem; color: var(--ink); letter-spacing: -.02em; }
+a.wordmark { text-decoration: none; cursor: pointer; }
+a.wordmark:hover { opacity: .85; }
+a.wordmark:focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; border-radius: 2px; }
 .wordmark span { color: var(--brass); }
 .wordmark--lg { font-size: 1.9rem; }
 .topbar .wordmark { color: #f2ead8; }
