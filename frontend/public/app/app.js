@@ -28,6 +28,51 @@ function isValidPassword(password) {
   return password.length >= 8 && (/\d/.test(password) || /[^a-zA-Z0-9]/.test(password));
 }
 
+function getPasswordStrength(password) {
+  const hasLength = password.length >= 8;
+  const hasComplex = /\d/.test(password) || /[^a-zA-Z0-9]/.test(password);
+  if (!password) return { segments: 0, state: "empty", hasLength, hasComplex };
+  if (!isValidPassword(password)) return { segments: 1, state: "invalid", hasLength, hasComplex };
+  let score = 0;
+  if (password.length >= 12) score++;
+  if (/\d/.test(password) && /[^a-zA-Z0-9]/.test(password)) score++;
+  if (/[a-z]/.test(password) && /[A-Z]/.test(password)) score++;
+  if (password.length >= 14) score++;
+  if (score >= 2) return { segments: 3, state: "good", hasLength, hasComplex };
+  return { segments: 2, state: "fair", hasLength, hasComplex };
+}
+
+const PASSWORD_STRENGTH_LABELS = {
+  invalid: "auth.passwordStrengthWeak",
+  fair: "auth.passwordStrengthFair",
+  good: "auth.passwordStrengthGood",
+};
+
+function updateRegisterPasswordStrength() {
+  const input = $("#registerForm input[name=password]");
+  const meter = $("#registerPasswordStrength");
+  if (!input || !meter) return;
+  const strength = getPasswordStrength(input.value);
+  const bars = meter.querySelector(".pwd-strength__bars");
+  meter.querySelectorAll(".pwd-strength__bar").forEach((bar, i) => {
+    bar.classList.remove("is-filled", "is-red", "is-orange", "is-green");
+    if (i < strength.segments) {
+      bar.classList.add("is-filled");
+      if (strength.state === "invalid") bar.classList.add("is-red");
+      else if (strength.state === "fair") bar.classList.add("is-orange");
+      else if (strength.state === "good") bar.classList.add("is-green");
+    }
+  });
+  meter.classList.toggle("is-invalid", strength.state === "invalid");
+  meter.querySelector('[data-req="length"]')?.classList.toggle("is-met", strength.hasLength);
+  meter.querySelector('[data-req="complex"]')?.classList.toggle("is-met", strength.hasComplex);
+  if (bars) {
+    bars.setAttribute("aria-valuenow", String(strength.segments));
+    const labelKey = PASSWORD_STRENGTH_LABELS[strength.state];
+    bars.setAttribute("aria-label", labelKey ? t(labelKey) : t("auth.passwordStrengthMeter"));
+  }
+}
+
 function clone(id) {
   const node = document.importNode($(`#${id}`).content, true);
   if (window.i18n) i18n.applyI18n(node);
@@ -496,6 +541,7 @@ function showAuthMode(mode) {
       btn.classList.toggle("is-active", btn.dataset.authTab === mode);
     });
   }
+  if (mode === "register") updateRegisterPasswordStrength();
 }
 function showApp() {
   const auth = $("#auth"), loading = $("#authLoading"), app = $("#app");
@@ -552,6 +598,9 @@ function bindEvents() {
     }
   });
 
+  const registerPasswordInput = $("#registerForm input[name=password]");
+  if (registerPasswordInput) registerPasswordInput.addEventListener("input", updateRegisterPasswordStrength);
+
   const registerForm = $("#registerForm");
   if (registerForm) registerForm.addEventListener("submit", async e => {
     e.preventDefault();
@@ -576,6 +625,7 @@ function bindEvents() {
       const email = f.email;
       registerPendingEmail = email;
       e.target.reset();
+      updateRegisterPasswordStrength();
       if (location.hash !== "#/register") location.hash = "#/register";
       showAuth(null, {
         success: t("auth.verificationEmailSent", { email }),

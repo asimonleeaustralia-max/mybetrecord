@@ -38,7 +38,21 @@
 
       <form id="registerForm" class="auth__form" hidden>
         <label><span data-i18n="auth.email">Email</span><input type="email" name="email" autocomplete="email" required /></label>
-        <label><span data-i18n="auth.password">Password</span> <span class="hint" data-i18n="auth.passwordHint">8+ characters with a number or special character</span><input type="password" name="password" autocomplete="new-password" minlength="8" required /></label>
+        <label>
+          <span data-i18n="auth.password">Password</span>
+          <input type="password" name="password" autocomplete="new-password" minlength="8" required />
+          <div class="pwd-strength" id="registerPasswordStrength" aria-live="polite">
+            <div class="pwd-strength__bars" role="meter" aria-valuemin="0" aria-valuemax="3" aria-valuenow="0" data-i18n-attr="aria-label" data-i18n="auth.passwordStrengthMeter">
+              <span class="pwd-strength__bar"></span>
+              <span class="pwd-strength__bar"></span>
+              <span class="pwd-strength__bar"></span>
+            </div>
+            <ul class="pwd-strength__reqs">
+              <li class="pwd-strength__req" data-req="length" data-i18n="auth.passwordReqLength">8+ characters</li>
+              <li class="pwd-strength__req" data-req="complex" data-i18n="auth.passwordReqComplex">Number or special character</li>
+            </ul>
+          </div>
+        </label>
         <label><span data-i18n="auth.confirmPassword">Confirm password</span><input type="password" name="password_confirm" autocomplete="new-password" minlength="8" required /></label>
         <button class="btn btn--brass" type="submit" data-i18n="auth.createAccount">Create account</button>
         <p class="auth__links"><a href="#/login" data-auth-back="login" data-i18n="auth.backToSignIn">Back to sign in</a></p>
