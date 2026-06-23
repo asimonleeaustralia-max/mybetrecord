@@ -2358,9 +2358,8 @@ async function start() {
 
 function onReady() {
   try { bindEvents(); } catch (err) { console.error("bindEvents failed:", err); }
-  if (getShareToken() || token()) {
-    start().catch(() => (getShareToken() ? renderPublicShare(getShareToken()) : showAuth()));
-  }
+  // Always boot: unauthenticated users may land on #/reset-password/… or #/forgot-password.
+  start().catch(() => (getShareToken() ? renderPublicShare(getShareToken()) : showAuth()));
 }
 
 window.mbrAttach = function () {
