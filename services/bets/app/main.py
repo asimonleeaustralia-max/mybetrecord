@@ -204,6 +204,37 @@ def _serialise_public(bet: Bet) -> PublicBetOut:
     return PublicBetOut.model_validate(bet)
 
 
+def _format_share_event_at(event_at: datetime | None) -> str | None:
+    if not event_at:
+        return None
+    if event_at.tzinfo is None:
+        event_at = event_at.replace(tzinfo=timezone.utc)
+    return event_at.strftime("%d %b %Y %H:%M UTC")
+
+
+def _format_share_personal_odds(bet: Bet) -> str | None:
+    if bet.personal_implied_odds is None:
+        return None
+    return f"{bet.personal_implied_odds:.2f}"
+
+
+def _share_optional_row(
+    label: str,
+    value: str | None,
+    esc,
+    *,
+    num: bool = False,
+    notes: bool = False,
+) -> str:
+    if not value:
+        return ""
+    cls = "num" if num else ""
+    if notes:
+        cls = (cls + " share-detail__notes").strip()
+    class_attr = f' class="{cls}"' if cls else ""
+    return f'<div class="share-detail__row"><dt>{esc(label)}</dt><dd{class_attr}>{esc(value)}</dd></div>'
+
+
 def _format_share_odds(bet: Bet) -> str:
     if bet.odds_format == "american":
         dec = bet.odds_decimal
@@ -238,7 +269,6 @@ def _share_page_html(bet: Bet, token: str, base_url: str = "https://mybetrecord.
   <meta property="og:image" content="{base_url}/og-default.svg" />
   <meta name="twitter:card" content="summary" />
   <link rel="stylesheet" href="/app/styles.css" />
-  <script>window.__MBR_SHARE_TOKEN = {token!r};</script>
 </head>
 <body>
   <section class="share-view">
@@ -250,17 +280,19 @@ def _share_page_html(bet: Bet, token: str, base_url: str = "https://mybetrecord.
           <dl class="share-detail__list">
             <div class="share-detail__row"><dt>Sport</dt><dd>{esc(bet.sport)}</dd></div>
             <div class="share-detail__row"><dt>Bet type</dt><dd>{esc(bet.bet_type)}</dd></div>
+            {_share_optional_row("Tournament", bet.tournament, esc)}
             <div class="share-detail__row"><dt>Event</dt><dd>{esc(bet.event)}</dd></div>
+            {_share_optional_row("Event time", _format_share_event_at(bet.event_at), esc)}
             <div class="share-detail__row"><dt>Selection</dt><dd>{esc(bet.selection)}</dd></div>
             <div class="share-detail__row"><dt>Stake</dt><dd class="num">{bet.stake:g} {esc(bet.currency)}</dd></div>
             <div class="share-detail__row"><dt>Odds</dt><dd class="num">{esc(_format_share_odds(bet))}</dd></div>
+            {_share_optional_row("Personal implied odds", _format_share_personal_odds(bet), esc, num=True)}
+            {_share_optional_row("Notes", bet.notes, esc, notes=True)}
           </dl>
         </article>
       </main>
     </div>
   </section>
-  <script src="/app/i18n.js"></script>
-  <script src="/app/app.js"></script>
 </body>
 </html>"""
 

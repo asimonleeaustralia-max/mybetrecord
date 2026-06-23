@@ -964,8 +964,12 @@ function shareDetailRow(label, value, { mono = false, notes = false } = {}) {
 }
 
 async function renderPublicShare(token) {
-  showShareView();
   const main = $("#shareMain");
+  if (!main) return;
+  // Server-rendered /share/{token} pages ship bet details in the HTML and
+  // do not include SPA templates — leave that markup alone.
+  if (!$("#tpl-share")) return;
+  showShareView();
   main.innerHTML = "";
   main.appendChild(clone("tpl-share"));
   const detail = $("#shareDetail");
