@@ -37,7 +37,6 @@
       </form>
 
       <form id="registerForm" class="auth__form" hidden>
-        <label><span data-i18n="auth.displayName">Display name</span><input type="text" name="display_name" autocomplete="name" /></label>
         <label><span data-i18n="auth.email">Email</span><input type="email" name="email" autocomplete="email" required /></label>
         <label><span data-i18n="auth.password">Password</span> <span class="hint" data-i18n="auth.passwordHint">8+ characters with a number or special character</span><input type="password" name="password" autocomplete="new-password" minlength="8" required /></label>
         <label><span data-i18n="auth.confirmPassword">Confirm password</span><input type="password" name="password_confirm" autocomplete="new-password" minlength="8" required /></label>
@@ -385,7 +384,6 @@
             <label><span data-i18n="settings.bankroll">Bankroll</span> <span class="hint" data-i18n="settings.bankrollHint">used for Kelly</span><input name="bankroll" inputmode="decimal" /></label>
             <label><span data-i18n="settings.kellyMultiplier">Kelly multiplier</span> <span class="hint" data-i18n="settings.kellyHint">1 = full, 0.5 = half</span><input name="kelly_multiplier" inputmode="decimal" placeholder="1" /></label>
           </div>
-          <label><span data-i18n="settings.displayName">Display name</span><input name="display_name" /></label>
           <div class="formactions"><button class="btn btn--brass" type="submit" data-i18n="settings.save">Save settings</button></div>
         </fieldset>
       </form>
@@ -434,7 +432,7 @@
           <table class="ledger ledger--compact">
             <thead>
               <tr>
-                <th data-i18n="admin.email">Email</th><th data-i18n="admin.name">Name</th><th data-i18n="admin.joined">Joined</th><th></th>
+                <th data-i18n="admin.email">Email</th><th data-i18n="admin.joined">Joined</th><th></th>
               </tr>
             </thead>
             <tbody id="adminAdminsBody"></tbody>
@@ -451,7 +449,7 @@
           <table class="ledger ledger--compact">
             <thead>
               <tr>
-                <th data-i18n="admin.email">Email</th><th data-i18n="admin.name">Name</th><th data-i18n="admin.status">Status</th>
+                <th data-i18n="admin.email">Email</th><th data-i18n="admin.status">Status</th>
                 <th data-i18n="admin.lastLogin">Last login</th><th data-i18n="admin.joined">Joined</th>
                 <th class="r" data-i18n="admin.bets">Bets</th><th class="r" data-i18n="admin.keys">Keys</th><th></th>
               </tr>

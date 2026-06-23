@@ -7,7 +7,7 @@ from datetime import datetime, timedelta, timezone
 from fastapi import Depends, FastAPI, HTTPException, Query, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import Response
-from sqlalchemy import func, or_, select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from betrecord_shared.config import get_settings
@@ -108,7 +108,6 @@ def register(
         PendingRegistration(
             email=email,
             password_hash=hash_password(payload.password),
-            display_name=payload.display_name,
             timezone=payload.timezone or "UTC",
             token_hash=token_hash,
             expires_at=expires_at,
@@ -167,7 +166,6 @@ def verify_registration(
     user = User(
         email=pending.email,
         password_hash=pending.password_hash,
-        display_name=pending.display_name,
         timezone=pending.timezone,
     )
     db.add(user)
@@ -451,7 +449,6 @@ def _admin_user_out(
     return AdminUserOut(
         id=user.id,
         email=user.email,
-        display_name=user.display_name,
         is_active=user.is_active,
         is_admin=user.is_admin,
         created_at=user.created_at,
@@ -497,9 +494,7 @@ def admin_list_users(
     stmt = select(User).order_by(User.created_at.desc())
     if search:
         term = f"%{search.strip().lower()}%"
-        stmt = stmt.where(
-            or_(func.lower(User.email).like(term), func.lower(User.display_name).like(term))
-        )
+        stmt = stmt.where(func.lower(User.email).like(term))
     users = db.scalars(stmt.offset(offset).limit(limit)).all()
     user_ids = [u.id for u in users]
     bet_counts, key_counts = _user_counts(db, user_ids)

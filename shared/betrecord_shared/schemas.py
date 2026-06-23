@@ -42,7 +42,6 @@ def _validate_iana_timezone(value: str | None) -> str | None:
 class UserRegister(BaseModel):
     email: EmailStr
     password: str = Field(min_length=8, max_length=128)
-    display_name: Optional[str] = None
     timezone: Optional[str] = Field(default=None, max_length=64)
 
     @field_validator("password")
@@ -99,7 +98,6 @@ LOCALE_PATTERN = r"^[a-z]{2,3}(-[A-Z]{2})?$"
 
 
 class SettingsUpdate(BaseModel):
-    display_name: Optional[str] = None
     default_odds_format: Optional[str] = Field(default=None, pattern=ODDS_FORMAT_PATTERN)
     base_currency: Optional[str] = Field(default=None, min_length=3, max_length=3)
     bankroll: Optional[float] = Field(default=None, ge=0)
@@ -117,7 +115,6 @@ class UserOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: str
     email: EmailStr
-    display_name: Optional[str]
     default_odds_format: str
     base_currency: str
     bankroll: float
@@ -206,7 +203,6 @@ class ApiKeyCreated(ApiKeyOut):
 class AdminUserOut(BaseModel):
     id: str
     email: EmailStr
-    display_name: Optional[str]
     is_active: bool
     is_admin: bool
     created_at: datetime

@@ -109,7 +109,7 @@ def _ensure_customer(user: User, db: Session) -> str:
         return user.stripe_customer_id
     customer = stripe.Customer.create(
         email=user.email,
-        name=user.display_name or None,
+        name=user.email,
         metadata={"user_id": user.id},
     )
     user.stripe_customer_id = customer.id

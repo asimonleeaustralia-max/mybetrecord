@@ -555,7 +555,6 @@ function bindEvents() {
       return;
     }
     delete f.password_confirm;
-    if (!f.display_name) delete f.display_name;
     f.timezone = browserTimeZone();
     $("#authError").hidden = true;
     $("#authSuccess").hidden = true;
@@ -2009,7 +2008,6 @@ async function renderSettings() {
   fillCurrencySelect(form.base_currency, 20, u.base_currency);
   form.bankroll.value = u.bankroll || "";
   form.kelly_multiplier.value = u.kelly_multiplier ?? 1;
-  form.display_name.value = u.display_name || "";
 
   form.addEventListener("submit", async e => {
     e.preventDefault();
@@ -2021,7 +2019,6 @@ async function renderSettings() {
       base_currency: data.base_currency.toUpperCase(),
       bankroll: Number(data.bankroll || 0),
       kelly_multiplier: Number(data.kelly_multiplier || 1),
-      display_name: data.display_name || null,
     };
     try {
       state.user = await api("/auth/settings", { method: "PATCH", body: payload });
@@ -2303,7 +2300,6 @@ async function loadAdminAdmins() {
   $("#adminAdminsBody").innerHTML = admins.map(u => `
     <tr data-admin="${u.id}">
       <td>${esc(u.email)}</td>
-      <td>${esc(u.display_name || "—")}</td>
       <td class="num">${formatDt(u.created_at)}</td>
       <td class="r">
         <button class="btn btn--ghost btn--sm" data-remove-admin="${u.id}" ${u.id === state.user?.id ? "disabled" : ""}>
@@ -2311,7 +2307,7 @@ async function loadAdminAdmins() {
         </button>
       </td>
     </tr>`).join("")
-    || `<tr><td colspan="4" class="empty">${t("admin.noAdmins")}</td></tr>`;
+    || `<tr><td colspan="3" class="empty">${t("admin.noAdmins")}</td></tr>`;
 
   $$("[data-remove-admin]").forEach(btn => btn.addEventListener("click", () =>
     adminRemoveAdmin(btn.dataset.removeAdmin)
@@ -2336,7 +2332,6 @@ async function loadAdminUsers() {
   $("#adminUsersBody").innerHTML = users.map(u => `
     <tr data-user="${u.id}">
       <td>${esc(u.email)}</td>
-      <td>${esc(u.display_name || "—")}</td>
       <td>${adminStatusBadge(u.is_active)}</td>
       <td class="num">${formatDt(u.last_login_at)}</td>
       <td class="num">${formatDt(u.created_at)}</td>

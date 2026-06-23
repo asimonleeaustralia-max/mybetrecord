@@ -389,7 +389,6 @@ def seed_dev_admin() -> None:
             User(
                 email=DEV_ADMIN_EMAIL,
                 password_hash=hash_password(DEV_ADMIN_PASSWORD),
-                display_name="Admin",
                 is_admin=True,
             )
         )
