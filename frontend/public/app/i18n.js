@@ -138,7 +138,7 @@ function applyI18n(root = document) {
     const val = t(key);
     if (el.dataset.i18nAttr) {
       el.setAttribute(el.dataset.i18nAttr, val);
-    } else if (el.dataset.i18nHtml) {
+    } else if (el.hasAttribute("data-i18n-html")) {
       el.innerHTML = val;
     } else {
       el.textContent = val;
