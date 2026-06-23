@@ -175,6 +175,17 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             if html_target.is_file():
                 return f"/{rel}.html"
             return "/blog/index.html"
+        if path.startswith("/pricing/"):
+            if path.endswith("/"):
+                return "/pricing/index.html"
+            rel = path.lstrip("/")
+            target = PUBLIC / rel
+            if target.is_file():
+                return path
+            html_target = PUBLIC / f"{rel}.html"
+            if html_target.is_file():
+                return f"/{rel}.html"
+            return "/pricing/index.html"
         if path != "/" and not (PUBLIC / path.lstrip("/")).is_file():
             # Marketing root only — do not SPA-fallback unknown paths to ledger.
             if path.endswith((".css", ".js", ".svg", ".txt", ".xml", ".json", ".html")):

@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pricing — mybetrecord</title>
+  <meta name="description" content="Free sports betting ledger with full features, or Pro for unlimited daily logging at about $5 USD per month in your local currency." />
+  <link rel="canonical" href="https://mybetrecord.com/pricing/" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/marketing.css" />
+  <link rel="stylesheet" href="/pricing/pricing.css" />
+</head>
+<body>
+  <div class="m-site">
+    <header class="m-header">
+      <a class="wordmark" href="/">my<span>bet</span>record</a>
+      <nav class="m-nav">
+        <label class="m-locale-wrap">
+          <span class="visually-hidden" data-i18n="home.language">Language</span>
+          <select id="localeSelect" class="m-locale" data-i18n-attr="aria-label" data-i18n="home.language"></select>
+        </label>
+        <a href="/pricing/" aria-current="page" data-i18n="home.pricing">Pricing</a>
+        <a href="/blog/" data-i18n="home.blog">Blog</a>
+        <a href="/login" data-i18n="auth.signIn">Sign in</a>
+        <a class="m-btn m-btn--primary" href="/app/#/register" data-i18n="auth.createAccount">Create account</a>
+      </nav>
+    </header>
+
+    <main class="pricing-page">
+      <h1 data-i18n="home.pricingTitle">Simple, honest pricing</h1>
+      <p class="sub" data-i18n="home.pricingSub">Every feature below is included on both plans. Pro removes the daily logging cap — about $5 USD per month in your local currency.</p>
+      <div class="m-pricing">
+        <article class="m-pricing__card">
+          <h2 class="m-pricing__tier" data-i18n="home.pricingFreeName">Free</h2>
+          <p class="m-pricing__price" data-i18n="home.pricingFreePrice">Free</p>
+          <p class="m-pricing__limit" data-i18n="home.pricingFreeLimit">Up to 5 bets and 5 multis per day</p>
+          <ul class="m-pricing__features">
+            <li data-i18n="home.pricingFeatureLedger">Full bet ledger — events, selections, stakes, outcomes &amp; P/L</li>
+            <li data-i18n="home.pricingFeatureOdds">All odds formats — decimal, American, fractional &amp; Asian</li>
+            <li data-i18n="home.pricingFeatureTypes">Every bet type — win, each-way, over-under, multis &amp; handicap</li>
+            <li data-i18n="home.pricingFeatureKelly">Kelly stake sizing from your bankroll &amp; stated edge</li>
+            <li data-i18n="home.pricingFeatureReports">ROI, yield, strike rate &amp; cumulative equity curve</li>
+            <li data-i18n="home.pricingFeatureBreakdowns">Breakdowns by sport, bet type, tipster &amp; bookmaker</li>
+            <li data-i18n="home.pricingFeatureClv">Closing line value (CLV) tracking</li>
+            <li data-i18n="home.pricingFeatureEdge">Model &amp; personal implied odds with per-unit edge</li>
+            <li data-i18n="home.pricingFeatureSettlement">Cash-out amounts &amp; winnings deductions on winners</li>
+            <li data-i18n="home.pricingFeatureExport">CSV, Excel &amp; JSON export</li>
+            <li data-i18n="home.pricingFeatureApi">API keys for scripts &amp; automation</li>
+            <li data-i18n="home.pricingFeatureLocale">Multi-language interface &amp; timezone support</li>
+          </ul>
+          <a class="m-btn m-btn--ghost m-pricing__cta" href="/app/#/register" data-i18n="home.pricingFreeCta">Start free</a>
+        </article>
+        <article class="m-pricing__card m-pricing__card--pro">
+          <h2 class="m-pricing__tier" data-i18n="home.pricingProName">Pro</h2>
+          <p class="m-pricing__price" id="proPrice"></p>
+          <p class="m-pricing__limit" data-i18n="home.pricingProLimit">Unlimited bets and multis every day</p>
+          <ul class="m-pricing__features">
+            <li data-i18n="home.pricingFeatureLedger">Full bet ledger — events, selections, stakes, outcomes &amp; P/L</li>
+            <li data-i18n="home.pricingFeatureOdds">All odds formats — decimal, American, fractional &amp; Asian</li>
+            <li data-i18n="home.pricingFeatureTypes">Every bet type — win, each-way, over-under, multis &amp; handicap</li>
+            <li data-i18n="home.pricingFeatureKelly">Kelly stake sizing from your bankroll &amp; stated edge</li>
+            <li data-i18n="home.pricingFeatureReports">ROI, yield, strike rate &amp; cumulative equity curve</li>
+            <li data-i18n="home.pricingFeatureBreakdowns">Breakdowns by sport, bet type, tipster &amp; bookmaker</li>
+            <li data-i18n="home.pricingFeatureClv">Closing line value (CLV) tracking</li>
+            <li data-i18n="home.pricingFeatureEdge">Model &amp; personal implied odds with per-unit edge</li>
+            <li data-i18n="home.pricingFeatureSettlement">Cash-out amounts &amp; winnings deductions on winners</li>
+            <li data-i18n="home.pricingFeatureExport">CSV, Excel &amp; JSON export</li>
+            <li data-i18n="home.pricingFeatureApi">API keys for scripts &amp; automation</li>
+            <li data-i18n="home.pricingFeatureLocale">Multi-language interface &amp; timezone support</li>
+          </ul>
+          <a class="m-btn m-btn--primary m-pricing__cta" href="/app/#/register" data-i18n="home.pricingProCta">Go Pro</a>
+        </article>
+      </div>
+      <p class="m-pricing__note" id="pricingNote" data-i18n="home.pricingNote">Pro is roughly $5 USD per month, shown in your local currency. Cancel anytime from Settings.</p>
+    </main>
+
+    <footer class="m-footer">
+      <nav>
+        <a href="/pricing/" data-i18n="home.pricing">Pricing</a>
+        <a href="/blog/" data-i18n="home.blog">Blog</a>
+        <a href="/privacy" data-i18n="home.privacy">Privacy</a>
+        <a href="/terms" data-i18n="home.terms">Terms</a>
+        <a href="/login" data-i18n="auth.signIn">Sign in</a>
+      </nav>
+      <p data-i18n="home.footerCopy">&copy; mybetrecord. Analytics and record-keeping — not gambling advice.</p>
+    </footer>
+  </div>
+  <script src="/app/i18n.js"></script>
+  <script src="/marketing.js"></script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+.pricing-page {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 48px 24px 64px;
+  width: 100%;
+}
+.pricing-page h1 {
+  font-family: var(--display);
+  font-size: 1.85rem;
+  margin: 0 0 12px;
+  letter-spacing: -.01em;
+}
+.pricing-page > p.sub {
+  color: var(--muted);
+  margin: 0 0 32px;
+  max-width: 640px;
+}

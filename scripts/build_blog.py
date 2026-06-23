@@ -87,6 +87,7 @@ def build() -> None:
         {"loc": f"{SITE_URL}/privacy", "changefreq": "yearly", "priority": "0.3"},
         {"loc": f"{SITE_URL}/terms", "changefreq": "yearly", "priority": "0.3"},
         {"loc": f"{SITE_URL}/blog/", "changefreq": "weekly", "priority": "0.8"},
+        {"loc": f"{SITE_URL}/pricing/", "changefreq": "monthly", "priority": "0.8"},
     ]
     for post in posts:
         static_urls.append(

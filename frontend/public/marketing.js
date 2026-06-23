@@ -30,8 +30,13 @@
 
   let _prices = null;
 
-  function applyHomeTitle() {
-    document.title = window.i18n.t("home.meta.title");
+  function applyPageTitle() {
+    const path = window.location.pathname.replace(/\/index\.html$/, "");
+    if (path === "/pricing" || path.endsWith("/pricing")) {
+      document.title = window.i18n.t("home.meta.pricingTitle");
+    } else {
+      document.title = window.i18n.t("home.meta.title");
+    }
   }
 
   function currencyForLocale(locale) {
@@ -107,7 +112,7 @@
     trackLandingVisit();
     const loc = window.i18n.getLoginLocale();
     await window.i18n.initI18n(loc);
-    applyHomeTitle();
+    applyPageTitle();
     await loadPricing();
     updateProPrice();
 
@@ -116,7 +121,7 @@
       select.innerHTML = window.i18n.languageOptions(window.i18n.currentLocale());
       select.addEventListener("change", async () => {
         await window.i18n.setLocale(select.value, { persistCookie: true });
-        applyHomeTitle();
+        applyPageTitle();
         updateProPrice();
       });
     }
