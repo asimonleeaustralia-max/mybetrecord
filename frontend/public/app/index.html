@@ -41,7 +41,12 @@
         <label><span data-i18n="auth.password">Password</span> <span class="hint" data-i18n="auth.passwordHint">8+ characters with a number or special character</span><input type="password" name="password" autocomplete="new-password" minlength="8" required /></label>
         <label><span data-i18n="auth.confirmPassword">Confirm password</span><input type="password" name="password_confirm" autocomplete="new-password" minlength="8" required /></label>
         <button class="btn btn--brass" type="submit" data-i18n="auth.createAccount">Create account</button>
+        <p class="auth__links"><a href="#/login" data-auth-back="login" data-i18n="auth.backToSignIn">Back to sign in</a></p>
       </form>
+
+      <div id="registerPending" class="auth__pending" hidden>
+        <p class="auth__links"><a href="#/login" data-auth-back="login" data-i18n="auth.backToSignIn">Back to sign in</a></p>
+      </div>
 
       <form id="forgotPasswordForm" class="auth__form" hidden>
         <p class="auth__hint" data-i18n="auth.forgotPasswordHint">Enter your email and we'll send you a link to reset your password.</p>

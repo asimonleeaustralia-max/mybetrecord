@@ -6,6 +6,7 @@
 
 const TOKEN_KEY = "mbr_token";
 const state = { user: null, sports: [], betTypes: [], tipsters: [], currencies: [], charts: {} };
+let registerPendingEmail = null;
 
 const translate = (key, vars) => window.i18n?.t(key, vars) ?? key;
 const t = translate;
@@ -473,14 +474,21 @@ function showAuth(message = null, { success = null } = {}) {
   if (success && ok) { ok.textContent = success; ok.hidden = false; }
 }
 
+function clearRegisterPending() {
+  registerPendingEmail = null;
+}
+
 function showAuthMode(mode) {
   const seg = document.querySelector("#auth .seg");
   const login = $("#loginForm"), reg = $("#registerForm");
   const forgot = $("#forgotPasswordForm"), reset = $("#resetPasswordForm");
+  const pending = $("#registerPending");
+  const registerPending = mode === "register" && registerPendingEmail;
   const showTabs = mode === "login" || mode === "register";
   if (seg) seg.hidden = !showTabs;
   if (login) login.hidden = mode !== "login";
-  if (reg) reg.hidden = mode !== "register";
+  if (reg) reg.hidden = mode !== "register" || registerPending;
+  if (pending) pending.hidden = !registerPending;
   if (forgot) forgot.hidden = mode !== "forgot";
   if (reset) reset.hidden = mode !== "reset";
   if (showTabs) {
@@ -507,6 +515,7 @@ function updateAdminNav() {
 function bindEvents() {
   $$("[data-auth-tab]").forEach(btn => btn.addEventListener("click", () => {
     const tab = btn.dataset.authTab;
+    if (tab === "login") clearRegisterPending();
     location.hash = tab === "register" ? "#/register" : "#/login";
   }));
 
@@ -514,12 +523,14 @@ function bindEvents() {
     const back = e.target.closest("[data-auth-back]");
     if (back) {
       e.preventDefault();
+      clearRegisterPending();
       location.hash = "#/login";
     }
   });
 
   window.addEventListener("hashchange", () => {
     if (getShareToken()) return;
+    if (getAuthRouteFromHash() === "login") clearRegisterPending();
     if (state.user) route();
     else showAuth();
   });
@@ -533,6 +544,7 @@ function bindEvents() {
     showAuthLoading();
     try {
       const { access_token } = await api("/auth/login", { method: "POST", body: f, allow401: true });
+      clearRegisterPending();
       setToken(access_token);
       await boot({ loading: true });
     } catch (err) {
@@ -560,10 +572,14 @@ function bindEvents() {
     $("#authSuccess").hidden = true;
     try {
       showAuthLoading();
-      const res = await api("/auth/register", { method: "POST", body: f, allow401: true });
-      location.hash = "#/login";
-      showAuth(null, { success: res.message || t("auth.verificationLinkSent") });
+      await api("/auth/register", { method: "POST", body: f, allow401: true });
+      const email = f.email;
+      registerPendingEmail = email;
       e.target.reset();
+      if (location.hash !== "#/register") location.hash = "#/register";
+      showAuth(null, {
+        success: t("auth.verificationEmailSent", { email }),
+      });
     } catch (err) {
       const msg = err.message === "Email already registered"
         ? t("auth.emailAlreadyRegistered")
