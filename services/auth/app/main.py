@@ -12,7 +12,7 @@ from sqlalchemy.orm import Session
 
 from betrecord_shared.config import get_settings
 from betrecord_shared.database import get_db, init_db
-from betrecord_shared.email import send_password_reset_email, send_verification_email
+from betrecord_shared.email import EmailDeliveryError, send_password_reset_email, send_verification_email
 from betrecord_shared.events import log_event
 from betrecord_shared.models import ApiKey, AppEvent, Bet, LandingHit, PasswordResetToken, PendingRegistration, User
 from betrecord_shared.schemas import (
@@ -138,11 +138,18 @@ def register(
             expires_at=expires_at,
         )
     )
-    send_verification_email(
-        email,
-        _verification_url(raw_token),
-        settings.email_verification_minutes,
-    )
+    try:
+        send_verification_email(
+            email,
+            _verification_url(raw_token),
+            settings.email_verification_minutes,
+        )
+    except EmailDeliveryError as exc:
+        db.rollback()
+        raise HTTPException(
+            status.HTTP_503_SERVICE_UNAVAILABLE,
+            "Unable to send verification email. Please try again later.",
+        ) from exc
     log_event(
         db,
         "register_pending",
@@ -292,11 +299,18 @@ def request_password_reset(
                 expires_at=expires_at,
             )
         )
-        send_password_reset_email(
-            user.email,
-            _reset_url(raw_token),
-            settings.password_reset_minutes,
-        )
+        try:
+            send_password_reset_email(
+                user.email,
+                _reset_url(raw_token),
+                settings.password_reset_minutes,
+            )
+        except EmailDeliveryError as exc:
+            db.rollback()
+            raise HTTPException(
+                status.HTTP_503_SERVICE_UNAVAILABLE,
+                "Unable to send password reset email. Please try again later.",
+            ) from exc
         log_event(
             db,
             "password_reset_requested",
