@@ -39,13 +39,21 @@ jobs:
           AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
           AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
         run: |
-          if [ -n "$AZURE_CLIENT_ID" ] && [ -n "$AZURE_TENANT_ID" ] && [ -n "$AZURE_SUBSCRIPTION_ID" ]; then
-            echo "ok=true" >> "$GITHUB_OUTPUT"
-          else
+          if [ -z "$AZURE_CLIENT_ID" ] || [ -z "$AZURE_TENANT_ID" ] || [ -z "$AZURE_SUBSCRIPTION_ID" ]; then
             echo "ok=false" >> "$GITHUB_OUTPUT"
             echo "::warning::Azure OIDC secrets (AZURE_CLIENT_ID / AZURE_TENANT_ID / AZURE_SUBSCRIPTION_ID) are not set; skipping deploy."
+            exit 0
           fi
+          if [ -z "$SMTP_HOST" ] || [ -z "$SMTP_USER" ] || [ -z "$SMTP_PASSWORD" ]; then
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::SMTP secrets (SMTP_HOST / SMTP_USER / SMTP_PASSWORD) are not set; skipping deploy so production signup emails keep working."
+            exit 0
+          fi
+          echo "ok=true" >> "$GITHUB_OUTPUT"
 
   build-and-deploy:
     needs: [test, preflight]

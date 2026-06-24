@@ -92,6 +92,31 @@ require_var() {
   fi
 }
 
+require_smtp_for_production() {
+  if [[ -n "${SMTP_HOST:-}" ]]; then
+    return
+  fi
+  local frontend="${FRONTEND_URL:-}"
+  if [[ -z "$frontend" || "$frontend" == http://localhost* ]]; then
+    return
+  fi
+  if [[ "${ALLOW_NO_SMTP:-}" == "1" ]]; then
+    echo "WARNING: SMTP_HOST is unset; verification and password-reset emails will fail in production." >&2
+    return
+  fi
+  cat >&2 <<'EOF'
+Missing SMTP_HOST for a production deploy (FRONTEND_URL is set to a public site).
+
+Signup verification and password-reset emails require SMTP on the auth service.
+Set SMTP_* in .env.deploy (see .env.deploy.example) or run:
+
+  ./scripts/setup_azure_email.sh
+
+To deploy anyway without email, set ALLOW_NO_SMTP=1.
+EOF
+  exit 1
+}
+
 run() {
   if [[ "$DRY_RUN" -eq 1 ]]; then
     echo "[dry-run] $*"
@@ -168,6 +193,7 @@ deploy_bicep() {
   local tag="$1"
   require_var PG_ADMIN_PASSWORD
   require_var JWT_SECRET
+  require_smtp_for_production
 
   local -a extra_params=(
     "imageTag=${tag}"
