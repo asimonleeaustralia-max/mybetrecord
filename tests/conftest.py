@@ -17,7 +17,7 @@ import uuid
 
 import pytest
 
-# Must be set before betrecord_shared.config is imported (it reads env at import).
+# Set test defaults before the first get_settings() call.
 os.environ.setdefault("DATABASE_URL", "sqlite+pysqlite:///:memory:")
 os.environ.setdefault("ENVIRONMENT", "development")
 os.environ.setdefault("JWT_SECRET", "integration-test-secret-key-0123456789abcd")
