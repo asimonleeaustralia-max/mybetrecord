@@ -17,16 +17,18 @@
   <div class="m-site">
     <header class="m-header">
       <a class="wordmark" href="/">my<span>bet</span>record</a>
-      <nav class="m-nav">
+      <div class="m-header__end">
         <label class="m-locale-wrap">
           <span class="visually-hidden" data-i18n="home.language">Language</span>
           <select id="localeSelect" class="m-locale" data-i18n-attr="aria-label" data-i18n="home.language"></select>
         </label>
-        <a href="/pricing/" aria-current="page" data-i18n="home.pricing">Pricing</a>
-        <a href="/blog/" data-i18n="home.blog">Blog</a>
-        <a href="/login" data-i18n="auth.signIn">Sign in</a>
-        <a class="m-btn m-btn--primary" href="/app/#/register" data-i18n="auth.createAccount">Create account</a>
-      </nav>
+        <nav class="m-nav">
+          <a href="/pricing/" aria-current="page" data-i18n="home.pricing">Pricing</a>
+          <a href="/blog/" data-i18n="home.blog">Blog</a>
+          <a href="/login" data-i18n="auth.signIn">Sign in</a>
+          <a class="m-btn m-btn--primary" href="/app/#/register" data-i18n="auth.createAccount">Create account</a>
+        </nav>
+      </div>
     </header>
 
     <main class="pricing-page">
