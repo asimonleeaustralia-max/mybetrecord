@@ -5,6 +5,7 @@ FROM nginx:1.27-alpine
 # with envsubst at startup, substituting the *_UPSTREAM env vars.
 COPY frontend/nginx.conf /etc/nginx/templates/default.conf.template
 COPY frontend/public /usr/share/nginx/html
+RUN chmod -R a+rX /usr/share/nginx/html
 
 # Defaults suit docker-compose; Azure overrides these with the internal FQDNs.
 ENV AUTH_UPSTREAM=http://auth:8001 \
