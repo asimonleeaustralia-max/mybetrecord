@@ -102,6 +102,70 @@ curl -X POST https://<your-site>/auth/password-reset/confirm \
   -d '{"token":"<token-from-email>","password":"new-password123"}'
 ```
 
+### Inbound email (support@)
+
+The site links to `support@mybetrecord.com`, `privacy@mybetrecord.com`, and
+`legal@mybetrecord.com`. Inbound mail is separate from outbound SMTP (verification
+and password-reset emails). Use a forwarding service such as
+[ImprovMX](https://improvmx.com) if your DNS is not on Cloudflare.
+
+1. Create an ImprovMX account and add `mybetrecord.com`.
+2. In ImprovMX, open **Domain Settings** (cogwheel) → **DNS Settings** — copy the
+   MX and SPF values shown there (there is no separate `improvmx-verification`
+   string; ImprovMX verifies your domain once MX + SPF records are live in DNS).
+3. **Add MX and SPF records in GoDaddy** (see below).
+4. Create forwarding aliases to your personal inbox:
+   - `support@mybetrecord.com` (required)
+   - `privacy@mybetrecord.com` and `legal@mybetrecord.com` (recommended — linked from the site)
+5. Confirm the destination address via ImprovMX’s verification email.
+6. In ImprovMX, click **Check Again** until the domain shows **Email forwarding
+   active**, then send a test message to `support@mybetrecord.com`.
+
+#### GoDaddy: MX and SPF records (steps 2–3)
+
+ImprovMX does **not** give you a one-off verification code. You add these fixed
+records in GoDaddy; ImprovMX detects them automatically.
+
+1. Sign in at [godaddy.com](https://www.godaddy.com) → **My Products**.
+2. Next to **mybetrecord.com**, click **DNS** (or **Manage DNS**).
+3. Remove any existing **MX** records for `@` (old GoDaddy email, Microsoft
+   365, etc.) — only one inbound mail provider can own MX for a domain.
+4. Add two **MX** records:
+
+   | Type | Name | Value | Priority | TTL |
+   |------|------|-------|----------|-----|
+   | MX | `@` | `mx1.improvmx.com` | 10 | 1 Hour |
+   | MX | `@` | `mx2.improvmx.com` | 20 | 1 Hour |
+
+5. Add one **TXT** record for SPF (this is not a verification code — it tells
+   other mail servers ImprovMX may handle mail for your domain):
+
+   | Type | Name | Value | TTL |
+   |------|------|-------|-----|
+   | TXT | `@` | `v=spf1 include:spf.improvmx.com ~all` | 1 Hour |
+
+   If you already have an SPF TXT record on `@`, **merge** ImprovMX into it
+   (do not create a second SPF record). See
+   [ImprovMX: combining SPF records](https://improvmx.com/guides/combining-spf-records).
+
+6. Click **Save** on each record.
+7. Back in ImprovMX → **Domain Settings** → **DNS Settings**, click **Check
+   Again**. Status changes to **Email forwarding active** once DNS has propagated
+   (usually 5–30 minutes; can take up to 24 hours).
+
+**Notes:**
+
+- Do **not** change your existing **A**, **CNAME**, or **ALIAS** records for
+  `www` / `@` — those keep the website on Azure.
+- If **nameservers** on the GoDaddy DNS page point elsewhere, add MX/SPF at that
+  DNS host instead.
+- Verify records with [ImprovMX Inspector](https://inspector.improvmx.com/).
+
+MX records only affect inbound delivery; they do not change your web hosting
+(CNAME/A for `www` / apex) or outbound SMTP.
+
+If DNS is on Cloudflare, you can use [Cloudflare Email Routing](https://developers.cloudflare.com/email-routing/) instead (free forwarding).
+
 ### Without Docker
 
 `scripts/run_local.py` runs the whole app on SQLite with a built-in static +
