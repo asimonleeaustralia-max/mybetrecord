@@ -148,11 +148,6 @@ def _validate_side_fields(side: str, each_way: bool, free_bet: bool = False) -> 
             status.HTTP_422_UNPROCESSABLE_ENTITY,
             "Free bet promotions apply to back bets only",
         )
-    if free_bet and each_way:
-        raise HTTPException(
-            status.HTTP_422_UNPROCESSABLE_ENTITY,
-            "Free bet is not supported with each-way bets",
-        )
 
 
 def _recompute(bet: Bet, user: User, db: Session) -> None:

@@ -104,6 +104,23 @@ def test_free_bet_cash_out():
     pl = bm.settle_profit(stake=100, decimal_odds=2.5, outcome="loss", cash_out_amount=120, free_bet=True)
     assert pl == pytest.approx(120.0)
 
+
+def test_free_bet_each_way_winner():
+    pl = bm.settle_profit(
+        stake=100, decimal_odds=5.0, outcome="win",
+        each_way=True, place_fraction=0.25, free_bet=True,
+    )
+    assert pl == pytest.approx(250.0)
+
+
+def test_free_bet_each_way_placed_only():
+    pl = bm.settle_profit(
+        stake=100, decimal_odds=5.0, outcome="placed",
+        each_way=True, place_fraction=0.25, free_bet=True,
+    )
+    assert pl == pytest.approx(50.0)
+
+
 def test_free_bet_turnover():
     assert bm.bet_turnover(100, 2.5, free_bet=True) == pytest.approx(0.0)
 

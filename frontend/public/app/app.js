@@ -1146,13 +1146,11 @@ async function renderForm(id) {
     updateSettlementPreview(form);
   });
   form.each_way.addEventListener("change", () => {
-    if (form.each_way.checked && form.free_bet) form.free_bet.checked = false;
     syncPromotionOptions();
     syncOutcomeOptions(form);
     updateSettlementPreview(form);
   });
   form.free_bet?.addEventListener("change", () => {
-    if (form.free_bet.checked) form.each_way.checked = false;
     syncPromotionOptions();
     syncOutcomeOptions(form);
     updateSettlementPreview(form);
@@ -1607,19 +1605,17 @@ function syncPromotionOptions() {
   const lay = isLaySide(form);
   const multiple = isMultiple(form);
 
-  if (lay || form.free_bet?.checked) {
-    if (lay || form.free_bet?.checked) form.each_way.checked = false;
-    form.each_way.disabled = lay || Boolean(form.free_bet?.checked);
-  } else if (!multiple) {
+  if (lay || multiple) {
+    form.each_way.checked = false;
+    form.each_way.disabled = true;
+  } else {
     form.each_way.disabled = false;
   }
   $("#ewFields").hidden = !form.each_way.checked;
 
-  if (lay || multiple || form.each_way?.checked) {
-    if ((lay || multiple) && form.free_bet) form.free_bet.checked = false;
-    if (form.free_bet) {
-      form.free_bet.disabled = lay || multiple || Boolean(form.each_way?.checked);
-    }
+  if (lay || multiple) {
+    if (form.free_bet) form.free_bet.checked = false;
+    if (form.free_bet) form.free_bet.disabled = true;
   } else if (form.free_bet) {
     form.free_bet.disabled = false;
   }

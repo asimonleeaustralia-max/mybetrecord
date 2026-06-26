@@ -391,6 +391,16 @@ def test_free_bet_win_and_loss(clients, auth_headers):
     assert loss["profit"] == pytest.approx(0.0)
 
 
+def test_free_bet_each_way(clients, auth_headers):
+    b = _make_bet(
+        clients, auth_headers[0], odds=5.0, stake=100, outcome="win",
+        each_way=True, place_fraction=0.25, free_bet=True,
+    )
+    assert b["each_way"] is True
+    assert b["free_bet"] is True
+    assert b["profit"] == pytest.approx(250.0)
+
+
 def test_lay_free_bet_rejected(clients, auth_headers):
     r = clients["bets"].post("/bets", headers=auth_headers[0], json={
         "sport": "Football", "event": "A v B", "selection": "Home", "odds": 2.0,
