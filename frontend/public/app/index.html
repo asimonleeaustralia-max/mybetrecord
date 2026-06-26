@@ -226,7 +226,7 @@
               <label class="odds-den-field"><span data-i18n="form.denominator">Denominator</span><input name="odds_denominator" inputmode="decimal" placeholder="4" /></label>
             </div>
           </div>
-          <div class="grid3">
+          <div class="grid2">
             <label><span class="odds-field-head">
                 <span id="stakeFieldLabel" data-i18n="form.stake">Stake</span>
                 <span class="hint" id="stakeFieldHint" hidden data-i18n="form.backersStakeHint">Your profit if the lay wins</span>
@@ -235,8 +235,12 @@
               <input list="currencyList" name="currency" maxlength="3" placeholder="GBP" autocapitalize="characters" required />
               <datalist id="currencyList"></datalist>
             </label>
-            <label class="check"><input type="checkbox" name="each_way" /> <span data-i18n="form.eachWay">Each way</span></label>
           </div>
+          <div class="check-row">
+            <label class="check"><input type="checkbox" name="each_way" /> <span data-i18n="form.eachWay">Each way</span></label>
+            <label class="check"><input type="checkbox" name="free_bet" /> <span data-i18n="form.freeBet">Free bet (promotion)</span></label>
+          </div>
+          <p class="free-bet-note" id="freeBetNote" hidden data-i18n="form.freeBetNote">Promotion stake only — winnings are recorded without returning the stake. A loss records zero P/L because you did not risk your own money.</p>
           <p class="settlement-preview" id="liabilityPreview" hidden>
             <span data-i18n="form.liability">Liability</span>:
             <span class="settlement-preview__value" data-role="liability"></span>

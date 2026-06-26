@@ -384,6 +384,21 @@ def test_pl_each_way_placed_only(clients, auth_headers):
     assert b["profit"] == pytest.approx(0.0)
 
 
+def test_free_bet_win_and_loss(clients, auth_headers):
+    win = _make_bet(clients, auth_headers[0], odds=2.5, stake=100, outcome="win", free_bet=True)
+    assert win["profit"] == pytest.approx(150.0)
+    loss = _make_bet(clients, auth_headers[0], odds=2.5, stake=100, outcome="loss", free_bet=True)
+    assert loss["profit"] == pytest.approx(0.0)
+
+
+def test_lay_free_bet_rejected(clients, auth_headers):
+    r = clients["bets"].post("/bets", headers=auth_headers[0], json={
+        "sport": "Football", "event": "A v B", "selection": "Home", "odds": 2.0,
+        "stake": 10, "outcome": "pending", "side": "lay", "free_bet": True,
+    })
+    assert r.status_code == 422
+
+
 # -------------------------------- Kelly ----------------------------------- #
 
 def test_kelly_recommendation(clients, auth_headers):

@@ -106,6 +106,7 @@ def _metrics_row(bet: Bet) -> dict:
         "cash_out_amount": bet.cash_out_amount,
         "side": bet.side or bm.BACK,
         "decimal_odds": bet.odds_decimal,
+        "free_bet": bet.free_bet,
     }
 
 

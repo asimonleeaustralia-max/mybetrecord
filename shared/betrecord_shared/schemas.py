@@ -333,6 +333,7 @@ class BetBase(BaseModel):
     each_way: bool = False
     place_fraction: float = 0.25
     placed: bool = False
+    free_bet: bool = False
 
     outcome: str = Field(default="pending")
     cash_out_amount: Optional[float] = None
@@ -362,6 +363,8 @@ class BetCreate(BetBase):
             # Each-way and lay are not supported for multiples.
             if self.each_way:
                 raise ValueError("Each-way is not supported for multiple bets")
+            if self.free_bet:
+                raise ValueError("Free bet is not supported for multiple bets")
             if self.side == "lay":
                 raise ValueError("Lay is not supported for multiple bets")
         else:
@@ -400,6 +403,7 @@ class BetUpdate(BaseModel):
     each_way: Optional[bool] = None
     place_fraction: Optional[float] = None
     placed: Optional[bool] = None
+    free_bet: Optional[bool] = None
     outcome: Optional[str] = None
     cash_out_amount: Optional[float] = None
     bet_model: Optional[str] = None
@@ -436,6 +440,7 @@ class BetOut(BaseModel):
     each_way: bool
     place_fraction: float
     placed: bool
+    free_bet: bool = False
     outcome: str
     profit: float
     cash_out_amount: Optional[float]

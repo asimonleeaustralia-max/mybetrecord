@@ -251,8 +251,10 @@ def lay_liability(stake: float, decimal_odds: float) -> float:
     return round(float(stake) * (float(decimal_odds) - 1.0), 2)
 
 
-def bet_turnover(stake: float, decimal_odds: float, side: str = BACK) -> float:
+def bet_turnover(stake: float, decimal_odds: float, side: str = BACK, *, free_bet: bool = False) -> float:
     """Stake counted toward turnover — liability for lays, stake for backs."""
+    if free_bet:
+        return 0.0
     if (side or BACK).lower() == LAY:
         return lay_liability(stake, decimal_odds)
     return float(stake)
@@ -269,6 +271,7 @@ def settle_profit(
     exchange_commission_pct: float = 0.0,   # % deducted from net winnings
     cash_out_amount: Optional[float] = None,
     side: str = BACK,
+    free_bet: bool = False,
 ) -> float:
     """Return profit/loss for one bet (negative = loss), net of winnings deductions.
 
@@ -279,13 +282,17 @@ def settle_profit(
     * For lay bets, stake is the backer's stake (your profit if the lay wins).
     * winnings deductions apply only to net winnings, and only when the bet
       shows a profit (e.g. exchange commission).
-    * a non-null cash_out_amount overrides outcome: P/L = cash_out - stake.
+    * a non-null cash_out_amount overrides outcome: P/L = cash_out - stake
+      (or cash_out alone for free-bet promotions).
+    * free_bet promotions do not return the stake; losses record zero P/L.
     """
     stake = float(stake)
     d = float(decimal_odds)
     is_lay = (side or BACK).lower() == LAY
 
     if cash_out_amount is not None:
+        if free_bet:
+            return round(float(cash_out_amount), 2)
         return round(float(cash_out_amount) - stake, 2)
 
     outcome = (outcome or PENDING).lower()
@@ -310,9 +317,9 @@ def settle_profit(
         elif outcome in (HALF_WIN,):
             gross = 0.5 * stake * (d - 1.0)
         elif outcome in (HALF_LOSS,):
-            gross = -0.5 * stake
+            gross = 0.0 if free_bet else -0.5 * stake
         elif outcome in (LOSS,):
-            gross = -stake
+            gross = 0.0 if free_bet else -stake
         else:
             gross = 0.0
     else:
@@ -323,13 +330,13 @@ def settle_profit(
         if outcome == WIN:
             win_part = unit * (d - 1.0)
         else:
-            win_part = -unit
+            win_part = 0.0 if free_bet else -unit
         # Place part settles on whether it placed (a win implies a place).
         place_odds = 1.0 + (d - 1.0) * float(place_fraction)
         if placed or outcome in (WIN, PLACED):
             place_part = unit * (place_odds - 1.0)
         else:
-            place_part = -unit
+            place_part = 0.0 if free_bet else -unit
         gross = win_part + place_part
 
     commission = 0.0
@@ -410,7 +417,8 @@ def portfolio_metrics(rows: Iterable[dict]) -> dict:
         pl = float(r.get("profit") or 0.0)
         odds = float(r.get("decimal_odds") or 0.0)
         side = r.get("side") or BACK
-        turnover += bet_turnover(stake, odds, side) if odds > 1.0 else stake
+        free_bet = bool(r.get("free_bet"))
+        turnover += bet_turnover(stake, odds, side, free_bet=free_bet) if odds > 1.0 else (0.0 if free_bet else stake)
         profit += pl
         settled += 1
         if has_cash_out:

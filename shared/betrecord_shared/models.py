@@ -184,6 +184,9 @@ class Bet(Base):
     place_fraction: Mapped[float] = mapped_column(Float, default=0.25)
     placed: Mapped[bool] = mapped_column(Boolean, default=False)
 
+    # Promotion: stake is not returned; losses record zero P/L.
+    free_bet: Mapped[bool] = mapped_column(Boolean, default=False)
+
     # Settlement
     outcome: Mapped[str] = mapped_column(String(16), default="pending", index=True)  # win|loss|void|...
     settled_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now, index=True)

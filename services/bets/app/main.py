@@ -137,11 +137,21 @@ def _sync_each_way_fields(bet: Bet) -> None:
         bet.placed = False
 
 
-def _validate_side_fields(side: str, each_way: bool) -> None:
+def _validate_side_fields(side: str, each_way: bool, free_bet: bool = False) -> None:
     if (side or bm.BACK).lower() == bm.LAY and each_way:
         raise HTTPException(
             status.HTTP_422_UNPROCESSABLE_ENTITY,
             "Each-way bets are not supported for lay bets",
+        )
+    if free_bet and (side or bm.BACK).lower() == bm.LAY:
+        raise HTTPException(
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+            "Free bet promotions apply to back bets only",
+        )
+    if free_bet and each_way:
+        raise HTTPException(
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+            "Free bet is not supported with each-way bets",
         )
 
 
@@ -159,6 +169,7 @@ def _recompute(bet: Bet, user: User, db: Session) -> None:
         exchange_commission_pct=bet.exchange_commission_pct or 0.0,
         cash_out_amount=bet.cash_out_amount,
         side=bet.side or bm.BACK,
+        free_bet=bet.free_bet,
     )
     if (bet.side or bm.BACK).lower() == bm.LAY:
         bet.personal_edge_pct = None
@@ -537,17 +548,19 @@ def create_bet(
         bet_type = _multiple_bet_type(payload.bet_type)
         side = bm.BACK
         each_way = False
+        free_bet = False
         stored_format = "decimal"  # combined odds are an inherently decimal product
     else:
         odds_decimal = _normalise_odds(payload.odds, odds_format, payload.odds_denominator)
         if odds_decimal <= 1.0:
             raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, "Decimal odds must exceed 1.0")
-        _validate_side_fields(payload.side, payload.each_way)
+        _validate_side_fields(payload.side, payload.each_way, payload.free_bet)
         event = payload.event
         selection = payload.selection
         bet_type = payload.bet_type
         side = payload.side
         each_way = payload.each_way
+        free_bet = payload.free_bet
         stored_format = odds_format
 
     bet = Bet(
@@ -569,6 +582,7 @@ def create_bet(
         each_way=each_way,
         place_fraction=payload.place_fraction,
         placed=payload.placed,
+        free_bet=free_bet,
         outcome=payload.outcome or "pending",
         cash_out_amount=payload.cash_out_amount,
         bet_model=payload.bet_model,
@@ -638,9 +652,10 @@ def update_bet(
         bet.side = bm.BACK
         bet.each_way = False
         bet.placed = False
+        bet.free_bet = False
         bet.legs = _leg_models(leg_specs)
-        # event/selection/side/each_way/placed are derived for multiples.
-        skip |= {"event", "selection", "side", "each_way", "placed"}
+        # event/selection/side/each_way/placed/free_bet are derived for multiples.
+        skip |= {"event", "selection", "side", "each_way", "placed", "free_bet"}
         if "bet_type" in data:
             bet.bet_type = _multiple_bet_type(data["bet_type"])
             skip.add("bet_type")
@@ -660,7 +675,7 @@ def update_bet(
 
     for field in (
         "tournament", "event", "selection", "sport", "bet_type", "side", "placed_at", "event_at", "settled_at", "stake", "currency",
-        "each_way", "place_fraction", "placed", "outcome", "cash_out_amount",
+        "each_way", "place_fraction", "placed", "free_bet", "outcome", "cash_out_amount",
         "bet_model", "model_implied_odds", "personal_implied_odds", "closing_odds", "closing_odds_exchange",
         "bookmaker", "portal", "exchange_commission_pct", "tipster", "bet_broker", "notes",
     ):
@@ -674,7 +689,7 @@ def update_bet(
                 value = value.upper()
             setattr(bet, field, value)
 
-    _validate_side_fields(bet.side or bm.BACK, bet.each_way)
+    _validate_side_fields(bet.side or bm.BACK, bet.each_way, bet.free_bet)
 
     if "outcome" in data:
         new_outcome = (bet.outcome or bm.PENDING).lower()

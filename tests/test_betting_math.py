@@ -94,6 +94,19 @@ def test_win_profit():
 def test_loss_profit():
     assert bm.settle_profit(stake=100, decimal_odds=2.5, outcome="loss") == pytest.approx(-100.0)
 
+def test_free_bet_win_profit():
+    assert bm.settle_profit(stake=100, decimal_odds=2.5, outcome="win", free_bet=True) == pytest.approx(150.0)
+
+def test_free_bet_loss_profit():
+    assert bm.settle_profit(stake=100, decimal_odds=2.5, outcome="loss", free_bet=True) == pytest.approx(0.0)
+
+def test_free_bet_cash_out():
+    pl = bm.settle_profit(stake=100, decimal_odds=2.5, outcome="loss", cash_out_amount=120, free_bet=True)
+    assert pl == pytest.approx(120.0)
+
+def test_free_bet_turnover():
+    assert bm.bet_turnover(100, 2.5, free_bet=True) == pytest.approx(0.0)
+
 def test_void_profit():
     assert bm.settle_profit(stake=100, decimal_odds=2.5, outcome="void") == 0.0
 

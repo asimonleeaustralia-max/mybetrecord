@@ -924,7 +924,10 @@ function betRow(b) {
   const multiBadge = b.is_multiple
     ? ` <span class="pill pill--multiple">${esc(t("bets.legsCount", { count: (b.legs || []).length }))}</span>`
     : "";
-  const label = esc(b.selection) + layBadge + multiBadge;
+  const freeBetBadge = b.free_bet
+    ? ` <span class="pill pill--promo">${esc(t("form.freeBetBadge"))}</span>`
+    : "";
+  const label = esc(b.selection) + layBadge + multiBadge + freeBetBadge;
   return `<tr>
     <td class="num">${date}</td>
     <td>${esc(b.sport)}</td>
@@ -1118,14 +1121,14 @@ async function renderForm(id) {
   fillCurrencyDatalist($("#currencyList"), 50);
   form.currency.value = state.user.base_currency || "GBP";
   syncOddsFormat();
-  syncEachWay();
+  syncPromotionOptions();
   syncSideUI(form);
   syncOutcomeOptions(form);
   syncMultiple(form);
 
   form.is_multiple.addEventListener("change", () => {
     syncMultiple(form);
-    syncEachWay();
+    syncPromotionOptions();
     syncSideUI(form);
     refreshPreviews(form);
   });
@@ -1137,12 +1140,23 @@ async function renderForm(id) {
   form.odds_format.addEventListener("change", onOddsFormatChange);
   form.side?.addEventListener("change", () => {
     syncSideUI(form);
-    syncEachWay();
+    syncPromotionOptions();
     syncOutcomeOptions(form);
     updateEffectiveOddsPreview(form);
     updateSettlementPreview(form);
   });
-  form.each_way.addEventListener("change", () => { syncEachWay(); syncOutcomeOptions(form); updateSettlementPreview(form); });
+  form.each_way.addEventListener("change", () => {
+    if (form.each_way.checked && form.free_bet) form.free_bet.checked = false;
+    syncPromotionOptions();
+    syncOutcomeOptions(form);
+    updateSettlementPreview(form);
+  });
+  form.free_bet?.addEventListener("change", () => {
+    if (form.free_bet.checked) form.each_way.checked = false;
+    syncPromotionOptions();
+    syncOutcomeOptions(form);
+    updateSettlementPreview(form);
+  });
   ["odds", "odds_denominator", "personal_implied_odds", "model_implied_odds"].forEach(n => {
     const el = form.elements.namedItem(n);
     if (el) el.addEventListener("input", () => {
@@ -1173,7 +1187,7 @@ async function renderForm(id) {
     $("#saveBtn").textContent = t("form.saveChanges");
     editing = await api(`/bets/${id}`);
     fillForm(form, editing);
-    syncOddsFormat(); syncEachWay(); syncSideUI(form); syncOutcomeOptions(form); syncMultiple(form); refreshPreviews(form);
+    syncOddsFormat(); syncPromotionOptions(); syncSideUI(form); syncOutcomeOptions(form); syncMultiple(form); refreshPreviews(form);
     const shareHost = document.createElement("div");
     form.querySelector(".formactions").before(shareHost);
     mountShareControls(shareHost, editing.id, editing.share_token);
@@ -1587,16 +1601,31 @@ function syncOddsFormat() {
     oddsInput.inputMode = "decimal";
   }
 }
-function syncEachWay() {
+function syncPromotionOptions() {
   const form = $("#betForm");
+  if (!form) return;
   const lay = isLaySide(form);
-  if (lay) {
-    form.each_way.checked = false;
-    form.each_way.disabled = true;
-  } else {
+  const multiple = isMultiple(form);
+
+  if (lay || form.free_bet?.checked) {
+    if (lay || form.free_bet?.checked) form.each_way.checked = false;
+    form.each_way.disabled = lay || Boolean(form.free_bet?.checked);
+  } else if (!multiple) {
     form.each_way.disabled = false;
   }
   $("#ewFields").hidden = !form.each_way.checked;
+
+  if (lay || multiple || form.each_way?.checked) {
+    if ((lay || multiple) && form.free_bet) form.free_bet.checked = false;
+    if (form.free_bet) {
+      form.free_bet.disabled = lay || multiple || Boolean(form.each_way?.checked);
+    }
+  } else if (form.free_bet) {
+    form.free_bet.disabled = false;
+  }
+
+  const note = $("#freeBetNote");
+  if (note) note.hidden = !form.free_bet?.checked;
 }
 
 function isLaySide(form) {
@@ -1720,6 +1749,7 @@ function computeSettlementProfit(form) {
   const cashOut = cashOutRaw ? parseFloat(cashOutRaw) : null;
   const outcome = form.outcome?.value || "pending";
   const eachWay = form.each_way?.checked;
+  const freeBet = form.free_bet?.checked;
   const placeFraction = parseFloat(form.place_fraction?.value) || 0.25;
   const commission = parseFloat(form.exchange_commission_pct?.value) || 0;
   const oddsDec = betDecimalOdds(form);
@@ -1727,7 +1757,7 @@ function computeSettlementProfit(form) {
   if (!Number.isFinite(stake) || stake <= 0) return null;
 
   if (cashOut != null && Number.isFinite(cashOut)) {
-    return Math.round((cashOut - stake) * 100) / 100;
+    return Math.round((freeBet ? cashOut : cashOut - stake) * 100) / 100;
   }
 
   if (outcome === "pending") return 0;
@@ -1742,17 +1772,17 @@ function computeSettlementProfit(form) {
   } else if (!eachWay) {
     if (outcome === "win") gross = stake * (oddsDec - 1);
     else if (outcome === "half_win") gross = 0.5 * stake * (oddsDec - 1);
-    else if (outcome === "half_loss") gross = -0.5 * stake;
-    else if (outcome === "loss") gross = -stake;
+    else if (outcome === "half_loss") gross = freeBet ? 0 : -0.5 * stake;
+    else if (outcome === "loss") gross = freeBet ? 0 : -stake;
   } else {
     const unit = stake / 2;
     const placeOdds = 1 + (oddsDec - 1) * placeFraction;
     if (outcome === "win") {
       gross = unit * (oddsDec - 1) + unit * (placeOdds - 1);
     } else if (outcome === "placed") {
-      gross = -unit + unit * (placeOdds - 1);
+      gross = (freeBet ? 0 : -unit) + unit * (placeOdds - 1);
     } else {
-      gross = -stake;
+      gross = freeBet ? 0 : -stake;
     }
   }
 
@@ -1763,7 +1793,9 @@ function computeSettlementProfit(form) {
 function maxCashOutReturn(form) {
   const stake = parseFloat(form.stake?.value);
   const oddsDec = betDecimalOdds(form);
+  const freeBet = form.free_bet?.checked;
   if (!Number.isFinite(stake) || stake <= 0 || !Number.isFinite(oddsDec) || oddsDec <= 1) return null;
+  if (freeBet) return Math.round(stake * (oddsDec - 1) * 100) / 100;
   return Math.round(stake * oddsDec * 100) / 100;
 }
 
@@ -1820,6 +1852,7 @@ function readForm(form) {
     out[k] = NUM_FIELDS.includes(k) ? Number(v) : v;
   }
   out.each_way = form.each_way.checked;
+  out.free_bet = Boolean(form.free_bet?.checked);
   const eachWay = out.each_way;
   out.placed = eachWay && (out.outcome === "win" || out.outcome === "placed");
   if (out.currency) out.currency = out.currency.trim().toUpperCase();
@@ -1835,6 +1868,7 @@ function readForm(form) {
     out.side = "back";
     out.each_way = false;
     out.placed = false;
+    out.free_bet = false;
     // The single event/selection/odds inputs are derived server-side for multiples.
     delete out.event;
     delete out.selection;
@@ -1883,8 +1917,9 @@ function fillForm(form, b) {
   set("stake", b.stake);
   set("currency", b.currency);
   form.each_way.checked = b.each_way;
+  if (form.free_bet) form.free_bet.checked = Boolean(b.free_bet);
   set("place_fraction", b.place_fraction);
-  syncEachWay();
+  syncPromotionOptions();
   syncOutcomeOptions(form);
   set("outcome", displayOutcome(b)); set("cash_out_amount", b.cash_out_amount);
   set("bet_model", b.bet_model); set("closing_odds", b.closing_odds);

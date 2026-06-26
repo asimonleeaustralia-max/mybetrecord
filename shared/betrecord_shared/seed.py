@@ -278,6 +278,28 @@ def _ensure_is_multiple_column() -> None:
             )
 
 
+def _ensure_free_bet_column() -> None:
+    """Add free_bet to existing databases created before promotions existed."""
+    if "bets" not in inspect(engine).get_table_names():
+        return
+    columns = {c["name"] for c in inspect(engine).get_columns("bets")}
+    if "free_bet" in columns:
+        return
+    dialect = engine.dialect.name
+    with engine.begin() as conn:
+        if dialect == "postgresql":
+            conn.execute(
+                text(
+                    "ALTER TABLE bets ADD COLUMN IF NOT EXISTS free_bet "
+                    "BOOLEAN NOT NULL DEFAULT FALSE"
+                )
+            )
+        else:
+            conn.execute(
+                text("ALTER TABLE bets ADD COLUMN free_bet BOOLEAN NOT NULL DEFAULT 0")
+            )
+
+
 def _ensure_side_column() -> None:
     """Add side (back|lay) to existing databases created before the column existed."""
     if "bets" not in inspect(engine).get_table_names():

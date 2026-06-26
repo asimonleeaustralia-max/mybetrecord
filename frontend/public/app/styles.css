@@ -221,7 +221,9 @@ input:focus, select:focus, textarea:focus {
   outline-offset: 1px;
   border-color: var(--brass);
 }
+.check-row { display: flex; flex-wrap: wrap; gap: 18px 24px; margin-top: 4px; }
 .check { display: flex; flex-direction: row; align-items: center; gap: 8px; }
+.free-bet-note { margin: 8px 0 0; padding: 10px 12px; background: var(--brass-wash); border-radius: 8px; color: var(--brass-deep); font-size: .88rem; line-height: 1.45; }
 .check input { width: auto; }
 
 /* ---------- buttons ---------- */
@@ -404,6 +406,7 @@ textarea { font-family: var(--sans); resize: vertical; }
 .combined-odds { margin: 0; font-size: .9rem; color: var(--ink-soft); }
 .combined-odds__value { font-family: var(--mono); font-weight: 600; color: var(--ink); }
 .pill--multiple { background: var(--brass-wash); color: var(--brass-deep); margin-left: 4px; vertical-align: middle; }
+.pill--promo { background: #f3e8ff; color: #7c3aed; margin-left: 4px; vertical-align: middle; }
 
 /* ---------- reports ---------- */
 .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 18px; }

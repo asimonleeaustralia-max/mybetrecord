@@ -61,6 +61,7 @@ def init_db() -> None:
         _ensure_portal_column,
         _ensure_side_column,
         _ensure_is_multiple_column,
+        _ensure_free_bet_column,
         _ensure_billing_columns,
     )
 
@@ -93,6 +94,7 @@ def init_db() -> None:
     _ensure_portal_column()
     _ensure_side_column()
     _ensure_is_multiple_column()
+    _ensure_free_bet_column()
     _ensure_billing_columns()
     seed_dev_admin()
     seed_bootstrap_admins()
