@@ -55,6 +55,9 @@ class Settings:
         # are unlimited. The main functional difference between the plans.
         self.free_daily_bet_limit = int(os.getenv("FREE_DAILY_BET_LIMIT", "5"))
         self.free_daily_multiple_limit = int(os.getenv("FREE_DAILY_MULTIPLE_LIMIT", "5"))
+        # Abuse prevention — hard cap on total bets per day for free and pro tiers.
+        # Not advertised to users.
+        self.tier_daily_abuse_limit = int(os.getenv("TIER_DAILY_ABUSE_LIMIT", "500"))
 
         # Multiple / parlay leg bounds. A multiple is at least a double (2 legs) and
         # at most this many legs.

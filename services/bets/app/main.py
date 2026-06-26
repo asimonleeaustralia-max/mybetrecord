@@ -385,8 +385,21 @@ def _usage(db: Session, user: User) -> BetUsageOut:
     )
 
 
+def _enforce_daily_abuse_limit(db: Session, user: User) -> None:
+    """Hard cap on total bets per day for free and pro tiers (abuse prevention)."""
+    if user.is_admin:
+        return
+    limit = get_settings().tier_daily_abuse_limit
+    if _bets_entered_today(db, user) >= limit:
+        raise HTTPException(
+            status.HTTP_429_TOO_MANY_REQUESTS,
+            "Unable to record bet right now. Please try again later.",
+        )
+
+
 def _enforce_daily_limit(db: Session, user: User, *, is_multiple: bool = False) -> None:
     """Free users get a separate daily allowance for single and multiple bets."""
+    _enforce_daily_abuse_limit(db, user)
     if user.is_pro:
         return
     if is_multiple:

@@ -722,6 +722,31 @@ def test_pro_plan_has_no_daily_limit(clients, auth_headers):
     assert usage["remaining"] is None
 
 
+def test_tier_daily_abuse_limit_blocks_pro_users(monkeypatch, clients, auth_headers):
+    """Internal cap applies to Pro but is not exposed via /bets/usage."""
+    monkeypatch.setenv("TIER_DAILY_ABUSE_LIMIT", "3")
+    get_settings.cache_clear()
+    headers, email = auth_headers
+    _promote_to_pro(email)
+    bet = {
+        "event": "e", "selection": "s", "sport": "Soccer",
+        "odds": 2.0, "odds_format": "decimal", "stake": 10,
+    }
+
+    for _ in range(3):
+        assert clients["bets"].post("/bets", headers=headers, json=bet).status_code == 201
+
+    blocked = clients["bets"].post("/bets", headers=headers, json=bet)
+    assert blocked.status_code == 429
+    assert "500" not in blocked.json()["detail"]
+    assert "limit" not in blocked.json()["detail"].lower()
+
+    usage = clients["bets"].get("/bets/usage", headers=headers).json()
+    assert usage["limit"] is None
+    assert usage["remaining"] is None
+    get_settings.cache_clear()
+
+
 # ------------------------------- admin ------------------------------------ #
 
 def _admin_headers(clients):
