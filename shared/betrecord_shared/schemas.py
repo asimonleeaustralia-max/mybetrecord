@@ -161,11 +161,31 @@ class CheckoutRequest(BaseModel):
     currency: Optional[str] = Field(default=None, min_length=3, max_length=3)
     success_url: str
     cancel_url: str
+    promotion_code: Optional[str] = None
 
 
 class CheckoutSessionOut(BaseModel):
     id: str
     url: Optional[str] = None
+
+
+class PortalSessionRequest(BaseModel):
+    return_url: str
+
+
+class PortalSessionOut(BaseModel):
+    url: str
+
+
+class PromoValidationOut(BaseModel):
+    valid: bool
+    code: str
+    summary: Optional[str] = None
+    percent_off: Optional[float] = None
+    amount_off: Optional[int] = None
+    currency: Optional[str] = None
+    duration: Optional[str] = None
+    duration_in_months: Optional[int] = None
 
 
 class BetUsageOut(BaseModel):

@@ -494,6 +494,14 @@ code { font-family: var(--mono); font-size: .82em; background: var(--canvas); pa
   font-family: var(--mono); font-variant-numeric: tabular-nums;
   font-size: 1.2rem; font-weight: 700; color: var(--ink);
 }
+.upgrade-card__promo { display: grid; gap: 6px; font-size: .85rem; color: var(--muted); }
+.upgrade-card__promo-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.mini-input {
+  padding: 6px 10px; font-size: .82rem; border: 1px solid var(--line);
+  border-radius: var(--radius); background: var(--surface); color: var(--ink);
+  min-width: 140px;
+}
+.plan-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 .upgrade-card .btn { justify-self: start; }
 
 .usage-banner {

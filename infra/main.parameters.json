@@ -9,7 +9,6 @@
     "jwtSecret": { "value": "REPLACE_WITH_LONG_RANDOM_SECRET" },
     "corsOrigins": { "value": "*" },
     "stripeSecretKey": { "value": "" },
-    "stripePriceId": { "value": "" },
     "stripeWebhookSecret": { "value": "" }
   }
 }

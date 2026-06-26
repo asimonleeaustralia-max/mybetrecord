@@ -385,7 +385,7 @@ async function api(path, { method = "GET", body, raw = false, allow401 = false, 
         detail = text;
       }
     }
-    throw new Error(apiErrorMessage(detail));
+    throw Object.assign(new Error(apiErrorMessage(detail)), { status: res.status });
   }
   if (raw) return res;
   if (res.status === 204) return null;
@@ -475,7 +475,7 @@ async function publicApi(path) {
     if (text) {
       try { detail = JSON.parse(text).detail ?? detail; } catch { detail = text; }
     }
-    throw new Error(apiErrorMessage(detail));
+    throw Object.assign(new Error(apiErrorMessage(detail)), { status: res.status });
   }
   return res.json();
 }
@@ -1201,7 +1201,14 @@ async function renderForm(id) {
       toast(editing ? t("form.betUpdated") : t("form.betRecorded"));
       await refreshTicker();
       location.hash = "#/bets";
-    } catch (err) { toast(err.message, true); }
+    } catch (err) {
+      if (err.status === 402) {
+        toast(t("plan.limitReached"), true);
+        location.hash = "#/settings";
+      } else {
+        toast(err.message, true);
+      }
+    }
   });
 }
 
@@ -2122,10 +2129,12 @@ function planDateLabel(iso) {
 async function handleBillingReturn() {
   const params = new URLSearchParams(location.search);
   const billing = params.get("billing");
-  if (!billing) return;
-  // Strip the query param but keep the SPA hash route.
+  const promo = params.get("promo");
+  if (!billing && !promo) return;
+  // Strip query params but keep the SPA hash route.
   const clean = location.pathname + location.hash;
   history.replaceState(null, "", clean);
+  if (promo) state.pendingPromoCode = promo.trim();
   if (billing === "success") {
     // The webhook confirms Pro server-side; refresh the cached user.
     try { state.user = await api("/auth/me"); } catch {}
@@ -2186,9 +2195,29 @@ function renderProPlan(body, plan) {
   if (cancelling) {
     lines.push(`<div class="plan-actions"><button type="button" class="btn btn--brass btn--sm" id="resumeBtn">${esc(t("plan.resume"))}</button></div>`);
   } else {
-    lines.push(`<div class="plan-actions"><button type="button" class="btn btn--ghost btn--sm" id="cancelBtn">${esc(t("plan.cancel"))}</button></div>`);
+    lines.push(`<div class="plan-actions">
+      <button type="button" class="btn btn--ghost btn--sm" id="manageBillingBtn">${esc(t("plan.manageBilling"))}</button>
+      <button type="button" class="btn btn--ghost btn--sm" id="cancelBtn">${esc(t("plan.cancel"))}</button>
+    </div>`);
   }
   body.innerHTML = lines.join("");
+
+  const manageBtn = $("#manageBillingBtn");
+  if (manageBtn) manageBtn.addEventListener("click", async () => {
+    manageBtn.disabled = true;
+    try {
+      const base = `${location.origin}/app/`;
+      const session = await api("/payments/portal-session", {
+        method: "POST",
+        body: { return_url: `${base}#/settings` },
+      });
+      if (session.url) window.location.assign(session.url);
+      else manageBtn.disabled = false;
+    } catch (err) {
+      toast(err.message, true);
+      manageBtn.disabled = false;
+    }
+  });
 
   const cancelBtn = $("#cancelBtn");
   if (cancelBtn) cancelBtn.addEventListener("click", async () => {
@@ -2246,34 +2275,86 @@ function renderFreePlan(body, plan, pricing) {
         </label>
         <div class="upgrade-card__price" id="planPrice"></div>
       </div>
+      <label class="upgrade-card__promo">
+        <span>${esc(t("plan.promoLabel"))}</span>
+        <div class="upgrade-card__promo-row">
+          <input type="text" id="planPromo" class="mini-input" placeholder="${esc(t("plan.promoPlaceholder"))}" autocomplete="off" />
+          <button type="button" class="btn btn--ghost btn--sm" id="promoApplyBtn">${esc(t("plan.promoApply"))}</button>
+        </div>
+        <p class="plan-note" id="planPromoNote" hidden></p>
+      </label>
       <button type="button" class="btn btn--brass" id="upgradeBtn">${esc(t("plan.upgrade"))}</button>
     </div>`);
   body.innerHTML = blocks.join("");
 
+  let appliedPromo = null;
   const priceFor = code => {
     const p = prices.find(x => x.currency === code);
     return p ? formatPrice(p.amount, p.currency) : "";
   };
   const updatePrice = () => {
     const code = $("#planCurrency").value;
-    $("#planPrice").textContent = t("plan.perMonth", { price: priceFor(code) });
+    const base = t("plan.perMonth", { price: priceFor(code) });
+    $("#planPrice").textContent = appliedPromo?.summary
+      ? `${base} (${appliedPromo.summary})`
+      : base;
+  };
+  const applyPromo = async () => {
+    const input = $("#planPromo");
+    const note = $("#planPromoNote");
+    const code = (input?.value || "").trim();
+    appliedPromo = null;
+    if (note) { note.hidden = true; note.textContent = ""; }
+    if (!code) { updatePrice(); return; }
+    try {
+      const result = await api(`/payments/promo?code=${encodeURIComponent(code)}`);
+      if (result.valid) {
+        appliedPromo = result;
+        if (note) {
+          note.hidden = false;
+          note.textContent = t("plan.promoApplied", { summary: result.summary });
+        }
+      } else if (note) {
+        note.hidden = false;
+        note.textContent = t("plan.promoInvalid");
+      }
+    } catch (err) {
+      if (note) {
+        note.hidden = false;
+        note.textContent = err.message || t("plan.promoInvalid");
+      }
+    }
+    updatePrice();
   };
   $("#planCurrency").addEventListener("change", updatePrice);
+  $("#promoApplyBtn")?.addEventListener("click", applyPromo);
+  $("#planPromo")?.addEventListener("keydown", e => {
+    if (e.key === "Enter") { e.preventDefault(); applyPromo(); }
+  });
+  if (state.pendingPromoCode) {
+    const promoInput = $("#planPromo");
+    if (promoInput) promoInput.value = state.pendingPromoCode;
+    state.pendingPromoCode = null;
+    applyPromo();
+  }
   updatePrice();
 
   $("#upgradeBtn").addEventListener("click", async () => {
     const btn = $("#upgradeBtn");
     btn.disabled = true;
     const currency = $("#planCurrency").value;
+    const promoCode = ($("#planPromo")?.value || "").trim();
     const base = `${location.origin}/app/`;
     try {
+      const body = {
+        currency,
+        success_url: `${base}?billing=success#/settings`,
+        cancel_url: `${base}?billing=cancel#/settings`,
+      };
+      if (promoCode) body.promotion_code = promoCode;
       const session = await api("/payments/checkout-session", {
         method: "POST",
-        body: {
-          currency,
-          success_url: `${base}?billing=success#/settings`,
-          cancel_url: `${base}?billing=cancel#/settings`,
-        },
+        body,
       });
       if (session.url) {
         window.location.assign(session.url);

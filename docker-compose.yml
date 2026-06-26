@@ -9,6 +9,7 @@ x-service-env: &service-env
   ENVIRONMENT: development
   CORS_ORIGINS: "*"
   FREE_DAILY_BET_LIMIT: ${FREE_DAILY_BET_LIMIT:-5}
+  FREE_DAILY_MULTIPLE_LIMIT: ${FREE_DAILY_MULTIPLE_LIMIT:-5}
 
 services:
   db:
@@ -62,7 +63,6 @@ services:
       STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}          # set to enable billing
       STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
       STRIPE_PRODUCT_ID: ${STRIPE_PRODUCT_ID:-}
-      STRIPE_PRICE_ID: ${STRIPE_PRICE_ID:-}
     depends_on:
       db: { condition: service_healthy }
     ports: ["8004:8004"]

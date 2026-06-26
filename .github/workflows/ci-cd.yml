@@ -84,6 +84,8 @@ jobs:
           SMTP_FROM: ${{ secrets.SMTP_FROM }}
           SMTP_USE_TLS: ${{ secrets.SMTP_USE_TLS }}
           STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+          STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
+          STRIPE_PRODUCT_ID: ${{ secrets.STRIPE_PRODUCT_ID }}
         run: |
           TAG="${GITHUB_SHA::7}"
           ./scripts/deploy.sh --skip-tests --tag "$TAG"

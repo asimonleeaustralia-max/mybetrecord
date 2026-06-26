@@ -13,6 +13,7 @@ at checkout; the business accepts the FX swing between them.
 
 from __future__ import annotations
 
+import logging
 from datetime import datetime, timezone
 
 from fastapi import Depends, FastAPI, HTTPException, Request, status
@@ -29,12 +30,16 @@ from betrecord_shared.schemas import (
     CheckoutRequest,
     CheckoutSessionOut,
     PlanOut,
+    PortalSessionOut,
+    PortalSessionRequest,
     PriceOut,
     PricingOut,
+    PromoValidationOut,
 )
 from betrecord_shared.security import get_current_user
 
 settings = get_settings()
+logger = logging.getLogger(__name__)
 app = FastAPI(title="mybetrecord · payments", version="0.2.0")
 
 app.add_middleware(
@@ -75,6 +80,45 @@ def _as_dt(epoch: int | None) -> datetime | None:
     return datetime.fromtimestamp(epoch, tz=timezone.utc)
 
 
+def _coupon_summary(coupon: dict) -> str:
+    """Human-readable discount description from a Stripe coupon object."""
+    parts: list[str] = []
+    if coupon.get("percent_off"):
+        parts.append(f"{coupon['percent_off']:.0f}% off")
+    elif coupon.get("amount_off"):
+        amount = coupon["amount_off"] / 100
+        ccy = (coupon.get("currency") or "").upper()
+        parts.append(f"{amount:g} {ccy} off".strip())
+
+    duration = coupon.get("duration")
+    months = coupon.get("duration_in_months")
+    if duration == "once":
+        parts.append("first invoice")
+    elif duration == "repeating" and months:
+        parts.append(f"for {months} month{'s' if months != 1 else ''}")
+    elif duration == "forever":
+        parts.append("ongoing")
+
+    return " ".join(parts) if parts else "Discount applied"
+
+
+def _resolve_promotion_code(code: str) -> tuple[str, dict]:
+    """Return (promotion_code id, coupon dict) for an active, redeemable code."""
+    matches = stripe.PromotionCode.list(code=code.strip(), active=True, limit=1)
+    if not matches.data:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Invalid or expired promotion code.")
+    promo = matches.data[0]
+    if promo.max_redemptions and promo.times_redeemed >= promo.max_redemptions:
+        raise HTTPException(
+            status.HTTP_400_BAD_REQUEST,
+            "This promotion code has reached its redemption limit.",
+        )
+    coupon = promo.coupon
+    if isinstance(coupon, str):
+        coupon = stripe.Coupon.retrieve(coupon)
+    return promo.id, coupon
+
+
 @app.get("/health")
 def health() -> dict:
     return {"status": "ok", "service": "payments", "stripe_configured": _stripe_ready()}
@@ -86,6 +130,28 @@ def get_pricing() -> PricingOut:
     return PricingOut(
         default_currency=pricing.DEFAULT_CURRENCY,
         prices=[PriceOut(**p) for p in pricing.pricing_table()],
+    )
+
+
+@app.get("/payments/promo", response_model=PromoValidationOut)
+def validate_promo(code: str) -> PromoValidationOut:
+    """Check whether a promotion code is valid and describe its discount."""
+    _require_stripe()
+    if not code or not code.strip():
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Promotion code is required.")
+    try:
+        _, coupon = _resolve_promotion_code(code)
+    except HTTPException:
+        return PromoValidationOut(valid=False, code=code.strip())
+    return PromoValidationOut(
+        valid=True,
+        code=code.strip().upper(),
+        summary=_coupon_summary(coupon),
+        percent_off=coupon.get("percent_off"),
+        amount_off=coupon.get("amount_off"),
+        currency=(coupon.get("currency") or "").upper() or None,
+        duration=coupon.get("duration"),
+        duration_in_months=coupon.get("duration_in_months"),
     )
 
 
@@ -141,19 +207,45 @@ def create_checkout_session(
         price_data["product_data"] = {"name": "mybetrecord Pro"}
 
     customer_id = _ensure_customer(user, db)
-    session = stripe.checkout.Session.create(
-        mode="subscription",
-        line_items=[{"price_data": price_data, "quantity": 1}],
-        customer=customer_id,
-        client_reference_id=user.id,
-        subscription_data={"metadata": {"user_id": user.id, "currency": currency}},
-        metadata={"user_id": user.id, "currency": currency},
-        success_url=payload.success_url,
-        cancel_url=payload.cancel_url,
-    )
-    log_event(db, "checkout_started", user_id=user.id, detail=f"{currency} {unit_amount}")
+    session_kwargs: dict = {
+        "mode": "subscription",
+        "line_items": [{"price_data": price_data, "quantity": 1}],
+        "customer": customer_id,
+        "client_reference_id": user.id,
+        "subscription_data": {"metadata": {"user_id": user.id, "currency": currency}},
+        "metadata": {"user_id": user.id, "currency": currency},
+        "success_url": payload.success_url,
+        "cancel_url": payload.cancel_url,
+    }
+    if payload.promotion_code:
+        promo_id, _ = _resolve_promotion_code(payload.promotion_code)
+        session_kwargs["discounts"] = [{"promotion_code": promo_id}]
+    else:
+        session_kwargs["allow_promotion_codes"] = True
+
+    session = stripe.checkout.Session.create(**session_kwargs)
+    detail = f"{currency} {unit_amount}"
+    if payload.promotion_code:
+        detail += f" promo={payload.promotion_code.strip()}"
+    log_event(db, "checkout_started", user_id=user.id, detail=detail)
     db.commit()
     return CheckoutSessionOut(id=session.id, url=session.url)
+
+
+@app.post("/payments/portal-session", response_model=PortalSessionOut)
+def create_portal_session(
+    payload: PortalSessionRequest,
+    user: User = Depends(get_current_user),
+) -> PortalSessionOut:
+    """Stripe Customer Portal — update payment method, view invoices."""
+    _require_stripe()
+    if not user.stripe_customer_id:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "No billing account yet.")
+    session = stripe.billing_portal.Session.create(
+        customer=user.stripe_customer_id,
+        return_url=payload.return_url,
+    )
+    return PortalSessionOut(url=session.url)
 
 
 @app.post("/payments/cancel", response_model=PlanOut)
@@ -233,6 +325,27 @@ def _apply_subscription(user: User, sub: dict, db: Session) -> None:
     db.commit()
 
 
+def _log_promo_redemption(db: Session, user: User, session_obj: dict) -> None:
+    """Best-effort audit when a checkout used a promotion code."""
+    total_details = session_obj.get("total_details") or {}
+    if not total_details.get("amount_discount"):
+        return
+    discounts = session_obj.get("discounts") or []
+    detail = "discount applied"
+    if discounts:
+        promo = discounts[0].get("promotion_code")
+        if isinstance(promo, dict):
+            detail = promo.get("code") or detail
+        elif promo:
+            try:
+                promo_obj = stripe.PromotionCode.retrieve(promo)
+                detail = promo_obj.code or detail
+            except Exception:
+                pass
+    log_event(db, "promo_redeemed", user_id=user.id, detail=detail)
+    db.commit()
+
+
 @app.post("/payments/webhook")
 async def webhook(request: Request, db: Session = Depends(get_db)):
     _require_stripe()
@@ -269,6 +382,10 @@ async def webhook(request: Request, db: Session = Depends(get_db)):
             else:
                 user.plan = "pro"
                 db.commit()
+            try:
+                _log_promo_redemption(db, user, obj)
+            except Exception:
+                logger.debug("Could not log promo redemption", exc_info=True)
 
     elif event_type in ("customer.subscription.updated", "customer.subscription.created"):
         user = _find_user(
@@ -292,5 +409,8 @@ async def webhook(request: Request, db: Session = Depends(get_db)):
             user.stripe_subscription_id = None
             user.subscription_current_period_end = _as_dt(obj.get("current_period_end"))
             db.commit()
+
+    else:
+        logger.debug("Unhandled Stripe webhook event: %s", event_type)
 
     return {"received": True}

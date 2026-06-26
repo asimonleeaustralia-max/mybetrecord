@@ -295,7 +295,13 @@
     "processing": "Your upgrade is being processed — this can take a moment.",
     "betsToday": "{{count}} of {{limit}} daily bets used",
     "multiplesToday": "{{count}} of {{limit}} daily multiples used",
-    "limitReached": "Daily limit reached — upgrade to Pro"
+    "limitReached": "Daily limit reached — upgrade to Pro",
+    "manageBilling": "Manage billing",
+    "promoLabel": "Promo code",
+    "promoPlaceholder": "Optional",
+    "promoApply": "Apply",
+    "promoInvalid": "That promotion code isn't valid.",
+    "promoApplied": "{{summary}}"
   },
   "admin": {
     "title": "Admin",

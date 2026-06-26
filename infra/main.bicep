@@ -41,8 +41,6 @@ param corsOrigins string = '*'
 @description('Stripe secret key (optional — leave blank to disable billing).')
 param stripeSecretKey string = ''
 
-param stripePriceId string = ''
-
 @description('Existing Stripe Product id for Pro prices (optional).')
 param stripeProductId string = ''
 
@@ -210,7 +208,6 @@ var stripeEnv = empty(stripeSecretKey)
   : [
       { name: 'STRIPE_SECRET_KEY', secretRef: 'stripe-secret' }
       { name: 'STRIPE_WEBHOOK_SECRET', secretRef: 'stripe-webhook' }
-      { name: 'STRIPE_PRICE_ID', value: stripePriceId }
       { name: 'STRIPE_PRODUCT_ID', value: stripeProductId }
     ]
 

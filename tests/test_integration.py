@@ -610,6 +610,36 @@ def test_cancel_requires_stripe_config(clients, auth_headers):
     assert r.status_code == 503
 
 
+def test_promo_validate_requires_stripe_config(clients):
+    r = clients["payments"].get("/payments/promo", params={"code": "TEST"})
+    assert r.status_code == 503
+
+
+def test_portal_session_requires_stripe_config(clients, auth_headers):
+    headers, _ = auth_headers
+    r = clients["payments"].post(
+        "/payments/portal-session",
+        headers=headers,
+        json={"return_url": "https://example.com/app#/settings"},
+    )
+    assert r.status_code == 503
+
+
+def test_checkout_accepts_optional_promotion_code_field(clients, auth_headers):
+    headers, _ = auth_headers
+    r = clients["payments"].post(
+        "/payments/checkout-session",
+        headers=headers,
+        json={
+            "currency": "USD",
+            "success_url": "https://x/ok",
+            "cancel_url": "https://x/no",
+            "promotion_code": "LAUNCH20",
+        },
+    )
+    assert r.status_code == 503  # billing not configured; field accepted by schema
+
+
 # --------------------------- free / pro plan ----------------------------- #
 
 def _promote_to_pro(email: str) -> None:

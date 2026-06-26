@@ -46,7 +46,6 @@ class Settings:
         # Stripe (payments service)
         self.stripe_secret_key = os.getenv("STRIPE_SECRET_KEY", "")
         self.stripe_webhook_secret = os.getenv("STRIPE_WEBHOOK_SECRET", "")
-        self.stripe_price_id = os.getenv("STRIPE_PRICE_ID", "")
         # Existing Stripe Product to attach Pro prices to. Optional — when unset the
         # payments service creates the line item with inline product data instead.
         self.stripe_product_id = os.getenv("STRIPE_PRODUCT_ID", "")

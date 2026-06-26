@@ -35,7 +35,7 @@ frontend, deployed to Azure Container Apps with Bicep.
 | **auth** | users, login, settings, API keys, password reset | `/auth/register`, `/auth/login`, `/auth/me`, `/auth/settings`, `/auth/api-keys`, `/auth/password-reset/request`, `/auth/password-reset/confirm` |
 | **bets** | bet CRUD, odds normalisation, P/L + Kelly on write, sports list | `/bets`, `/bets/{id}`, `/bets/sports` |
 | **reports** | analytics, exports | `/reports/summary`, `/reports/equity-curve`, `/reports/breakdown`, `/reports/export.csv`, `/reports/export.xlsx` |
-| **payments** | Stripe scaffold (off by default) | `/payments/checkout-session`, `/payments/webhook` |
+| **payments** | Stripe Pro subscriptions (off without keys) | `/payments/checkout-session`, `/payments/webhook`, `/payments/promo`, `/payments/portal-session` |
 | **frontend** | SPA + same-origin reverse proxy | — |
 
 The domain logic — odds conversion, implied probability, Kelly, settlement,
@@ -74,6 +74,38 @@ docker compose up --build
 
 That starts Postgres, all four services, and the frontend. Create an account, set your **default entry odds** format and bankroll under
 **Settings** (bankroll is used for the Kelly recommendation), and record a bet.
+
+### Plans & billing
+
+- **Free** — up to 5 single bets and 5 multiple/parlay bets per day (configurable via `FREE_DAILY_BET_LIMIT` / `FREE_DAILY_MULTIPLE_LIMIT`).
+- **Pro** — unlimited daily bets, ~$5 USD/month (20 currencies; see `shared/betrecord_shared/pricing.py`).
+
+Billing is **optional**. Without `STRIPE_SECRET_KEY`, everyone stays on Free and upgrade buttons show as unavailable.
+
+To enable billing locally, set in `.env` or `docker-compose` overrides:
+
+```bash
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...   # from Stripe CLI or Dashboard webhook
+STRIPE_PRODUCT_ID=prod_...          # optional — groups prices in Stripe Dashboard
+```
+
+Forward webhooks during local dev:
+
+```bash
+stripe listen --forward-to localhost:8080/payments/webhook
+```
+
+**Stripe Dashboard setup (test + live):**
+
+1. Create a Product (e.g. `mybetrecord Pro`) — optional `STRIPE_PRODUCT_ID`.
+2. Register webhook `https://<your-domain>/payments/webhook` with events: `checkout.session.completed`, `customer.subscription.created`, `customer.subscription.updated`, `customer.subscription.deleted`.
+3. Configure [Customer Portal](https://dashboard.stripe.com/settings/billing/portal) for payment-method updates and invoices.
+4. **Promotion codes** — create a Coupon (e.g. 20% off for 3 months), then a Promotion Code (e.g. `LAUNCH20`). Share via email or deep link `/app?promo=LAUNCH20#/settings`. Codes can also be entered on Stripe Checkout or in Settings before upgrade.
+
+Test card: `4242 4242 4242 4242`, any future expiry, any CVC.
+
+Past-due subscriptions still grant Pro access (`past_due` is treated as active) until Stripe cancels the subscription.
 
 ### Password reset
 
@@ -250,7 +282,8 @@ records Azure shows you at your registrar. Set `corsOrigins` to that URL.
 calls `./scripts/deploy.sh --skip-tests` after Azure OIDC login. Configure these
 repo secrets: `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID`,
 `PG_ADMIN_PASSWORD`, `JWT_SECRET`, and (optionally) `FRONTEND_URL`, `SMTP_HOST`,
-`SMTP_USER`, `SMTP_PASSWORD`, `STRIPE_SECRET_KEY`.
+`SMTP_USER`, `SMTP_PASSWORD`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`,
+`STRIPE_PRODUCT_ID`.
 
 ### Why Container Apps instead of bare Container Instances
 
