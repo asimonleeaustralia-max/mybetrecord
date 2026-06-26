@@ -169,9 +169,17 @@
               <input list="bookmakerList" name="bookmaker" data-i18n-placeholder="form.bookmakerPlaceholder" />
               <datalist id="bookmakerList"></datalist>
             </label>
-            <label><span data-i18n="form.commission">Winnings deduction %</span> <span class="hint" data-i18n="form.commissionHint">e.g. exchange commission</span>
-              <input name="exchange_commission_pct" inputmode="decimal" placeholder="0" /></label>
+            <label><span data-i18n="form.portal">Portal</span> <span class="hint" data-i18n="form.optional">optional</span>
+              <select name="portal" id="betPortal">
+                <option value=""></option>
+                <option value="phone" data-i18n="form.portalPhone">Phone</option>
+                <option value="online" data-i18n="form.portalOnline">Online</option>
+                <option value="in_shop" data-i18n="form.portalInShop">In Shop</option>
+              </select>
+            </label>
           </div>
+          <label><span data-i18n="form.commission">Winnings deduction %</span> <span class="hint" data-i18n="form.commissionHint">e.g. exchange commission</span>
+            <input name="exchange_commission_pct" inputmode="decimal" placeholder="0" /></label>
           <label><span data-i18n="form.tournament">Tournament</span> <span class="hint" data-i18n="form.optional">optional</span><input name="tournament" data-i18n-placeholder="form.tournamentPlaceholder" /></label>
           <label id="eventField"><span data-i18n="form.event">Event</span><input name="event" required data-i18n-placeholder="form.eventPlaceholder" /></label>
           <label id="selectionField"><span data-i18n="form.selection">Selection</span><input name="selection" required data-i18n-placeholder="form.selectionPlaceholder" /></label>

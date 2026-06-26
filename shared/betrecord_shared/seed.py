@@ -62,6 +62,21 @@ def _ensure_bookmaker_column() -> None:
             conn.execute(text("ALTER TABLE bets ADD COLUMN bookmaker VARCHAR(80)"))
 
 
+def _ensure_portal_column() -> None:
+    """Add portal to existing databases created before the column existed."""
+    if "bets" not in inspect(engine).get_table_names():
+        return
+    columns = {c["name"] for c in inspect(engine).get_columns("bets")}
+    if "portal" in columns:
+        return
+    dialect = engine.dialect.name
+    with engine.begin() as conn:
+        if dialect == "postgresql":
+            conn.execute(text("ALTER TABLE bets ADD COLUMN IF NOT EXISTS portal VARCHAR(16)"))
+        else:
+            conn.execute(text("ALTER TABLE bets ADD COLUMN portal VARCHAR(16)"))
+
+
 def _ensure_event_at_column() -> None:
     """Add event_at to existing databases created before the column existed."""
     if "bets" not in inspect(engine).get_table_names():

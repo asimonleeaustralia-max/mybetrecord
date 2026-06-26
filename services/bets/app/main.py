@@ -577,6 +577,7 @@ def create_bet(
         closing_odds=payload.closing_odds,
         closing_odds_exchange=payload.closing_odds_exchange,
         bookmaker=payload.bookmaker,
+        portal=payload.portal,
         exchange_commission_pct=payload.exchange_commission_pct or 0.0,
         tipster=payload.tipster,
         bet_broker=payload.bet_broker,
@@ -661,7 +662,7 @@ def update_bet(
         "tournament", "event", "selection", "sport", "bet_type", "side", "placed_at", "event_at", "settled_at", "stake", "currency",
         "each_way", "place_fraction", "placed", "outcome", "cash_out_amount",
         "bet_model", "model_implied_odds", "personal_implied_odds", "closing_odds", "closing_odds_exchange",
-        "bookmaker", "exchange_commission_pct", "tipster", "bet_broker", "notes",
+        "bookmaker", "portal", "exchange_commission_pct", "tipster", "bet_broker", "notes",
     ):
         if field in skip:
             continue

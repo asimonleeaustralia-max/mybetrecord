@@ -203,6 +203,7 @@ class Bet(Base):
 
     # Where the bet was placed
     bookmaker: Mapped[str | None] = mapped_column(String(80), nullable=True, index=True)
+    portal: Mapped[str | None] = mapped_column(String(16), nullable=True)  # phone | online | in_shop
     exchange_commission_pct: Mapped[float] = mapped_column(Float, default=0.0)  # % deducted from winnings
 
     # Meta

@@ -210,6 +210,7 @@ _EXPORT_COLUMNS = [
     ("closing_odds", "Closing odds bookmaker"),
     ("closing_odds_exchange", "Closing odds exchange"),
     ("bookmaker", "Bookmaker"),
+    ("portal", "Portal"),
     ("exchange_commission_pct", "Winnings deduction %"),
     ("tipster", "Tipster"),
     ("notes", "Notes"),

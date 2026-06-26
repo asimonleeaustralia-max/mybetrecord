@@ -1886,6 +1886,7 @@ function fillForm(form, b) {
   set("personal_implied_odds", b.personal_implied_odds);
   set("exchange_commission_pct", b.exchange_commission_pct);
   set("bookmaker", b.bookmaker);
+  if (form.portal) form.portal.value = b.portal || "";
   set("tipster", b.tipster); set("bet_broker", b.bet_broker); set("notes", b.notes);
 }
 

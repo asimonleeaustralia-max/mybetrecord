@@ -58,6 +58,7 @@ def init_db() -> None:
         _ensure_modelling_edge_columns,
         _ensure_share_token_column,
         _ensure_bet_broker_column,
+        _ensure_portal_column,
         _ensure_side_column,
         _ensure_is_multiple_column,
         _ensure_billing_columns,
@@ -89,6 +90,7 @@ def init_db() -> None:
     _ensure_modelling_edge_columns()
     _ensure_share_token_column()
     _ensure_bet_broker_column()
+    _ensure_portal_column()
     _ensure_side_column()
     _ensure_is_multiple_column()
     _ensure_billing_columns()

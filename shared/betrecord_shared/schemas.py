@@ -12,6 +12,7 @@ from pydantic import BaseModel, EmailStr, Field, ConfigDict, field_validator, mo
 ODDS_FORMAT_PATTERN = (
     "^(decimal|american|fractional|hong_kong|malaysian|indonesian)$"
 )
+PORTAL_PATTERN = "^(phone|online|in_shop)$"
 
 
 # ----------------------------- Auth / users ------------------------------- #
@@ -323,6 +324,7 @@ class BetBase(BaseModel):
     closing_odds_exchange: Optional[float] = None
 
     bookmaker: Optional[str] = None
+    portal: Optional[str] = Field(default=None, pattern=PORTAL_PATTERN)
     exchange_commission_pct: float = 0.0
 
     tipster: Optional[str] = None
@@ -386,6 +388,7 @@ class BetUpdate(BaseModel):
     closing_odds: Optional[float] = None
     closing_odds_exchange: Optional[float] = None
     bookmaker: Optional[str] = None
+    portal: Optional[str] = Field(default=None, pattern=PORTAL_PATTERN)
     exchange_commission_pct: Optional[float] = None
     tipster: Optional[str] = None
     bet_broker: Optional[str] = None
@@ -426,6 +429,7 @@ class BetOut(BaseModel):
     closing_odds: Optional[float]
     closing_odds_exchange: Optional[float]
     bookmaker: Optional[str]
+    portal: Optional[str]
     exchange_commission_pct: float
     tipster: Optional[str]
     bet_broker: Optional[str]
