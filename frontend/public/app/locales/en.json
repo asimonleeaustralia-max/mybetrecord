@@ -9,6 +9,8 @@
     "createAccount": "Create account",
     "email": "Email",
     "password": "Password",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
     "passwordHint": "8+ characters with a number or special character",
     "passwordReqLength": "8+ characters",
     "passwordReqComplex": "Number or special character",
