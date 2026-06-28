@@ -2194,6 +2194,25 @@ function planDateLabel(iso) {
   return i18n.formatLocaleDate(d, { day: "2-digit", month: "short", year: "numeric", ...tzOpt });
 }
 
+function trackPromoReferral(code) {
+  if (!code) return;
+  const payload = JSON.stringify({
+    path: "/app",
+    referrer: document.referrer || null,
+    promo_code: code.trim(),
+  });
+  if (navigator.sendBeacon) {
+    navigator.sendBeacon("/auth/track/landing", new Blob([payload], { type: "application/json" }));
+    return;
+  }
+  fetch("/auth/track/landing", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: payload,
+    keepalive: true,
+  }).catch(() => {});
+}
+
 async function handleBillingReturn() {
   const params = new URLSearchParams(location.search);
   const billing = params.get("billing");
@@ -2202,7 +2221,10 @@ async function handleBillingReturn() {
   // Strip query params but keep the SPA hash route.
   const clean = location.pathname + location.hash;
   history.replaceState(null, "", clean);
-  if (promo) state.pendingPromoCode = promo.trim();
+  if (promo) {
+    state.pendingPromoCode = promo.trim();
+    trackPromoReferral(promo.trim());
+  }
   if (billing === "success") {
     // The webhook confirms Pro server-side; refresh the cached user.
     try { state.user = await api("/auth/me"); } catch {}
@@ -2350,6 +2372,7 @@ function renderFreePlan(body, plan, pricing) {
           <button type="button" class="btn btn--ghost btn--sm" id="promoApplyBtn">${esc(t("plan.promoApply"))}</button>
         </div>
         <p class="plan-note" id="planPromoNote" hidden></p>
+        <div class="upgrade-card__promo-terms" id="planPromoTerms" hidden></div>
       </label>
       <button type="button" class="btn btn--brass" id="upgradeBtn">${esc(t("plan.upgrade"))}</button>
     </div>`);
@@ -2370,9 +2393,11 @@ function renderFreePlan(body, plan, pricing) {
   const applyPromo = async () => {
     const input = $("#planPromo");
     const note = $("#planPromoNote");
+    const termsEl = $("#planPromoTerms");
     const code = (input?.value || "").trim();
     appliedPromo = null;
     if (note) { note.hidden = true; note.textContent = ""; }
+    if (termsEl) { termsEl.hidden = true; termsEl.textContent = ""; }
     if (!code) { updatePrice(); return; }
     try {
       const result = await api(`/payments/promo?code=${encodeURIComponent(code)}`);
@@ -2382,9 +2407,15 @@ function renderFreePlan(body, plan, pricing) {
           note.hidden = false;
           note.textContent = t("plan.promoApplied", { summary: result.summary });
         }
+        if (termsEl && result.terms) {
+          termsEl.hidden = false;
+          termsEl.textContent = result.terms;
+        }
       } else if (note) {
         note.hidden = false;
-        note.textContent = t("plan.promoInvalid");
+        note.textContent = result.already_used
+          ? t("plan.promoAlreadyUsed")
+          : t("plan.promoInvalid");
       }
     } catch (err) {
       if (note) {
@@ -2474,6 +2505,9 @@ async function renderAdmin() {
     userSearchTimer = setTimeout(loadAdminUsers, 300);
   });
   $("#adminEventFilter").addEventListener("change", loadAdminEvents);
+  $("#adminPromoType")?.addEventListener("change", syncAdminPromoForm);
+  $("#adminPromoForm")?.addEventListener("submit", adminCreatePromo);
+  syncAdminPromoForm();
   $("#adminAddForm").addEventListener("submit", async (e) => {
     e.preventDefault();
     const email = $("#adminAddEmail").value.trim();
@@ -2488,7 +2522,10 @@ async function renderAdmin() {
     }
   });
 
-  await Promise.all([loadAdminStats(), loadAdminAdmins(), loadAdminUsers(), loadAdminEvents(), loadAdminLandingHits()]);
+  await Promise.all([
+    loadAdminStats(), loadAdminAdmins(), loadAdminUsers(), loadAdminEvents(),
+    loadAdminLandingHits(), loadAdminPromoCodes(),
+  ]);
 }
 
 async function loadAdminStats() {
@@ -2622,6 +2659,134 @@ async function loadAdminLandingHits() {
       <td title="${esc(h.referrer || "")}">${esc(shortReferrer(h.referrer))}</td>
     </tr>`).join("")
     || `<tr><td colspan="6" class="empty">${t("admin.noLandingHits")}</td></tr>`;
+}
+
+function syncAdminPromoForm() {
+  const type = $("#adminPromoType")?.value || "free_months";
+  const freeEl = $("#adminPromoFreeMonths");
+  const pctEl = $("#adminPromoPercent");
+  if (freeEl) freeEl.hidden = type !== "free_months";
+  if (pctEl) pctEl.hidden = type !== "percent_discount";
+}
+
+function adminPromoOfferLabel(p) {
+  if (p.promo_type === "free_months") {
+    return t("admin.promoOfferFreeMonths", { months: p.free_months || 0 });
+  }
+  return t("admin.promoOfferPercent", { percent: p.percent_off || 0 });
+}
+
+function adminPromoTypeLabel(type) {
+  return type === "free_months" ? t("admin.promoTypeFreeMonths") : t("admin.promoTypePercent");
+}
+
+function parseAdminDateTimeLocal(value) {
+  if (!value) return null;
+  const d = new Date(value);
+  return Number.isNaN(d.getTime()) ? null : d.toISOString();
+}
+
+async function adminCreatePromo(e) {
+  e.preventDefault();
+  const type = $("#adminPromoType").value;
+  const body = {
+    code: $("#adminPromoCode").value.trim(),
+    promo_type: type,
+    valid_from: parseAdminDateTimeLocal($("#adminPromoValidFrom").value),
+    valid_until: parseAdminDateTimeLocal($("#adminPromoValidUntil").value),
+    description: $("#adminPromoDesc").value.trim() || null,
+  };
+  const maxUses = $("#adminPromoMaxUses").value.trim();
+  if (maxUses) body.max_redemptions = Number(maxUses);
+  if (type === "free_months") {
+    body.free_months = Number($("#adminPromoFreeMonths").value);
+  } else {
+    body.percent_off = Number($("#adminPromoPercent").value);
+  }
+  try {
+    await api("/payments/admin/promo-codes", { method: "POST", body });
+    toast(t("admin.promoCreated"));
+    $("#adminPromoForm").reset();
+    syncAdminPromoForm();
+    await loadAdminPromoCodes();
+  } catch (err) {
+    toast(err.message, true);
+  }
+}
+
+async function loadAdminPromoCodes() {
+  const promos = await api("/payments/admin/promo-codes");
+  $("#adminPromoBody").innerHTML = promos.map(p => `
+    <tr data-promo="${p.id}">
+      <td><code>${esc(p.code)}</code></td>
+      <td>${esc(adminPromoTypeLabel(p.promo_type))}</td>
+      <td>${esc(adminPromoOfferLabel(p))}</td>
+      <td class="num">${p.redemption_count}${p.max_redemptions ? ` / ${p.max_redemptions}` : ""}</td>
+      <td class="num">${p.referral_count}</td>
+      <td>${adminStatusBadge(p.active)}</td>
+      <td class="r">
+        <button type="button" class="btn btn--ghost btn--sm" data-promo-stats="${p.id}">${t("admin.promoStats")}</button>
+        <button type="button" class="btn btn--ghost btn--sm" data-promo-toggle="${p.id}" data-active="${p.active}">
+          ${p.active ? t("admin.promoDeactivate") : t("admin.promoActivate")}
+        </button>
+      </td>
+    </tr>`).join("")
+    || `<tr><td colspan="7" class="empty">${t("admin.noPromoCodes")}</td></tr>`;
+
+  $$("[data-promo-stats]").forEach(btn => btn.addEventListener("click", () =>
+    loadAdminPromoStats(btn.dataset.promoStats)
+  ));
+  $$("[data-promo-toggle]").forEach(btn => btn.addEventListener("click", () =>
+    adminTogglePromo(btn.dataset.promoToggle, btn.dataset.active !== "true")
+  ));
+}
+
+async function adminTogglePromo(promoId, active) {
+  const label = active ? t("admin.promoActivateConfirm") : t("admin.promoDeactivateConfirm");
+  if (!confirm(label)) return;
+  try {
+    await api(`/payments/admin/promo-codes/${promoId}`, { method: "PATCH", body: { active } });
+    toast(t("admin.promoUpdated"));
+    await loadAdminPromoCodes();
+  } catch (err) {
+    toast(err.message, true);
+  }
+}
+
+async function loadAdminPromoStats(promoId) {
+  const stats = await api(`/payments/admin/promo-codes/${promoId}/stats`);
+  const panel = $("#adminPromoStats");
+  if (!panel) return;
+  panel.hidden = false;
+  $("#adminPromoStatsTitle").textContent = t("admin.promoStatsTitle", { code: stats.promo.code });
+  const currencyLines = Object.entries(stats.currencies || {})
+    .map(([ccy, n]) => `${ccy}: ${n}`)
+    .join(" · ") || "—";
+  $("#adminPromoStatsSummary").innerHTML = [
+    [t("admin.promoUses"), String(stats.promo.redemption_count)],
+    [t("admin.promoReferrals"), String(stats.promo.referral_count)],
+    [t("admin.promoCurrencies"), currencyLines],
+  ].map(([l, v]) => `<div class="card"><div class="card__label">${l}</div><div class="card__value">${esc(v)}</div></div>`).join("");
+
+  $("#adminPromoRedemptionsBody").innerHTML = (stats.redemptions || []).map(r => `
+    <tr>
+      <td class="num">${formatDt(r.redeemed_at)}</td>
+      <td>${esc(r.user_email || r.user_id)}</td>
+      <td class="num">${esc(r.currency || "—")}</td>
+      <td title="${esc(r.referrer || "")}">${esc(shortReferrer(r.referrer))}</td>
+    </tr>`).join("")
+    || `<tr><td colspan="4" class="empty">${t("admin.noPromoRedemptions")}</td></tr>`;
+
+  $("#adminPromoReferralsBody").innerHTML = (stats.referrals || []).map(r => `
+    <tr>
+      <td class="num">${formatDt(r.created_at)}</td>
+      <td class="num">${esc(r.ip_address || "—")}</td>
+      <td>${esc(r.country || "—")}</td>
+      <td title="${esc(r.referrer || "")}">${esc(shortReferrer(r.referrer))}</td>
+    </tr>`).join("")
+    || `<tr><td colspan="4" class="empty">${t("admin.noPromoReferrals")}</td></tr>`;
+
+  panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
 
 /* -------------------------------- start -------------------------------- */

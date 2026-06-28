@@ -98,6 +98,9 @@ def track_landing(payload: LandingTrackIn, request: Request, db: Session = Depen
     ua = request.headers.get("user-agent")
     path = (payload.path or "/").strip()[:255] or "/"
     referrer = (payload.referrer or "").strip()[:512] or None
+    promo_code = (payload.promo_code or "").strip()[:64] or None
+    if promo_code:
+        promo_code = promo_code.upper()
     db.add(
         LandingHit(
             path=path,
@@ -107,6 +110,7 @@ def track_landing(payload: LandingTrackIn, request: Request, db: Session = Depen
             country=client_country(dict(request.headers)),
             is_bot=is_bot(ua),
             referrer=referrer,
+            promo_code=promo_code,
         )
     )
     db.commit()

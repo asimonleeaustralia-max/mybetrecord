@@ -536,6 +536,18 @@ code { font-family: var(--mono); font-size: .82em; background: var(--canvas); pa
 }
 .upgrade-card__promo { display: grid; gap: 6px; font-size: .85rem; color: var(--muted); }
 .upgrade-card__promo-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.upgrade-card__promo-terms {
+  font-size: .8rem; line-height: 1.45; color: var(--muted);
+  padding: 10px 12px; border-radius: 8px;
+  background: var(--surface-2, #f8f9fb); border: 1px solid var(--border, #e5e7eb);
+}
+.admin-promo-form {
+  display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+  margin-bottom: 12px; padding: 0 0 12px;
+}
+.admin-promo-stats { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border, #e5e7eb); }
+.admin-promo-stats h4 { margin: 16px 0 8px; font-size: .95rem; }
+.admin-promo-stats__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 8px; }
 .mini-input {
   padding: 6px 10px; font-size: .82rem; border: 1px solid var(--line);
   border-radius: var(--radius); background: var(--surface); color: var(--ink);

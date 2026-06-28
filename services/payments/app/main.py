@@ -16,16 +16,16 @@ from __future__ import annotations
 import logging
 from datetime import datetime, timezone
 
-from fastapi import Depends, FastAPI, HTTPException, Request, status
+from fastapi import Depends, FastAPI, HTTPException, Query, Request, status
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from betrecord_shared import pricing
+from betrecord_shared import pricing, promo as promo_lib
 from betrecord_shared.config import get_settings
 from betrecord_shared.database import get_db
 from betrecord_shared.events import log_event
-from betrecord_shared.models import User
+from betrecord_shared.models import LandingHit, PromoCode, PromoRedemption, User
 from betrecord_shared.schemas import (
     CheckoutRequest,
     CheckoutSessionOut,
@@ -34,9 +34,15 @@ from betrecord_shared.schemas import (
     PortalSessionRequest,
     PriceOut,
     PricingOut,
+    PromoCodeCreate,
+    PromoCodeOut,
+    PromoCodeStatsOut,
+    PromoCodeUpdate,
+    PromoRedemptionOut,
+    PromoReferralOut,
     PromoValidationOut,
 )
-from betrecord_shared.security import get_current_user
+from betrecord_shared.security import get_current_admin, get_current_user
 
 settings = get_settings()
 logger = logging.getLogger(__name__)
@@ -102,21 +108,67 @@ def _coupon_summary(coupon: dict) -> str:
     return " ".join(parts) if parts else "Discount applied"
 
 
-def _resolve_promotion_code(code: str) -> tuple[str, dict]:
-    """Return (promotion_code id, coupon dict) for an active, redeemable code."""
-    matches = stripe.PromotionCode.list(code=code.strip(), active=True, limit=1)
-    if not matches.data:
-        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Invalid or expired promotion code.")
-    promo = matches.data[0]
-    if promo.max_redemptions and promo.times_redeemed >= promo.max_redemptions:
-        raise HTTPException(
-            status.HTTP_400_BAD_REQUEST,
-            "This promotion code has reached its redemption limit.",
+def _promo_validation_out(promo: PromoCode, *, already_used: bool = False) -> PromoValidationOut:
+    months = promo_lib.discount_months(promo)
+    duration = "repeating" if months or promo.promo_type == promo_lib.PROMO_TYPE_FREE_MONTHS else "forever"
+    duration_months = promo.free_months if promo.promo_type == promo_lib.PROMO_TYPE_FREE_MONTHS else months
+    return PromoValidationOut(
+        valid=True,
+        code=promo.code,
+        summary=promo_lib.build_summary(promo),
+        terms=promo_lib.build_terms(promo),
+        promo_type=promo.promo_type,
+        free_months=promo.free_months,
+        percent_off=promo.percent_off,
+        valid_from=promo.valid_from,
+        valid_until=promo.valid_until,
+        already_used=already_used,
+        duration=duration,
+        duration_in_months=duration_months,
+    )
+
+
+def _invalid_promo_out(code: str, *, already_used: bool = False) -> PromoValidationOut:
+    return PromoValidationOut(valid=False, code=promo_lib.normalise_code(code), already_used=already_used)
+
+
+def _resolve_promotion_code(
+    code: str,
+    user: User,
+    db: Session,
+) -> tuple[str, PromoCode]:
+    """Return (Stripe promotion_code id, local PromoCode) after validation."""
+    promo, err = promo_lib.validate_promo_for_user(db, code, user)
+    if err:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, err)
+    return promo.stripe_promotion_code_id, promo
+
+
+def _promo_code_out(db: Session, promo: PromoCode) -> PromoCodeOut:
+    ref_count = int(
+        db.scalar(
+            select(func.count())
+            .select_from(LandingHit)
+            .where(LandingHit.promo_code == promo.code)
         )
-    coupon = promo.coupon
-    if isinstance(coupon, str):
-        coupon = stripe.Coupon.retrieve(coupon)
-    return promo.id, coupon
+        or 0
+    )
+    return PromoCodeOut(
+        id=promo.id,
+        code=promo.code,
+        promo_type=promo.promo_type,
+        free_months=promo.free_months,
+        percent_off=promo.percent_off,
+        valid_from=promo.valid_from,
+        valid_until=promo.valid_until,
+        max_redemptions=promo.max_redemptions,
+        active=promo.active,
+        description=promo.description,
+        redemption_count=promo_lib.redemption_count(db, promo.id),
+        referral_count=ref_count,
+        created_at=promo.created_at,
+        updated_at=promo.updated_at,
+    )
 
 
 @app.get("/health")
@@ -134,25 +186,30 @@ def get_pricing() -> PricingOut:
 
 
 @app.get("/payments/promo", response_model=PromoValidationOut)
-def validate_promo(code: str) -> PromoValidationOut:
-    """Check whether a promotion code is valid and describe its discount."""
-    _require_stripe()
+def validate_promo(
+    code: str,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> PromoValidationOut:
+    """Check whether a promotion code is valid for this account and describe its terms."""
     if not code or not code.strip():
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "Promotion code is required.")
-    try:
-        _, coupon = _resolve_promotion_code(code)
-    except HTTPException:
-        return PromoValidationOut(valid=False, code=code.strip())
-    return PromoValidationOut(
-        valid=True,
-        code=code.strip().upper(),
-        summary=_coupon_summary(coupon),
-        percent_off=coupon.get("percent_off"),
-        amount_off=coupon.get("amount_off"),
-        currency=(coupon.get("currency") or "").upper() or None,
-        duration=coupon.get("duration"),
-        duration_in_months=coupon.get("duration_in_months"),
+
+    normalized = promo_lib.normalise_code(code)
+    promo = promo_lib.get_promo_by_code(db, normalized)
+    if not promo:
+        return _invalid_promo_out(code)
+
+    if promo_lib.user_has_redeemed(db, promo.id, user.id):
+        return _invalid_promo_out(code, already_used=True)
+
+    promo_obj, err = promo_lib.validate_promo_for_user(
+        db, code, user, require_stripe=_stripe_ready()
     )
+    if err:
+        return _invalid_promo_out(code)
+
+    return _promo_validation_out(promo_obj)
 
 
 @app.get("/payments/plan", response_model=PlanOut)
@@ -186,6 +243,7 @@ def _ensure_customer(user: User, db: Session) -> str:
 @app.post("/payments/checkout-session", response_model=CheckoutSessionOut)
 def create_checkout_session(
     payload: CheckoutRequest,
+    request: Request,
     user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ) -> CheckoutSessionOut:
@@ -207,6 +265,8 @@ def create_checkout_session(
         price_data["product_data"] = {"name": "mybetrecord Pro"}
 
     customer_id = _ensure_customer(user, db)
+    promo_record: PromoCode | None = None
+    referrer = (request.headers.get("referer") or "")[:512] or None
     session_kwargs: dict = {
         "mode": "subscription",
         "line_items": [{"price_data": price_data, "quantity": 1}],
@@ -218,10 +278,11 @@ def create_checkout_session(
         "cancel_url": payload.cancel_url,
     }
     if payload.promotion_code:
-        promo_id, _ = _resolve_promotion_code(payload.promotion_code)
+        promo_id, promo_record = _resolve_promotion_code(payload.promotion_code, user, db)
         session_kwargs["discounts"] = [{"promotion_code": promo_id}]
-    else:
-        session_kwargs["allow_promotion_codes"] = True
+        session_kwargs["metadata"]["promo_code"] = promo_record.code
+        if referrer:
+            session_kwargs["metadata"]["referrer"] = referrer
 
     session = stripe.checkout.Session.create(**session_kwargs)
     detail = f"{currency} {unit_amount}"
@@ -291,6 +352,174 @@ def resume_subscription(
     return get_plan(user)
 
 
+# ----------------------------- admin promo codes --------------------------- #
+
+def _validate_promo_create(payload: PromoCodeCreate) -> None:
+    if payload.promo_type == promo_lib.PROMO_TYPE_FREE_MONTHS and not payload.free_months:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "free_months is required for free-month promos.")
+    if payload.promo_type == promo_lib.PROMO_TYPE_PERCENT_DISCOUNT:
+        if not payload.percent_off:
+            raise HTTPException(
+                status.HTTP_400_BAD_REQUEST,
+                "percent_off is required for percent-discount promos.",
+            )
+        if not payload.valid_until:
+            raise HTTPException(
+                status.HTTP_400_BAD_REQUEST,
+                "valid_until is required for percent-discount promos.",
+            )
+    if payload.valid_from and payload.valid_until and payload.valid_from >= payload.valid_until:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "valid_until must be after valid_from.")
+
+
+@app.get("/payments/admin/promo-codes", response_model=list[PromoCodeOut])
+def admin_list_promo_codes(
+    admin: User = Depends(get_current_admin),
+    db: Session = Depends(get_db),
+) -> list[PromoCodeOut]:
+    promos = db.scalars(select(PromoCode).order_by(PromoCode.created_at.desc())).all()
+    return [_promo_code_out(db, p) for p in promos]
+
+
+@app.post("/payments/admin/promo-codes", response_model=PromoCodeOut, status_code=201)
+def admin_create_promo_code(
+    payload: PromoCodeCreate,
+    admin: User = Depends(get_current_admin),
+    db: Session = Depends(get_db),
+) -> PromoCodeOut:
+    _validate_promo_create(payload)
+    code = promo_lib.normalise_code(payload.code)
+    if db.scalar(select(PromoCode.id).where(PromoCode.code == code)):
+        raise HTTPException(status.HTTP_409_CONFLICT, "A promo code with that value already exists.")
+
+    promo = PromoCode(
+        code=code,
+        promo_type=payload.promo_type,
+        free_months=payload.free_months,
+        percent_off=payload.percent_off,
+        valid_from=payload.valid_from,
+        valid_until=payload.valid_until,
+        max_redemptions=payload.max_redemptions,
+        active=payload.active,
+        description=payload.description,
+    )
+    db.add(promo)
+    db.flush()
+
+    if _stripe_ready():
+        try:
+            promo_lib.sync_promo_to_stripe(promo, stripe)
+        except Exception as exc:
+            db.rollback()
+            raise HTTPException(
+                status.HTTP_502_BAD_GATEWAY,
+                f"Could not create Stripe promotion: {exc}",
+            ) from exc
+
+    log_event(db, "admin.promo_created", user_id=admin.id, detail=code)
+    db.commit()
+    db.refresh(promo)
+    return _promo_code_out(db, promo)
+
+
+@app.patch("/payments/admin/promo-codes/{promo_id}", response_model=PromoCodeOut)
+def admin_update_promo_code(
+    promo_id: str,
+    payload: PromoCodeUpdate,
+    admin: User = Depends(get_current_admin),
+    db: Session = Depends(get_db),
+) -> PromoCodeOut:
+    promo = db.get(PromoCode, promo_id)
+    if not promo:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Promo code not found.")
+
+    data = payload.model_dump(exclude_unset=True)
+    if "valid_from" in data or "valid_until" in data:
+        vf = data.get("valid_from", promo.valid_from)
+        vu = data.get("valid_until", promo.valid_until)
+        if vf and vu and vf >= vu:
+            raise HTTPException(status.HTTP_400_BAD_REQUEST, "valid_until must be after valid_from.")
+
+    was_active = promo.active
+    for key, value in data.items():
+        setattr(promo, key, value)
+
+    if _stripe_ready() and "active" in data and data["active"] != was_active:
+        try:
+            promo_lib.set_stripe_promo_active(promo, promo.active, stripe)
+        except Exception as exc:
+            db.rollback()
+            raise HTTPException(
+                status.HTTP_502_BAD_GATEWAY,
+                f"Could not update Stripe promotion: {exc}",
+            ) from exc
+
+    log_event(db, "admin.promo_updated", user_id=admin.id, detail=promo.code)
+    db.commit()
+    db.refresh(promo)
+    return _promo_code_out(db, promo)
+
+
+@app.get("/payments/admin/promo-codes/{promo_id}/stats", response_model=PromoCodeStatsOut)
+def admin_promo_code_stats(
+    promo_id: str,
+    admin: User = Depends(get_current_admin),
+    db: Session = Depends(get_db),
+    limit: int = Query(default=100, ge=1, le=500),
+) -> PromoCodeStatsOut:
+    promo = db.get(PromoCode, promo_id)
+    if not promo:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Promo code not found.")
+
+    redemptions = db.scalars(
+        select(PromoRedemption)
+        .where(PromoRedemption.promo_code_id == promo.id)
+        .order_by(PromoRedemption.redeemed_at.desc())
+        .limit(limit)
+    ).all()
+
+    redemption_out: list[PromoRedemptionOut] = []
+    currencies: dict[str, int] = {}
+    for r in redemptions:
+        email = r.user.email if r.user else None
+        redemption_out.append(
+            PromoRedemptionOut(
+                user_id=r.user_id,
+                user_email=email,
+                currency=r.currency,
+                referrer=r.referrer,
+                redeemed_at=r.redeemed_at,
+            )
+        )
+        if r.currency:
+            currencies[r.currency] = currencies.get(r.currency, 0) + 1
+
+    hits = db.scalars(
+        select(LandingHit)
+        .where(LandingHit.promo_code == promo.code)
+        .order_by(LandingHit.created_at.desc())
+        .limit(limit)
+    ).all()
+    referrals = [
+        PromoReferralOut(
+            created_at=h.created_at,
+            path=h.path,
+            ip_address=h.ip_address,
+            referrer=h.referrer,
+            country=h.country,
+            is_bot=h.is_bot,
+        )
+        for h in hits
+    ]
+
+    return PromoCodeStatsOut(
+        promo=_promo_code_out(db, promo),
+        redemptions=redemption_out,
+        referrals=referrals,
+        currencies=currencies,
+    )
+
+
 # ------------------------------- webhook ---------------------------------- #
 
 def _find_user(db: Session, *, user_id: str | None, customer_id: str | None) -> User | None:
@@ -325,24 +554,52 @@ def _apply_subscription(user: User, sub: dict, db: Session) -> None:
     db.commit()
 
 
-def _log_promo_redemption(db: Session, user: User, session_obj: dict) -> None:
-    """Best-effort audit when a checkout used a promotion code."""
-    total_details = session_obj.get("total_details") or {}
-    if not total_details.get("amount_discount"):
+def _record_promo_redemption(
+    db: Session,
+    user: User,
+    session_obj: dict,
+) -> None:
+    """Persist promo redemption when checkout completed with a discount."""
+    metadata = session_obj.get("metadata") or {}
+    code = metadata.get("promo_code")
+    if not code:
+        total_details = session_obj.get("total_details") or {}
+        if not total_details.get("amount_discount"):
+            return
+        discounts = session_obj.get("discounts") or []
+        if discounts:
+            promo_ref = discounts[0].get("promotion_code")
+            if isinstance(promo_ref, dict):
+                code = promo_ref.get("code")
+            elif promo_ref and stripe:
+                try:
+                    promo_obj = stripe.PromotionCode.retrieve(promo_ref)
+                    code = promo_obj.code
+                except Exception:
+                    return
+    if not code:
         return
-    discounts = session_obj.get("discounts") or []
-    detail = "discount applied"
-    if discounts:
-        promo = discounts[0].get("promotion_code")
-        if isinstance(promo, dict):
-            detail = promo.get("code") or detail
-        elif promo:
-            try:
-                promo_obj = stripe.PromotionCode.retrieve(promo)
-                detail = promo_obj.code or detail
-            except Exception:
-                pass
-    log_event(db, "promo_redeemed", user_id=user.id, detail=detail)
+
+    promo = promo_lib.get_promo_by_code(db, code)
+    if not promo:
+        return
+    if promo_lib.user_has_redeemed(db, promo.id, user.id):
+        return
+
+    currency = (metadata.get("currency") or "").upper() or None
+    if not currency:
+        currency = (session_obj.get("currency") or "").upper() or None
+
+    db.add(
+        PromoRedemption(
+            promo_code_id=promo.id,
+            user_id=user.id,
+            currency=currency,
+            stripe_checkout_session_id=session_obj.get("id"),
+            referrer=(metadata.get("referrer") or "")[:512] or None,
+        )
+    )
+    log_event(db, "promo_redeemed", user_id=user.id, detail=promo.code)
     db.commit()
 
 
@@ -383,9 +640,9 @@ async def webhook(request: Request, db: Session = Depends(get_db)):
                 user.plan = "pro"
                 db.commit()
             try:
-                _log_promo_redemption(db, user, obj)
+                _record_promo_redemption(db, user, obj)
             except Exception:
-                logger.debug("Could not log promo redemption", exc_info=True)
+                logger.debug("Could not record promo redemption", exc_info=True)
 
     elif event_type in ("customer.subscription.updated", "customer.subscription.created"):
         user = _find_user(

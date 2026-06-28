@@ -61,9 +61,12 @@
   function trackLandingVisit() {
     const path = window.location.pathname;
     if (path !== "/" && path !== "/index.html") return;
+    const params = new URLSearchParams(window.location.search);
+    const promo = params.get("promo");
     const payload = JSON.stringify({
       path: "/",
       referrer: document.referrer || null,
+      promo_code: promo ? promo.trim() : null,
     });
     if (navigator.sendBeacon) {
       navigator.sendBeacon("/auth/track/landing", new Blob([payload], { type: "application/json" }));

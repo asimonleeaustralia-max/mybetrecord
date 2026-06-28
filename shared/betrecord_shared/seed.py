@@ -385,6 +385,30 @@ def _ensure_last_login_at_column() -> None:
             conn.execute(text("ALTER TABLE users ADD COLUMN last_login_at DATETIME"))
 
 
+def _ensure_landing_promo_column() -> None:
+    """Add promo_code to landing_hits for promo referral tracking."""
+    if "landing_hits" not in inspect(engine).get_table_names():
+        return
+    columns = {c["name"] for c in inspect(engine).get_columns("landing_hits")}
+    if "promo_code" in columns:
+        return
+    dialect = engine.dialect.name
+    with engine.begin() as conn:
+        if dialect == "postgresql":
+            conn.execute(
+                text("ALTER TABLE landing_hits ADD COLUMN IF NOT EXISTS promo_code VARCHAR(64)")
+            )
+            conn.execute(
+                text(
+                    "CREATE INDEX IF NOT EXISTS ix_landing_hits_promo_code "
+                    "ON landing_hits (promo_code)"
+                )
+            )
+        else:
+            conn.execute(text("ALTER TABLE landing_hits ADD COLUMN promo_code VARCHAR(64)"))
+            conn.execute(text("CREATE INDEX IF NOT EXISTS ix_landing_hits_promo_code ON landing_hits (promo_code)"))
+
+
 def seed_bootstrap_admins() -> None:
     """Promote configured bootstrap emails to admin if the account exists."""
     emails = get_settings().bootstrap_admin_emails

@@ -131,7 +131,56 @@ class LandingHit(Base):
     country: Mapped[str | None] = mapped_column(String(2), nullable=True, index=True)
     is_bot: Mapped[bool] = mapped_column(Boolean, default=False, index=True)
     referrer: Mapped[str | None] = mapped_column(String(512), nullable=True)
+    promo_code: Mapped[str | None] = mapped_column(String(64), index=True, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now, index=True)
+
+
+class PromoCode(Base):
+    """Admin-managed promotion code for Pro subscriptions."""
+
+    __tablename__ = "promo_codes"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
+    code: Mapped[str] = mapped_column(String(64), unique=True, index=True, nullable=False)
+    promo_type: Mapped[str] = mapped_column(String(32), nullable=False)  # free_months | percent_discount
+    free_months: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    percent_off: Mapped[float | None] = mapped_column(Float, nullable=True)
+    valid_from: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    valid_until: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    max_redemptions: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    active: Mapped[bool] = mapped_column(Boolean, default=True, index=True)
+    description: Mapped[str | None] = mapped_column(String(512), nullable=True)
+    stripe_coupon_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    stripe_promotion_code_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=_now, onupdate=_now
+    )
+
+    redemptions: Mapped[list["PromoRedemption"]] = relationship(
+        back_populates="promo_code", cascade="all, delete-orphan"
+    )
+
+
+class PromoRedemption(Base):
+    """Record of a promo code applied at checkout — one row per user per code."""
+
+    __tablename__ = "promo_redemptions"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
+    promo_code_id: Mapped[str] = mapped_column(
+        ForeignKey("promo_codes.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    user_id: Mapped[str] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    currency: Mapped[str | None] = mapped_column(String(3), nullable=True)
+    stripe_checkout_session_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    referrer: Mapped[str | None] = mapped_column(String(512), nullable=True)
+    redeemed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now, index=True)
+
+    promo_code: Mapped["PromoCode"] = relationship(back_populates="redemptions")
+    user: Mapped["User"] = relationship()
 
 
 class AppEvent(Base):

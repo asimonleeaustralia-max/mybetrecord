@@ -181,11 +181,80 @@ class PromoValidationOut(BaseModel):
     valid: bool
     code: str
     summary: Optional[str] = None
+    terms: Optional[str] = None
+    promo_type: Optional[str] = None
+    free_months: Optional[int] = None
     percent_off: Optional[float] = None
+    valid_from: Optional[datetime] = None
+    valid_until: Optional[datetime] = None
+    already_used: bool = False
+    # Legacy Stripe coupon fields (kept for backward compatibility)
     amount_off: Optional[int] = None
     currency: Optional[str] = None
     duration: Optional[str] = None
     duration_in_months: Optional[int] = None
+
+
+class PromoCodeCreate(BaseModel):
+    code: str = Field(min_length=2, max_length=64)
+    promo_type: Literal["free_months", "percent_discount"]
+    free_months: Optional[int] = Field(default=None, ge=1, le=24)
+    percent_off: Optional[float] = Field(default=None, gt=0, le=100)
+    valid_from: Optional[datetime] = None
+    valid_until: Optional[datetime] = None
+    max_redemptions: Optional[int] = Field(default=None, ge=1)
+    active: bool = True
+    description: Optional[str] = Field(default=None, max_length=512)
+
+
+class PromoCodeUpdate(BaseModel):
+    active: Optional[bool] = None
+    valid_from: Optional[datetime] = None
+    valid_until: Optional[datetime] = None
+    max_redemptions: Optional[int] = Field(default=None, ge=1)
+    description: Optional[str] = Field(default=None, max_length=512)
+
+
+class PromoCodeOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: str
+    code: str
+    promo_type: str
+    free_months: Optional[int]
+    percent_off: Optional[float]
+    valid_from: Optional[datetime]
+    valid_until: Optional[datetime]
+    max_redemptions: Optional[int]
+    active: bool
+    description: Optional[str]
+    redemption_count: int = 0
+    referral_count: int = 0
+    created_at: datetime
+    updated_at: datetime
+
+
+class PromoRedemptionOut(BaseModel):
+    user_id: str
+    user_email: Optional[str] = None
+    currency: Optional[str]
+    referrer: Optional[str]
+    redeemed_at: datetime
+
+
+class PromoReferralOut(BaseModel):
+    created_at: datetime
+    path: str
+    ip_address: Optional[str]
+    referrer: Optional[str]
+    country: Optional[str]
+    is_bot: bool
+
+
+class PromoCodeStatsOut(BaseModel):
+    promo: PromoCodeOut
+    redemptions: list[PromoRedemptionOut]
+    referrals: list[PromoReferralOut]
+    currencies: dict[str, int]
 
 
 class BetUsageOut(BaseModel):
@@ -256,6 +325,7 @@ class AdminStatsOut(BaseModel):
 class LandingTrackIn(BaseModel):
     path: str = "/"
     referrer: Optional[str] = None
+    promo_code: Optional[str] = Field(default=None, max_length=64)
 
 
 class LandingHitOut(BaseModel):
@@ -268,6 +338,7 @@ class LandingHitOut(BaseModel):
     country: Optional[str]
     is_bot: bool
     referrer: Optional[str]
+    promo_code: Optional[str] = None
     created_at: datetime
 
 

@@ -635,9 +635,145 @@ def test_cancel_requires_stripe_config(clients, auth_headers):
     assert r.status_code == 503
 
 
-def test_promo_validate_requires_stripe_config(clients):
+def test_promo_validate_requires_auth(clients):
     r = clients["payments"].get("/payments/promo", params={"code": "TEST"})
-    assert r.status_code == 503
+    assert r.status_code == 401
+
+
+def test_promo_validate_invalid_code(clients, auth_headers):
+    headers, _ = auth_headers
+    r = clients["payments"].get("/payments/promo", params={"code": "NOTREAL"}, headers=headers)
+    assert r.status_code == 200
+    assert r.json()["valid"] is False
+
+
+def _create_test_promo(db, **kwargs):
+    from betrecord_shared.models import PromoCode
+    from betrecord_shared import promo as promo_lib
+
+    defaults = {
+        "code": "TESTFREE",
+        "promo_type": promo_lib.PROMO_TYPE_FREE_MONTHS,
+        "free_months": 2,
+        "active": True,
+    }
+    defaults.update(kwargs)
+    promo = PromoCode(**defaults)
+    db.add(promo)
+    db.commit()
+    db.refresh(promo)
+    return promo
+
+
+def test_promo_validate_free_months(clients, auth_headers):
+    from betrecord_shared.database import SessionLocal
+
+    headers, _ = auth_headers
+    with SessionLocal() as db:
+        _create_test_promo(db, code="FREETWO")
+
+    r = clients["payments"].get("/payments/promo", params={"code": "freetwo"}, headers=headers)
+    assert r.status_code == 200
+    body = r.json()
+    assert body["valid"] is True
+    assert body["promo_type"] == "free_months"
+    assert body["free_months"] == 2
+    assert body["terms"]
+    assert "One use per account" in body["terms"]
+
+
+def test_promo_use_once_per_account(clients, auth_headers):
+    from sqlalchemy import select
+
+    from betrecord_shared.database import SessionLocal
+    from betrecord_shared.models import PromoRedemption, User
+
+    headers, email = auth_headers
+    with SessionLocal() as db:
+        promo = _create_test_promo(db, code="ONCEONLY")
+        user = db.scalar(select(User).where(User.email == email))
+        db.add(PromoRedemption(promo_code_id=promo.id, user_id=user.id, currency="USD"))
+        db.commit()
+
+    r = clients["payments"].get("/payments/promo", params={"code": "ONCEONLY"}, headers=headers)
+    assert r.status_code == 200
+    assert r.json()["valid"] is False
+    assert r.json()["already_used"] is True
+
+
+def test_admin_promo_crud(clients, auth_headers):
+    from betrecord_shared.database import SessionLocal
+    from betrecord_shared.models import PromoCode
+
+    user_headers, _ = auth_headers
+    admin_headers = _admin_headers(clients)
+
+    assert clients["payments"].get("/payments/admin/promo-codes", headers=user_headers).status_code == 403
+
+    created = clients["payments"].post(
+        "/payments/admin/promo-codes",
+        headers=admin_headers,
+        json={
+            "code": "admin25",
+            "promo_type": "percent_discount",
+            "percent_off": 25,
+            "valid_until": "2030-12-31T23:59:59Z",
+            "max_redemptions": 100,
+            "description": "Launch promo",
+        },
+    )
+    assert created.status_code == 201, created.text
+    body = created.json()
+    assert body["code"] == "ADMIN25"
+    assert body["percent_off"] == 25
+    assert body["active"] is True
+
+    listed = clients["payments"].get("/payments/admin/promo-codes", headers=admin_headers)
+    assert listed.status_code == 200
+    assert any(p["code"] == "ADMIN25" for p in listed.json())
+
+    promo_id = body["id"]
+    patched = clients["payments"].patch(
+        f"/payments/admin/promo-codes/{promo_id}",
+        headers=admin_headers,
+        json={"active": False},
+    )
+    assert patched.status_code == 200
+    assert patched.json()["active"] is False
+
+    with SessionLocal() as db:
+        promo = db.get(PromoCode, promo_id)
+        assert promo.active is False
+
+
+def test_promo_referral_tracking(clients):
+    from betrecord_shared import promo as promo_lib
+    from betrecord_shared.database import SessionLocal
+
+    admin_headers = _admin_headers(clients)
+    r = clients["auth"].post(
+        "/auth/track/landing",
+        json={"path": "/", "referrer": "https://twitter.com/", "promo_code": "REFPROMO"},
+    )
+    assert r.status_code == 204
+
+    with SessionLocal() as db:
+        promo = _create_test_promo(
+            db,
+            code="REFPROMO",
+            promo_type=promo_lib.PROMO_TYPE_PERCENT_DISCOUNT,
+            percent_off=25,
+            free_months=None,
+        )
+
+    stats = clients["payments"].get(
+        f"/payments/admin/promo-codes/{promo.id}/stats",
+        headers=admin_headers,
+    )
+    assert stats.status_code == 200
+    data = stats.json()
+    assert data["promo"]["referral_count"] >= 1
+    assert any(ref["referrer"] == "https://twitter.com/" for ref in data["referrals"])
 
 
 def test_portal_session_requires_stripe_config(clients, auth_headers):
