@@ -113,8 +113,6 @@
     const loc = window.i18n.getLoginLocale();
     await window.i18n.initI18n(loc);
     applyPageTitle();
-    await loadPricing();
-    updateProPrice();
 
     const select = document.getElementById("localeSelect");
     if (select) {
@@ -127,7 +125,9 @@
     }
 
     window.i18n.applyI18n(document);
-    updateProPrice();
+
+    // Pricing is only needed for #proPrice on the pricing page — don't block the language selector.
+    loadPricing().then(() => updateProPrice()).catch(() => {});
   }
 
   document.addEventListener("DOMContentLoaded", () => {
