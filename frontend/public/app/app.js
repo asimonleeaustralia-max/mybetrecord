@@ -2241,16 +2241,33 @@ async function renderPlan() {
   if (!body) return;
   body.innerHTML = `<p class="muted">${esc(t("plan.loading"))}</p>`;
 
-  let plan, pricing;
+  let plan;
+  let pricing;
   try {
-    [plan, pricing] = await Promise.all([
-      api("/payments/plan"),
-      api("/payments/pricing"),
-    ]);
-  } catch {
-    body.innerHTML = `<p class="muted">${esc(t("plan.unavailable"))}</p>`;
-    if (badge) badge.hidden = true;
-    return;
+    pricing = await api("/billing/pricing");
+  } catch (err) {
+    console.warn("Pro pricing unavailable:", err);
+  }
+
+  try {
+    plan = await api("/billing/plan");
+  } catch (err) {
+    console.warn("Plan details unavailable:", err);
+    if (!pricing) {
+      body.innerHTML = `<p class="muted">${esc(t("plan.unavailable"))}</p>`;
+      if (badge) badge.hidden = true;
+      return;
+    }
+    // Pricing loaded but plan endpoint failed (often a content blocker on desktop Safari).
+    plan = {
+      plan: state.user?.plan || "free",
+      plan_currency: state.user?.plan_currency || null,
+      subscription_status: state.user?.subscription_status || null,
+      subscription_cancel_at_period_end: Boolean(state.user?.subscription_cancel_at_period_end),
+      subscription_current_period_end: state.user?.subscription_current_period_end || null,
+      free_daily_bet_limit: 5,
+      stripe_configured: true,
+    };
   }
 
   const isPro = plan.plan === "pro";
@@ -2297,7 +2314,7 @@ function renderProPlan(body, plan) {
     manageBtn.disabled = true;
     try {
       const base = `${location.origin}/app/`;
-      const session = await api("/payments/portal-session", {
+      const session = await api("/billing/portal-session", {
         method: "POST",
         body: { return_url: `${base}#/settings` },
       });
@@ -2314,7 +2331,7 @@ function renderProPlan(body, plan) {
     if (!confirm(t("plan.cancelConfirm"))) return;
     cancelBtn.disabled = true;
     try {
-      await api("/payments/cancel", { method: "POST" });
+      await api("/billing/cancel", { method: "POST" });
       toast(t("plan.cancelRequested"));
       await renderPlan();
     } catch (err) {
@@ -2327,7 +2344,7 @@ function renderProPlan(body, plan) {
   if (resumeBtn) resumeBtn.addEventListener("click", async () => {
     resumeBtn.disabled = true;
     try {
-      await api("/payments/resume", { method: "POST" });
+      await api("/billing/resume", { method: "POST" });
       toast(t("plan.resumed"));
       await renderPlan();
     } catch (err) {
@@ -2343,6 +2360,12 @@ function renderFreePlan(body, plan, pricing) {
 
   if (!plan.stripe_configured) {
     blocks.push(`<p class="plan-note">${esc(t("plan.billingUnavailable"))}</p>`);
+    body.innerHTML = blocks.join("");
+    return;
+  }
+
+  if (!pricing?.prices?.length) {
+    blocks.push(`<p class="plan-note">${esc(t("plan.unavailable"))}</p>`);
     body.innerHTML = blocks.join("");
     return;
   }
@@ -2400,7 +2423,7 @@ function renderFreePlan(body, plan, pricing) {
     if (termsEl) { termsEl.hidden = true; termsEl.textContent = ""; }
     if (!code) { updatePrice(); return; }
     try {
-      const result = await api(`/payments/promo?code=${encodeURIComponent(code)}`);
+      const result = await api(`/billing/promo?code=${encodeURIComponent(code)}`);
       if (result.valid) {
         appliedPromo = result;
         if (note) {
@@ -2451,7 +2474,7 @@ function renderFreePlan(body, plan, pricing) {
         cancel_url: `${base}?billing=cancel#/settings`,
       };
       if (promoCode) body.promotion_code = promoCode;
-      const session = await api("/payments/checkout-session", {
+      const session = await api("/billing/checkout-session", {
         method: "POST",
         body,
       });
@@ -2704,7 +2727,7 @@ async function adminCreatePromo(e) {
     body.percent_off = Number($("#adminPromoPercent").value);
   }
   try {
-    await api("/payments/admin/promo-codes", { method: "POST", body });
+    await api("/billing/admin/promo-codes", { method: "POST", body });
     toast(t("admin.promoCreated"));
     $("#adminPromoForm").reset();
     syncAdminPromoForm();
@@ -2715,7 +2738,7 @@ async function adminCreatePromo(e) {
 }
 
 async function loadAdminPromoCodes() {
-  const promos = await api("/payments/admin/promo-codes");
+  const promos = await api("/billing/admin/promo-codes");
   $("#adminPromoBody").innerHTML = promos.map(p => `
     <tr data-promo="${p.id}">
       <td><code>${esc(p.code)}</code></td>
@@ -2745,7 +2768,7 @@ async function adminTogglePromo(promoId, active) {
   const label = active ? t("admin.promoActivateConfirm") : t("admin.promoDeactivateConfirm");
   if (!confirm(label)) return;
   try {
-    await api(`/payments/admin/promo-codes/${promoId}`, { method: "PATCH", body: { active } });
+    await api(`/billing/admin/promo-codes/${promoId}`, { method: "PATCH", body: { active } });
     toast(t("admin.promoUpdated"));
     await loadAdminPromoCodes();
   } catch (err) {
@@ -2754,7 +2777,7 @@ async function adminTogglePromo(promoId, active) {
 }
 
 async function loadAdminPromoStats(promoId) {
-  const stats = await api(`/payments/admin/promo-codes/${promoId}/stats`);
+  const stats = await api(`/billing/admin/promo-codes/${promoId}/stats`);
   const panel = $("#adminPromoStats");
   if (!panel) return;
   panel.hidden = false;

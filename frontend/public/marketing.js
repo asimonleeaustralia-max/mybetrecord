@@ -83,7 +83,7 @@
   async function loadPricing() {
     if (_prices) return _prices;
     try {
-      const res = await fetch("/payments/pricing");
+      const res = await fetch("/billing/pricing");
       if (res.ok) {
         const data = await res.json();
         _prices = data.prices || priceListFromFallback();

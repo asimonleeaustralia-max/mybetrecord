@@ -77,9 +77,14 @@ load_secret_key() {
   if [[ -n "${STRIPE_SECRET_KEY:-}" ]]; then
     return 0
   fi
-  for f in "$ROOT/.env" "$ROOT/.env.deploy"; do
+  local files=("$ROOT/.env" "$ROOT/.env.deploy")
+  if [[ "$MODE" == "production" ]]; then
+    files=("$ROOT/.env.deploy" "$ROOT/.env")
+  elif [[ "$MODE" == "local" ]]; then
+    files=("$ROOT/.env" "$ROOT/.env.deploy")
+  fi
+  for f in "${files[@]}"; do
     if [[ -f "$f" ]]; then
-      # shellcheck disable=SC1090
       local val
       val="$(grep -E '^STRIPE_SECRET_KEY=' "$f" | head -1 | cut -d= -f2- || true)"
       if [[ -n "$val" ]]; then
@@ -88,7 +93,7 @@ load_secret_key() {
       fi
     fi
   done
-  echo "Set STRIPE_SECRET_KEY (sk_test_... or sk_live_...) in the environment or .env.deploy." >&2
+  echo "Set STRIPE_SECRET_KEY (sk_test_... / rk_live_... etc.) in the environment or .env.deploy." >&2
   echo "Dashboard: https://dashboard.stripe.com/apikeys" >&2
   exit 1
 }
@@ -113,8 +118,16 @@ ensure_product() {
   list_json="$(stripe_api GET /products -G --data-urlencode "active=true" --data-urlencode "limit=100")"
 
   if command -v jq >/dev/null 2>&1; then
-    STRIPE_PRODUCT_ID="$(echo "$list_json" | jq -r --arg n "$PRODUCT_NAME" \
-      '.data[] | select(.name == $n) | .id' | head -1)"
+    if [[ "$STRIPE_SECRET_KEY" == sk_live_* || "$STRIPE_SECRET_KEY" == rk_live_* ]]; then
+      STRIPE_PRODUCT_ID="$(echo "$list_json" | jq -r --arg n "$PRODUCT_NAME" \
+        '.data[] | select(.name == $n and .livemode == true) | .id' | head -1)"
+    elif [[ "$STRIPE_SECRET_KEY" == sk_test_* || "$STRIPE_SECRET_KEY" == rk_test_* ]]; then
+      STRIPE_PRODUCT_ID="$(echo "$list_json" | jq -r --arg n "$PRODUCT_NAME" \
+        '.data[] | select(.name == $n and .livemode == false) | .id' | head -1)"
+    else
+      STRIPE_PRODUCT_ID="$(echo "$list_json" | jq -r --arg n "$PRODUCT_NAME" \
+        '.data[] | select(.name == $n) | .id' | head -1)"
+    fi
   else
     STRIPE_PRODUCT_ID="$(echo "$list_json" | grep -o '"id": "prod_[^"]*"' | head -1 | cut -d'"' -f4 || true)"
   fi
@@ -171,7 +184,14 @@ update_env_files() {
   esac
 
   upsert_env "$file" STRIPE_SECRET_KEY "$STRIPE_SECRET_KEY"
-  upsert_env "$file" STRIPE_PRODUCT_ID "$STRIPE_PRODUCT_ID"
+  if [[ -n "${STRIPE_PRODUCT_ID:-}" ]]; then
+    upsert_env "$file" STRIPE_PRODUCT_ID "$STRIPE_PRODUCT_ID"
+  else
+    # Clear a stale product id (e.g. test-mode prod_ on a live key).
+    if grep -q "^STRIPE_PRODUCT_ID=" "$file"; then
+      sed -i '' 's|^STRIPE_PRODUCT_ID=.*|STRIPE_PRODUCT_ID=|' "$file"
+    fi
+  fi
   if [[ -n "${STRIPE_WEBHOOK_SECRET:-}" ]]; then
     upsert_env "$file" STRIPE_WEBHOOK_SECRET "$STRIPE_WEBHOOK_SECRET"
   fi
@@ -228,7 +248,7 @@ main() {
   require_cmd curl
   load_secret_key
 
-  if [[ "$STRIPE_SECRET_KEY" == sk_live_* ]]; then
+  if [[ "$STRIPE_SECRET_KEY" == sk_live_* || "$STRIPE_SECRET_KEY" == rk_live_* ]]; then
     echo "Using LIVE Stripe key — production account."
   else
     echo "Using TEST Stripe key — safe for local development."
