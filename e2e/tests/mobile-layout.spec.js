@@ -10,7 +10,12 @@ const VIEWPORTS = [
 const APP_VIEWS = [
   { view: "bets", hash: "#/bets", ready: "#main .ledger" },
   { view: "new", hash: "#/new", ready: "#main #betForm" },
-  { view: "reports", hash: "#/reports", ready: "#main #metricCards" },
+  {
+    view: "reports",
+    hash: "#/reports",
+    ready: "#main #metricCards .card",
+    alsoReady: "#main .chart-wrap canvas, #main .chart-fallback",
+  },
   { view: "settings", hash: "#/settings", ready: "#main #settingsForm" },
 ];
 
@@ -34,10 +39,13 @@ test.describe("mobile layout", () => {
       await loginViaUi(page, request, baseURL, "layout");
       await expect(page.locator("#app")).toBeVisible();
 
-      for (const { view, hash, ready } of APP_VIEWS) {
+      for (const { view, hash, ready, alsoReady } of APP_VIEWS) {
         await page.locator(`.tab[data-view="${view}"]`).click();
         await expect(page).toHaveURL(new RegExp(hash.replace("#", "#")));
         await expect(page.locator(ready)).toBeVisible({ timeout: 20_000 });
+        if (alsoReady) {
+          await expect(page.locator(alsoReady).first()).toBeVisible({ timeout: 25_000 });
+        }
         const overflow = await mainOverflows(page);
         expect(overflow, `overflow on ${hash} at ${viewport.width}px`).toBe(false);
       }
