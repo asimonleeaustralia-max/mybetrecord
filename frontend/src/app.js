@@ -925,7 +925,10 @@ async function boot({ loading = false } = {}) {
     await i18n.setLocale(state.user.preferred_locale || "en", { persistCookie: true });
     showApp();
     await refreshTicker();
-    if (!location.hash) location.hash = "#/bets";
+    const gateHash = (location.hash || "").split("?")[0];
+    if (!location.hash || gateHash === "#/login" || gateHash === "#/register" || gateHash === "#/forgot-password") {
+      location.hash = "#/bets";
+    }
     await route();
   } catch {
     setToken(null);

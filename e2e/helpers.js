@@ -1,3 +1,5 @@
+import { expect } from "@playwright/test";
+
 const PASSWORD = "password123";
 
 async function postWithRetry(request, url, data, attempts = 5) {
@@ -37,4 +39,17 @@ export async function registerAndLogin(request, baseURL, email) {
 
 export function uniqueEmail(prefix = "e2e") {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@example.com`;
+}
+
+/** Register via API, then sign in through the SPA login form. */
+export async function loginViaUi(page, request, baseURL, prefix = "e2e") {
+  const email = uniqueEmail(prefix);
+  await registerAndLogin(request, baseURL, email);
+  await page.goto("/app/#/login");
+  await page.locator("#loginForm input[name=email]").fill(email);
+  await page.locator("#loginForm input[name=password]").fill(PASSWORD);
+  await page.locator("#loginForm button[type=submit]").click();
+  await expect(page.locator(".topbar")).toBeVisible({ timeout: 20_000 });
+  await expect(page).toHaveURL(/#\/bets/, { timeout: 20_000 });
+  return email;
 }

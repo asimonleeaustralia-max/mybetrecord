@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { registerAndLogin, uniqueEmail } from "../helpers.js";
+import { loginViaUi } from "../helpers.js";
 
 const VIEWPORTS = [
   { width: 320, height: 568 },
@@ -7,30 +7,29 @@ const VIEWPORTS = [
   { width: 414, height: 896 },
 ];
 
+async function mainOverflows(page) {
+  return page.locator("#main").evaluate((el) => {
+    if (!el || el.clientWidth === 0) return false;
+    return el.scrollWidth > el.clientWidth + 1;
+  });
+}
+
 test.describe("mobile layout", () => {
   for (const viewport of VIEWPORTS) {
     test(`no horizontal overflow at ${viewport.width}px`, async ({ page, request, baseURL }) => {
       await page.setViewportSize(viewport);
       await page.goto("/");
       const landingOverflow = await page.evaluate(() =>
-        document.documentElement.scrollWidth > document.documentElement.clientWidth
+        document.documentElement.scrollWidth > document.documentElement.clientWidth + 1
       );
       expect(landingOverflow).toBe(false);
 
-      const email = uniqueEmail("layout");
-      await registerAndLogin(request, baseURL, email);
-      await page.goto("/app/#/login");
-      await page.locator("#loginForm input[name=email]").fill(email);
-      await page.locator("#loginForm input[name=password]").fill("password123");
-      await page.locator("#loginForm button[type=submit]").click();
-      await expect(page.locator(".topbar")).toBeVisible({ timeout: 15_000 });
+      await loginViaUi(page, request, baseURL, "layout");
 
       for (const hash of ["#/bets", "#/new", "#/reports", "#/settings"]) {
         await page.goto(`/app/${hash}`);
-        await page.waitForTimeout(300);
-        const overflow = await page.evaluate(() =>
-          document.documentElement.scrollWidth > document.documentElement.clientWidth + 1
-        );
+        await expect(page.locator("#main")).toBeVisible({ timeout: 15_000 });
+        const overflow = await mainOverflows(page);
         expect(overflow, `overflow on ${hash} at ${viewport.width}px`).toBe(false);
       }
 

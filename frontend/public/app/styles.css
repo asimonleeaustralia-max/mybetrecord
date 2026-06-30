@@ -336,9 +336,10 @@ input:focus, select:focus, textarea:focus {
   top: 0;
   z-index: 30;
 }
-.topbar {
+  .topbar {
   position: relative;
   display: flex; align-items: center; gap: 20px;
+  flex-wrap: wrap;
   padding: 12px 20px;
   background: var(--ink);
   color: #cfd3da;
@@ -502,6 +503,8 @@ code { font-family: var(--mono); font-size: .82em; background: var(--canvas); pa
   .grid2, .grid3 { grid-template-columns: 1fr; }
   .split { grid-template-columns: 1fr; }
   .ticker { gap: 16px; }
+  .topbar { gap: 10px; padding-left: 14px; padding-right: 14px; }
+  .topbar .btn--sm { padding: 7px 10px; }
   .main { padding: 16px 14px 80px; }
   .view__head h1 { font-size: 1.25rem; }
   input, select, textarea { font-size: 16px; }
