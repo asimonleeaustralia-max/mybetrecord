@@ -82,14 +82,16 @@
 
   async function loadPricing() {
     if (_prices) return _prices;
-    try {
-      const res = await fetch("/billing/pricing");
-      if (res.ok) {
-        const data = await res.json();
-        _prices = data.prices || priceListFromFallback();
-        return _prices;
-      }
-    } catch { /* static fallback */ }
+    for (const path of ["/billing/pricing", "/pro/pricing"]) {
+      try {
+        const res = await fetch(path);
+        if (res.ok) {
+          const data = await res.json();
+          _prices = data.prices || priceListFromFallback();
+          return _prices;
+        }
+      } catch { /* try next path */ }
+    }
     _prices = priceListFromFallback();
     return _prices;
   }

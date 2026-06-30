@@ -2256,28 +2256,40 @@ async function renderPlan() {
     pricing = await api("/billing/pricing");
   } catch (err) {
     console.warn("Pro pricing unavailable:", err);
+    try {
+      pricing = await api("/pro/pricing");
+    } catch (err2) {
+      console.warn("Pro pricing fallback unavailable:", err2);
+    }
   }
 
   try {
     plan = await api("/billing/plan");
   } catch (err) {
     console.warn("Plan details unavailable:", err);
-    if (!pricing) {
-      body.innerHTML = `<p class="muted">${esc(t("plan.unavailable"))}</p>`;
-      if (badge) badge.hidden = true;
-      return;
+    try {
+      plan = await api("/pro/plan");
+    } catch (err2) {
+      console.warn("Plan details fallback unavailable:", err2);
+      if (!pricing) {
+        body.innerHTML = `<p class="muted">${esc(t("plan.unavailable"))}</p>`;
+        if (badge) badge.hidden = true;
+        return;
+      }
+      // Pricing loaded but plan endpoint failed (often a content blocker on desktop Safari).
+      plan = {
+        plan: state.user?.plan || "free",
+        plan_currency: state.user?.plan_currency || null,
+        subscription_status: state.user?.subscription_status || null,
+        subscription_cancel_at_period_end: Boolean(state.user?.subscription_cancel_at_period_end),
+        subscription_current_period_end: state.user?.subscription_current_period_end || null,
+        free_daily_bet_limit: 5,
+        stripe_configured: true,
+      };
     }
-    // Pricing loaded but plan endpoint failed (often a content blocker on desktop Safari).
-    plan = {
-      plan: state.user?.plan || "free",
-      plan_currency: state.user?.plan_currency || null,
-      subscription_status: state.user?.subscription_status || null,
-      subscription_cancel_at_period_end: Boolean(state.user?.subscription_cancel_at_period_end),
-      subscription_current_period_end: state.user?.subscription_current_period_end || null,
-      free_daily_bet_limit: 5,
-      stripe_configured: true,
-    };
   }
+
+  if (!pricing && plan?.pricing) pricing = plan.pricing;
 
   const isPro = plan.plan === "pro";
   if (badge) {

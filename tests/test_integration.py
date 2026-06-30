@@ -608,6 +608,7 @@ def test_plan_defaults_to_free(clients, auth_headers):
     body = r.json()
     assert body["plan"] == "free"
     assert body["stripe_configured"] is False
+    assert body["pricing"] is None
     assert body["free_daily_bet_limit"] == get_settings().free_daily_bet_limit
     assert body["subscription_cancel_at_period_end"] is False
 

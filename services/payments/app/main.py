@@ -176,13 +176,17 @@ def health() -> dict:
     return {"status": "ok", "service": "payments", "stripe_configured": _stripe_ready()}
 
 
-@app.get("/payments/pricing", response_model=PricingOut)
-def get_pricing() -> PricingOut:
-    """Public Pro pricing for every supported currency."""
+def _pricing_out() -> PricingOut:
     return PricingOut(
         default_currency=pricing.DEFAULT_CURRENCY,
         prices=[PriceOut(**p) for p in pricing.pricing_table()],
     )
+
+
+@app.get("/payments/pricing", response_model=PricingOut)
+def get_pricing() -> PricingOut:
+    """Public Pro pricing for every supported currency."""
+    return _pricing_out()
 
 
 @app.get("/payments/promo", response_model=PromoValidationOut)
@@ -215,6 +219,7 @@ def validate_promo(
 @app.get("/payments/plan", response_model=PlanOut)
 def get_plan(user: User = Depends(get_current_user)) -> PlanOut:
     """Current subscription state for the signed-in user."""
+    stripe_ready = _stripe_ready()
     return PlanOut(
         plan=user.plan or "free",
         plan_currency=user.plan_currency,
@@ -222,7 +227,8 @@ def get_plan(user: User = Depends(get_current_user)) -> PlanOut:
         subscription_cancel_at_period_end=bool(user.subscription_cancel_at_period_end),
         subscription_current_period_end=user.subscription_current_period_end,
         free_daily_bet_limit=settings.free_daily_bet_limit,
-        stripe_configured=_stripe_ready(),
+        stripe_configured=stripe_ready,
+        pricing=_pricing_out() if stripe_ready else None,
     )
 
 

@@ -155,6 +155,8 @@ class PlanOut(BaseModel):
     subscription_current_period_end: Optional[datetime] = None
     free_daily_bet_limit: int
     stripe_configured: bool = False
+    # Bundled so the plan page works when extensions block /billing/pricing.
+    pricing: Optional[PricingOut] = None
 
 
 class CheckoutRequest(BaseModel):
