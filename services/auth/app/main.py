@@ -494,6 +494,8 @@ def _admin_user_out(
         email=user.email,
         is_active=user.is_active,
         is_admin=user.is_admin,
+        base_currency=user.base_currency,
+        preferred_locale=user.preferred_locale,
         created_at=user.created_at,
         last_login_at=user.last_login_at,
         bet_count=bet_counts.get(user.id, 0),

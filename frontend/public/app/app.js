@@ -2610,6 +2610,8 @@ async function loadAdminUsers() {
     <tr data-user="${u.id}">
       <td>${esc(u.email)}</td>
       <td>${adminStatusBadge(u.is_active)}</td>
+      <td>${esc(u.base_currency || "—")}</td>
+      <td>${esc(u.preferred_locale || "—")}</td>
       <td class="num">${formatDt(u.last_login_at)}</td>
       <td class="num">${formatDt(u.created_at)}</td>
       <td class="r num">${u.bet_count}</td>
@@ -2620,7 +2622,7 @@ async function loadAdminUsers() {
         </button>
       </td>
     </tr>`).join("")
-    || `<tr><td colspan="8" class="empty">${t("admin.noUsers")}</td></tr>`;
+    || `<tr><td colspan="10" class="empty">${t("admin.noUsers")}</td></tr>`;
 
   $$("[data-toggle-active]").forEach(btn => btn.addEventListener("click", () =>
     adminToggleUser(btn.dataset.toggleActive, { is_active: btn.dataset.active !== "true" })

@@ -295,6 +295,8 @@ class AdminUserOut(BaseModel):
     email: EmailStr
     is_active: bool
     is_admin: bool
+    base_currency: str
+    preferred_locale: str
     created_at: datetime
     last_login_at: Optional[datetime]
     bet_count: int
