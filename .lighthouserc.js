@@ -2,9 +2,9 @@ module.exports = {
   ci: {
     collect: {
       url: [
-        "http://localhost:8080/",
-        "http://localhost:8080/app/",
-        "http://localhost:8080/pricing/",
+        "http://127.0.0.1:8080/",
+        "http://127.0.0.1:8080/app/",
+        "http://127.0.0.1:8080/pricing/",
       ],
       numberOfRuns: 1,
       settings: {

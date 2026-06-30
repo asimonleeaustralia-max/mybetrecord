@@ -49,6 +49,7 @@ cd frontend && npm ci && npm run build
 
 # Start full stack
 docker compose up -d --build --wait
+./scripts/wait-for-stack.sh
 
 # Playwright (Pixel 5, iPhone 12, iPhone SE, Desktop Safari)
 cd e2e && npm ci && npx playwright install --with-deps chromium webkit && npm test
