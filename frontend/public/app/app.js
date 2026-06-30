@@ -427,6 +427,52 @@ async function api(path, { method = "GET", body, raw = false, allow401 = false, 
   return res.json();
 }
 
+// Mirrors shared/betrecord_shared/pricing.py — used when subscription API paths are blocked.
+const FALLBACK_PRO_PRICES = {
+  USD: 4.99, EUR: 4.99, JPY: 700, GBP: 3.99, CNY: 35, AUD: 7.99, CAD: 6.99,
+  CHF: 4.5, HKD: 39, SGD: 6.99, SEK: 49, KRW: 6900, NOK: 49, NZD: 8.99,
+  INR: 399, MXN: 89, TWD: 149, ZAR: 89, BRL: 24.9, DKK: 35,
+};
+
+// Innocuous paths first — extensions often hang /billing/* until fetch times out.
+const SUB_API_BASES = ["/sub", "/pro", "/billing"];
+
+function staticPricingOut() {
+  return {
+    default_currency: "USD",
+    prices: Object.entries(FALLBACK_PRO_PRICES).map(([currency, amount]) => ({
+      currency,
+      amount,
+      interval: "month",
+    })),
+  };
+}
+
+function planFromUser(user) {
+  return {
+    plan: user?.plan || "free",
+    plan_currency: user?.plan_currency || null,
+    subscription_status: user?.subscription_status || null,
+    subscription_cancel_at_period_end: Boolean(user?.subscription_cancel_at_period_end),
+    subscription_current_period_end: user?.subscription_current_period_end || null,
+    free_daily_bet_limit: 5,
+    stripe_configured: true,
+    pricing: staticPricingOut(),
+  };
+}
+
+async function subApi(path, options = {}) {
+  const suffix = path.startsWith("/") ? path : `/${path}`;
+  const { timeoutMs = 8000, ...rest } = options;
+  const attempts = SUB_API_BASES.map(base =>
+    api(`${base}${suffix}`, { ...rest, timeoutMs }).catch(err => {
+      console.warn(`Subscription API failed (${base}${suffix}):`, err);
+      throw err;
+    })
+  );
+  return Promise.any(attempts);
+}
+
 /* ------------------------------- helpers ------------------------------- */
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -2251,45 +2297,19 @@ async function renderPlan() {
   body.innerHTML = `<p class="muted">${esc(t("plan.loading"))}</p>`;
 
   let plan;
-  let pricing;
   try {
-    pricing = await api("/billing/pricing");
-  } catch (err) {
-    console.warn("Pro pricing unavailable:", err);
-    try {
-      pricing = await api("/pro/pricing");
-    } catch (err2) {
-      console.warn("Pro pricing fallback unavailable:", err2);
-    }
-  }
-
-  try {
-    plan = await api("/billing/plan");
+    plan = await subApi("/plan");
   } catch (err) {
     console.warn("Plan details unavailable:", err);
-    try {
-      plan = await api("/pro/plan");
-    } catch (err2) {
-      console.warn("Plan details fallback unavailable:", err2);
-      if (!pricing) {
-        body.innerHTML = `<p class="muted">${esc(t("plan.unavailable"))}</p>`;
-        if (badge) badge.hidden = true;
-        return;
-      }
-      // Pricing loaded but plan endpoint failed (often a content blocker on desktop Safari).
-      plan = {
-        plan: state.user?.plan || "free",
-        plan_currency: state.user?.plan_currency || null,
-        subscription_status: state.user?.subscription_status || null,
-        subscription_cancel_at_period_end: Boolean(state.user?.subscription_cancel_at_period_end),
-        subscription_current_period_end: state.user?.subscription_current_period_end || null,
-        free_daily_bet_limit: 5,
-        stripe_configured: true,
-      };
+    if (!state.user) {
+      body.innerHTML = `<p class="muted">${esc(t("plan.unavailable"))}</p>`;
+      if (badge) badge.hidden = true;
+      return;
     }
+    plan = planFromUser(state.user);
   }
 
-  if (!pricing && plan?.pricing) pricing = plan.pricing;
+  const pricing = plan.pricing?.prices?.length ? plan.pricing : staticPricingOut();
 
   const isPro = plan.plan === "pro";
   if (badge) {
@@ -2335,7 +2355,7 @@ function renderProPlan(body, plan) {
     manageBtn.disabled = true;
     try {
       const base = `${location.origin}/app/`;
-      const session = await api("/billing/portal-session", {
+      const session = await subApi("/portal-session", {
         method: "POST",
         body: { return_url: `${base}#/settings/plan` },
       });
@@ -2352,7 +2372,7 @@ function renderProPlan(body, plan) {
     if (!confirm(t("plan.cancelConfirm"))) return;
     cancelBtn.disabled = true;
     try {
-      await api("/billing/cancel", { method: "POST" });
+      await subApi("/cancel", { method: "POST" });
       toast(t("plan.cancelRequested"));
       await renderPlan();
     } catch (err) {
@@ -2365,7 +2385,7 @@ function renderProPlan(body, plan) {
   if (resumeBtn) resumeBtn.addEventListener("click", async () => {
     resumeBtn.disabled = true;
     try {
-      await api("/billing/resume", { method: "POST" });
+      await subApi("/resume", { method: "POST" });
       toast(t("plan.resumed"));
       await renderPlan();
     } catch (err) {
@@ -2444,7 +2464,7 @@ function renderFreePlan(body, plan, pricing) {
     if (termsEl) { termsEl.hidden = true; termsEl.textContent = ""; }
     if (!code) { updatePrice(); return; }
     try {
-      const result = await api(`/billing/promo?code=${encodeURIComponent(code)}`);
+      const result = await subApi(`/promo?code=${encodeURIComponent(code)}`);
       if (result.valid) {
         appliedPromo = result;
         if (note) {
@@ -2495,7 +2515,7 @@ function renderFreePlan(body, plan, pricing) {
         cancel_url: `${base}?billing=cancel#/settings/plan`,
       };
       if (promoCode) body.promotion_code = promoCode;
-      const session = await api("/billing/checkout-session", {
+      const session = await subApi("/checkout-session", {
         method: "POST",
         body,
       });
@@ -2750,7 +2770,7 @@ async function adminCreatePromo(e) {
     body.percent_off = Number($("#adminPromoPercent").value);
   }
   try {
-    await api("/billing/admin/promo-codes", { method: "POST", body });
+    await subApi("/admin/promo-codes", { method: "POST", body });
     toast(t("admin.promoCreated"));
     $("#adminPromoForm").reset();
     syncAdminPromoForm();
@@ -2761,7 +2781,7 @@ async function adminCreatePromo(e) {
 }
 
 async function loadAdminPromoCodes() {
-  const promos = await api("/billing/admin/promo-codes");
+  const promos = await subApi("/admin/promo-codes");
   $("#adminPromoBody").innerHTML = promos.map(p => `
     <tr data-promo="${p.id}">
       <td><code>${esc(p.code)}</code></td>
@@ -2791,7 +2811,7 @@ async function adminTogglePromo(promoId, active) {
   const label = active ? t("admin.promoActivateConfirm") : t("admin.promoDeactivateConfirm");
   if (!confirm(label)) return;
   try {
-    await api(`/billing/admin/promo-codes/${promoId}`, { method: "PATCH", body: { active } });
+    await subApi(`/admin/promo-codes/${promoId}`, { method: "PATCH", body: { active } });
     toast(t("admin.promoUpdated"));
     await loadAdminPromoCodes();
   } catch (err) {
@@ -2800,7 +2820,7 @@ async function adminTogglePromo(promoId, active) {
 }
 
 async function loadAdminPromoStats(promoId) {
-  const stats = await api(`/billing/admin/promo-codes/${promoId}/stats`);
+  const stats = await subApi(`/admin/promo-codes/${promoId}/stats`);
   const panel = $("#adminPromoStats");
   if (!panel) return;
   panel.hidden = false;

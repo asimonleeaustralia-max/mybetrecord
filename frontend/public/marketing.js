@@ -82,7 +82,7 @@
 
   async function loadPricing() {
     if (_prices) return _prices;
-    for (const path of ["/billing/pricing", "/pro/pricing"]) {
+    for (const path of ["/sub/pricing", "/pro/pricing", "/billing/pricing"]) {
       try {
         const res = await fetch(path);
         if (res.ok) {
