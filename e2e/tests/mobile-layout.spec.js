@@ -7,6 +7,13 @@ const VIEWPORTS = [
   { width: 414, height: 896 },
 ];
 
+const APP_VIEWS = [
+  { view: "bets", hash: "#/bets", ready: "#main .ledger" },
+  { view: "new", hash: "#/new", ready: "#main #betForm" },
+  { view: "reports", hash: "#/reports", ready: "#main #metricCards" },
+  { view: "settings", hash: "#/settings", ready: "#main #settingsForm" },
+];
+
 async function mainOverflows(page) {
   return page.locator("#main").evaluate((el) => {
     if (!el || el.clientWidth === 0) return false;
@@ -25,10 +32,12 @@ test.describe("mobile layout", () => {
       expect(landingOverflow).toBe(false);
 
       await loginViaUi(page, request, baseURL, "layout");
+      await expect(page.locator("#app")).toBeVisible();
 
-      for (const hash of ["#/bets", "#/new", "#/reports", "#/settings"]) {
-        await page.goto(`/app/${hash}`);
-        await expect(page.locator("#main")).toBeVisible({ timeout: 15_000 });
+      for (const { view, hash, ready } of APP_VIEWS) {
+        await page.locator(`.tab[data-view="${view}"]`).click();
+        await expect(page).toHaveURL(new RegExp(hash.replace("#", "#")));
+        await expect(page.locator(ready)).toBeVisible({ timeout: 20_000 });
         const overflow = await mainOverflows(page);
         expect(overflow, `overflow on ${hash} at ${viewport.width}px`).toBe(false);
       }

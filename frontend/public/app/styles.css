@@ -378,7 +378,8 @@ input:focus, select:focus, textarea:focus {
 }
 .tab.is-active { color: var(--ink); border-bottom-color: var(--brass); }
 
-.main { padding: 22px 20px 64px; max-width: 1100px; margin: 0 auto; }
+.main { padding: 22px 20px 64px; max-width: 1100px; margin: 0 auto; min-width: 0; overflow-x: clip; }
+.view, .view--narrow, .betform, fieldset { min-width: 0; max-width: 100%; }
 .view__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px; flex-wrap: wrap; }
 .view__head h1 { font-size: 1.45rem; margin: 0; }
 .view--narrow { max-width: 680px; margin: 0 auto; }
@@ -391,7 +392,7 @@ input:focus, select:focus, textarea:focus {
 .filters select, .filters input { padding: 7px 10px; font-size: .85rem; min-width: 120px; }
 
 /* ---------- ledger table ---------- */
-.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); max-width: 100%; }
 .ledger { width: 100%; border-collapse: collapse; font-size: .88rem; }
 .ledger th {
   text-align: left; font: 600 .68rem var(--sans); text-transform: uppercase; letter-spacing: .06em;
@@ -436,10 +437,10 @@ textarea { font-family: var(--sans); resize: vertical; }
 .calc-results { display: flex; flex-direction: column; gap: 10px; }
 .calc-field__label { font-family: var(--sans); font-size: .78rem; font-weight: 600; color: var(--ink-muted); }
 .calc-field__value { font-family: var(--mono); font-size: .9rem; }
-.formactions { display: flex; justify-content: flex-end; gap: 10px; }
+.formactions { display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
 
 /* ---------- multiple / parlay legs ---------- */
-.check--multiple { font-weight: 600; color: var(--brass-deep); }
+.check--multiple { font-weight: 600; color: var(--brass-deep); flex-wrap: wrap; align-items: flex-start; }
 .legs { display: grid; gap: 14px; }
 .leg {
   border: 1px solid var(--line); border-radius: 10px;
@@ -458,7 +459,7 @@ textarea { font-family: var(--sans); resize: vertical; }
 .pill--promo { background: #f3e8ff; color: #7c3aed; margin-left: 4px; vertical-align: middle; }
 
 /* ---------- reports ---------- */
-.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 18px; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr)); gap: 12px; margin-bottom: 18px; }
 .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; }
 .card__label { font-size: .68rem; text-transform: uppercase; letter-spacing: .07em; color: var(--faint); }
 .card__value { font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 1.5rem; font-weight: 700; margin-top: 6px; }
@@ -468,13 +469,13 @@ textarea { font-family: var(--sans); resize: vertical; }
 .chart-wrap { position: relative; width: 100%; }
 .chart-wrap--equity { height: 220px; }
 .chart-wrap--monthly { height: 200px; }
-.panel__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.panel__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
 .panel__head h2 { font-size: 1.02rem; margin: 0; }
 .panel__sub { font-size: .8rem; color: var(--muted); }
 .settings-legal { font-size: .85rem; color: var(--muted); margin: 0 0 20px; text-align: center; }
 .settings-legal a { color: var(--brass-deep); text-decoration: none; }
 .settings-legal a:hover { text-decoration: underline; }
-.exports { display: flex; gap: 8px; }
+.exports { display: flex; gap: 8px; flex-wrap: wrap; }
 .split { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
 .mini-select { width: auto; padding: 6px 10px; font-size: .82rem; }
 .admin-add-form { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
@@ -507,7 +508,9 @@ code { font-family: var(--mono); font-size: .82em; background: var(--canvas); pa
   .topbar .btn--sm { padding: 7px 10px; }
   .main { padding: 16px 14px 80px; }
   .view__head h1 { font-size: 1.25rem; }
+  .view__head .exports { width: 100%; }
   input, select, textarea { font-size: 16px; }
+  input[type="datetime-local"] { min-width: 0; max-width: 100%; }
   .filters select, .filters input { font-size: 16px; }
   .mini-input, .mini-select { font-size: 16px; }
   --mono: ui-monospace, SFMono-Regular, Menlo, monospace;
