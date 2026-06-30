@@ -1,0 +1,14 @@
+{
+  "name": "mybetrecord-e2e",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "playwright test",
+    "test:install": "playwright install --with-deps chromium webkit",
+    "lighthouse": "lhci autorun"
+  },
+  "devDependencies": {
+    "@lhci/cli": "^0.14.0",
+    "@playwright/test": "^1.51.0"
+  }
+}

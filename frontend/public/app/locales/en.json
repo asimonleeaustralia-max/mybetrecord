@@ -3,6 +3,16 @@
     "title": "mybetrecord · your betting ledger",
     "signingIn": "Signing in"
   },
+  "common": {
+    "confirm": "Confirm",
+    "cancel": "Cancel"
+  },
+  "storage": {
+    "ephemeral": "Private browsing — your session won't be saved after you close this tab."
+  },
+  "i18n": {
+    "fallbackNotice": "Couldn't load your language — showing English."
+  },
   "auth": {
     "tagline": "A disciplined ledger for people who bet to a number.",
     "signIn": "Sign in",
@@ -232,6 +242,10 @@
     "turnover": "{{amount}} turnover",
     "wlv": "{{wins}}W / {{losses}}L / {{voids}}V",
     "noSettled": "No settled bets yet.",
+    "chartFallback": "Chart unavailable — showing recent values as a table.",
+    "date": "Date",
+    "value": "Value",
+    "noData": "No data for this period.",
     "dimSport": "Sport",
     "dimTipster": "Tipster",
     "dimBetType": "Bet type",

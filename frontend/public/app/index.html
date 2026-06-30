@@ -8,7 +8,7 @@
   <title>mybetrecord · your betting ledger</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=optional" rel="stylesheet" />
   <link rel="stylesheet" href="/app/styles.css" />
 </head>
 <body>
@@ -93,6 +93,7 @@
 
   <!-- ───────────────────────── App shell ──────────────────────── -->
   <div id="app" class="app" hidden>
+    <div class="app-chrome">
     <header class="topbar">
       <a href="#/bets" class="wordmark">my<span>bet</span>record</a>
       <div class="ticker">
@@ -110,8 +111,22 @@
       <a href="#/settings" class="tab" data-view="settings" data-i18n="nav.settings">Settings</a>
       <a href="#/admin" class="tab" data-view="admin" hidden data-i18n="nav.admin">Admin</a>
     </nav>
+    </div>
 
     <main id="main" class="main"></main>
+  </div>
+
+  <div id="mbrModal" class="mbr-modal" hidden role="alertdialog" aria-modal="true" aria-labelledby="mbrModalMsg">
+    <div class="mbr-modal__panel">
+      <p id="mbrModalMsg"></p>
+      <div id="mbrModalPrompt" class="mbr-modal__prompt" hidden>
+        <input type="text" id="mbrModalInput" autocomplete="off" />
+      </div>
+      <div class="mbr-modal__actions">
+        <button type="button" id="mbrModalCancel" class="btn btn--ghost"></button>
+        <button type="button" id="mbrModalOk" class="btn btn--brass"></button>
+      </div>
+    </div>
   </div>
 
   <div id="toast" class="toast" hidden></div>
@@ -612,19 +627,21 @@
     </div>
   </template>
 
+  <script src="/app/storage.js"></script>
   <script src="/app/i18n.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", async function () {
       var auth = document.getElementById("auth");
       var loading = document.getElementById("authLoading");
+      var store = window.mbrStorage.safeStorage();
       try {
         if (loading) loading.hidden = false;
-        var loc = localStorage.getItem("mbr_token")
+        var loc = store.getItem("mbr_token")
           ? "en"
           : (window.i18n.getLocaleCookie() || window.i18n.getLoginLocale());
         await window.i18n.initI18n(loc);
         document.title = window.i18n.t("meta.title");
-        if (!localStorage.getItem("mbr_token") && auth) {
+        if (!store.getItem("mbr_token") && auth) {
           window.i18n.applyI18n(auth);
           if (loading) loading.hidden = true;
           auth.hidden = false;

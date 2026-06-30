@@ -9,6 +9,19 @@ to CSV or Excel, and drive the whole thing from an API if you want to.
 Python (FastAPI) microservices, PostgreSQL, a vanilla-JS mobile-responsive
 frontend, deployed to Azure Container Apps with Bicep.
 
+### Browser support
+
+| Platform | Minimum |
+|----------|---------|
+| iOS Safari | 12+ |
+| Chrome Android | 80+ |
+| Samsung Internet | 12+ |
+| Desktop Safari / Chrome / Firefox | Last 2 major versions |
+
+Not supported: IE11, pre-Chromium Edge. See [docs/mobile-testing.md](docs/mobile-testing.md) for the manual device checklist and how to run Playwright / Lighthouse CI locally.
+
+Frontend source lives in `frontend/src/`; run `cd frontend && npm run build` before serving or committing JS changes.
+
 ---
 
 ## Architecture

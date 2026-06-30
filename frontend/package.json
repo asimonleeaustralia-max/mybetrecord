@@ -1,0 +1,17 @@
+{
+  "name": "mybetrecord-frontend",
+  "private": true,
+  "scripts": {
+    "build": "node scripts/build-frontend.mjs",
+    "build:watch": "node scripts/build-frontend.mjs --watch"
+  },
+  "browserslist": [
+    "iOS >= 12",
+    "Chrome >= 80",
+    "Android >= 5",
+    "not dead"
+  ],
+  "devDependencies": {
+    "esbuild": "^0.25.0"
+  }
+}

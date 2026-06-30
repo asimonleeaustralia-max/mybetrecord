@@ -1,0 +1,2 @@
+(function(r){"use strict";const l="mbr_token",n={};let t=null,o=!1;function c(){return{getItem(e){return Object.prototype.hasOwnProperty.call(n,e)?n[e]:null},setItem(e,m){n[e]=String(m)},removeItem(e){delete n[e]}}}function a(){if(t)return t;try{const e="__mbr_storage_test__";r.localStorage.setItem(e,"1"),r.localStorage.removeItem(e),t=r.localStorage}catch{t=c(),o=!0}return t}function s(){return a(),o}r.mbrStorage={safeStorage:a,isEphemeralStorage:s,TOKEN_KEY:l}})(typeof window<"u"?window:globalThis);
+//# sourceMappingURL=storage.js.map

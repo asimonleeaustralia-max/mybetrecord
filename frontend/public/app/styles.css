@@ -52,6 +52,8 @@ a.wordmark:focus-visible { outline: 2px solid var(--brass); outline-offset: 2px;
 
 /* ============================ Auth ============================ */
 .auth {
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
   min-height: 100dvh;
   display: grid; place-items: center;
   padding: 24px;
@@ -87,6 +89,8 @@ a.wordmark:focus-visible { outline: 2px solid var(--brass); outline-offset: 2px;
 .auth[hidden], #app[hidden], #shareView[hidden] { display: none !important; }
 
 .share-view {
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
   min-height: 100dvh;
   display: grid;
   place-items: center;
@@ -327,8 +331,13 @@ input:focus, select:focus, textarea:focus {
 .form-error { color: var(--loss); font-size: .85rem; margin-top: 14px; }
 
 /* ============================ App shell ============================ */
+.app-chrome {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+}
 .topbar {
-  position: sticky; top: 0; z-index: 30;
+  position: relative;
   display: flex; align-items: center; gap: 20px;
   padding: 12px 20px;
   background: var(--ink);
@@ -356,7 +365,7 @@ input:focus, select:focus, textarea:focus {
 }
 
 .tabs {
-  position: sticky; top: 0; z-index: 20;
+  position: relative;
   display: flex; gap: 2px; padding: 0 12px;
   background: var(--surface); border-bottom: 1px solid var(--line);
   overflow-x: auto;
@@ -480,7 +489,9 @@ code { font-family: var(--mono); font-size: .82em; background: var(--canvas); pa
 
 /* ---------- toast ---------- */
 .toast {
-  position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%);
+  position: fixed; left: 50%;
+  bottom: calc(28px + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
   background: var(--ink); color: #fff; padding: 11px 18px; border-radius: 999px;
   font-size: .88rem; font-weight: 500; z-index: 60; box-shadow: var(--shadow);
 }
@@ -493,11 +504,50 @@ code { font-family: var(--mono); font-size: .82em; background: var(--canvas); pa
   .ticker { gap: 16px; }
   .main { padding: 16px 14px 80px; }
   .view__head h1 { font-size: 1.25rem; }
+  input, select, textarea { font-size: 16px; }
+  .filters select, .filters input { font-size: 16px; }
+  .mini-input, .mini-select { font-size: 16px; }
+  --mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+  --display: var(--sans);
+}
+
+@media (pointer: coarse) {
+  .icon-btn {
+    min-width: 44px;
+    min-height: 44px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }
 }
+
+/* ---------- modal dialog ---------- */
+body.mbr-modal-open { overflow: hidden; }
+.mbr-modal {
+  position: fixed; inset: 0; z-index: 80;
+  display: grid; place-items: center;
+  padding: 24px;
+  padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  background: rgba(22, 24, 29, .45);
+}
+.mbr-modal[hidden] { display: none !important; }
+.mbr-modal__panel {
+  width: min(400px, 100%);
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 22px 20px 18px;
+  box-shadow: var(--shadow);
+}
+.mbr-modal__panel p { margin: 0 0 16px; line-height: 1.45; }
+.mbr-modal__prompt { margin-bottom: 14px; }
+.mbr-modal__prompt input { width: 100%; }
+.mbr-modal__actions {
+  display: flex; justify-content: flex-end; gap: 10px;
+}
+
+.chart-fallback { margin-top: 8px; }
+.chart-fallback .hint { margin: 0 0 10px; color: var(--muted); font-size: .85rem; }
 
 /* ============================ Plan & billing ============================ */
 .plan-badge {

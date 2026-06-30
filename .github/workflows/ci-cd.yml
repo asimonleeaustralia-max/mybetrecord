@@ -26,6 +26,67 @@ jobs:
       - name: Run unit + integration tests
         run: pytest -q
 
+  frontend-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "22" }
+      - name: Build frontend assets
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run build
+
+  e2e:
+    needs: [frontend-build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "22" }
+      - name: Build frontend
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run build
+      - name: Start stack
+        run: docker compose up -d --build --wait
+      - name: Install Playwright
+        working-directory: e2e
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium webkit
+      - name: Run Playwright e2e (mobile profiles)
+        working-directory: e2e
+        run: npm test
+      - name: Stop stack
+        if: always()
+        run: docker compose down -v
+
+  lighthouse:
+    needs: [e2e]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "22" }
+      - name: Build frontend
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run build
+      - name: Start stack
+        run: docker compose up -d --build --wait
+      - name: Run Lighthouse CI (mobile)
+        working-directory: e2e
+        run: |
+          npm ci
+          npx lhci autorun --config=../.lighthouserc.js
+      - name: Stop stack
+        if: always()
+        run: docker compose down -v
+
   # Secrets can't be referenced in job-level `if:`, so we expose their presence
   # as an output here and gate `build-and-deploy` on that. Missing secrets =>
   # deploy is skipped (not failed), so CI stays green until Azure is wired up.
@@ -56,7 +117,7 @@ jobs:
           echo "ok=true" >> "$GITHUB_OUTPUT"
 
   build-and-deploy:
-    needs: [test, preflight]
+    needs: [test, frontend-build, e2e, lighthouse, preflight]
     if: github.ref == 'refs/heads/main' && needs.preflight.outputs.can-deploy == 'true'
     runs-on: ubuntu-latest
     permissions:
