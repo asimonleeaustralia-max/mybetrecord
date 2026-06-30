@@ -805,7 +805,8 @@ async function route() {
 
   if (path === "/edit" && id) return renderForm(id);
   const handler = routes[path] || renderBets;
-  await handler();
+  if (path === "/settings" && id) await handler(id);
+  else await handler();
 }
 
 /* -------------------------------- boot -------------------------------- */
@@ -863,7 +864,7 @@ async function loadUsageBanner() {
   banner.className = "usage-banner" + (reached ? " usage-banner--full" : "");
   banner.innerHTML = `
     <span>${counts.join(" · ")}</span>
-    <a href="#/settings" class="usage-banner__cta">${esc(t(reached ? "plan.limitReached" : "plan.upgradeCta"))}</a>`;
+    <a href="#/settings/plan" class="usage-banner__cta">${esc(t(reached ? "plan.limitReached" : "plan.upgradeCta"))}</a>`;
   banner.hidden = false;
 }
 
@@ -1253,7 +1254,7 @@ async function renderForm(id) {
     } catch (err) {
       if (err.status === 402) {
         toast(t("plan.limitReached"), true);
-        location.hash = "#/settings";
+        location.hash = "#/settings/plan";
       } else {
         toast(err.message, true);
       }
@@ -2136,7 +2137,13 @@ async function downloadExport(kind) {
 }
 
 /* ============================ Settings ============================ */
-async function renderSettings() {
+function focusPlanBilling() {
+  const panel = $("#planBilling");
+  if (!panel) return;
+  panel.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+async function renderSettings(section) {
   const main = $("#main");
   main.innerHTML = "";
   main.appendChild(clone("tpl-settings"));
@@ -2171,8 +2178,9 @@ async function renderSettings() {
     } catch (err) { toast(err.message, true); }
   });
 
-  await handleBillingReturn();
+  const billingFocus = await handleBillingReturn();
   await renderPlan();
+  if (section === "plan" || billingFocus) focusPlanBilling();
 
   $("#newKeyBtn").addEventListener("click", createKey);
   await loadKeys();
@@ -2217,7 +2225,7 @@ async function handleBillingReturn() {
   const params = new URLSearchParams(location.search);
   const billing = params.get("billing");
   const promo = params.get("promo");
-  if (!billing && !promo) return;
+  if (!billing && !promo) return false;
   // Strip query params but keep the SPA hash route.
   const clean = location.pathname + location.hash;
   history.replaceState(null, "", clean);
@@ -2233,6 +2241,7 @@ async function handleBillingReturn() {
   } else if (billing === "cancel") {
     toast(t("plan.upgradeCanceled"), true);
   }
+  return true;
 }
 
 async function renderPlan() {
@@ -2316,7 +2325,7 @@ function renderProPlan(body, plan) {
       const base = `${location.origin}/app/`;
       const session = await api("/billing/portal-session", {
         method: "POST",
-        body: { return_url: `${base}#/settings` },
+        body: { return_url: `${base}#/settings/plan` },
       });
       if (session.url) window.location.assign(session.url);
       else manageBtn.disabled = false;
@@ -2470,8 +2479,8 @@ function renderFreePlan(body, plan, pricing) {
     try {
       const body = {
         currency,
-        success_url: `${base}?billing=success#/settings`,
-        cancel_url: `${base}?billing=cancel#/settings`,
+        success_url: `${base}?billing=success#/settings/plan`,
+        cancel_url: `${base}?billing=cancel#/settings/plan`,
       };
       if (promoCode) body.promotion_code = promoCode;
       const session = await api("/billing/checkout-session", {
