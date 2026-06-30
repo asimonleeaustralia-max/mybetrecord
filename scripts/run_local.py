@@ -156,7 +156,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
 
     def _rewrite_path(self, path: str) -> str:
         """Map public URLs to static files or SPA fallbacks."""
-        if path in ("/privacy", "/terms", "/login"):
+        if path in ("/privacy", "/terms", "/support", "/login"):
             return f"{path}.html"
         if path.startswith("/app/"):
             rel = path.lstrip("/")
