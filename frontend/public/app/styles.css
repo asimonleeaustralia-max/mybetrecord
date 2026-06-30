@@ -372,6 +372,8 @@ input:focus, select:focus, textarea:focus {
 .view__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px; flex-wrap: wrap; }
 .view__head h1 { font-size: 1.45rem; margin: 0; }
 .view--narrow { max-width: 680px; margin: 0 auto; }
+.view--focus-plan { display: flex; flex-direction: column; }
+.view--focus-plan #planBilling { order: -1; }
 
 /* ---------- filters ---------- */
 .filters { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
@@ -511,7 +513,11 @@ code { font-family: var(--mono); font-size: .82em; background: var(--canvas); pa
   border-color: #e7d6ad;
 }
 .plan-body { display: grid; gap: 12px; }
-#planBilling { scroll-margin-top: 6.5rem; }
+#planBilling { scroll-margin-top: 7.5rem; }
+.view--focus-plan #planBilling {
+  border-color: #e7d6ad;
+  box-shadow: 0 0 0 1px rgba(169, 121, 31, .12), var(--shadow);
+}
 .plan-desc { margin: 0; color: var(--ink-soft); }
 .plan-note { margin: 0; color: var(--muted); font-size: .9rem; }
 .plan-note--warn { color: var(--brass-deep); }

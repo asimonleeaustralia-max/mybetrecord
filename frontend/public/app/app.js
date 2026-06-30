@@ -850,6 +850,7 @@ async function route() {
   $$(".tab").forEach(t => t.classList.toggle("is-active", t.getAttribute("href") === `#${path}`));
 
   if (path === "/edit" && id) return renderForm(id);
+  if (path === "/settings" && id === "plan") window.scrollTo(0, 0);
   const handler = routes[path] || renderBets;
   if (path === "/settings" && id) await handler(id);
   else await handler();
@@ -2183,16 +2184,30 @@ async function downloadExport(kind) {
 }
 
 /* ============================ Settings ============================ */
+function settingsPlanRequested() {
+  const parts = (location.hash || "").slice(1).split("/").filter(Boolean);
+  return parts[0] === "settings" && parts[1] === "plan";
+}
+
 function focusPlanBilling() {
   const panel = $("#planBilling");
   if (!panel) return;
-  panel.scrollIntoView({ behavior: "smooth", block: "start" });
+  const scroll = () => {
+    panel.scrollIntoView({ behavior: "smooth", block: "start" });
+    const btn = $("#upgradeBtn");
+    if (btn && !btn.disabled) btn.focus({ preventScroll: true });
+  };
+  requestAnimationFrame(() => requestAnimationFrame(scroll));
 }
 
 async function renderSettings(section) {
+  const focusPlan = section === "plan" || settingsPlanRequested();
   const main = $("#main");
   main.innerHTML = "";
   main.appendChild(clone("tpl-settings"));
+  const view = main.querySelector(".view");
+  if (focusPlan && view) view.classList.add("view--focus-plan");
+  if (focusPlan) window.scrollTo(0, 0);
 
   const form = $("#settingsForm");
   const u = state.user;
@@ -2226,10 +2241,11 @@ async function renderSettings(section) {
 
   const billingFocus = await handleBillingReturn();
   await renderPlan();
-  if (section === "plan" || billingFocus) focusPlanBilling();
+  if (focusPlan || billingFocus) focusPlanBilling();
 
   $("#newKeyBtn").addEventListener("click", createKey);
   await loadKeys();
+  if (focusPlan || billingFocus) focusPlanBilling();
 }
 
 /* ----------------------------- Plan & billing ----------------------------- */
