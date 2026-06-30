@@ -42,7 +42,7 @@ test.describe("mobile layout", () => {
       for (const { view, hash, ready, alsoReady } of APP_VIEWS) {
         await page.locator(`.tab[data-view="${view}"]`).click();
         await expect(page).toHaveURL(new RegExp(hash.replace("#", "#")));
-        await expect(page.locator(ready)).toBeVisible({ timeout: 20_000 });
+        await expect(page.locator(ready).first()).toBeVisible({ timeout: 20_000 });
         if (alsoReady) {
           await expect(page.locator(alsoReady).first()).toBeVisible({ timeout: 25_000 });
         }
