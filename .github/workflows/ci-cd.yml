@@ -56,7 +56,7 @@ jobs:
           npm ci
           npx playwright install --with-deps chromium webkit
       - name: Start stack
-        run: docker compose up -d --build --wait
+        run: docker compose up -d --build
       - name: Wait for API through nginx
         run: chmod +x scripts/wait-for-stack.sh && ./scripts/wait-for-stack.sh
       - name: Run Playwright e2e (mobile profiles)
@@ -68,7 +68,7 @@ jobs:
         if: failure()
         run: |
           docker compose ps -a
-          docker compose logs --no-color --tail=80 auth frontend
+          docker compose logs --no-color --tail=80 auth bets reports frontend
       - name: Stop stack
         if: always()
         run: docker compose down -v
@@ -86,7 +86,7 @@ jobs:
           npm ci
           npm run build
       - name: Start stack
-        run: docker compose up -d --build --wait
+        run: docker compose up -d --build
       - name: Wait for API through nginx
         run: chmod +x scripts/wait-for-stack.sh && ./scripts/wait-for-stack.sh
       - name: Run Lighthouse CI (mobile)

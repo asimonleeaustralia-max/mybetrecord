@@ -12,10 +12,10 @@ x-service-env: &service-env
   FREE_DAILY_MULTIPLE_LIMIT: ${FREE_DAILY_MULTIPLE_LIMIT:-5}
 
 x-healthcheck-python: &healthcheck-python
-  interval: 5s
-  timeout: 5s
-  retries: 12
-  start_period: 40s
+  interval: 10s
+  timeout: 10s
+  retries: 18
+  start_period: 90s
 
 services:
   db:
@@ -98,10 +98,10 @@ services:
       REPORTS_UPSTREAM: http://reports:8003
       PAYMENTS_UPSTREAM: http://payments:8004
     depends_on:
-      auth: { condition: service_healthy }
-      bets: { condition: service_healthy }
-      reports: { condition: service_healthy }
-      payments: { condition: service_healthy }
+      auth: { condition: service_started }
+      bets: { condition: service_started }
+      reports: { condition: service_started }
+      payments: { condition: service_started }
     ports: ["8080:8080"]
     healthcheck:
       test: ["CMD-SHELL", "curl -fsS http://localhost:8080/readyz >/dev/null || exit 1"]

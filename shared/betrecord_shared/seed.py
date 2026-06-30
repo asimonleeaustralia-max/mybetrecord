@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from sqlalchemy import inspect, select, text
+from sqlalchemy.exc import IntegrityError
 
 from .config import get_settings
 from .database import SessionLocal, engine
@@ -446,11 +447,14 @@ def seed_dev_admin() -> None:
                 db.commit()
             return
 
-        db.add(
-            User(
-                email=DEV_ADMIN_EMAIL,
-                password_hash=hash_password(DEV_ADMIN_PASSWORD),
-                is_admin=True,
+        try:
+            db.add(
+                User(
+                    email=DEV_ADMIN_EMAIL,
+                    password_hash=hash_password(DEV_ADMIN_PASSWORD),
+                    is_admin=True,
+                )
             )
-        )
-        db.commit()
+            db.commit()
+        except IntegrityError:
+            db.rollback()

@@ -24,7 +24,7 @@ from sqlalchemy.orm import Session
 from betrecord_shared import betting_math as bm
 from betrecord_shared.bankroll import effective_bankroll
 from betrecord_shared.config import get_settings
-from betrecord_shared.database import get_db, init_db
+from betrecord_shared.database import get_db
 from betrecord_shared.models import Bet, BetLeg, User
 from betrecord_shared.schemas import (
     BetCreate,
@@ -47,12 +47,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
-@app.on_event("startup")
-def _startup() -> None:
-    if settings.environment != "production":
-        init_db()
 
 
 @app.get("/health")
