@@ -369,6 +369,26 @@ def _ensure_billing_columns() -> None:
             )
 
 
+def _ensure_comp_pro_until_column() -> None:
+    """Add comp_pro_until to existing databases created before the column existed."""
+    if "users" not in inspect(engine).get_table_names():
+        return
+    columns = {c["name"] for c in inspect(engine).get_columns("users")}
+    if "comp_pro_until" in columns:
+        return
+    dialect = engine.dialect.name
+    with engine.begin() as conn:
+        if dialect == "postgresql":
+            conn.execute(
+                text(
+                    "ALTER TABLE users ADD COLUMN IF NOT EXISTS comp_pro_until "
+                    "TIMESTAMP WITH TIME ZONE"
+                )
+            )
+        else:
+            conn.execute(text("ALTER TABLE users ADD COLUMN comp_pro_until DATETIME"))
+
+
 def _ensure_last_login_at_column() -> None:
     """Add last_login_at to existing databases created before the column existed."""
     if "users" not in inspect(engine).get_table_names():

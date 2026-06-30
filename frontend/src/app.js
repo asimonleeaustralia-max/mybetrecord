@@ -450,12 +450,16 @@ function staticPricingOut() {
 }
 
 function planFromUser(user) {
+  const billingPlan = user?.plan || "free";
+  const isPro = Boolean(user?.is_pro) || billingPlan === "pro";
   return {
-    plan: user?.plan || "free",
+    plan: isPro ? "pro" : "free",
+    billing_plan: billingPlan,
     plan_currency: user?.plan_currency || null,
     subscription_status: user?.subscription_status || null,
     subscription_cancel_at_period_end: Boolean(user?.subscription_cancel_at_period_end),
     subscription_current_period_end: user?.subscription_current_period_end || null,
+    comp_pro_until: user?.comp_pro_until || null,
     free_daily_bet_limit: 5,
     stripe_configured: true,
     pricing: staticPricingOut(),
@@ -508,12 +512,15 @@ function toast(msg, isErr = false) {
 }
 
 let _modalResolve = null;
+let _modalMode = "confirm";
 
 function closeModal(result) {
   const modal = $("#mbrModal");
   if (!modal) return;
   modal.hidden = true;
   document.body.classList.remove("mbr-modal-open");
+  $("#mbrModalMsg").textContent = "";
+  _modalMode = "confirm";
   if (_modalResolve) {
     const resolve = _modalResolve;
     _modalResolve = null;
@@ -556,11 +563,19 @@ function bindModalEvents() {
   if (!modal || modal._bound) return;
   modal._bound = true;
   $("#mbrModalOk").addEventListener("click", () => {
+    if (_modalMode === "comp") {
+      const parsed = new Date($("#mbrCompDate")?.value || "");
+      closeModal(Number.isNaN(parsed.getTime()) ? null : parsed.toISOString());
+      return;
+    }
     if ($("#mbrModalPrompt").hidden) closeModal(true);
     else closeModal($("#mbrModalInput").value);
   });
-  $("#mbrModalCancel").addEventListener("click", () => closeModal($("#mbrModalPrompt").hidden ? false : null));
-  modal.addEventListener("click", (e) => { if (e.target === modal) closeModal($("#mbrModalPrompt").hidden ? false : null); });
+  $("#mbrModalCancel").addEventListener("click", () => closeModal(_modalMode === "comp" ? null : ($("#mbrModalPrompt").hidden ? false : null)));
+  modal.addEventListener("click", (e) => {
+    if (e.target !== modal) return;
+    closeModal(_modalMode === "comp" ? null : ($("#mbrModalPrompt").hidden ? false : null));
+  });
   $("#mbrModalInput").addEventListener("keydown", (e) => {
     if (e.key === "Enter") { e.preventDefault(); closeModal($("#mbrModalInput").value); }
   });
@@ -2402,7 +2417,7 @@ async function handleBillingReturn() {
     // The webhook confirms Pro server-side; refresh the cached user.
     try { state.user = await api("/auth/me"); } catch {}
     await refreshTicker();
-    toast(t(state.user?.plan === "pro" ? "plan.upgradeSuccess" : "plan.processing"));
+    toast(t(state.user?.is_pro ? "plan.upgradeSuccess" : "plan.processing"));
   } else if (billing === "cancel") {
     toast(t("plan.upgradeCanceled"), true);
   }
@@ -2447,14 +2462,26 @@ async function renderPlan() {
 function renderProPlan(body, plan) {
   const periodEnd = plan.subscription_current_period_end;
   const cancelling = plan.subscription_cancel_at_period_end;
+  const hasStripe = (plan.billing_plan || plan.plan) === "pro" && plan.subscription_status;
+  const compActive = plan.comp_pro_until && new Date(plan.comp_pro_until) > new Date();
   const lines = [`<p class="plan-desc">${esc(t("plan.proDesc"))}</p>`];
-  if (cancelling && periodEnd) {
-    lines.push(`<p class="plan-note plan-note--warn">${esc(t("plan.cancelsOn", { date: planDateLabel(periodEnd) }))}</p>`);
-  } else if (periodEnd) {
-    lines.push(`<p class="plan-note">${esc(t("plan.renewsOn", { date: planDateLabel(periodEnd) }))}</p>`);
+  if (compActive) {
+    const end = new Date(plan.comp_pro_until);
+    if (end.getUTCFullYear() >= 2090) {
+      lines.push(`<p class="plan-note">${esc(t("plan.compLifetime"))}</p>`);
+    } else {
+      lines.push(`<p class="plan-note">${esc(t("plan.compUntil", { date: planDateLabel(plan.comp_pro_until) }))}</p>`);
+    }
+  }
+  if (hasStripe) {
+    if (cancelling && periodEnd) {
+      lines.push(`<p class="plan-note plan-note--warn">${esc(t("plan.cancelsOn", { date: planDateLabel(periodEnd) }))}</p>`);
+    } else if (periodEnd) {
+      lines.push(`<p class="plan-note">${esc(t("plan.renewsOn", { date: planDateLabel(periodEnd) }))}</p>`);
+    }
   }
 
-  if (!plan.stripe_configured) {
+  if (!plan.stripe_configured || !hasStripe) {
     body.innerHTML = lines.join("");
     return;
   }
@@ -2762,6 +2789,103 @@ async function adminRemoveAdmin(userId) {
   }
 }
 
+function toDatetimeLocalValue(date) {
+  const d = date instanceof Date ? date : new Date(date);
+  if (Number.isNaN(d.getTime())) return "";
+  const pad = n => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+function compUntilFromDays(days) {
+  const d = new Date();
+  d.setDate(d.getDate() + days);
+  d.setHours(23, 59, 59, 999);
+  return d;
+}
+
+const COMP_FOREVER_DATE = new Date("2099-12-31T23:59:59.000Z");
+
+function adminCompActive(u) {
+  if (!u?.comp_pro_until) return false;
+  return new Date(u.comp_pro_until) > new Date();
+}
+
+function adminCompBadge(u) {
+  if (!adminCompActive(u)) return "";
+  const end = new Date(u.comp_pro_until);
+  const label = end.getUTCFullYear() >= 2090
+    ? t("admin.compForever")
+    : t("admin.compUntil", { date: planDateLabel(u.comp_pro_until) });
+  return `<span class="plan-badge plan-badge--pro admin-comp-badge">${esc(label)}</span>`;
+}
+
+function compProDialog(user) {
+  const modal = $("#mbrModal");
+  const defaultDate = adminCompActive(user)
+    ? new Date(user.comp_pro_until)
+    : compUntilFromDays(90);
+
+  if (!modal) {
+    const raw = window.prompt(t("admin.compProPrompt"), toDatetimeLocalValue(defaultDate));
+    if (raw == null) return Promise.resolve(null);
+    const parsed = new Date(raw);
+    return Promise.resolve(Number.isNaN(parsed.getTime()) ? null : parsed.toISOString());
+  }
+
+  const presets = [
+    { label: t("admin.compDays30"), date: compUntilFromDays(30) },
+    { label: t("admin.compDays90"), date: compUntilFromDays(90) },
+    { label: t("admin.compDays365"), date: compUntilFromDays(365) },
+    { label: t("admin.compForever"), date: COMP_FOREVER_DATE },
+  ];
+
+  return new Promise(resolve => {
+    _modalMode = "comp";
+    _modalResolve = resolve;
+    $("#mbrModalMsg").innerHTML = `
+      <strong>${esc(t("admin.compProTitle"))}</strong>
+      <p class="muted admin-comp-help">${esc(t("admin.compProPrompt"))}</p>
+      <div class="admin-comp-presets">
+        ${presets.map((p, i) => `<button type="button" class="btn btn--ghost btn--sm" data-comp-preset="${i}">${esc(p.label)}</button>`).join("")}
+        ${adminCompActive(user) ? `<button type="button" class="btn btn--ghost btn--sm" data-comp-clear="1">${esc(t("admin.compClear"))}</button>` : ""}
+      </div>
+      <label class="admin-comp-date">
+        <span>${esc(t("admin.compCustomDate"))}</span>
+        <input type="datetime-local" id="mbrCompDate" class="mini-select" />
+      </label>`;
+    $("#mbrCompDate").value = toDatetimeLocalValue(defaultDate);
+    $("#mbrModalPrompt").hidden = true;
+    $("#mbrModalCancel").textContent = t("common.cancel");
+    $("#mbrModalOk").textContent = t("common.confirm");
+    modal.hidden = false;
+    document.body.classList.add("mbr-modal-open");
+
+    $$("[data-comp-preset]", modal).forEach(btn => {
+      btn.addEventListener("click", () => {
+        $("#mbrCompDate").value = toDatetimeLocalValue(presets[Number(btn.dataset.compPreset)].date);
+      });
+    });
+    const clearBtn = $("[data-comp-clear]", modal);
+    if (clearBtn) clearBtn.addEventListener("click", () => closeModal("clear"));
+    setTimeout(() => $("#mbrCompDate")?.focus(), 0);
+  });
+}
+
+async function adminSetCompPro(user) {
+  const result = await compProDialog(user);
+  if (result === null) return;
+  try {
+    await api(`/auth/admin/users/${user.id}/comp-pro`, {
+      method: "PATCH",
+      body: { comp_pro_until: result === "clear" ? null : result },
+    });
+    toast(result === "clear" ? t("admin.compCleared") : t("admin.compApplied"));
+    await loadAdminUsers();
+  } catch (err) {
+    toast(err.message, true);
+  }
+}
+
 async function loadAdminUsers() {
   const search = $("#adminUserSearch").value.trim();
   const qs = search ? `?search=${encodeURIComponent(search)}` : "";
@@ -2769,7 +2893,13 @@ async function loadAdminUsers() {
     const users = await api(`/auth/admin/users${qs}`);
     $("#adminUsersBody").innerHTML = users.map(u => `
     <tr data-user="${u.id}">
-      <td>${esc(u.email)}</td>
+      <td class="admin-user-email">
+        <div class="admin-user-email__row">
+          <span>${esc(u.email)}</span>
+          ${adminCompBadge(u)}
+          <button type="button" class="btn btn--ghost btn--sm" data-comp-pro="${u.id}">${t("admin.compPro")}</button>
+        </div>
+      </td>
       <td>${adminStatusBadge(u.is_active)}</td>
       <td>${esc(u.base_currency || "—")}</td>
       <td>${esc(u.preferred_locale || "—")}</td>
@@ -2788,6 +2918,10 @@ async function loadAdminUsers() {
     $$("[data-toggle-active]").forEach(btn => btn.addEventListener("click", () =>
       adminToggleUser(btn.dataset.toggleActive, { is_active: btn.dataset.active !== "true" })
     ));
+    $$("[data-comp-pro]").forEach(btn => btn.addEventListener("click", () => {
+      const user = users.find(u => u.id === btn.dataset.compPro);
+      if (user) adminSetCompPro(user);
+    }));
   } catch (err) {
     $("#adminUsersBody").innerHTML = `<tr><td colspan="10" class="empty">${esc(err.message)}</td></tr>`;
     toast(err.message, true);

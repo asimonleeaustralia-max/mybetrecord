@@ -131,6 +131,8 @@ class UserOut(BaseModel):
     subscription_status: Optional[str] = None
     subscription_cancel_at_period_end: bool = False
     subscription_current_period_end: Optional[datetime] = None
+    comp_pro_until: Optional[datetime] = None
+    is_pro: bool = False
 
 
 # ----------------------------- Billing / plans ---------------------------- #
@@ -149,10 +151,12 @@ class PricingOut(BaseModel):
 class PlanOut(BaseModel):
     """Current subscription state for the signed-in user."""
     plan: str = "free"
+    billing_plan: str = "free"
     plan_currency: Optional[str] = None
     subscription_status: Optional[str] = None
     subscription_cancel_at_period_end: bool = False
     subscription_current_period_end: Optional[datetime] = None
+    comp_pro_until: Optional[datetime] = None
     free_daily_bet_limit: int
     stripe_configured: bool = False
     # Bundled so the plan page works when extensions block /billing/pricing.
@@ -303,6 +307,14 @@ class AdminUserOut(BaseModel):
     last_login_at: Optional[datetime]
     bet_count: int
     api_key_count: int
+    plan: str = "free"
+    comp_pro_until: Optional[datetime] = None
+    is_pro: bool = False
+
+
+class AdminCompProIn(BaseModel):
+    """Set or clear complimentary Pro access. Pass null to revoke."""
+    comp_pro_until: Optional[datetime] = None
 
 
 class AdminUserUpdate(BaseModel):

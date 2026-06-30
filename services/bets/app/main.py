@@ -351,7 +351,7 @@ def _usage(db: Session, user: User) -> BetUsageOut:
     multiple_count = _bets_entered_today(db, user, is_multiple=True)
     if user.is_pro:
         return BetUsageOut(
-            plan=user.plan or "free",
+            plan="pro",
             date=day,
             count=single_count,
             limit=None,

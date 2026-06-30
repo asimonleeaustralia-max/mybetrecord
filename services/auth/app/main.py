@@ -17,6 +17,7 @@ from betrecord_shared.events import log_event
 from betrecord_shared.models import ApiKey, AppEvent, Bet, LandingHit, PasswordResetToken, PendingRegistration, User
 from betrecord_shared.schemas import (
     AdminAddIn,
+    AdminCompProIn,
     AdminStatsOut,
     AdminUserOut,
     AdminUserUpdate,
@@ -500,6 +501,9 @@ def _admin_user_out(
         last_login_at=user.last_login_at,
         bet_count=bet_counts.get(user.id, 0),
         api_key_count=key_counts.get(user.id, 0),
+        plan=user.plan or "free",
+        comp_pro_until=user.comp_pro_until,
+        is_pro=user.is_pro,
     )
 
 
@@ -657,6 +661,40 @@ def admin_update_user(
             detail=f"target={user.email}; " + ", ".join(changes),
             ip_address=_client_ip(request),
         )
+    db.commit()
+    db.refresh(user)
+    bet_counts, key_counts = _user_counts(db, [user.id])
+    return _admin_user_out(user, bet_counts, key_counts)
+
+
+@app.patch("/auth/admin/users/{user_id}/comp-pro", response_model=AdminUserOut)
+def admin_comp_pro(
+    user_id: str,
+    payload: AdminCompProIn,
+    request: Request,
+    admin: User = Depends(get_current_admin),
+    db: Session = Depends(get_db),
+) -> AdminUserOut:
+    user = db.get(User, user_id)
+    if not user:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "User not found")
+
+    until = payload.comp_pro_until
+    if until is not None and until.tzinfo is None:
+        until = until.replace(tzinfo=timezone.utc)
+
+    user.comp_pro_until = until
+    if until:
+        detail = f"target={user.email}; comp_pro_until={until.isoformat()}"
+    else:
+        detail = f"target={user.email}; comp_pro_until=cleared"
+    log_event(
+        db,
+        "admin.comp_pro",
+        user_id=admin.id,
+        detail=detail,
+        ip_address=_client_ip(request),
+    )
     db.commit()
     db.refresh(user)
     bet_counts, key_counts = _user_counts(db, [user.id])

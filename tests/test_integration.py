@@ -1005,6 +1005,46 @@ def test_admin_can_toggle_user_active(clients, auth_headers):
     ).status_code == 200
 
 
+def test_admin_comp_pro_grants_and_revokes(clients, auth_headers):
+    from datetime import datetime, timedelta, timezone
+
+    admin_headers = _admin_headers(clients)
+    user_headers, email = auth_headers
+    users = clients["auth"].get(f"/auth/admin/users?search={email}", headers=admin_headers).json()
+    user_id = users[0]["id"]
+
+    until = (datetime.now(timezone.utc) + timedelta(days=90)).isoformat()
+    comped = clients["auth"].patch(
+        f"/auth/admin/users/{user_id}/comp-pro",
+        headers=admin_headers,
+        json={"comp_pro_until": until},
+    )
+    assert comped.status_code == 200
+    body = comped.json()
+    assert body["is_pro"] is True
+    assert body["comp_pro_until"] is not None
+
+    usage = clients["bets"].get("/bets/usage", headers=user_headers).json()
+    assert usage["plan"] == "pro"
+    assert usage["limit"] is None
+
+    plan = clients["payments"].get("/payments/plan", headers=user_headers).json()
+    assert plan["plan"] == "pro"
+    assert plan["comp_pro_until"] is not None
+
+    cleared = clients["auth"].patch(
+        f"/auth/admin/users/{user_id}/comp-pro",
+        headers=admin_headers,
+        json={"comp_pro_until": None},
+    )
+    assert cleared.status_code == 200
+    assert cleared.json()["is_pro"] is False
+
+    usage = clients["bets"].get("/bets/usage", headers=user_headers).json()
+    assert usage["plan"] == "free"
+    assert usage["limit"] == get_settings().free_daily_bet_limit
+
+
 def test_admin_cannot_disable_self(clients):
     admin_headers = _admin_headers(clients)
     me = clients["auth"].get("/auth/me", headers=admin_headers).json()

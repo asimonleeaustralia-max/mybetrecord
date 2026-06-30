@@ -63,10 +63,22 @@ class User(Base):
     subscription_current_period_end: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True
     )
+    # Admin-granted complimentary Pro access (independent of Stripe subscription).
+    comp_pro_until: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
 
     @property
     def is_pro(self) -> bool:
-        return (self.plan or "free").lower() == "pro"
+        if (self.plan or "free").lower() == "pro":
+            return True
+        until = self.comp_pro_until
+        if until is None:
+            return False
+        now = datetime.now(timezone.utc)
+        if until.tzinfo is None:
+            until = until.replace(tzinfo=timezone.utc)
+        return until > now
 
     api_keys: Mapped[list["ApiKey"]] = relationship(back_populates="user", cascade="all, delete-orphan")
     bets: Mapped[list["Bet"]] = relationship(back_populates="user", cascade="all, delete-orphan")

@@ -481,6 +481,12 @@ textarea { font-family: var(--sans); resize: vertical; }
 .mini-select { width: auto; padding: 6px 10px; font-size: .82rem; }
 .admin-add-form { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .admin-add-form .mini-select { min-width: 220px; }
+.admin-user-email__row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.admin-comp-badge { font-size: .68rem; padding: 2px 7px; }
+.admin-comp-help { margin: 8px 0; font-size: .88rem; }
+.admin-comp-presets { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
+.admin-comp-date { display: flex; flex-direction: column; gap: 4px; font-size: .82rem; margin-top: 8px; }
+.admin-comp-date input { width: 100%; }
 .outcome-select { min-width: 108px; font-weight: 600; cursor: pointer; }
 .outcome-select--win { background: #e7f4ee; color: var(--win); border-color: #c5e6d6; }
 .outcome-select--loss { background: #fbecea; color: var(--loss); border-color: #f0ccc8; }

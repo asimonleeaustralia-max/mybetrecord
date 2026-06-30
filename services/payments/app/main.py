@@ -220,12 +220,16 @@ def validate_promo(
 def get_plan(user: User = Depends(get_current_user)) -> PlanOut:
     """Current subscription state for the signed-in user."""
     stripe_ready = _stripe_ready()
+    billing_plan = user.plan or "free"
+    effective = "pro" if user.is_pro else "free"
     return PlanOut(
-        plan=user.plan or "free",
+        plan=effective,
+        billing_plan=billing_plan,
         plan_currency=user.plan_currency,
         subscription_status=user.subscription_status,
         subscription_cancel_at_period_end=bool(user.subscription_cancel_at_period_end),
         subscription_current_period_end=user.subscription_current_period_end,
+        comp_pro_until=user.comp_pro_until,
         free_daily_bet_limit=settings.free_daily_bet_limit,
         stripe_configured=stripe_ready,
         pricing=_pricing_out() if stripe_ready else None,

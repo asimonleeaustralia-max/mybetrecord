@@ -63,6 +63,7 @@ def init_db() -> None:
         _ensure_is_multiple_column,
         _ensure_free_bet_column,
         _ensure_billing_columns,
+        _ensure_comp_pro_until_column,
         _ensure_landing_promo_column,
     )
 
@@ -97,6 +98,7 @@ def init_db() -> None:
     _ensure_is_multiple_column()
     _ensure_free_bet_column()
     _ensure_billing_columns()
+    _ensure_comp_pro_until_column()
     _ensure_landing_promo_column()
     seed_dev_admin()
     seed_bootstrap_admins()
