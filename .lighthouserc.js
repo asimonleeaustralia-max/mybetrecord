@@ -8,7 +8,7 @@ module.exports = {
       ],
       numberOfRuns: 1,
       settings: {
-        preset: "mobile",
+        formFactor: "mobile",
         throttling: {
           rttMs: 150,
           throughputKbps: 1638.4,
