@@ -270,7 +270,9 @@
     "revokeConfirm": "Revoke this key? Anything using it will stop working.",
     "keyRevoked": "Key revoked",
     "keyPrompt": "Name this key (e.g. 'laptop script')",
-    "keyReveal": "Copy this now — it won't be shown again:  {{key}}"
+    "keyReveal": "Copy this now — it won't be shown again:  {{key}}",
+    "supportContact": "Need help? Email <a href=\"mailto:support@mybetrecord.com\">support@mybetrecord.com</a>",
+    "legalLinks": "<a href=\"/privacy\">Privacy</a> · <a href=\"/terms\">Terms</a> · <a href=\"/support\">Support</a>"
   },
   "plan": {
     "title": "Plan & billing",
