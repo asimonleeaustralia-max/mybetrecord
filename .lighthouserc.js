@@ -8,8 +8,7 @@ module.exports = {
       ],
       numberOfRuns: 1,
       settings: {
-        preset: "desktop",
-        emulatedFormFactor: "mobile",
+        preset: "mobile",
         throttling: {
           rttMs: 150,
           throughputKbps: 1638.4,
