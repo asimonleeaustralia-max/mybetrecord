@@ -451,6 +451,26 @@
       </div>
       <div class="cards" id="adminStats"></div>
 
+      <div class="panel">
+        <div class="panel__head">
+          <h2 data-i18n="admin.users">Users</h2>
+          <input type="search" id="adminUserSearch" class="mini-select" data-i18n-placeholder="admin.searchPlaceholder" />
+        </div>
+        <div class="table-wrap">
+          <table class="ledger ledger--compact">
+            <thead>
+              <tr>
+                <th data-i18n="admin.email">Email</th><th data-i18n="admin.status">Status</th>
+                <th data-i18n="admin.currency">Currency</th><th data-i18n="admin.language">Language</th>
+                <th data-i18n="admin.lastLogin">Last login</th><th data-i18n="admin.joined">Joined</th>
+                <th class="r" data-i18n="admin.bets">Bets</th><th class="r" data-i18n="admin.keys">Keys</th><th></th>
+              </tr>
+            </thead>
+            <tbody id="adminUsersBody"></tbody>
+          </table>
+        </div>
+      </div>
+
       <div class="panel" id="adminPromoPanel">
         <div class="panel__head">
           <h2 data-i18n="admin.promoCodes">Promo codes</h2>
@@ -564,26 +584,6 @@
 
       <div class="panel">
         <div class="panel__head">
-          <h2 data-i18n="admin.users">Users</h2>
-          <input type="search" id="adminUserSearch" class="mini-select" data-i18n-placeholder="admin.searchPlaceholder" />
-        </div>
-        <div class="table-wrap">
-          <table class="ledger ledger--compact">
-            <thead>
-              <tr>
-                <th data-i18n="admin.email">Email</th><th data-i18n="admin.status">Status</th>
-                <th data-i18n="admin.currency">Currency</th><th data-i18n="admin.language">Language</th>
-                <th data-i18n="admin.lastLogin">Last login</th><th data-i18n="admin.joined">Joined</th>
-                <th class="r" data-i18n="admin.bets">Bets</th><th class="r" data-i18n="admin.keys">Keys</th><th></th>
-              </tr>
-            </thead>
-            <tbody id="adminUsersBody"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="panel">
-        <div class="panel__head">
           <h2 data-i18n="admin.events">App events</h2>
           <select id="adminEventFilter" class="mini-select">
             <option value="" data-i18n="admin.allEvents">All events</option>
@@ -634,7 +634,7 @@
         if (auth) auth.hidden = false;
       }
       var s = document.createElement("script");
-      s.src = "/app/app.js";
+      s.src = "/app/app.js?v=__BUILD_ID__";
       s.onload = function () { if (window.mbrAttach) window.mbrAttach(); };
       s.onerror = function () {
         if (loading) loading.hidden = true;

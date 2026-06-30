@@ -2587,7 +2587,7 @@ async function renderAdmin() {
   });
 
   await Promise.all([
-    loadAdminStats(), loadAdminAdmins(), loadAdminUsers(), loadAdminEvents(),
+    loadAdminStats(), loadAdminUsers(), loadAdminAdmins(), loadAdminEvents(),
     loadAdminLandingHits(), loadAdminPromoCodes(),
   ]);
 }
@@ -2646,8 +2646,9 @@ async function adminRemoveAdmin(userId) {
 async function loadAdminUsers() {
   const search = $("#adminUserSearch").value.trim();
   const qs = search ? `?search=${encodeURIComponent(search)}` : "";
-  const users = await api(`/auth/admin/users${qs}`);
-  $("#adminUsersBody").innerHTML = users.map(u => `
+  try {
+    const users = await api(`/auth/admin/users${qs}`);
+    $("#adminUsersBody").innerHTML = users.map(u => `
     <tr data-user="${u.id}">
       <td>${esc(u.email)}</td>
       <td>${adminStatusBadge(u.is_active)}</td>
@@ -2663,11 +2664,15 @@ async function loadAdminUsers() {
         </button>
       </td>
     </tr>`).join("")
-    || `<tr><td colspan="10" class="empty">${t("admin.noUsers")}</td></tr>`;
+      || `<tr><td colspan="10" class="empty">${t("admin.noUsers")}</td></tr>`;
 
-  $$("[data-toggle-active]").forEach(btn => btn.addEventListener("click", () =>
-    adminToggleUser(btn.dataset.toggleActive, { is_active: btn.dataset.active !== "true" })
-  ));
+    $$("[data-toggle-active]").forEach(btn => btn.addEventListener("click", () =>
+      adminToggleUser(btn.dataset.toggleActive, { is_active: btn.dataset.active !== "true" })
+    ));
+  } catch (err) {
+    $("#adminUsersBody").innerHTML = `<tr><td colspan="10" class="empty">${esc(err.message)}</td></tr>`;
+    toast(err.message, true);
+  }
 }
 
 async function adminToggleUser(userId, payload) {

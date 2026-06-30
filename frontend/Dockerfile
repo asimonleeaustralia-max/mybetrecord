@@ -1,11 +1,14 @@
 # syntax=docker/dockerfile:1
 FROM nginx:1.27-alpine
 
+ARG BUILD_ID=dev
+
 # nginx:alpine auto-renders templates in /etc/nginx/templates/*.template
 # with envsubst at startup, substituting the *_UPSTREAM env vars.
 COPY frontend/nginx.conf /etc/nginx/templates/default.conf.template
 COPY frontend/public /usr/share/nginx/html
-RUN chmod -R a+rX /usr/share/nginx/html
+RUN chmod -R a+rX /usr/share/nginx/html \
+    && sed -i "s/__BUILD_ID__/${BUILD_ID}/g" /usr/share/nginx/html/app/index.html
 
 # Defaults suit docker-compose; Azure overrides these with the internal FQDNs.
 ENV AUTH_UPSTREAM=http://auth:8001 \

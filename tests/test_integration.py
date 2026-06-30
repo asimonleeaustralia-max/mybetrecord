@@ -965,6 +965,8 @@ def test_admin_stats_users_and_events(clients, auth_headers):
     assert email in emails
     target = next(u for u in users.json() if u["email"] == email)
     assert target["last_login_at"] is not None
+    assert target["base_currency"]
+    assert target["preferred_locale"]
 
     events = clients["auth"].get("/auth/admin/events", headers=admin_headers)
     assert events.status_code == 200

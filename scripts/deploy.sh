@@ -265,6 +265,7 @@ build_and_push_images() {
   done
   run az acr build --registry "$ACR_NAME" \
     --image "frontend:${IMAGE_TAG}" --image "frontend:latest" \
+    --build-arg "BUILD_ID=${IMAGE_TAG}" \
     --file frontend/Dockerfile .
 }
 
