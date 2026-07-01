@@ -30,12 +30,20 @@ class Settings:
         self.smtp_from = os.getenv("SMTP_FROM", "noreply@mybetrecord.com")
         self.smtp_use_tls = os.getenv("SMTP_USE_TLS", "true").lower() in ("1", "true", "yes")
 
+        self.environment = os.getenv("ENVIRONMENT", "development")
+
         # CORS
         self.cors_origins = [
             o.strip()
             for o in os.getenv("CORS_ORIGINS", "*").split(",")
             if o.strip()
         ]
+        if self.environment == "production" and (
+            not self.cors_origins or "*" in self.cors_origins
+        ):
+            raise RuntimeError(
+                "CORS_ORIGINS must list explicit origins in production (not '*')"
+            )
 
         # Service discovery (set per environment; localhost for docker-compose)
         self.auth_url = os.getenv("AUTH_URL", "http://localhost:8001")
@@ -63,8 +71,6 @@ class Settings:
         # at most this many legs.
         self.min_parlay_legs = 2
         self.max_parlay_legs = int(os.getenv("MAX_PARLAY_LEGS", "10"))
-
-        self.environment = os.getenv("ENVIRONMENT", "development")
 
     # Comma-separated emails that are always granted admin on login/startup.
     @property

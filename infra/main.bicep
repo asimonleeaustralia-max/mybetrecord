@@ -34,8 +34,8 @@ param pgAdminPassword string
 @description('Secret used to sign JWTs (generate a long random string).')
 param jwtSecret string
 
-@description('Public origin(s) allowed by CORS. Use the frontend URL in prod.')
-param corsOrigins string = '*'
+@description('Public origin(s) allowed by CORS. Use explicit https origins in prod.')
+param corsOrigins string = 'https://www.mybetrecord.com,https://mybetrecord.com'
 
 @secure()
 @description('Stripe secret key (optional — leave blank to disable billing).')

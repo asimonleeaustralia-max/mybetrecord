@@ -7,7 +7,7 @@
     "pgAdminLogin": { "value": "betadmin" },
     "pgAdminPassword": { "value": "REPLACE_WITH_STRONG_PASSWORD" },
     "jwtSecret": { "value": "REPLACE_WITH_LONG_RANDOM_SECRET" },
-    "corsOrigins": { "value": "*" },
+    "corsOrigins": { "value": "https://www.mybetrecord.com,https://mybetrecord.com" },
     "stripeSecretKey": { "value": "" },
     "stripeWebhookSecret": { "value": "" }
   }

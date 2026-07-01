@@ -92,6 +92,64 @@ require_var() {
   fi
 }
 
+resolve_cors_origins() {
+  if [[ -n "${CORS_ORIGINS:-}" && "${CORS_ORIGINS}" != "*" ]]; then
+    return
+  fi
+
+  local -a origins=()
+  add_origin() {
+    local o="$1"
+    [[ -z "$o" ]] && return
+    local existing
+    for existing in "${origins[@]}"; do
+      [[ "$existing" == "$o" ]] && return
+    done
+    origins+=("$o")
+  }
+
+  if [[ -n "${FRONTEND_URL:-}" ]]; then
+    add_origin "${FRONTEND_URL%/}"
+  fi
+
+  local hostnames="${CUSTOM_HOSTNAMES:-www.mybetrecord.com,mybetrecord.com}"
+  local hostname
+  IFS=',' read -ra hosts <<< "$hostnames"
+  for hostname in "${hosts[@]}"; do
+    hostname="${hostname#"${hostname%%[![:space:]]*}"}"
+    hostname="${hostname%"${hostname##*[![:space:]]}"}"
+    [[ -z "$hostname" ]] && continue
+    add_origin "https://${hostname}"
+  done
+
+  if [[ ${#origins[@]} -eq 0 ]]; then
+    return
+  fi
+
+  local IFS=,
+  CORS_ORIGINS="${origins[*]}"
+  echo "Resolved CORS_ORIGINS from FRONTEND_URL / CUSTOM_HOSTNAMES: ${CORS_ORIGINS}"
+}
+
+require_cors_for_production() {
+  resolve_cors_origins
+  if [[ "${CORS_ORIGINS:-}" == "*" || -z "${CORS_ORIGINS:-}" ]]; then
+    local frontend="${FRONTEND_URL:-}"
+    if [[ -z "$frontend" || "$frontend" == http://localhost* ]]; then
+      return
+    fi
+    cat >&2 <<'EOF'
+CORS_ORIGINS is '*' or unset for a production deploy.
+
+Set CORS_ORIGINS in .env.deploy to your site origin(s), e.g.:
+  CORS_ORIGINS=https://www.mybetrecord.com,https://mybetrecord.com
+
+Or set FRONTEND_URL (and optionally CUSTOM_HOSTNAMES); deploy will derive origins automatically.
+EOF
+    exit 1
+  fi
+}
+
 require_smtp_for_production() {
   if [[ -n "${SMTP_HOST:-}" ]]; then
     return
@@ -193,6 +251,7 @@ deploy_bicep() {
   local tag="$1"
   require_var PG_ADMIN_PASSWORD
   require_var JWT_SECRET
+  require_cors_for_production
   require_smtp_for_production
 
   local -a extra_params=(
