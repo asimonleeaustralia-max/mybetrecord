@@ -486,7 +486,10 @@ const ccy = () => state.user?.base_currency || "GBP";
 function money(v, withSign = false) {
   if (v == null) return "—";
   const n = Number(v);
-  const s = i18n.formatLocaleNumber(n, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const s = n.toLocaleString(i18n.moneyFormatLocale(ccy()), {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
   return (withSign && n > 0 ? "+" : "") + s;
 }
 function plClass(v) { return v > 0 ? "pl-pos" : v < 0 ? "pl-neg" : "pl-zero"; }
@@ -736,6 +739,12 @@ function bindEvents() {
   window.addEventListener("hashchange", () => {
     if (getShareToken()) return;
     if (getAuthRouteFromHash() === "login") clearRegisterPending();
+    if (getResetTokenFromHash()) {
+      setToken(null);
+      state.user = null;
+      showAuth();
+      return;
+    }
     if (state.user) route();
     else showAuth();
   });
@@ -889,8 +898,7 @@ async function verifyEmailFromHash() {
 async function refreshTicker() {
   try {
     const s = await api("/reports/summary?use_primary_currency=true");
-    if (state.user && s.bankroll != null) state.user.bankroll = s.bankroll;
-    $("#tkBankroll").textContent = s.bankroll ? money(s.bankroll) : "—";
+    $("#tkBankroll").textContent = s.bankroll != null ? money(s.bankroll) : "—";
     const pl = $("#tkPL");
     pl.textContent = money(s.profit, true);
     pl.className = "num " + plClass(s.profit);
@@ -934,6 +942,11 @@ async function route() {
 
 /* -------------------------------- boot -------------------------------- */
 async function boot({ loading = false } = {}) {
+  if (getResetTokenFromHash()) {
+    setToken(null);
+    showAuth();
+    return;
+  }
   if (loading) showAuthLoading();
   try {
     state.user = await api("/auth/me");
@@ -2350,7 +2363,7 @@ async function renderSettings(section) {
     };
     try {
       state.user = await api("/auth/settings", { method: "PATCH", body: payload });
-      await i18n.setLocale(state.user.preferred_locale || "en", { persistCookie: true });
+      await i18n.setLocale(state.user.preferred_locale || "en", { persistCookie: true, updateTitle: true });
       toast(t("settings.saved"));
       await refreshTicker();
       await route();
@@ -2559,8 +2572,11 @@ function renderFreePlan(body, plan, pricing) {
 
   const prices = pricing.prices || [];
   const codes = prices.map(p => p.currency);
-  const preferred = (state.user?.base_currency || pricing.default_currency || "USD").toUpperCase();
-  const selected = codes.includes(preferred) ? preferred : (pricing.default_currency || "USD");
+  const localeCurrency = i18n.currencyForLocale(state.user?.preferred_locale).toUpperCase();
+  const baseCurrency = (state.user?.base_currency || pricing.default_currency || "USD").toUpperCase();
+  const selected = codes.includes(localeCurrency)
+    ? localeCurrency
+    : (codes.includes(baseCurrency) ? baseCurrency : (pricing.default_currency || "USD"));
   const options = prices.map(p =>
     `<option value="${esc(p.currency)}"${p.currency === selected ? " selected" : ""}>${esc(p.currency)}</option>`
   ).join("");
@@ -2657,6 +2673,7 @@ function renderFreePlan(body, plan, pricing) {
     try {
       const body = {
         currency,
+        locale: i18n.stripeLocale(state.user?.preferred_locale || i18n.currentLocale()),
         success_url: `${base}?billing=success#/settings/plan`,
         cancel_url: `${base}?billing=cancel#/settings/plan`,
       };
@@ -3127,6 +3144,15 @@ async function start() {
       await i18n.initI18n(i18n.getLoginLocale?.() || "en");
       document.title = t("share.title");
       await renderPublicShare(shareToken);
+      return;
+    }
+    if (getResetTokenFromHash()) {
+      setToken(null);
+      showAuthLoading();
+      await i18n.initI18n(i18n.getLoginLocale?.() || "en");
+      document.title = t("meta.title");
+      i18n.applyI18n(document);
+      showAuth();
       return;
     }
     if (token()) {
