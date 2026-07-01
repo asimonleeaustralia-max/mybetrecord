@@ -30,19 +30,30 @@
   }
   </script>
 </head>
-<body>
+<body data-blog-slug="spreadsheet-vs-betting-tracker">
   <div class="m-site">
-    <header class="m-header">
+    <header class="m-header m-header--with-end">
       <a class="wordmark" href="/">my<span>bet</span>record</a>
-      <nav class="m-nav"><a href="/blog/">Blog</a><a class="m-btn m-btn--primary" href="/app/#/register">Create account</a></nav>
+      <div class="m-header__end">
+        <label class="m-locale-wrap">
+          <span class="visually-hidden" data-i18n="home.language">Language</span>
+          <select id="localeSelect" class="m-locale" data-i18n-attr="aria-label" data-i18n="home.language"></select>
+        </label>
+        <nav class="m-nav">
+          <a href="/pricing/" data-i18n="home.pricing">Pricing</a>
+          <a href="/blog/" data-i18n="home.blog">Blog</a>
+          <a href="/login" data-i18n="auth.signIn">Sign in</a>
+          <a class="m-btn m-btn--primary" href="/app/#/register" data-i18n="auth.createAccount">Create account</a>
+        </nav>
+      </div>
     </header>
     <article class="blog-post">
       <header class="blog-post__head">
         <p class="blog-post__meta"><time datetime="2026-03-05">2026-03-05</time></p>
-        <h1>Spreadsheet vs Dedicated Betting Tracker</h1>
-        <p class="blog-post__deck">When Excel is enough for your betting record — and when a dedicated tracker saves time, errors, and blind spots.</p>
+        <h1 data-i18n="blog.posts.spreadsheet-vs-betting-tracker.title">Spreadsheet vs Dedicated Betting Tracker</h1>
+        <p class="blog-post__deck" data-i18n="blog.posts.spreadsheet-vs-betting-tracker.description">When Excel is enough for your betting record — and when a dedicated tracker saves time, errors, and blind spots.</p>
       </header>
-      <div class="blog-post__body"><p>Spreadsheets are the universal starting point for betting records. They are free, flexible, and familiar. Many bettors never leave them. Others hit a wall — usually when complexity outgrows cells and formulas.</p>
+      <div class="blog-post__body" data-i18n-html="blog.posts.spreadsheet-vs-betting-tracker.body"><p>Spreadsheets are the universal starting point for betting records. They are free, flexible, and familiar. Many bettors never leave them. Others hit a wall — usually when complexity outgrows cells and formulas.</p>
 <h2>When spreadsheets work</h2>
 <ul>
 <li>Fewer than ~50 bets per month</li>
@@ -112,27 +123,36 @@
 <p>Keep your sheet one more month but log new bets in mybetrecord. Compare month-end profit and yield. If they match and the tracker saved time, switch.</p>
 <p><strong>Start free:</strong> <a href="/app/#/register">Create account</a> — no card required to begin logging.</p></div>
       <aside class="blog-cta">
-        <strong>Track this in mybetrecord</strong>
-        <p>Log bets, see ROI and yield, and size stakes with Kelly — free account.</p>
-        <a class="m-btn m-btn--primary" href="/app/#/register">Start your ledger</a>
+        <strong data-i18n="blog.ctaTitle">Track this in mybetrecord</strong>
+        <p data-i18n="blog.ctaLead">Log bets, see ROI and yield, and size stakes with Kelly — free account.</p>
+        <a class="m-btn m-btn--primary" href="/app/#/register" data-i18n="blog.ctaButton">Start your ledger</a>
       </aside>
       
       <section class="blog-related">
-        <h2>Related guides</h2>
+        <h2 data-i18n="blog.relatedTitle">Related guides</h2>
         <ul>
           
-          <li><a href="/blog/betting-equity-curve.html">Reading Your Betting Equity Curve</a></li>
+          <li><a href="/blog/betting-equity-curve.html" data-i18n="blog.posts.betting-equity-curve.title">Reading Your Betting Equity Curve</a></li>
           
-          <li><a href="/blog/each-way-bet-settlement.html">Each-Way Bet Settlement Explained</a></li>
+          <li><a href="/blog/each-way-bet-settlement.html" data-i18n="blog.posts.each-way-bet-settlement.title">Each-Way Bet Settlement Explained</a></li>
           
         </ul>
       </section>
       
-      <p class="blog-rg"><strong>Responsible gambling.</strong> Educational content only — not betting advice. Never stake more than you can afford to lose.</p>
+      <p class="blog-rg" data-i18n="blog.rg" data-i18n-html><strong>Responsible gambling.</strong> Educational content only — not betting advice. Never stake more than you can afford to lose.</p>
     </article>
     <footer class="m-footer">
-      <nav><a href="/">Home</a><a href="/blog/">Blog</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="mailto:support@mybetrecord.com">Support</a></nav>
+      <nav>
+        <a href="/" data-i18n="blog.home">Home</a>
+        <a href="/blog/" data-i18n="home.blog">Blog</a>
+        <a href="/privacy" data-i18n="home.privacy">Privacy</a>
+        <a href="/terms" data-i18n="home.terms">Terms</a>
+        <a href="/support" data-i18n="home.support">Support</a>
+      </nav>
+      <p data-i18n="home.footerCopy">&copy; mybetrecord. Analytics and record-keeping — not gambling advice.</p>
     </footer>
   </div>
+  <script src="/app/i18n.js"></script>
+  <script src="/marketing.js"></script>
 </body>
 </html>

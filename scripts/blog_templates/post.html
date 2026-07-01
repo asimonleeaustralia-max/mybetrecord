@@ -30,39 +30,59 @@
   }
   </script>
 </head>
-<body>
+<body data-blog-slug="{{ post.slug }}">
   <div class="m-site">
-    <header class="m-header">
+    <header class="m-header m-header--with-end">
       <a class="wordmark" href="/">my<span>bet</span>record</a>
-      <nav class="m-nav"><a href="/blog/">Blog</a><a class="m-btn m-btn--primary" href="/app/#/register">Create account</a></nav>
+      <div class="m-header__end">
+        <label class="m-locale-wrap">
+          <span class="visually-hidden" data-i18n="home.language">Language</span>
+          <select id="localeSelect" class="m-locale" data-i18n-attr="aria-label" data-i18n="home.language"></select>
+        </label>
+        <nav class="m-nav">
+          <a href="/pricing/" data-i18n="home.pricing">Pricing</a>
+          <a href="/blog/" data-i18n="home.blog">Blog</a>
+          <a href="/login" data-i18n="auth.signIn">Sign in</a>
+          <a class="m-btn m-btn--primary" href="/app/#/register" data-i18n="auth.createAccount">Create account</a>
+        </nav>
+      </div>
     </header>
     <article class="blog-post">
       <header class="blog-post__head">
         <p class="blog-post__meta"><time datetime="{{ post.date }}">{{ post.date }}</time></p>
-        <h1>{{ post.title }}</h1>
-        <p class="blog-post__deck">{{ post.description }}</p>
+        <h1 data-i18n="blog.posts.{{ post.slug }}.title">{{ post.title }}</h1>
+        <p class="blog-post__deck" data-i18n="blog.posts.{{ post.slug }}.description">{{ post.description }}</p>
       </header>
-      <div class="blog-post__body">{{ post.body_html | safe }}</div>
+      <div class="blog-post__body" data-i18n-html="blog.posts.{{ post.slug }}.body">{{ post.body_html | safe }}</div>
       <aside class="blog-cta">
-        <strong>Track this in mybetrecord</strong>
-        <p>Log bets, see ROI and yield, and size stakes with Kelly — free account.</p>
-        <a class="m-btn m-btn--primary" href="/app/#/register">Start your ledger</a>
+        <strong data-i18n="blog.ctaTitle">Track this in mybetrecord</strong>
+        <p data-i18n="blog.ctaLead">Log bets, see ROI and yield, and size stakes with Kelly — free account.</p>
+        <a class="m-btn m-btn--primary" href="/app/#/register" data-i18n="blog.ctaButton">Start your ledger</a>
       </aside>
       {% if related %}
       <section class="blog-related">
-        <h2>Related guides</h2>
+        <h2 data-i18n="blog.relatedTitle">Related guides</h2>
         <ul>
           {% for r in related %}
-          <li><a href="/blog/{{ r.slug }}.html">{{ r.title }}</a></li>
+          <li><a href="/blog/{{ r.slug }}.html" data-i18n="blog.posts.{{ r.slug }}.title">{{ r.title }}</a></li>
           {% endfor %}
         </ul>
       </section>
       {% endif %}
-      <p class="blog-rg"><strong>Responsible gambling.</strong> Educational content only — not betting advice. Never stake more than you can afford to lose.</p>
+      <p class="blog-rg" data-i18n="blog.rg" data-i18n-html><strong>Responsible gambling.</strong> Educational content only — not betting advice. Never stake more than you can afford to lose.</p>
     </article>
     <footer class="m-footer">
-      <nav><a href="/">Home</a><a href="/blog/">Blog</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="mailto:support@mybetrecord.com">Support</a></nav>
+      <nav>
+        <a href="/" data-i18n="blog.home">Home</a>
+        <a href="/blog/" data-i18n="home.blog">Blog</a>
+        <a href="/privacy" data-i18n="home.privacy">Privacy</a>
+        <a href="/terms" data-i18n="home.terms">Terms</a>
+        <a href="/support" data-i18n="home.support">Support</a>
+      </nav>
+      <p data-i18n="home.footerCopy">&copy; mybetrecord. Analytics and record-keeping — not gambling advice.</p>
     </footer>
   </div>
+  <script src="/app/i18n.js"></script>
+  <script src="/marketing.js"></script>
 </body>
 </html>

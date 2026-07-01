@@ -261,8 +261,13 @@ def create_checkout_session(
     if user.is_pro:
         raise HTTPException(status.HTTP_409_CONFLICT, "You're already on the Pro plan.")
 
-    currency = pricing.normalise_currency(payload.currency or user.base_currency)
+    currency = pricing.normalise_currency(
+        payload.currency
+        or pricing.currency_for_locale(user.preferred_locale)
+        or user.base_currency
+    )
     unit_amount = pricing.stripe_unit_amount(currency)
+    checkout_locale = payload.locale or pricing.stripe_checkout_locale(user.preferred_locale)
 
     price_data = {
         "currency": currency.lower(),
@@ -282,6 +287,7 @@ def create_checkout_session(
         "line_items": [{"price_data": price_data, "quantity": 1}],
         "customer": customer_id,
         "client_reference_id": user.id,
+        "locale": checkout_locale,
         "subscription_data": {"metadata": {"user_id": user.id, "currency": currency}},
         "metadata": {"user_id": user.id, "currency": currency},
         "success_url": payload.success_url,

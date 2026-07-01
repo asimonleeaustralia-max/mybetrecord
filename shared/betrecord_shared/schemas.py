@@ -165,6 +165,7 @@ class PlanOut(BaseModel):
 
 class CheckoutRequest(BaseModel):
     currency: Optional[str] = Field(default=None, min_length=3, max_length=3)
+    locale: Optional[str] = Field(default=None, max_length=16)
     success_url: str
     cancel_url: str
     promotion_code: Optional[str] = None

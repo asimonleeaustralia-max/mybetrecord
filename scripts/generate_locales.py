@@ -10,7 +10,7 @@ import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-LOCALES = ROOT / "frontend" / "public" / "locales"
+LOCALES = ROOT / "frontend" / "public" / "app" / "locales"
 EN_FILE = LOCALES / "en.json"
 LANG_FILE = LOCALES / "languages.json"
 
@@ -139,6 +139,40 @@ def translate_batch(translator, texts: list[str], *, batch_size: int = 20) -> li
     return results
 
 
+def merge_missing_language(code: str, flat_en: dict[str, str]) -> str:
+    """Translate only keys missing or still English in an existing locale file."""
+    from deep_translator import GoogleTranslator
+
+    out_path = LOCALES / f"{code}.json"
+    if code == "en":
+        en = json.loads(EN_FILE.read_text(encoding="utf-8"))
+        out_path.write_text(json.dumps(en, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        return f"{code} (source)"
+
+    flat_loc: dict[str, str] = {}
+    if out_path.exists():
+        flat_loc = flatten(json.loads(out_path.read_text(encoding="utf-8")))
+
+    missing = [k for k in flat_en if k not in flat_loc or flat_loc[k] == flat_en[k]]
+    if not missing:
+        return f"{code} (up to date)"
+
+    target = TRANSLATE_MAP.get(code, code.split("-")[0])
+    translator = GoogleTranslator(source="en", target=target)
+    texts = [flat_en[k] for k in missing]
+    translated = translate_batch(translator, texts)
+    for key, val in zip(missing, translated):
+        if val == flat_en[key]:
+            val = translate_one(translator, flat_en[key], retries=5)
+        flat_loc[key] = val
+
+    out_path.write_text(
+        json.dumps(unflatten(flat_loc), ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    return f"{code} merged {len(missing)} keys"
+
+
 def translate_language(code: str, flat_en: dict[str, str], force: bool) -> str:
     from deep_translator import GoogleTranslator
 
@@ -185,6 +219,7 @@ def main() -> None:
     args = sys.argv[1:]
     force = "--force" in args
     fix_untranslated = "--fix-untranslated" in args
+    merge_missing = "--merge-missing" in args
     workers = 1
     if "--workers" in args:
         workers = max(1, int(args[args.index("--workers") + 1]))
@@ -205,6 +240,8 @@ def main() -> None:
 
     def run_one(code: str) -> str:
         try:
+            if merge_missing:
+                return merge_missing_language(code, flat_en)
             return translate_language(code, flat_en, force)
         except Exception as exc:
             return f"{code} FAILED: {exc}"

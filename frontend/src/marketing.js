@@ -9,41 +9,44 @@
     INR: 399, MXN: 89, TWD: 149, ZAR: 89, BRL: 24.9, DKK: 35,
   };
 
-  // Map UI locale to a supported billing currency (top-20 FX list in pricing.py).
-  const LOCALE_CURRENCIES = {
-    en: "USD", "zh-CN": "CNY", "zh-TW": "TWD", hi: "INR", bn: "INR", mr: "INR",
-    te: "INR", ta: "INR", gu: "INR", kn: "INR", ml: "INR", pa: "INR", or: "INR", ne: "INR",
-    es: "EUR", fr: "EUR", de: "EUR", it: "EUR", nl: "EUR", pt: "BRL", ca: "EUR",
-    el: "EUR", fi: "EUR", da: "DKK", sv: "SEK", no: "NOK", pl: "EUR", cs: "EUR",
-    sk: "EUR", sl: "EUR", hr: "EUR", ro: "EUR", bg: "EUR", hu: "EUR", et: "EUR",
-    lv: "EUR", lt: "EUR", be: "EUR", bs: "EUR", sq: "EUR", sr: "EUR", mt: "EUR",
-    lb: "EUR", ga: "EUR", gl: "EUR", eu: "EUR", cy: "GBP", gd: "GBP", fy: "EUR",
-    ja: "JPY", ko: "KRW", af: "ZAR", mi: "NZD",
-    ar: "USD", ru: "USD", id: "USD", ur: "USD", sw: "USD", tr: "USD", vi: "USD",
-    he: "USD", fa: "USD", ps: "USD", uk: "USD", th: "USD", ms: "USD", tl: "USD",
-    my: "USD", km: "USD", lo: "USD", mn: "USD", ka: "USD", hy: "USD", kk: "USD",
-    ky: "USD", uz: "USD", az: "USD", am: "USD", ha: "USD", ig: "USD", yo: "USD",
-    zu: "USD", xh: "USD", rw: "USD", so: "USD", mg: "USD", ny: "USD", ht: "USD",
-    jv: "USD", su: "USD", ceb: "USD", tg: "USD", tk: "USD", tt: "USD", ug: "CNY",
-    si: "USD", mk: "USD", is: "USD", eo: "EUR",
-  };
-
   let _prices = null;
 
-  function applyPageTitle() {
+  function pageKind() {
     const path = window.location.pathname.replace(/\/index\.html$/, "");
-    if (path === "/pricing" || path.endsWith("/pricing")) {
-      document.title = window.i18n.t("home.meta.pricingTitle");
-    } else {
-      document.title = window.i18n.t("home.meta.title");
-    }
+    if (path === "/pricing" || path.endsWith("/pricing")) return "pricing";
+    if (path === "/blog" || path.endsWith("/blog")) return "blog-index";
+    const blogPost = path.match(/\/blog\/([^/]+)\.html$/);
+    if (blogPost) return { kind: "blog-post", slug: blogPost[1] };
+    return "home";
   }
 
-  function currencyForLocale(locale) {
-    const code = window.i18n.normalizeLocale(locale) || "en";
-    if (LOCALE_CURRENCIES[code]) return LOCALE_CURRENCIES[code];
-    const base = code.split("-")[0];
-    return LOCALE_CURRENCIES[base] || "USD";
+  function applyPageMeta() {
+    const kind = pageKind();
+    let titleKey = "home.meta.title";
+    let descKey = "home.meta.description";
+
+    if (kind === "pricing") {
+      titleKey = "home.meta.pricingTitle";
+      descKey = "home.meta.pricingDescription";
+    } else if (kind === "blog-index") {
+      titleKey = "blog.meta.title";
+      descKey = "blog.meta.description";
+    } else if (kind?.kind === "blog-post") {
+      const base = window.i18n.t(`blog.posts.${kind.slug}.title`);
+      document.title = base === `blog.posts.${kind.slug}.title`
+        ? document.title
+        : `${base} — mybetrecord`;
+      const desc = window.i18n.t(`blog.posts.${kind.slug}.description`);
+      const meta = document.querySelector('meta[name="description"]');
+      if (meta && desc !== `blog.posts.${kind.slug}.description`) {
+        meta.setAttribute("content", desc);
+      }
+      return;
+    }
+
+    document.title = window.i18n.t(titleKey);
+    const meta = document.querySelector('meta[name="description"]');
+    if (meta) meta.setAttribute("content", window.i18n.t(descKey));
   }
 
   function formatPrice(amount, currency) {
@@ -97,7 +100,7 @@
   }
 
   function priceForLocale(prices, locale) {
-    const currency = currencyForLocale(locale);
+    const currency = window.i18n.currencyForLocale(locale);
     return prices.find(p => p.currency === currency)
       || prices.find(p => p.currency === "USD")
       || prices[0];
@@ -117,21 +120,20 @@
     trackLandingVisit();
     const loc = window.i18n.getLoginLocale();
     await window.i18n.initI18n(loc);
-    applyPageTitle();
 
     const select = document.getElementById("localeSelect");
     if (select) {
       select.innerHTML = window.i18n.languageOptions(window.i18n.currentLocale());
       select.addEventListener("change", async () => {
-        await window.i18n.setLocale(select.value, { persistCookie: true });
-        applyPageTitle();
+        await window.i18n.setLocale(select.value, { persistCookie: true, updateTitle: false });
+        applyPageMeta();
         updateProPrice();
       });
     }
 
     window.i18n.applyI18n(document);
+    applyPageMeta();
 
-    // Pricing is only needed for #proPrice on the pricing page — don't block the language selector.
     loadPricing().then(() => updateProPrice()).catch(() => {});
   }
 

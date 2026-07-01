@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import json
 import re
 from datetime import date
 from pathlib import Path
@@ -15,6 +16,8 @@ CONTENT_DIR = ROOT / "content" / "blog"
 TEMPLATE_DIR = ROOT / "scripts" / "blog_templates"
 OUT_DIR = ROOT / "frontend" / "public" / "blog"
 PUBLIC_DIR = ROOT / "frontend" / "public"
+LOCALES_DIR = ROOT / "frontend" / "public" / "app" / "locales"
+EN_LOCALE = LOCALES_DIR / "en.json"
 SITE_URL = "https://mybetrecord.com"
 
 FRONT_MATTER_RE = re.compile(r"^---\s*\n(.*?)\n---\s*\n", re.DOTALL)
@@ -56,6 +59,38 @@ def load_posts() -> list[dict]:
     return posts
 
 
+def sync_blog_locales(posts: list[dict]) -> None:
+    """Merge blog post strings into en.json for i18n."""
+    en = json.loads(EN_LOCALE.read_text(encoding="utf-8"))
+    blog = en.setdefault("blog", {})
+    blog.setdefault("meta", {})
+    blog["meta"].setdefault("title", "Blog — mybetrecord")
+    blog["meta"].setdefault(
+        "description",
+        "Guides on betting ledgers, ROI, Kelly criterion, closing line value, and sports betting analytics.",
+    )
+    blog.setdefault("indexTitle", "Betting analytics guides")
+    blog.setdefault("indexSub", "Learn the maths behind the metrics — then track them in your ledger.")
+    blog.setdefault("home", "Home")
+    blog.setdefault("ctaTitle", "Track this in mybetrecord")
+    blog.setdefault("ctaLead", "Log bets, see ROI and yield, and size stakes with Kelly — free account.")
+    blog.setdefault("ctaButton", "Start your ledger")
+    blog.setdefault("relatedTitle", "Related guides")
+    blog.setdefault(
+        "rg",
+        "<strong>Responsible gambling.</strong> Educational content only — not betting advice. "
+        "Never stake more than you can afford to lose.",
+    )
+    posts_i18n = blog.setdefault("posts", {})
+    for post in posts:
+        posts_i18n[post["slug"]] = {
+            "title": post["title"],
+            "description": post["description"],
+            "body": post["body_html"],
+        }
+    EN_LOCALE.write_text(json.dumps(en, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
 def build() -> None:
     env = Environment(
         loader=FileSystemLoader(str(TEMPLATE_DIR)),
@@ -66,6 +101,7 @@ def build() -> None:
     sitemap_tpl = env.get_template("sitemap.xml")
 
     posts = load_posts()
+    sync_blog_locales(posts)
     OUT_DIR.mkdir(parents=True, exist_ok=True)
 
     for i, post in enumerate(posts):

@@ -13,75 +13,86 @@
 </head>
 <body>
   <div class="m-site">
-    <header class="m-header">
+    <header class="m-header m-header--with-end">
       <a class="wordmark" href="/">my<span>bet</span>record</a>
-      <nav class="m-nav"><a href="/login">Sign in</a><a class="m-btn m-btn--primary" href="/app/#/register">Create account</a></nav>
+      <div class="m-header__end">
+        <label class="m-locale-wrap">
+          <span class="visually-hidden" data-i18n="home.language">Language</span>
+          <select id="localeSelect" class="m-locale" data-i18n-attr="aria-label" data-i18n="home.language"></select>
+        </label>
+        <nav class="m-nav">
+          <a href="/pricing/" data-i18n="home.pricing">Pricing</a>
+          <a href="/blog/" aria-current="page" data-i18n="home.blog">Blog</a>
+          <a href="/login" data-i18n="auth.signIn">Sign in</a>
+          <a class="m-btn m-btn--primary" href="/app/#/register" data-i18n="auth.createAccount">Create account</a>
+        </nav>
+      </div>
     </header>
     <main class="blog-index">
-      <h1>Betting analytics guides</h1>
-      <p class="sub">Learn the maths behind the metrics — then track them in your ledger.</p>
+      <h1 data-i18n="blog.indexTitle">Betting analytics guides</h1>
+      <p class="sub" data-i18n="blog.indexSub">Learn the maths behind the metrics — then track them in your ledger.</p>
       <ul class="blog-list">
         
         <li>
           <a href="/blog/spreadsheet-vs-betting-tracker.html">
-            <span class="blog-list__title">Spreadsheet vs Dedicated Betting Tracker</span>
-            <span class="blog-list__desc">When Excel is enough for your betting record — and when a dedicated tracker saves time, errors, and blind spots.</span>
+            <span class="blog-list__title" data-i18n="blog.posts.spreadsheet-vs-betting-tracker.title">Spreadsheet vs Dedicated Betting Tracker</span>
+            <span class="blog-list__desc" data-i18n="blog.posts.spreadsheet-vs-betting-tracker.description">When Excel is enough for your betting record — and when a dedicated tracker saves time, errors, and blind spots.</span>
             <time datetime="2026-03-05">2026-03-05</time>
           </a>
         </li>
         
         <li>
           <a href="/blog/betting-equity-curve.html">
-            <span class="blog-list__title">Reading Your Betting Equity Curve</span>
-            <span class="blog-list__desc">An equity curve plots cumulative profit over time. Learn what shapes mean, why pending bets are excluded, and how to spot drift.</span>
+            <span class="blog-list__title" data-i18n="blog.posts.betting-equity-curve.title">Reading Your Betting Equity Curve</span>
+            <span class="blog-list__desc" data-i18n="blog.posts.betting-equity-curve.description">An equity curve plots cumulative profit over time. Learn what shapes mean, why pending bets are excluded, and how to spot drift.</span>
             <time datetime="2026-02-26">2026-02-26</time>
           </a>
         </li>
         
         <li>
           <a href="/blog/each-way-bet-settlement.html">
-            <span class="blog-list__title">Each-Way Bet Settlement Explained</span>
-            <span class="blog-list__desc">How each-way bets pay on the win and place parts. Worked examples with place fractions and dead-heat rules.</span>
+            <span class="blog-list__title" data-i18n="blog.posts.each-way-bet-settlement.title">Each-Way Bet Settlement Explained</span>
+            <span class="blog-list__desc" data-i18n="blog.posts.each-way-bet-settlement.description">How each-way bets pay on the win and place parts. Worked examples with place fractions and dead-heat rules.</span>
             <time datetime="2026-02-19">2026-02-19</time>
           </a>
         </li>
         
         <li>
           <a href="/blog/odds-formats-decimal-american-fractional.html">
-            <span class="blog-list__title">Odds Formats — Decimal, American, and Fractional</span>
-            <span class="blog-list__desc">Convert between decimal, American, and fractional odds. Reference table and formulas for Hong Kong, Malaysian, and Indonesian formats.</span>
+            <span class="blog-list__title" data-i18n="blog.posts.odds-formats-decimal-american-fractional.title">Odds Formats — Decimal, American, and Fractional</span>
+            <span class="blog-list__desc" data-i18n="blog.posts.odds-formats-decimal-american-fractional.description">Convert between decimal, American, and fractional odds. Reference table and formulas for Hong Kong, Malaysian, and Indonesian formats.</span>
             <time datetime="2026-02-12">2026-02-12</time>
           </a>
         </li>
         
         <li>
           <a href="/blog/closing-line-value-clv.html">
-            <span class="blog-list__title">Closing Line Value (CLV) — Why Sharp Bettors Track It</span>
-            <span class="blog-list__desc">Closing line value measures whether you beat the final market price. Learn how to calculate CLV and why it predicts long-term skill.</span>
+            <span class="blog-list__title" data-i18n="blog.posts.closing-line-value-clv.title">Closing Line Value (CLV) — Why Sharp Bettors Track It</span>
+            <span class="blog-list__desc" data-i18n="blog.posts.closing-line-value-clv.description">Closing line value measures whether you beat the final market price. Learn how to calculate CLV and why it predicts long-term skill.</span>
             <time datetime="2026-02-05">2026-02-05</time>
           </a>
         </li>
         
         <li>
           <a href="/blog/kelly-criterion-explained.html">
-            <span class="blog-list__title">Kelly Criterion Explained for Bettors</span>
-            <span class="blog-list__desc">The Kelly criterion sizes stakes from edge and odds. Learn the formula, fractional Kelly, and a numeric example you can verify.</span>
+            <span class="blog-list__title" data-i18n="blog.posts.kelly-criterion-explained.title">Kelly Criterion Explained for Bettors</span>
+            <span class="blog-list__desc" data-i18n="blog.posts.kelly-criterion-explained.description">The Kelly criterion sizes stakes from edge and odds. Learn the formula, fractional Kelly, and a numeric example you can verify.</span>
             <time datetime="2026-01-29">2026-01-29</time>
           </a>
         </li>
         
         <li>
           <a href="/blog/roi-vs-yield-sports-betting.html">
-            <span class="blog-list__title">ROI vs Yield in Sports Betting</span>
-            <span class="blog-list__desc">ROI and yield measure betting performance differently. Learn the formulas, worked examples, and when to use each metric.</span>
+            <span class="blog-list__title" data-i18n="blog.posts.roi-vs-yield-sports-betting.title">ROI vs Yield in Sports Betting</span>
+            <span class="blog-list__desc" data-i18n="blog.posts.roi-vs-yield-sports-betting.description">ROI and yield measure betting performance differently. Learn the formulas, worked examples, and when to use each metric.</span>
             <time datetime="2026-01-22">2026-01-22</time>
           </a>
         </li>
         
         <li>
           <a href="/blog/what-is-a-betting-ledger.html">
-            <span class="blog-list__title">What Is a Betting Ledger?</span>
-            <span class="blog-list__desc">A betting ledger is a structured record of every wager you place. Learn why disciplined bettors keep one and what to track.</span>
+            <span class="blog-list__title" data-i18n="blog.posts.what-is-a-betting-ledger.title">What Is a Betting Ledger?</span>
+            <span class="blog-list__desc" data-i18n="blog.posts.what-is-a-betting-ledger.description">A betting ledger is a structured record of every wager you place. Learn why disciplined bettors keep one and what to track.</span>
             <time datetime="2026-01-15">2026-01-15</time>
           </a>
         </li>
@@ -89,8 +100,16 @@
       </ul>
     </main>
     <footer class="m-footer">
-      <nav><a href="/">Home</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="mailto:support@mybetrecord.com">Support</a></nav>
+      <nav>
+        <a href="/" data-i18n="blog.home">Home</a>
+        <a href="/privacy" data-i18n="home.privacy">Privacy</a>
+        <a href="/terms" data-i18n="home.terms">Terms</a>
+        <a href="/support" data-i18n="home.support">Support</a>
+      </nav>
+      <p data-i18n="home.footerCopy">&copy; mybetrecord. Analytics and record-keeping — not gambling advice.</p>
     </footer>
   </div>
+  <script src="/app/i18n.js"></script>
+  <script src="/marketing.js"></script>
 </body>
 </html>

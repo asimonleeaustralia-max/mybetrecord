@@ -4,6 +4,32 @@ const LOCALE_COOKIE = "mbr_locale";
 const LOCALE_COOKIE_MAX_AGE = 365 * 24 * 60 * 60; // 1 year
 const LOCALE_BASE = "/app/locales";
 
+// Map UI locale to billing currency (mirrors shared/betrecord_shared/pricing.py top-20 list).
+const LOCALE_CURRENCIES = {
+  en: "USD", "zh-CN": "CNY", "zh-TW": "TWD", hi: "INR", bn: "INR", mr: "INR",
+  te: "INR", ta: "INR", gu: "INR", kn: "INR", ml: "INR", pa: "INR", or: "INR", ne: "INR",
+  es: "EUR", fr: "EUR", de: "EUR", it: "EUR", nl: "EUR", pt: "BRL", ca: "EUR",
+  el: "EUR", fi: "EUR", da: "DKK", sv: "SEK", no: "NOK", pl: "EUR", cs: "EUR",
+  sk: "EUR", sl: "EUR", hr: "EUR", ro: "EUR", bg: "EUR", hu: "EUR", et: "EUR",
+  lv: "EUR", lt: "EUR", be: "EUR", bs: "EUR", sq: "EUR", sr: "EUR", mt: "EUR",
+  lb: "EUR", ga: "EUR", gl: "EUR", eu: "EUR", cy: "GBP", gd: "GBP", fy: "EUR",
+  ja: "JPY", ko: "KRW", af: "ZAR", mi: "NZD",
+  ar: "USD", ru: "USD", id: "USD", ur: "USD", sw: "USD", tr: "USD", vi: "USD",
+  he: "USD", fa: "USD", ps: "USD", uk: "USD", th: "USD", ms: "USD", tl: "USD",
+  my: "USD", km: "USD", lo: "USD", mn: "USD", ka: "USD", hy: "USD", kk: "USD",
+  ky: "USD", uz: "USD", az: "USD", am: "USD", ha: "USD", ig: "USD", yo: "USD",
+  zu: "USD", xh: "USD", rw: "USD", so: "USD", mg: "USD", ny: "USD", ht: "USD",
+  jv: "USD", su: "USD", ceb: "USD", tg: "USD", tk: "USD", tt: "USD", ug: "CNY",
+  si: "USD", mk: "USD", is: "USD", eo: "EUR",
+};
+
+const CURRENCY_FORMAT_LOCALES = {
+  USD: "en-US", GBP: "en-GB", EUR: "de-DE", AUD: "en-AU", CAD: "en-CA",
+  NZD: "en-NZ", JPY: "ja-JP", CNY: "zh-CN", TWD: "zh-TW", HKD: "zh-HK",
+  SGD: "en-SG", INR: "en-IN", KRW: "ko-KR", CHF: "de-CH", SEK: "sv-SE",
+  NOK: "nb-NO", DKK: "da-DK", ZAR: "en-ZA", BRL: "pt-BR", MXN: "es-MX",
+};
+
 let _catalog = null;
 let _strings = {};
 let _locale = "en";
@@ -114,14 +140,44 @@ async function initI18n(locale) {
   return _locale;
 }
 
-async function setLocale(locale, { persistCookie = false } = {}) {
+async function setLocale(locale, { persistCookie = false, updateTitle = true } = {}) {
   await loadCatalog();
   const code = normalizeLocale(locale) || "en";
   await loadLocale(code);
   if (persistCookie) setLocaleCookie(code);
-  document.title = t("meta.title");
+  if (updateTitle) document.title = t("meta.title");
   applyI18n(document);
   return code;
+}
+
+function currencyForLocale(locale) {
+  const code = normalizeLocale(locale) || "en";
+  if (LOCALE_CURRENCIES[code]) return LOCALE_CURRENCIES[code];
+  const base = code.split("-")[0];
+  return LOCALE_CURRENCIES[base] || "USD";
+}
+
+/** Stripe Checkout locale — https://docs.stripe.com/api/checkout/sessions/create#create_checkout_session-locale */
+function stripeLocale(locale) {
+  const code = normalizeLocale(locale) || "en";
+  const map = { "zh-CN": "zh", "zh-TW": "zh-TW", no: "nb", en: "en", "en-GB": "en-GB" };
+  if (map[code]) return map[code];
+  const base = code.split("-")[0];
+  const direct = new Set([
+    "bg", "cs", "da", "de", "el", "es", "et", "fi", "fr", "hr", "hu", "id", "it",
+    "ja", "ko", "lt", "lv", "ms", "mt", "nb", "nl", "pl", "pt", "ro", "ru", "sk",
+    "sl", "sv", "th", "tr", "vi",
+  ]);
+  if (direct.has(base)) return base;
+  if (base === "pt") return "pt-BR";
+  if (base === "fr" && /-ca/i.test(code)) return "fr-CA";
+  if (base === "es" && /-(419|mx|ar|co|cl)/i.test(code)) return "es-419";
+  return "auto";
+}
+
+function moneyFormatLocale(currency) {
+  const c = (currency || "USD").toUpperCase();
+  return CURRENCY_FORMAT_LOCALES[c] || "en-US";
 }
 
 function get(obj, path) {
@@ -194,6 +250,9 @@ window.i18n = {
   localeTag,
   languageOptions,
   normalizeLocale,
+  currencyForLocale,
+  stripeLocale,
+  moneyFormatLocale,
   formatLocaleDate,
   formatLocaleTime,
   formatLocaleNumber,

@@ -30,19 +30,30 @@
   }
   </script>
 </head>
-<body>
+<body data-blog-slug="betting-equity-curve">
   <div class="m-site">
-    <header class="m-header">
+    <header class="m-header m-header--with-end">
       <a class="wordmark" href="/">my<span>bet</span>record</a>
-      <nav class="m-nav"><a href="/blog/">Blog</a><a class="m-btn m-btn--primary" href="/app/#/register">Create account</a></nav>
+      <div class="m-header__end">
+        <label class="m-locale-wrap">
+          <span class="visually-hidden" data-i18n="home.language">Language</span>
+          <select id="localeSelect" class="m-locale" data-i18n-attr="aria-label" data-i18n="home.language"></select>
+        </label>
+        <nav class="m-nav">
+          <a href="/pricing/" data-i18n="home.pricing">Pricing</a>
+          <a href="/blog/" data-i18n="home.blog">Blog</a>
+          <a href="/login" data-i18n="auth.signIn">Sign in</a>
+          <a class="m-btn m-btn--primary" href="/app/#/register" data-i18n="auth.createAccount">Create account</a>
+        </nav>
+      </div>
     </header>
     <article class="blog-post">
       <header class="blog-post__head">
         <p class="blog-post__meta"><time datetime="2026-02-26">2026-02-26</time></p>
-        <h1>Reading Your Betting Equity Curve</h1>
-        <p class="blog-post__deck">An equity curve plots cumulative profit over time. Learn what shapes mean, why pending bets are excluded, and how to spot drift.</p>
+        <h1 data-i18n="blog.posts.betting-equity-curve.title">Reading Your Betting Equity Curve</h1>
+        <p class="blog-post__deck" data-i18n="blog.posts.betting-equity-curve.description">An equity curve plots cumulative profit over time. Learn what shapes mean, why pending bets are excluded, and how to spot drift.</p>
       </header>
-      <div class="blog-post__body"><p>An <strong>equity curve</strong> is a line chart of cumulative profit (or bankroll) after each settled bet, in chronological order. It turns a table of results into a story you can read at a glance.</p>
+      <div class="blog-post__body" data-i18n-html="blog.posts.betting-equity-curve.body"><p>An <strong>equity curve</strong> is a line chart of cumulative profit (or bankroll) after each settled bet, in chronological order. It turns a table of results into a story you can read at a glance.</p>
 <h2>What a healthy curve looks like</h2>
 <p>Positive edge with sensible staking produces an upward drift with drawdowns — not a straight line. Short flat or down periods are normal variance; sustained drift against you may signal model decay or discipline slip.</p>
 <h2>Common curve shapes</h2>
@@ -63,27 +74,36 @@
 <p>Equity curves lie by omission if you ignore CLV, yield, and sample size. Use the curve for intuition; use tables for decisions.</p>
 <p>View your equity curve in mybetrecord reports after logging a few settled bets.</p></div>
       <aside class="blog-cta">
-        <strong>Track this in mybetrecord</strong>
-        <p>Log bets, see ROI and yield, and size stakes with Kelly — free account.</p>
-        <a class="m-btn m-btn--primary" href="/app/#/register">Start your ledger</a>
+        <strong data-i18n="blog.ctaTitle">Track this in mybetrecord</strong>
+        <p data-i18n="blog.ctaLead">Log bets, see ROI and yield, and size stakes with Kelly — free account.</p>
+        <a class="m-btn m-btn--primary" href="/app/#/register" data-i18n="blog.ctaButton">Start your ledger</a>
       </aside>
       
       <section class="blog-related">
-        <h2>Related guides</h2>
+        <h2 data-i18n="blog.relatedTitle">Related guides</h2>
         <ul>
           
-          <li><a href="/blog/spreadsheet-vs-betting-tracker.html">Spreadsheet vs Dedicated Betting Tracker</a></li>
+          <li><a href="/blog/spreadsheet-vs-betting-tracker.html" data-i18n="blog.posts.spreadsheet-vs-betting-tracker.title">Spreadsheet vs Dedicated Betting Tracker</a></li>
           
-          <li><a href="/blog/each-way-bet-settlement.html">Each-Way Bet Settlement Explained</a></li>
+          <li><a href="/blog/each-way-bet-settlement.html" data-i18n="blog.posts.each-way-bet-settlement.title">Each-Way Bet Settlement Explained</a></li>
           
         </ul>
       </section>
       
-      <p class="blog-rg"><strong>Responsible gambling.</strong> Educational content only — not betting advice. Never stake more than you can afford to lose.</p>
+      <p class="blog-rg" data-i18n="blog.rg" data-i18n-html><strong>Responsible gambling.</strong> Educational content only — not betting advice. Never stake more than you can afford to lose.</p>
     </article>
     <footer class="m-footer">
-      <nav><a href="/">Home</a><a href="/blog/">Blog</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="mailto:support@mybetrecord.com">Support</a></nav>
+      <nav>
+        <a href="/" data-i18n="blog.home">Home</a>
+        <a href="/blog/" data-i18n="home.blog">Blog</a>
+        <a href="/privacy" data-i18n="home.privacy">Privacy</a>
+        <a href="/terms" data-i18n="home.terms">Terms</a>
+        <a href="/support" data-i18n="home.support">Support</a>
+      </nav>
+      <p data-i18n="home.footerCopy">&copy; mybetrecord. Analytics and record-keeping — not gambling advice.</p>
     </footer>
   </div>
+  <script src="/app/i18n.js"></script>
+  <script src="/marketing.js"></script>
 </body>
 </html>

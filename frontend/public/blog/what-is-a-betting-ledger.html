@@ -30,19 +30,30 @@
   }
   </script>
 </head>
-<body>
+<body data-blog-slug="what-is-a-betting-ledger">
   <div class="m-site">
-    <header class="m-header">
+    <header class="m-header m-header--with-end">
       <a class="wordmark" href="/">my<span>bet</span>record</a>
-      <nav class="m-nav"><a href="/blog/">Blog</a><a class="m-btn m-btn--primary" href="/app/#/register">Create account</a></nav>
+      <div class="m-header__end">
+        <label class="m-locale-wrap">
+          <span class="visually-hidden" data-i18n="home.language">Language</span>
+          <select id="localeSelect" class="m-locale" data-i18n-attr="aria-label" data-i18n="home.language"></select>
+        </label>
+        <nav class="m-nav">
+          <a href="/pricing/" data-i18n="home.pricing">Pricing</a>
+          <a href="/blog/" data-i18n="home.blog">Blog</a>
+          <a href="/login" data-i18n="auth.signIn">Sign in</a>
+          <a class="m-btn m-btn--primary" href="/app/#/register" data-i18n="auth.createAccount">Create account</a>
+        </nav>
+      </div>
     </header>
     <article class="blog-post">
       <header class="blog-post__head">
         <p class="blog-post__meta"><time datetime="2026-01-15">2026-01-15</time></p>
-        <h1>What Is a Betting Ledger?</h1>
-        <p class="blog-post__deck">A betting ledger is a structured record of every wager you place. Learn why disciplined bettors keep one and what to track.</p>
+        <h1 data-i18n="blog.posts.what-is-a-betting-ledger.title">What Is a Betting Ledger?</h1>
+        <p class="blog-post__deck" data-i18n="blog.posts.what-is-a-betting-ledger.description">A betting ledger is a structured record of every wager you place. Learn why disciplined bettors keep one and what to track.</p>
       </header>
-      <div class="blog-post__body"><p>A <strong>betting ledger</strong> is simply a complete, chronological record of your wagers: what you backed, at what odds, for how much, and how it settled. Think of it as the difference between guessing whether you are up for the season and <em>knowing</em>.</p>
+      <div class="blog-post__body" data-i18n-html="blog.posts.what-is-a-betting-ledger.body"><p>A <strong>betting ledger</strong> is simply a complete, chronological record of your wagers: what you backed, at what odds, for how much, and how it settled. Think of it as the difference between guessing whether you are up for the season and <em>knowing</em>.</p>
 <h2>Why spreadsheets fail</h2>
 <p>Most bettors start in Excel or Google Sheets. That works until:</p>
 <ul>
@@ -81,27 +92,36 @@
 <p>Pick one sport or market type and log the next 20 bets without changing your process. Review strike rate, average odds, and profit by week. That baseline is worth more than any tip.</p>
 <p><strong>Track this in mybetrecord:</strong> create a free account, set your bankroll and default odds format, and log your first bet in under a minute.</p></div>
       <aside class="blog-cta">
-        <strong>Track this in mybetrecord</strong>
-        <p>Log bets, see ROI and yield, and size stakes with Kelly — free account.</p>
-        <a class="m-btn m-btn--primary" href="/app/#/register">Start your ledger</a>
+        <strong data-i18n="blog.ctaTitle">Track this in mybetrecord</strong>
+        <p data-i18n="blog.ctaLead">Log bets, see ROI and yield, and size stakes with Kelly — free account.</p>
+        <a class="m-btn m-btn--primary" href="/app/#/register" data-i18n="blog.ctaButton">Start your ledger</a>
       </aside>
       
       <section class="blog-related">
-        <h2>Related guides</h2>
+        <h2 data-i18n="blog.relatedTitle">Related guides</h2>
         <ul>
           
-          <li><a href="/blog/spreadsheet-vs-betting-tracker.html">Spreadsheet vs Dedicated Betting Tracker</a></li>
+          <li><a href="/blog/spreadsheet-vs-betting-tracker.html" data-i18n="blog.posts.spreadsheet-vs-betting-tracker.title">Spreadsheet vs Dedicated Betting Tracker</a></li>
           
-          <li><a href="/blog/betting-equity-curve.html">Reading Your Betting Equity Curve</a></li>
+          <li><a href="/blog/betting-equity-curve.html" data-i18n="blog.posts.betting-equity-curve.title">Reading Your Betting Equity Curve</a></li>
           
         </ul>
       </section>
       
-      <p class="blog-rg"><strong>Responsible gambling.</strong> Educational content only — not betting advice. Never stake more than you can afford to lose.</p>
+      <p class="blog-rg" data-i18n="blog.rg" data-i18n-html><strong>Responsible gambling.</strong> Educational content only — not betting advice. Never stake more than you can afford to lose.</p>
     </article>
     <footer class="m-footer">
-      <nav><a href="/">Home</a><a href="/blog/">Blog</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="mailto:support@mybetrecord.com">Support</a></nav>
+      <nav>
+        <a href="/" data-i18n="blog.home">Home</a>
+        <a href="/blog/" data-i18n="home.blog">Blog</a>
+        <a href="/privacy" data-i18n="home.privacy">Privacy</a>
+        <a href="/terms" data-i18n="home.terms">Terms</a>
+        <a href="/support" data-i18n="home.support">Support</a>
+      </nav>
+      <p data-i18n="home.footerCopy">&copy; mybetrecord. Analytics and record-keeping — not gambling advice.</p>
     </footer>
   </div>
+  <script src="/app/i18n.js"></script>
+  <script src="/marketing.js"></script>
 </body>
 </html>
