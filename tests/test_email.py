@@ -8,6 +8,7 @@ from betrecord_shared.email import EmailDeliveryError, send_email
 
 def test_send_email_raises_without_smtp_in_production(monkeypatch):
     monkeypatch.setenv("ENVIRONMENT", "production")
+    monkeypatch.setenv("CORS_ORIGINS", "https://www.example.com")
     monkeypatch.setenv("SMTP_HOST", "")
     get_settings.cache_clear()
     try:
