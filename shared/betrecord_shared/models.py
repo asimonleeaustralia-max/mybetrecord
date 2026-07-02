@@ -164,6 +164,7 @@ class PromoCode(Base):
     description: Mapped[str | None] = mapped_column(String(512), nullable=True)
     stripe_coupon_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
     stripe_promotion_code_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    stats_token: Mapped[str | None] = mapped_column(String(32), unique=True, index=True, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=_now, onupdate=_now

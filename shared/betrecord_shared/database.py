@@ -65,6 +65,7 @@ def init_db() -> None:
         _ensure_billing_columns,
         _ensure_comp_pro_until_column,
         _ensure_landing_promo_column,
+        _ensure_promo_stats_token_column,
     )
 
     if settings.database_url.startswith("postgresql"):
@@ -100,5 +101,6 @@ def init_db() -> None:
     _ensure_billing_columns()
     _ensure_comp_pro_until_column()
     _ensure_landing_promo_column()
+    _ensure_promo_stats_token_column()
     seed_dev_admin()
     seed_bootstrap_admins()

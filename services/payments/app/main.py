@@ -13,11 +13,13 @@ at checkout; the business accepts the FX swing between them.
 
 from __future__ import annotations
 
+import html as html_module
 import logging
 from datetime import datetime, timezone
 
 from fastapi import Depends, FastAPI, HTTPException, Query, Request, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse, Response
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
@@ -40,7 +42,9 @@ from betrecord_shared.schemas import (
     PromoCodeUpdate,
     PromoRedemptionOut,
     PromoReferralOut,
+    PromoStatsShareOut,
     PromoValidationOut,
+    PublicPromoStatsOut,
 )
 from betrecord_shared.security import get_current_admin, get_current_user
 
@@ -166,6 +170,7 @@ def _promo_code_out(db: Session, promo: PromoCode) -> PromoCodeOut:
         description=promo.description,
         redemption_count=promo_lib.redemption_count(db, promo.id),
         referral_count=ref_count,
+        stats_token=promo.stats_token,
         created_at=promo.created_at,
         updated_at=promo.updated_at,
     )
@@ -534,6 +539,134 @@ def admin_promo_code_stats(
         referrals=referrals,
         currencies=currencies,
     )
+
+
+def _build_public_promo_stats(db: Session, promo: PromoCode) -> PublicPromoStatsOut:
+    redemptions = db.scalars(
+        select(PromoRedemption).where(PromoRedemption.promo_code_id == promo.id)
+    ).all()
+    discount_by_currency: dict[str, float] = {}
+    for r in redemptions:
+        ccy = pricing.normalise_currency(r.currency)
+        value = promo_lib.estimated_discount_value(promo, ccy)
+        discount_by_currency[ccy] = discount_by_currency.get(ccy, 0.0) + value
+    return PublicPromoStatsOut(
+        code=promo.code,
+        summary=promo_lib.build_summary(promo),
+        user_count=len(redemptions),
+        discount_by_currency=discount_by_currency,
+    )
+
+
+def _format_public_discount(ccy: str, amount: float) -> str:
+    if ccy in pricing.ZERO_DECIMAL_CURRENCIES:
+        return f"{amount:,.0f} {ccy}"
+    return f"{amount:,.2f} {ccy}"
+
+
+def _promo_stats_page_html(stats: PublicPromoStatsOut, token: str, base_url: str = "https://mybetrecord.com") -> str:
+    esc = html_module.escape
+    title = f"{stats.code} — promo usage"
+    discount_lines = stats.discount_by_currency
+    if discount_lines:
+        discount_html = "".join(
+            f'<div class="share-detail__row"><dt>{esc(ccy)}</dt>'
+            f'<dd class="num">{esc(_format_public_discount(ccy, amt))}</dd></div>'
+            for ccy, amt in sorted(discount_lines.items())
+        )
+    else:
+        discount_html = '<div class="share-detail__row"><dt>Total discounted</dt><dd class="num">—</dd></div>'
+    page_url = f"{base_url}/promo/{token}"
+    return f"""<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>{esc(title)} — mybetrecord</title>
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="{esc(title)}" />
+  <meta property="og:description" content="{esc(stats.summary)}" />
+  <meta property="og:url" content="{esc(page_url)}" />
+  <meta property="og:image" content="{base_url}/og-default.svg" />
+  <meta name="twitter:card" content="summary" />
+  <link rel="stylesheet" href="/app/styles.css" />
+</head>
+<body>
+  <section class="share-view">
+    <div class="share-view__panel">
+      <div class="wordmark wordmark--lg">my<span>bet</span>record</div>
+      <p class="share-view__tag">Read-only view</p>
+      <main id="shareMain">
+        <article class="share-detail">
+          <h1>{esc(stats.code)}</h1>
+          <p>{esc(stats.summary)}</p>
+          <dl class="share-detail__list">
+            <div class="share-detail__row"><dt>Users</dt><dd class="num">{stats.user_count}</dd></div>
+            {discount_html}
+          </dl>
+        </article>
+      </main>
+    </div>
+  </section>
+</body>
+</html>"""
+
+
+@app.get("/payments/public/promo/{stats_token}", response_model=PublicPromoStatsOut)
+def get_public_promo_stats(stats_token: str, db: Session = Depends(get_db)) -> PublicPromoStatsOut:
+    """Read-only promo usage stats via an unguessable link. No authentication required."""
+    promo = db.scalar(select(PromoCode).where(PromoCode.stats_token == stats_token))
+    if not promo:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Promo stats not found")
+    return _build_public_promo_stats(db, promo)
+
+
+@app.get("/payments/promo-stats-page/{stats_token}", response_class=HTMLResponse)
+def promo_stats_page(stats_token: str, db: Session = Depends(get_db)) -> HTMLResponse:
+    """Server-rendered promo stats page (noindex)."""
+    promo = db.scalar(select(PromoCode).where(PromoCode.stats_token == stats_token))
+    if not promo:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Promo stats not found")
+    stats = _build_public_promo_stats(db, promo)
+    return HTMLResponse(_promo_stats_page_html(stats, stats_token))
+
+
+@app.post("/payments/admin/promo-codes/{promo_id}/stats-share", response_model=PromoStatsShareOut)
+def admin_enable_promo_stats_share(
+    promo_id: str,
+    admin: User = Depends(get_current_admin),
+    db: Session = Depends(get_db),
+) -> PromoStatsShareOut:
+    promo = db.get(PromoCode, promo_id)
+    if not promo:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Promo code not found.")
+    if not promo.stats_token:
+        promo.stats_token = promo_lib.new_stats_token(db)
+        log_event(db, "admin.promo_stats_shared", user_id=admin.id, detail=promo.code)
+        db.commit()
+        db.refresh(promo)
+    return PromoStatsShareOut(stats_token=promo.stats_token)
+
+
+@app.delete(
+    "/payments/admin/promo-codes/{promo_id}/stats-share",
+    status_code=status.HTTP_204_NO_CONTENT,
+    response_class=Response,
+)
+def admin_disable_promo_stats_share(
+    promo_id: str,
+    admin: User = Depends(get_current_admin),
+    db: Session = Depends(get_db),
+) -> Response:
+    promo = db.get(PromoCode, promo_id)
+    if not promo:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Promo code not found.")
+    if promo.stats_token:
+        promo.stats_token = None
+        log_event(db, "admin.promo_stats_share_revoked", user_id=admin.id, detail=promo.code)
+        db.commit()
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 # ------------------------------- webhook ---------------------------------- #

@@ -430,6 +430,35 @@ def _ensure_landing_promo_column() -> None:
             conn.execute(text("CREATE INDEX IF NOT EXISTS ix_landing_hits_promo_code ON landing_hits (promo_code)"))
 
 
+def _ensure_promo_stats_token_column() -> None:
+    """Add stats_token to promo_codes for public read-only usage pages."""
+    if "promo_codes" not in inspect(engine).get_table_names():
+        return
+    columns = {c["name"] for c in inspect(engine).get_columns("promo_codes")}
+    if "stats_token" in columns:
+        return
+    dialect = engine.dialect.name
+    with engine.begin() as conn:
+        if dialect == "postgresql":
+            conn.execute(
+                text("ALTER TABLE promo_codes ADD COLUMN IF NOT EXISTS stats_token VARCHAR(32)")
+            )
+            conn.execute(
+                text(
+                    "CREATE UNIQUE INDEX IF NOT EXISTS ix_promo_codes_stats_token "
+                    "ON promo_codes (stats_token)"
+                )
+            )
+        else:
+            conn.execute(text("ALTER TABLE promo_codes ADD COLUMN stats_token VARCHAR(32)"))
+            conn.execute(
+                text(
+                    "CREATE UNIQUE INDEX IF NOT EXISTS ix_promo_codes_stats_token "
+                    "ON promo_codes (stats_token)"
+                )
+            )
+
+
 def seed_bootstrap_admins() -> None:
     """Promote configured bootstrap emails to admin if the account exists."""
     emails = get_settings().bootstrap_admin_emails

@@ -592,6 +592,14 @@ function getShareToken() {
   return parts[0] === "share" && parts[1] ? parts[1] : null;
 }
 
+function getPromoStatsToken() {
+  if (window.__MBR_PROMO_STATS_TOKEN) return window.__MBR_PROMO_STATS_TOKEN;
+  const pathMatch = location.pathname.match(/\/promo\/([^/]+)/);
+  if (pathMatch) return pathMatch[1];
+  const parts = (location.hash || "").slice(1).split("/").filter(Boolean);
+  return parts[0] === "promo-stats" && parts[1] ? parts[1] : null;
+}
+
 function getResetTokenFromHash() {
   const parts = (location.hash || "").slice(1).split("/").filter(Boolean);
   return parts[0] === "reset-password" && parts[1] ? parts[1] : null;
@@ -614,6 +622,20 @@ function getAuthRouteFromHash() {
 
 function shareLink(token) {
   return `${location.origin}/share/${token}`;
+}
+
+function promoStatsLink(token) {
+  return `${location.origin}/promo/${token}`;
+}
+
+function formatPublicDiscount(currency, amount) {
+  const zeroDecimal = new Set(["BIF", "CLP", "DJF", "GNF", "JPY", "KMF", "KRW", "MGA", "PYG", "RWF", "UGX", "VND", "VUV", "XAF", "XOF", "XPF"]);
+  const digits = zeroDecimal.has(currency) ? 0 : 2;
+  const formatted = Number(amount).toLocaleString(undefined, {
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits,
+  });
+  return `${formatted} ${currency}`;
 }
 
 async function publicApi(path) {
@@ -737,7 +759,7 @@ function bindEvents() {
   });
 
   window.addEventListener("hashchange", () => {
-    if (getShareToken()) return;
+    if (getShareToken() || getPromoStatsToken()) return;
     if (getAuthRouteFromHash() === "login") clearRegisterPending();
     if (getResetTokenFromHash()) {
       setToken(null);
@@ -921,6 +943,11 @@ async function route() {
   const shareToken = getShareToken();
   if (shareToken) {
     await renderPublicShare(shareToken);
+    return;
+  }
+  const promoStatsToken = getPromoStatsToken();
+  if (promoStatsToken) {
+    await renderPublicPromoStats(promoStatsToken);
     return;
   }
   if (!state.user) return;
@@ -1245,6 +1272,36 @@ async function renderPublicShare(token) {
     ].join("");
   } catch {
     detail.innerHTML = `<p class="empty">${esc(t("share.notFound"))}</p>`;
+  }
+}
+
+async function renderPublicPromoStats(token) {
+  const main = $("#shareMain");
+  if (!main) return;
+  if (!$("#tpl-promo-stats")) return;
+  showShareView();
+  main.innerHTML = "";
+  main.appendChild(clone("tpl-promo-stats"));
+  const detail = $("#promoStatsDetail");
+  const title = $("#promoStatsTitle");
+  const summary = $("#promoStatsSummary");
+  try {
+    const stats = await publicApi(`/payments/public/promo/${encodeURIComponent(token)}`);
+    title.textContent = stats.code;
+    summary.textContent = stats.summary;
+    const discounts = Object.entries(stats.discount_by_currency || {});
+    detail.innerHTML = [
+      shareDetailRow(t("promoStats.users"), esc(String(stats.user_count)), { mono: true }),
+      ...(discounts.length
+        ? discounts.map(([ccy, amt]) =>
+            shareDetailRow(ccy, esc(formatPublicDiscount(ccy, amt)), { mono: true })
+          )
+        : [shareDetailRow(t("promoStats.totalDiscounted"), "—", { mono: true })]),
+    ].join("");
+  } catch {
+    title.textContent = t("promoStats.title");
+    summary.textContent = "";
+    detail.innerHTML = `<p class="empty">${esc(t("promoStats.notFound"))}</p>`;
   }
 }
 
@@ -2767,6 +2824,24 @@ async function renderAdmin() {
   $("#adminEventFilter").addEventListener("change", loadAdminEvents);
   $("#adminPromoType")?.addEventListener("change", syncAdminPromoForm);
   $("#adminPromoForm")?.addEventListener("submit", adminCreatePromo);
+  $("#adminPromoStatsShareBtn")?.addEventListener("click", async () => {
+    const promoId = $("#adminPromoStats")?.dataset.promoId;
+    if (!promoId) return;
+    try {
+      await adminSharePromoStats(promoId);
+    } catch (err) {
+      toast(err.message, true);
+    }
+  });
+  $("#adminPromoStatsRevokeBtn")?.addEventListener("click", async () => {
+    const promoId = $("#adminPromoStats")?.dataset.promoId;
+    if (!promoId) return;
+    try {
+      await adminRevokePromoStats(promoId);
+    } catch (err) {
+      toast(err.message, true);
+    }
+  });
   syncAdminPromoForm();
   $("#adminAddForm").addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -3132,7 +3207,11 @@ async function loadAdminPromoStats(promoId) {
   const panel = $("#adminPromoStats");
   if (!panel) return;
   panel.hidden = false;
+  panel.dataset.promoId = promoId;
+  panel.dataset.statsToken = stats.promo.stats_token || "";
   $("#adminPromoStatsTitle").textContent = t("admin.promoStatsTitle", { code: stats.promo.code });
+  const revokeBtn = $("#adminPromoStatsRevokeBtn");
+  if (revokeBtn) revokeBtn.hidden = !stats.promo.stats_token;
   const currencyLines = Object.entries(stats.currencies || {})
     .map(([ccy, n]) => `${ccy}: ${n}`)
     .join(" · ") || "—";
@@ -3163,6 +3242,30 @@ async function loadAdminPromoStats(promoId) {
   panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
 
+async function adminSharePromoStats(promoId) {
+  const { stats_token } = await subApi(`/admin/promo-codes/${promoId}/stats-share`, { method: "POST" });
+  await copyText(promoStatsLink(stats_token));
+  toast(t("admin.promoStatsLinkCopied"));
+  const panel = $("#adminPromoStats");
+  if (panel) {
+    panel.dataset.statsToken = stats_token;
+    const revokeBtn = $("#adminPromoStatsRevokeBtn");
+    if (revokeBtn) revokeBtn.hidden = false;
+  }
+}
+
+async function adminRevokePromoStats(promoId) {
+  if (!(await confirmDialog(t("admin.promoStatsRevokeConfirm")))) return;
+  await subApi(`/admin/promo-codes/${promoId}/stats-share`, { method: "DELETE" });
+  toast(t("admin.promoStatsRevoked"));
+  const panel = $("#adminPromoStats");
+  if (panel) {
+    panel.dataset.statsToken = "";
+    const revokeBtn = $("#adminPromoStatsRevokeBtn");
+    if (revokeBtn) revokeBtn.hidden = true;
+  }
+}
+
 /* -------------------------------- start -------------------------------- */
 async function start() {
   try {
@@ -3177,6 +3280,13 @@ async function start() {
       await i18n.initI18n(i18n.getLoginLocale?.() || "en");
       document.title = t("share.title");
       await renderPublicShare(shareToken);
+      return;
+    }
+    const promoStatsToken = getPromoStatsToken();
+    if (promoStatsToken) {
+      await i18n.initI18n(i18n.getLoginLocale?.() || "en");
+      document.title = t("promoStats.title");
+      await renderPublicPromoStats(promoStatsToken);
       return;
     }
     if (getResetTokenFromHash()) {
@@ -3213,7 +3323,13 @@ async function start() {
 function onReady() {
   try { bindEvents(); } catch (err) { console.error("bindEvents failed:", err); }
   // Always boot: unauthenticated users may land on #/reset-password/… or #/forgot-password.
-  start().catch(() => (getShareToken() ? renderPublicShare(getShareToken()) : showAuth()));
+  start().catch(() => {
+    const shareToken = getShareToken();
+    if (shareToken) return renderPublicShare(shareToken);
+    const promoStatsToken = getPromoStatsToken();
+    if (promoStatsToken) return renderPublicPromoStats(promoStatsToken);
+    showAuth();
+  });
 }
 
 window.mbrAttach = function () {

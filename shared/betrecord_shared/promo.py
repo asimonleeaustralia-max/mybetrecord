@@ -2,11 +2,15 @@
 
 from __future__ import annotations
 
+import secrets
+
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING
 
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
+
+from . import pricing
 
 if TYPE_CHECKING:
     from .models import PromoCode, PromoRedemption, User
@@ -87,6 +91,29 @@ def build_terms(promo: PromoCode) -> str:
     if promo.description:
         parts.append(promo.description.strip())
     return " ".join(parts)
+
+
+def estimated_discount_value(promo: PromoCode, currency: str | None) -> float:
+    """Estimated total discount for one redemption in the given checkout currency."""
+    monthly = pricing.price_amount(pricing.normalise_currency(currency))
+    if promo.promo_type == PROMO_TYPE_FREE_MONTHS:
+        return (promo.free_months or 0) * monthly
+    percent = promo.percent_off or 0
+    months = discount_months(promo)
+    if months:
+        return (percent / 100.0) * monthly * months
+    return (percent / 100.0) * monthly
+
+
+def new_stats_token(db: Session) -> str:
+    from .models import PromoCode
+
+    for _ in range(10):
+        token = secrets.token_urlsafe(16)
+        existing = db.scalar(select(PromoCode.id).where(PromoCode.stats_token == token))
+        if not existing:
+            return token
+    raise RuntimeError("Could not create promo stats link")
 
 
 def redemption_count(db: Session, promo_id: str) -> int:

@@ -154,6 +154,12 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             return token or None
         return None
 
+    def _promo_stats_token(self, path: str) -> str | None:
+        if path.startswith("/promo/"):
+            token = path[len("/promo/"):].split("/")[0].split("?")[0]
+            return token or None
+        return None
+
     def _rewrite_path(self, path: str) -> str:
         """Map public URLs to static files or SPA fallbacks."""
         if path in ("/privacy", "/terms", "/support", "/login"):
@@ -199,6 +205,13 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             saved = self.path
             self.path = f"/bets/share-page/{share}"
             self._do_proxy(8002)
+            self.path = saved
+            return True
+        promo_stats = self._promo_stats_token(path)
+        if promo_stats:
+            saved = self.path
+            self.path = f"/payments/promo-stats-page/{promo_stats}"
+            self._do_proxy(8004)
             self.path = saved
             return True
         port = self._proxy_target()

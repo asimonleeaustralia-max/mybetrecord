@@ -100,6 +100,13 @@
     "shareSection": "Share link",
     "shareHint": "Create a read-only link others can open without signing in."
   },
+  "promoStats": {
+    "title": "Promo usage",
+    "publicNote": "Read-only view",
+    "users": "Users",
+    "totalDiscounted": "Total discounted",
+    "notFound": "This promo stats page could not be found."
+  },
   "outcomes": {
     "pending": "Pending",
     "win": "Win",
@@ -439,6 +446,11 @@
     "noPromoCodes": "No promo codes yet.",
     "noPromoRedemptions": "No redemptions yet.",
     "noPromoReferrals": "No referral traffic yet.",
+    "promoStatsShare": "Share stats",
+    "promoStatsRevoke": "Revoke stats link",
+    "promoStatsLinkCopied": "Public stats link copied",
+    "promoStatsRevokeConfirm": "Revoke this public stats link? Anyone with the link will no longer be able to view usage.",
+    "promoStatsRevoked": "Public stats link revoked",
     "compPro": "Comp Pro",
     "compProTitle": "Complimentary Pro access",
     "compProPrompt": "Choose how long to grant Pro access, or enter an expiry date.",

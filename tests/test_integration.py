@@ -1230,3 +1230,88 @@ def test_share_page_html(clients, auth_headers):
     assert token in html
     assert clients["bets"].get("/bets/share-page/not-a-real-token").status_code == 404
 
+
+def test_promo_stats_share_lifecycle(clients, auth_headers):
+    from sqlalchemy import select
+
+    from betrecord_shared.database import SessionLocal
+    from betrecord_shared.models import PromoRedemption, User
+
+    admin_headers = _admin_headers(clients)
+    headers, email = auth_headers
+
+    created = clients["payments"].post(
+        "/payments/admin/promo-codes",
+        headers=admin_headers,
+        json={
+            "code": "STATSTEST",
+            "promo_type": "free_months",
+            "free_months": 2,
+        },
+    )
+    assert created.status_code == 201, created.text
+    promo_id = created.json()["id"]
+    assert created.json().get("stats_token") is None
+
+    enabled = clients["payments"].post(
+        f"/payments/admin/promo-codes/{promo_id}/stats-share",
+        headers=admin_headers,
+    )
+    assert enabled.status_code == 200, enabled.text
+    token = enabled.json()["stats_token"]
+    assert token
+
+    again = clients["payments"].post(
+        f"/payments/admin/promo-codes/{promo_id}/stats-share",
+        headers=admin_headers,
+    )
+    assert again.status_code == 200
+    assert again.json()["stats_token"] == token
+
+    with SessionLocal() as db:
+        promo = _create_test_promo(db, code="REDEEMUSD")
+        user = db.scalar(select(User).where(User.email == email))
+        db.add(PromoRedemption(promo_code_id=promo.id, user_id=user.id, currency="USD"))
+        db.commit()
+        promo_id2 = promo.id
+        enabled2 = clients["payments"].post(
+            f"/payments/admin/promo-codes/{promo_id2}/stats-share",
+            headers=admin_headers,
+        )
+        token2 = enabled2.json()["stats_token"]
+
+    public = clients["payments"].get(f"/payments/public/promo/{token}")
+    assert public.status_code == 200, public.text
+    body = public.json()
+    assert body["code"] == "STATSTEST"
+    assert body["user_count"] == 0
+    assert body["discount_by_currency"] == {}
+
+    public2 = clients["payments"].get(f"/payments/public/promo/{token2}")
+    assert public2.status_code == 200, public2.text
+    body2 = public2.json()
+    assert body2["user_count"] == 1
+    assert body2["discount_by_currency"]["USD"] == 9.98  # 2 months × $4.99
+
+    assert clients["payments"].get("/payments/public/promo/not-a-real-token").status_code == 404
+    assert clients["payments"].get(f"/payments/public/promo/{token}").status_code == 200
+
+    page = clients["payments"].get(f"/payments/promo-stats-page/{token2}")
+    assert page.status_code == 200, page.text
+    assert "text/html" in page.headers.get("content-type", "")
+    assert "noindex" in page.text
+    assert "REDEEMUSD" in page.text
+    assert "USD" in page.text
+
+    revoked = clients["payments"].delete(
+        f"/payments/admin/promo-codes/{promo_id}/stats-share",
+        headers=admin_headers,
+    )
+    assert revoked.status_code == 204
+    assert clients["payments"].get(f"/payments/public/promo/{token}").status_code == 404
+
+    assert clients["payments"].post(
+        f"/payments/admin/promo-codes/{promo_id}/stats-share",
+        headers=headers,
+    ).status_code == 403
+

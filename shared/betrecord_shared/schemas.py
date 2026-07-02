@@ -246,8 +246,20 @@ class PromoCodeOut(BaseModel):
     description: Optional[str]
     redemption_count: int = 0
     referral_count: int = 0
+    stats_token: Optional[str] = None
     created_at: datetime
     updated_at: datetime
+
+
+class PromoStatsShareOut(BaseModel):
+    stats_token: str
+
+
+class PublicPromoStatsOut(BaseModel):
+    code: str
+    summary: str
+    user_count: int
+    discount_by_currency: dict[str, float]
 
 
 class PromoRedemptionOut(BaseModel):

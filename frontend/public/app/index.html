@@ -360,6 +360,14 @@
     </div>
   </template>
 
+  <template id="tpl-promo-stats">
+    <div class="view view--narrow">
+      <div class="view__head"><h1 id="promoStatsTitle"></h1></div>
+      <p id="promoStatsSummary" class="hint"></p>
+      <dl class="share-detail" id="promoStatsDetail"></dl>
+    </div>
+  </template>
+
   <template id="tpl-reports">
     <div class="view">
       <div class="view__head">
@@ -539,6 +547,10 @@
         </div>
         <div id="adminPromoStats" class="admin-promo-stats" hidden>
           <h3 id="adminPromoStatsTitle"></h3>
+          <div class="admin-promo-stats__actions">
+            <button type="button" class="btn btn--ghost btn--sm" id="adminPromoStatsShareBtn" data-i18n="admin.promoStatsShare">Share stats</button>
+            <button type="button" class="btn btn--ghost btn--sm" id="adminPromoStatsRevokeBtn" data-i18n="admin.promoStatsRevoke" hidden>Revoke stats link</button>
+          </div>
           <div class="admin-promo-stats__grid" id="adminPromoStatsSummary"></div>
           <h4 data-i18n="admin.promoRedemptions">Redemptions</h4>
           <div class="table-wrap">
