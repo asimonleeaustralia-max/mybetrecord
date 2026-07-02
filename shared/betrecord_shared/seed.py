@@ -459,6 +459,46 @@ def _ensure_promo_stats_token_column() -> None:
             )
 
 
+def _ensure_public_bets_columns() -> None:
+    """Add public_bets_enabled and public_bets_token to users for public bet records."""
+    if "users" not in inspect(engine).get_table_names():
+        return
+    columns = {c["name"] for c in inspect(engine).get_columns("users")}
+    dialect = engine.dialect.name
+    with engine.begin() as conn:
+        if "public_bets_enabled" not in columns:
+            if dialect == "postgresql":
+                conn.execute(
+                    text(
+                        "ALTER TABLE users ADD COLUMN IF NOT EXISTS public_bets_enabled "
+                        "BOOLEAN NOT NULL DEFAULT FALSE"
+                    )
+                )
+            else:
+                conn.execute(
+                    text("ALTER TABLE users ADD COLUMN public_bets_enabled BOOLEAN NOT NULL DEFAULT 0")
+                )
+        if "public_bets_token" not in columns:
+            if dialect == "postgresql":
+                conn.execute(
+                    text("ALTER TABLE users ADD COLUMN IF NOT EXISTS public_bets_token VARCHAR(32)")
+                )
+                conn.execute(
+                    text(
+                        "CREATE UNIQUE INDEX IF NOT EXISTS ix_users_public_bets_token "
+                        "ON users (public_bets_token)"
+                    )
+                )
+            else:
+                conn.execute(text("ALTER TABLE users ADD COLUMN public_bets_token VARCHAR(32)"))
+                conn.execute(
+                    text(
+                        "CREATE UNIQUE INDEX IF NOT EXISTS ix_users_public_bets_token "
+                        "ON users (public_bets_token)"
+                    )
+                )
+
+
 def seed_bootstrap_admins() -> None:
     """Promote configured bootstrap emails to admin if the account exists."""
     emails = get_settings().bootstrap_admin_emails

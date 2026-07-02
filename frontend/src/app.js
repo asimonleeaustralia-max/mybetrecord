@@ -600,6 +600,14 @@ function getPromoStatsToken() {
   return parts[0] === "promo-stats" && parts[1] ? parts[1] : null;
 }
 
+function getPublicBetsToken() {
+  if (window.__MBR_PUBLIC_BETS_TOKEN) return window.__MBR_PUBLIC_BETS_TOKEN;
+  const pathMatch = location.pathname.match(/\/u\/([^/]+)/);
+  if (pathMatch) return pathMatch[1];
+  const parts = (location.hash || "").slice(1).split("/").filter(Boolean);
+  return parts[0] === "u" && parts[1] ? parts[1] : null;
+}
+
 function getResetTokenFromHash() {
   const parts = (location.hash || "").slice(1).split("/").filter(Boolean);
   return parts[0] === "reset-password" && parts[1] ? parts[1] : null;
@@ -626,6 +634,10 @@ function shareLink(token) {
 
 function promoStatsLink(token) {
   return `${location.origin}/promo/${token}`;
+}
+
+function publicProfileLink(token) {
+  return `${location.origin}/u/${token}`;
 }
 
 function formatPublicDiscount(currency, amount) {
@@ -759,7 +771,7 @@ function bindEvents() {
   });
 
   window.addEventListener("hashchange", () => {
-    if (getShareToken() || getPromoStatsToken()) return;
+    if (getShareToken() || getPromoStatsToken() || getPublicBetsToken()) return;
     if (getAuthRouteFromHash() === "login") clearRegisterPending();
     if (getResetTokenFromHash()) {
       setToken(null);
@@ -948,6 +960,11 @@ async function route() {
   const promoStatsToken = getPromoStatsToken();
   if (promoStatsToken) {
     await renderPublicPromoStats(promoStatsToken);
+    return;
+  }
+  const publicBetsToken = getPublicBetsToken();
+  if (publicBetsToken) {
+    await renderPublicProfile(publicBetsToken);
     return;
   }
   if (!state.user) return;
@@ -1302,6 +1319,48 @@ async function renderPublicPromoStats(token) {
     title.textContent = t("promoStats.title");
     summary.textContent = "";
     detail.innerHTML = `<p class="empty">${esc(t("promoStats.notFound"))}</p>`;
+  }
+}
+
+function publicProfileRow(b) {
+  const d = b.placed_at ? new Date(b.placed_at) : null;
+  const date = d ? i18n.formatLocaleDate(d, { day: "2-digit", month: "short", year: "2-digit" }) : "—";
+  const outcome = b.outcome || "pending";
+  const tone = outcomeTone(outcome);
+  return `<tr>
+    <td class="num">${date}</td>
+    <td>${esc(b.sport)}</td>
+    <td>${esc(b.event)}<div class="sel">${esc(b.selection)}</div></td>
+    <td class="r num">${esc(formatPublicOdds(b))}</td>
+    <td class="r num">${money(b.stake)} ${esc(b.currency)}</td>
+    <td><span class="outcome-select outcome-select--${tone}">${esc(t(`outcomes.${outcome}`) || outcome)}</span></td>
+  </tr>`;
+}
+
+async function renderPublicProfile(token) {
+  const main = $("#shareMain");
+  if (!main) return;
+  if (!$("#tpl-public-profile")) return;
+  showShareView();
+  main.innerHTML = "";
+  main.appendChild(clone("tpl-public-profile"));
+  const title = $("#publicProfileTitle");
+  const summary = $("#publicProfileSummary");
+  const body = $("#publicProfileBody");
+  const empty = $("#publicProfileEmpty");
+  try {
+    const profile = await publicApi(`/bets/public/profile/${encodeURIComponent(token)}`);
+    title.textContent = profile.display_name || t("publicProfile.title");
+    summary.textContent = t("publicProfile.betCount", { count: profile.bet_count });
+    const bets = profile.bets || [];
+    empty.hidden = bets.length > 0;
+    body.innerHTML = bets.map(publicProfileRow).join("");
+  } catch {
+    title.textContent = t("publicProfile.title");
+    summary.textContent = "";
+    body.innerHTML = "";
+    empty.hidden = false;
+    empty.textContent = t("publicProfile.notFound");
   }
 }
 
@@ -2388,6 +2447,12 @@ function focusPlanBilling() {
   requestAnimationFrame(() => requestAnimationFrame(scroll));
 }
 
+function updatePublicBetsActions(user) {
+  const actions = $("#publicBetsActions");
+  if (!actions) return;
+  actions.hidden = !(user?.public_bets_enabled && user?.public_bets_token);
+}
+
 async function renderSettings(section) {
   const focusPlan = section === "plan" || settingsPlanRequested();
   const main = $("#main");
@@ -2439,6 +2504,8 @@ async function renderSettings(section) {
   fillCurrencySelect(form.base_currency, 20, u.base_currency);
   form.bankroll.value = u.bankroll || "";
   form.kelly_multiplier.value = u.kelly_multiplier ?? 1;
+  if (form.public_bets_enabled) form.public_bets_enabled.checked = !!u.public_bets_enabled;
+  updatePublicBetsActions(u);
 
   form.addEventListener("submit", async e => {
     e.preventDefault();
@@ -2450,15 +2517,31 @@ async function renderSettings(section) {
       base_currency: data.base_currency.toUpperCase(),
       bankroll: Number(data.bankroll || 0),
       kelly_multiplier: Number(data.kelly_multiplier || 1),
+      public_bets_enabled: !!form.public_bets_enabled?.checked,
     };
     try {
       state.user = await api("/auth/settings", { method: "PATCH", body: payload });
       await i18n.setLocale(state.user.preferred_locale || "en", { persistCookie: true });
+      updatePublicBetsActions(state.user);
       toast(t("settings.saved"));
       await refreshTicker();
       await route();
     } catch (err) { toast(err.message, true); }
   });
+
+  const copyBtn = $("#publicBetsCopyBtn");
+  if (copyBtn) {
+    copyBtn.addEventListener("click", async () => {
+      const token = state.user?.public_bets_token;
+      if (!token) return;
+      try {
+        await copyText(publicProfileLink(token));
+        toast(t("settings.publicBetsLinkCopied"));
+      } catch (err) {
+        toast(err.message, true);
+      }
+    });
+  }
 
   const billingFocus = await handleBillingReturn();
   await renderPlan();
@@ -3289,6 +3372,13 @@ async function start() {
       await renderPublicPromoStats(promoStatsToken);
       return;
     }
+    const publicBetsToken = getPublicBetsToken();
+    if (publicBetsToken) {
+      await i18n.initI18n(i18n.getLoginLocale?.() || "en");
+      document.title = t("publicProfile.title");
+      await renderPublicProfile(publicBetsToken);
+      return;
+    }
     if (getResetTokenFromHash()) {
       setToken(null);
       showAuthLoading();
@@ -3328,6 +3418,8 @@ function onReady() {
     if (shareToken) return renderPublicShare(shareToken);
     const promoStatsToken = getPromoStatsToken();
     if (promoStatsToken) return renderPublicPromoStats(promoStatsToken);
+    const publicBetsToken = getPublicBetsToken();
+    if (publicBetsToken) return renderPublicProfile(publicBetsToken);
     showAuth();
   });
 }

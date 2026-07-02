@@ -115,6 +115,7 @@ class SettingsUpdate(BaseModel):
     kelly_multiplier: Optional[float] = Field(default=None, gt=0, le=1)
     preferred_locale: Optional[str] = Field(default=None, pattern=LOCALE_PATTERN)
     timezone: Optional[str] = Field(default=None, max_length=64)
+    public_bets_enabled: Optional[bool] = None
 
     @field_validator("timezone")
     @classmethod
@@ -143,6 +144,8 @@ class UserOut(BaseModel):
     subscription_current_period_end: Optional[datetime] = None
     comp_pro_until: Optional[datetime] = None
     is_pro: bool = False
+    public_bets_enabled: bool = False
+    public_bets_token: Optional[str] = None
 
 
 # ----------------------------- Billing / plans ---------------------------- #
@@ -595,6 +598,15 @@ class PublicBetOut(BaseModel):
     currency: str
     personal_implied_odds: Optional[float] = None
     notes: Optional[str] = None
+    placed_at: Optional[datetime] = None
+    outcome: str = "pending"
+
+
+class PublicProfileOut(BaseModel):
+    """Read-only public bet record for a user."""
+    display_name: Optional[str] = None
+    bet_count: int
+    bets: list[PublicBetOut]
 
 
 class BetShareOut(BaseModel):

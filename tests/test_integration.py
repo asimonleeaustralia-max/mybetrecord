@@ -1315,3 +1315,82 @@ def test_promo_stats_share_lifecycle(clients, auth_headers):
         headers=headers,
     ).status_code == 403
 
+
+def test_public_bets_profile_lifecycle(clients, auth_headers):
+    headers, _ = auth_headers
+    me = clients["auth"].get("/auth/me", headers=headers)
+    assert me.json().get("public_bets_enabled") is False
+    assert me.json().get("public_bets_token") is None
+
+    enabled = clients["auth"].patch(
+        "/auth/settings", headers=headers, json={"public_bets_enabled": True}
+    )
+    assert enabled.status_code == 200, enabled.text
+    body = enabled.json()
+    assert body["public_bets_enabled"] is True
+    token = body["public_bets_token"]
+    assert token
+
+    again = clients["auth"].patch(
+        "/auth/settings", headers=headers, json={"public_bets_enabled": True}
+    )
+    assert again.status_code == 200
+    assert again.json()["public_bets_token"] == token
+
+    bet = _make_bet(
+        clients,
+        headers,
+        event="Ascot 14:30",
+        selection="Galileo Gold",
+        sport="Horse racing",
+        bet_type="Win",
+        bookmaker="Bet365",
+    )
+    public = clients["bets"].get(f"/bets/public/profile/{token}")
+    assert public.status_code == 200, public.text
+    profile = public.json()
+    assert profile["bet_count"] == 1
+    assert len(profile["bets"]) == 1
+    b = profile["bets"][0]
+    assert b["event"] == "Ascot 14:30"
+    assert b["selection"] == "Galileo Gold"
+    assert b["sport"] == "Horse racing"
+    assert b["stake"] == pytest.approx(100)
+    assert "profit" not in b
+    assert "bookmaker" not in b
+    assert "id" not in b
+
+    disabled = clients["auth"].patch(
+        "/auth/settings", headers=headers, json={"public_bets_enabled": False}
+    )
+    assert disabled.status_code == 200
+    assert disabled.json()["public_bets_enabled"] is False
+    assert disabled.json()["public_bets_token"] is None
+    assert clients["bets"].get(f"/bets/public/profile/{token}").status_code == 404
+
+
+def test_public_bets_profile_requires_no_auth(clients, auth_headers):
+    headers, _ = auth_headers
+    _make_bet(clients, headers)
+    token = clients["auth"].patch(
+        "/auth/settings", headers=headers, json={"public_bets_enabled": True}
+    ).json()["public_bets_token"]
+    assert clients["bets"].get(f"/bets/public/profile/{token}").status_code == 200
+    assert clients["bets"].get("/bets/public/profile/not-a-real-token").status_code == 404
+
+
+def test_public_profile_page_html(clients, auth_headers):
+    headers, _ = auth_headers
+    _make_bet(clients, headers, event="Ascot 14:30", selection="Galileo Gold")
+    token = clients["auth"].patch(
+        "/auth/settings", headers=headers, json={"public_bets_enabled": True}
+    ).json()["public_bets_token"]
+    r = clients["bets"].get(f"/bets/public-profile-page/{token}")
+    assert r.status_code == 200, r.text
+    assert "text/html" in r.headers.get("content-type", "")
+    html = r.text
+    assert "noindex" in html
+    assert "Galileo Gold" in html
+    assert "Ascot 14:30" in html
+    assert clients["bets"].get("/bets/public-profile-page/not-a-real-token").status_code == 404
+

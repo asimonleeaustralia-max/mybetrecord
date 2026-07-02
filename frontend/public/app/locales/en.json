@@ -107,6 +107,12 @@
     "totalDiscounted": "Total discounted",
     "notFound": "This promo stats page could not be found."
   },
+  "publicProfile": {
+    "title": "Public bet record",
+    "betCount": "{{count}} bets",
+    "empty": "No bets yet.",
+    "notFound": "This public bet record could not be found."
+  },
   "outcomes": {
     "pending": "Pending",
     "win": "Win",
@@ -298,6 +304,11 @@
     "keyRevoked": "Key revoked",
     "keyPrompt": "Name this key (e.g. 'laptop script')",
     "keyReveal": "Copy this now — it won't be shown again:  {{key}}",
+    "publicBetsTitle": "Public bet record",
+    "publicBetsEnabled": "Make my bets publicly viewable (read-only)",
+    "publicBetsHint": "Anyone with the link can view your bets without signing in. Sensitive details like P/L and bookmaker are hidden.",
+    "publicBetsCopyLink": "Copy public link",
+    "publicBetsLinkCopied": "Public link copied",
     "supportContact": "Need help? Email <a href=\"mailto:support@mybetrecord.com\">support@mybetrecord.com</a>",
     "legalLinks": "<a href=\"/privacy\">Privacy</a> · <a href=\"/terms\">Terms</a> · <a href=\"/support\">Support</a>"
   },

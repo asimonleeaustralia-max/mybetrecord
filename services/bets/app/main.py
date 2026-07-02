@@ -34,6 +34,7 @@ from betrecord_shared.schemas import (
     BetUpdate,
     BetUsageOut,
     PublicBetOut,
+    PublicProfileOut,
 )
 from betrecord_shared.security import get_current_user
 
@@ -307,6 +308,73 @@ def _new_share_token(db: Session) -> str:
     raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Could not create share link")
 
 
+def _public_profile_user(db: Session, token: str) -> User | None:
+    return db.scalar(
+        select(User).where(
+            User.public_bets_token == token,
+            User.public_bets_enabled.is_(True),
+        )
+    )
+
+
+def _public_profile_page_html(user: User, bets: list[Bet], token: str, base_url: str = "https://mybetrecord.com") -> str:
+    esc = html_module.escape
+    title = user.display_name or "Bet record"
+    og_title = html_module.escape(f"{title} — mybetrecord")
+    og_desc = html_module.escape(f"Public bet record · {len(bets)} bet{'s' if len(bets) != 1 else ''}")
+    profile_url = f"{base_url}/u/{token}"
+    rows = []
+    for bet in bets:
+        date = bet.placed_at.strftime("%d %b %y") if bet.placed_at else "—"
+        rows.append(
+            f"<tr>"
+            f"<td class=\"num\">{esc(date)}</td>"
+            f"<td>{esc(bet.sport)}</td>"
+            f"<td>{esc(bet.event)}<div class=\"sel\">{esc(bet.selection)}</div></td>"
+            f"<td class=\"r num\">{bet.odds_decimal:.2f}</td>"
+            f"<td class=\"r num\">{bet.stake:g} {esc(bet.currency)}</td>"
+            f"<td>{esc(bet.outcome)}</td>"
+            f"</tr>"
+        )
+    table_body = "\n".join(rows) if rows else '<tr><td colspan="6" class="empty">No bets yet.</td></tr>'
+    return f"""<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>{esc(title)} — mybetrecord</title>
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="{og_title}" />
+  <meta property="og:description" content="{og_desc}" />
+  <meta property="og:url" content="{esc(profile_url)}" />
+  <meta property="og:image" content="{base_url}/og-default.svg" />
+  <meta name="twitter:card" content="summary" />
+  <link rel="stylesheet" href="/app/styles.css" />
+</head>
+<body>
+  <section class="share-view">
+    <div class="share-view__panel">
+      <div class="wordmark wordmark--lg">my<span>bet</span>record</div>
+      <p class="share-view__tag">Read-only view</p>
+      <main id="shareMain">
+        <div class="view view--narrow">
+          <div class="view__head"><h1>{esc(title)}</h1></div>
+          <p class="hint">{len(bets)} bet{'s' if len(bets) != 1 else ''}</p>
+          <table class="ledger ledger--compact">
+            <thead><tr>
+              <th>Date</th><th>Sport</th><th>Event</th><th class="r">Odds</th><th class="r">Stake</th><th>Result</th>
+            </tr></thead>
+            <tbody>{table_body}</tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+  </section>
+</body>
+</html>"""
+
+
 # --------------------------- free-plan limits ----------------------------- #
 
 def _user_zone(user: User) -> ZoneInfo:
@@ -484,6 +552,32 @@ def list_bets(
     return [_serialise(b) for b in db.scalars(stmt).all()]
 
 
+@app.get("/bets/public/profile/{token}", response_model=PublicProfileOut)
+def get_public_profile(
+    token: str,
+    db: Session = Depends(get_db),
+    limit: int = Query(default=200, le=1000),
+    offset: int = 0,
+):
+    """Read-only list of a user's bets via their public profile link."""
+    user = _public_profile_user(db, token)
+    if not user:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Profile not found")
+    stmt = (
+        select(Bet)
+        .where(Bet.user_id == user.id)
+        .order_by(Bet.placed_at.desc())
+        .limit(limit)
+        .offset(offset)
+    )
+    bets = db.scalars(stmt).all()
+    return PublicProfileOut(
+        display_name=user.display_name,
+        bet_count=len(bets),
+        bets=[_serialise_public(b) for b in bets],
+    )
+
+
 @app.get("/bets/public/{share_token}", response_model=PublicBetOut)
 def get_public_bet(share_token: str, db: Session = Depends(get_db)):
     """Read-only view of a bet via its share link. No authentication required."""
@@ -491,6 +585,18 @@ def get_public_bet(share_token: str, db: Session = Depends(get_db)):
     if not bet:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Bet not found")
     return _serialise_public(bet)
+
+
+@app.get("/bets/public-profile-page/{token}", response_class=HTMLResponse)
+def public_profile_page(token: str, db: Session = Depends(get_db)) -> HTMLResponse:
+    """Server-rendered public profile page with Open Graph tags (noindex)."""
+    user = _public_profile_user(db, token)
+    if not user:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Profile not found")
+    bets = db.scalars(
+        select(Bet).where(Bet.user_id == user.id).order_by(Bet.placed_at.desc()).limit(200)
+    ).all()
+    return HTMLResponse(_public_profile_page_html(user, list(bets), token))
 
 
 @app.get("/bets/share-page/{share_token}", response_class=HTMLResponse)

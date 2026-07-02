@@ -368,6 +368,25 @@
     </div>
   </template>
 
+  <template id="tpl-public-profile">
+    <div class="view">
+      <div class="view__head"><h1 id="publicProfileTitle"></h1></div>
+      <p id="publicProfileSummary" class="hint"></p>
+      <table class="ledger ledger--compact">
+        <thead><tr>
+          <th data-i18n="bets.date">Date</th>
+          <th data-i18n="bets.sport">Sport</th>
+          <th data-i18n="bets.event">Event</th>
+          <th class="r" data-i18n="bets.odds">Odds</th>
+          <th class="r" data-i18n="bets.stake">Stake</th>
+          <th data-i18n="bets.result">Result</th>
+        </tr></thead>
+        <tbody id="publicProfileBody"></tbody>
+      </table>
+      <p id="publicProfileEmpty" class="empty" hidden data-i18n="publicProfile.empty">No bets yet.</p>
+    </div>
+  </template>
+
   <template id="tpl-reports">
     <div class="view">
       <div class="view__head">
@@ -454,6 +473,18 @@
             <label><span data-i18n="settings.kellyMultiplier">Kelly multiplier</span> <span class="hint" data-i18n="settings.kellyHint">1 = full, 0.5 = half</span><input name="kelly_multiplier" inputmode="decimal" placeholder="1" /></label>
           </div>
           <div class="formactions"><button class="btn btn--brass" type="submit" data-i18n="settings.save">Save settings</button></div>
+        </fieldset>
+
+        <fieldset id="publicBetsPanel">
+          <legend data-i18n="settings.publicBetsTitle">Public bet record</legend>
+          <label class="check">
+            <input type="checkbox" name="public_bets_enabled" />
+            <span data-i18n="settings.publicBetsEnabled">Make my bets publicly viewable (read-only)</span>
+          </label>
+          <p class="hint" data-i18n="settings.publicBetsHint">Anyone with the link can view your bets without signing in. Sensitive details like P/L and bookmaker are hidden.</p>
+          <div class="share-actions" id="publicBetsActions" hidden>
+            <button type="button" class="btn btn--ghost btn--sm" id="publicBetsCopyBtn" data-i18n="settings.publicBetsCopyLink">Copy public link</button>
+          </div>
         </fieldset>
       </form>
 

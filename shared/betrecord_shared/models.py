@@ -46,6 +46,10 @@ class User(Base):
     preferred_locale: Mapped[str] = mapped_column(String(16), default="en")
     timezone: Mapped[str] = mapped_column(String(64), default="UTC")  # IANA, e.g. Europe/London
 
+    # Public read-only bet record (unguessable token; null when disabled)
+    public_bets_enabled: Mapped[bool] = mapped_column(Boolean, default=False)
+    public_bets_token: Mapped[str | None] = mapped_column(String(32), unique=True, index=True, nullable=True)
+
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
     last_login_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)

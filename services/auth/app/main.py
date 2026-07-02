@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import secrets
 from datetime import datetime, timedelta, timezone
 
 from fastapi import Depends, FastAPI, HTTPException, Query, Request, status
@@ -424,6 +425,12 @@ def update_settings(
     db: Session = Depends(get_db),
 ) -> User:
     data = payload.model_dump(exclude_unset=True)
+    if "public_bets_enabled" in data:
+        enabled = data["public_bets_enabled"]
+        if enabled and not user.public_bets_token:
+            user.public_bets_token = _new_public_bets_token(db)
+        elif not enabled:
+            user.public_bets_token = None
     for field, value in data.items():
         if field == "base_currency" and value:
             value = value.upper()
@@ -432,6 +439,16 @@ def update_settings(
     db.commit()
     db.refresh(user)
     return user
+
+
+def _new_public_bets_token(db: Session) -> str:
+    """Generate a unique, URL-safe token for a user's public bet record."""
+    for _ in range(10):
+        token = secrets.token_urlsafe(16)
+        existing = db.scalar(select(User.id).where(User.public_bets_token == token))
+        if not existing:
+            return token
+    raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Could not create public link")
 
 
 # ------------------------------ API keys ---------------------------------- #
