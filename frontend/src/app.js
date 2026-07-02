@@ -2342,6 +2342,39 @@ async function renderSettings(section) {
 
   const form = $("#settingsForm");
   const u = state.user;
+  const accountEmail = $("#accountEmail");
+  if (accountEmail) accountEmail.textContent = u.email || "";
+  initPasswordToggles(main);
+
+  const passwordChangeForm = $("#passwordChangeForm");
+  if (passwordChangeForm) {
+    passwordChangeForm.addEventListener("submit", async e => {
+      e.preventDefault();
+      const f = Object.fromEntries(new FormData(e.target));
+      if (f.password !== f.password_confirm) {
+        toast(t("auth.passwordMismatch"), true);
+        return;
+      }
+      if (!isValidPassword(f.password)) {
+        toast(t("auth.passwordInvalid"), true);
+        return;
+      }
+      try {
+        const res = await api("/auth/password/change", {
+          method: "POST",
+          body: { current_password: f.current_password, password: f.password },
+        });
+        e.target.reset();
+        toast(res.message || t("settings.passwordChanged"));
+      } catch (err) {
+        const msg = err.message === "Current password is incorrect"
+          ? t("settings.currentPasswordIncorrect")
+          : err.message;
+        toast(msg, true);
+      }
+    });
+  }
+
   await i18n.loadCatalog();
   $("#localeSelect").innerHTML = i18n.languageOptions(u.preferred_locale || "en");
   fillTimezoneSelect($("#timezoneSelect"), u.timezone || "UTC");

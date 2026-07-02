@@ -404,6 +404,21 @@
   <template id="tpl-settings">
     <div class="view view--narrow">
       <div class="view__head"><h1 data-i18n="settings.title">Settings</h1></div>
+
+      <div class="panel" id="accountPanel">
+        <div class="panel__head"><h2 data-i18n="settings.account">Account</h2></div>
+        <p class="panel__sub"><span data-i18n="settings.email">Email</span>: <strong id="accountEmail"></strong></p>
+        <form id="passwordChangeForm" class="betform">
+          <fieldset>
+            <legend data-i18n="settings.changePassword">Change password</legend>
+            <label><span data-i18n="settings.currentPassword">Current password</span><input type="password" name="current_password" autocomplete="current-password" required /></label>
+            <label><span data-i18n="auth.newPassword">New password</span> <span class="hint" data-i18n="auth.passwordHint">8+ characters with a number or special character</span><input type="password" name="password" autocomplete="new-password" minlength="8" required /></label>
+            <label><span data-i18n="auth.confirmPassword">Confirm password</span><input type="password" name="password_confirm" autocomplete="new-password" minlength="8" required /></label>
+            <div class="formactions"><button class="btn btn--ghost" type="submit" data-i18n="auth.updatePassword">Update password</button></div>
+          </fieldset>
+        </form>
+      </div>
+
       <form id="settingsForm" class="betform">
         <fieldset>
           <legend data-i18n="settings.preferences">Preferences</legend>

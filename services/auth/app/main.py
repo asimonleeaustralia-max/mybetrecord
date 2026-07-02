@@ -26,6 +26,7 @@ from betrecord_shared.schemas import (
     AppEventOut,
     LandingHitOut,
     LandingTrackIn,
+    PasswordChange,
     PasswordResetConfirm,
     PasswordResetRequest,
     PasswordResetResponse,
@@ -386,6 +387,28 @@ def confirm_password_reset(
     )
     db.commit()
     return PasswordResetResponse(message="Password updated. You can sign in with your new password.")
+
+
+@app.post("/auth/password/change", response_model=PasswordResetResponse)
+def change_password(
+    payload: PasswordChange,
+    request: Request,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> PasswordResetResponse:
+    if not verify_password(payload.current_password, user.password_hash):
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Current password is incorrect")
+    user.password_hash = hash_password(payload.password)
+    _invalidate_reset_tokens(db, user.id)
+    log_event(
+        db,
+        "password_changed",
+        user_id=user.id,
+        detail=user.email,
+        ip_address=_client_ip(request),
+    )
+    db.commit()
+    return PasswordResetResponse(message="Password updated.")
 
 
 @app.get("/auth/me", response_model=UserOut)

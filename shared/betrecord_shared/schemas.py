@@ -95,6 +95,16 @@ class PasswordResetResponse(BaseModel):
     reset_token: Optional[str] = None  # populated in non-production for local testing
 
 
+class PasswordChange(BaseModel):
+    current_password: str = Field(min_length=1, max_length=128)
+    password: str = Field(min_length=8, max_length=128)
+
+    @field_validator("password")
+    @classmethod
+    def _password(cls, v: str) -> str:
+        return _validate_password(v)
+
+
 LOCALE_PATTERN = r"^[a-z]{2,3}(-[A-Z]{2})?$"
 
 

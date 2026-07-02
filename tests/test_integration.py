@@ -152,6 +152,46 @@ def test_password_reset_confirm_rejects_weak_password(clients):
     assert r.status_code == 422
 
 
+def test_password_change(clients, auth_headers):
+    headers, email = auth_headers
+    password = "password123"
+    new_password = "new-password456"
+
+    r = clients["auth"].post(
+        "/auth/password/change",
+        headers=headers,
+        json={"current_password": password, "password": new_password},
+    )
+    assert r.status_code == 200
+    assert "updated" in r.json()["message"].lower()
+
+    r = clients["auth"].post("/auth/login", json={"email": email, "password": password})
+    assert r.status_code == 401
+
+    r = clients["auth"].post("/auth/login", json={"email": email, "password": new_password})
+    assert r.status_code == 200
+
+
+def test_password_change_rejects_wrong_current_password(clients, auth_headers):
+    headers, _ = auth_headers
+    r = clients["auth"].post(
+        "/auth/password/change",
+        headers=headers,
+        json={"current_password": "wrong-password", "password": "new-password456"},
+    )
+    assert r.status_code == 400
+
+
+def test_password_change_rejects_weak_password(clients, auth_headers):
+    headers, _ = auth_headers
+    r = clients["auth"].post(
+        "/auth/password/change",
+        headers=headers,
+        json={"current_password": "password123", "password": "password"},
+    )
+    assert r.status_code == 422
+
+
 def test_settings_update(clients, auth_headers):
     headers, _ = auth_headers
     r = clients["auth"].patch("/auth/settings", headers=headers,
