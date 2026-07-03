@@ -132,6 +132,9 @@ jobs:
   build-and-deploy:
     needs: [test, frontend-build, e2e, lighthouse, preflight]
     if: github.ref == 'refs/heads/main' && needs.preflight.outputs.can-deploy == 'true'
+    concurrency:
+      group: azure-deploy-${{ github.ref }}
+      cancel-in-progress: false
     runs-on: ubuntu-latest
     permissions:
       id-token: write   # OIDC login to Azure

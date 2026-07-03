@@ -304,6 +304,32 @@ deploy_bicep() {
     --parameters "${extra_params[@]}"
 }
 
+deploy_bicep_with_retry() {
+  local tag="$1"
+  local attempt=1
+  local max_attempts=30
+  local wait_seconds=60
+
+  while true; do
+    local output
+    if output="$(deploy_bicep "$tag" 2>&1)"; then
+      [[ -n "$output" ]] && echo "$output"
+      return 0
+    fi
+    echo "$output" >&2
+    if [[ "$output" != *DeploymentActive* ]]; then
+      return 1
+    fi
+    if (( attempt >= max_attempts )); then
+      echo "Timed out waiting for the active Azure deployment to finish." >&2
+      return 1
+    fi
+    echo "Another Azure deployment is in progress (attempt ${attempt}/${max_attempts}); retrying in ${wait_seconds}s..."
+    sleep "$wait_seconds"
+    attempt=$((attempt + 1))
+  done
+}
+
 build_and_push_images() {
   build_blog
   resolve_acr
@@ -409,23 +435,23 @@ ensure_resource_group
 
 if [[ "$INFRA_ONLY" -eq 1 ]]; then
   echo "Infra-only deploy (no image rebuild)..."
-  deploy_bicep "$IMAGE_TAG"
+  deploy_bicep_with_retry "$IMAGE_TAG"
 elif [[ "$BOOTSTRAP" -eq 1 ]]; then
   echo "Bootstrap: provisioning infrastructure..."
-  deploy_bicep "$IMAGE_TAG"
+  deploy_bicep_with_retry "$IMAGE_TAG"
   build_and_push_images
   echo "Bootstrap: redeploying apps with images..."
-  deploy_bicep "$IMAGE_TAG"
+  deploy_bicep_with_retry "$IMAGE_TAG"
 else
   resolve_acr
   if [[ -z "${ACR_NAME:-}" ]]; then
     echo "No ACR found — bootstrapping (infra → images → infra)..."
-    deploy_bicep "$IMAGE_TAG"
+    deploy_bicep_with_retry "$IMAGE_TAG"
     build_and_push_images
-    deploy_bicep "$IMAGE_TAG"
+    deploy_bicep_with_retry "$IMAGE_TAG"
   else
     build_and_push_images
-    deploy_bicep "$IMAGE_TAG"
+    deploy_bicep_with_retry "$IMAGE_TAG"
   fi
 fi
 
