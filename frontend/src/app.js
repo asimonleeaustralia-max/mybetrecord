@@ -2528,6 +2528,8 @@ async function renderSettings(section) {
   fillCurrencySelect(form.base_currency, 20, u.base_currency);
   form.bankroll.value = u.bankroll || "";
   form.kelly_multiplier.value = u.kelly_multiplier ?? 1;
+  const publicNickname = $("#publicNickname");
+  if (publicNickname) publicNickname.value = u.display_name || "";
   const accountDescription = $("#accountDescription");
   const accountDescriptionWordCount = $("#accountDescriptionWordCount");
   if (accountDescription) {
@@ -2548,6 +2550,7 @@ async function renderSettings(section) {
       toast(t("settings.accountDescriptionTooLong"), true);
       return;
     }
+    const nickname = (data.display_name || "").trim();
     const payload = {
       preferred_locale: data.preferred_locale,
       timezone: data.timezone,
@@ -2557,6 +2560,7 @@ async function renderSettings(section) {
       kelly_multiplier: Number(data.kelly_multiplier || 1),
       public_bets_enabled: !!form.public_bets_enabled?.checked,
       account_description: description || null,
+      display_name: nickname || null,
     };
     try {
       state.user = await api("/auth/settings", { method: "PATCH", body: payload });

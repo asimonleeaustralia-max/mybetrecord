@@ -436,6 +436,10 @@
       <div class="panel" id="accountPanel">
         <div class="panel__head"><h2 data-i18n="settings.account">Account</h2></div>
         <p class="panel__sub"><span data-i18n="settings.email">Email</span>: <strong id="accountEmail"></strong></p>
+        <label><span data-i18n="settings.publicNickname">Public nickname</span>
+          <input name="display_name" id="publicNickname" maxlength="120" autocomplete="nickname" form="settingsForm" data-i18n-placeholder="settings.publicNicknamePlaceholder" placeholder="e.g. Simon L." />
+          <span class="hint" data-i18n="settings.publicNicknameHint">This is the name shown on your public bet record. Your email is never displayed publicly.</span>
+        </label>
         <label><span data-i18n="settings.accountDescription">Account description</span>
           <textarea name="account_description" id="accountDescription" rows="6" maxlength="8000" form="settingsForm" data-i18n-placeholder="settings.accountDescriptionPlaceholder" placeholder="Tell visitors about your betting approach, focus sports, or record-keeping style."></textarea>
           <span class="hint" data-i18n="settings.accountDescriptionHint">Optional. Shown on your public bet record. Max 500 words.</span>

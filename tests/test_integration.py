@@ -1411,6 +1411,39 @@ def test_account_description_on_public_profile(clients, auth_headers):
     assert profile.json()["account_description"] == "Long-term CLV tracker."
 
 
+def test_public_nickname_settings(clients, auth_headers):
+    headers, _ = auth_headers
+    me = clients["auth"].get("/auth/me", headers=headers)
+    assert me.json().get("display_name") is None
+
+    saved = clients["auth"].patch(
+        "/auth/settings",
+        headers=headers,
+        json={"display_name": "Sharp Bettor"},
+    )
+    assert saved.status_code == 200, saved.text
+    assert saved.json()["display_name"] == "Sharp Bettor"
+
+    cleared = clients["auth"].patch(
+        "/auth/settings", headers=headers, json={"display_name": "   "}
+    )
+    assert cleared.status_code == 200
+    assert cleared.json()["display_name"] is None
+
+
+def test_public_nickname_on_public_profile(clients, auth_headers):
+    headers, _ = auth_headers
+    _make_bet(clients, headers)
+    token = clients["auth"].patch(
+        "/auth/settings",
+        headers=headers,
+        json={"public_bets_enabled": True, "display_name": "Sharp Bettor"},
+    ).json()["public_bets_token"]
+    profile = clients["bets"].get(f"/bets/public/profile/{token}")
+    assert profile.status_code == 200
+    assert profile.json()["display_name"] == "Sharp Bettor"
+
+
 def test_public_bets_profile_requires_no_auth(clients, auth_headers):
     headers, _ = auth_headers
     _make_bet(clients, headers)

@@ -42,6 +42,15 @@ def _validate_account_description(value: str | None) -> str | None:
     return value
 
 
+def _validate_display_name(value: str | None) -> str | None:
+    if value is None:
+        return None
+    value = value.strip()
+    if not value:
+        return None
+    return value
+
+
 def _validate_iana_timezone(value: str | None) -> str | None:
     if value is None:
         return None
@@ -132,6 +141,7 @@ class SettingsUpdate(BaseModel):
     timezone: Optional[str] = Field(default=None, max_length=64)
     public_bets_enabled: Optional[bool] = None
     account_description: Optional[str] = Field(default=None, max_length=8000)
+    display_name: Optional[str] = Field(default=None, max_length=120)
 
     @field_validator("timezone")
     @classmethod
@@ -142,6 +152,11 @@ class SettingsUpdate(BaseModel):
     @classmethod
     def _account_description(cls, v: str | None) -> str | None:
         return _validate_account_description(v)
+
+    @field_validator("display_name")
+    @classmethod
+    def _display_name(cls, v: str | None) -> str | None:
+        return _validate_display_name(v)
 
 
 class UserOut(BaseModel):
@@ -168,6 +183,7 @@ class UserOut(BaseModel):
     public_bets_enabled: bool = False
     public_bets_token: Optional[str] = None
     account_description: Optional[str] = None
+    display_name: Optional[str] = None
 
 
 # ----------------------------- Billing / plans ---------------------------- #
