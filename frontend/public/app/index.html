@@ -371,6 +371,7 @@
   <template id="tpl-public-profile">
     <div class="view">
       <div class="view__head"><h1 id="publicProfileTitle"></h1></div>
+      <p id="publicProfileDescription" class="panel__sub" hidden></p>
       <p id="publicProfileSummary" class="hint"></p>
       <table class="ledger ledger--compact">
         <thead><tr>
@@ -435,6 +436,11 @@
       <div class="panel" id="accountPanel">
         <div class="panel__head"><h2 data-i18n="settings.account">Account</h2></div>
         <p class="panel__sub"><span data-i18n="settings.email">Email</span>: <strong id="accountEmail"></strong></p>
+        <label><span data-i18n="settings.accountDescription">Account description</span>
+          <textarea name="account_description" id="accountDescription" rows="6" maxlength="8000" form="settingsForm" data-i18n-placeholder="settings.accountDescriptionPlaceholder" placeholder="Tell visitors about your betting approach, focus sports, or record-keeping style."></textarea>
+          <span class="hint" data-i18n="settings.accountDescriptionHint">Optional. Shown on your public bet record. Max 500 words.</span>
+          <span class="hint" id="accountDescriptionWordCount" aria-live="polite"></span>
+        </label>
         <form id="passwordChangeForm" class="betform">
           <fieldset>
             <legend data-i18n="settings.changePassword">Change password</legend>

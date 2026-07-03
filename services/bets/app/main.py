@@ -573,6 +573,7 @@ def get_public_profile(
     bets = db.scalars(stmt).all()
     return PublicProfileOut(
         display_name=user.display_name,
+        account_description=user.account_description,
         bet_count=len(bets),
         bets=[_serialise_public(b) for b in bets],
     )

@@ -1369,6 +1369,48 @@ def test_public_bets_profile_lifecycle(clients, auth_headers):
     assert clients["bets"].get(f"/bets/public/profile/{token}").status_code == 404
 
 
+def test_account_description_settings(clients, auth_headers):
+    headers, _ = auth_headers
+    me = clients["auth"].get("/auth/me", headers=headers)
+    assert me.json().get("account_description") is None
+
+    saved = clients["auth"].patch(
+        "/auth/settings",
+        headers=headers,
+        json={"account_description": "Value-focused football and tennis."},
+    )
+    assert saved.status_code == 200, saved.text
+    assert saved.json()["account_description"] == "Value-focused football and tennis."
+
+    cleared = clients["auth"].patch(
+        "/auth/settings", headers=headers, json={"account_description": "   "}
+    )
+    assert cleared.status_code == 200
+    assert cleared.json()["account_description"] is None
+
+    too_long = "word " * 501
+    rejected = clients["auth"].patch(
+        "/auth/settings", headers=headers, json={"account_description": too_long}
+    )
+    assert rejected.status_code == 422
+
+
+def test_account_description_on_public_profile(clients, auth_headers):
+    headers, _ = auth_headers
+    _make_bet(clients, headers)
+    token = clients["auth"].patch(
+        "/auth/settings",
+        headers=headers,
+        json={
+            "public_bets_enabled": True,
+            "account_description": "Long-term CLV tracker.",
+        },
+    ).json()["public_bets_token"]
+    profile = clients["bets"].get(f"/bets/public/profile/{token}")
+    assert profile.status_code == 200
+    assert profile.json()["account_description"] == "Long-term CLV tracker."
+
+
 def test_public_bets_profile_requires_no_auth(clients, auth_headers):
     headers, _ = auth_headers
     _make_bet(clients, headers)

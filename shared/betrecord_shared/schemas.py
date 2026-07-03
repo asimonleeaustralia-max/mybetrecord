@@ -27,6 +27,21 @@ def _validate_password(value: str) -> str:
     return value
 
 
+def _count_words(value: str) -> int:
+    return len(value.split())
+
+
+def _validate_account_description(value: str | None) -> str | None:
+    if value is None:
+        return None
+    value = value.strip()
+    if not value:
+        return None
+    if _count_words(value) > 500:
+        raise ValueError("Account description must be 500 words or fewer")
+    return value
+
+
 def _validate_iana_timezone(value: str | None) -> str | None:
     if value is None:
         return None
@@ -116,11 +131,17 @@ class SettingsUpdate(BaseModel):
     preferred_locale: Optional[str] = Field(default=None, pattern=LOCALE_PATTERN)
     timezone: Optional[str] = Field(default=None, max_length=64)
     public_bets_enabled: Optional[bool] = None
+    account_description: Optional[str] = Field(default=None, max_length=8000)
 
     @field_validator("timezone")
     @classmethod
     def _timezone(cls, v: str | None) -> str | None:
         return _validate_iana_timezone(v)
+
+    @field_validator("account_description")
+    @classmethod
+    def _account_description(cls, v: str | None) -> str | None:
+        return _validate_account_description(v)
 
 
 class UserOut(BaseModel):
@@ -146,6 +167,7 @@ class UserOut(BaseModel):
     is_pro: bool = False
     public_bets_enabled: bool = False
     public_bets_token: Optional[str] = None
+    account_description: Optional[str] = None
 
 
 # ----------------------------- Billing / plans ---------------------------- #
@@ -605,6 +627,7 @@ class PublicBetOut(BaseModel):
 class PublicProfileOut(BaseModel):
     """Read-only public bet record for a user."""
     display_name: Optional[str] = None
+    account_description: Optional[str] = None
     bet_count: int
     bets: list[PublicBetOut]
 

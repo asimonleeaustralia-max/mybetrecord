@@ -309,6 +309,11 @@
     "publicBetsHint": "Anyone with the link can view your bets without signing in. Sensitive details like P/L and bookmaker are hidden.",
     "publicBetsCopyLink": "Copy public link",
     "publicBetsLinkCopied": "Public link copied",
+    "accountDescription": "Account description",
+    "accountDescriptionPlaceholder": "Tell visitors about your betting approach, focus sports, or record-keeping style.",
+    "accountDescriptionHint": "Optional. Shown on your public bet record. Max 500 words.",
+    "accountDescriptionWordCount": "{{count}} / 500 words",
+    "accountDescriptionTooLong": "Account description must be 500 words or fewer",
     "supportContact": "Need help? Email <a href=\"mailto:support@mybetrecord.com\">support@mybetrecord.com</a>",
     "legalLinks": "<a href=\"/privacy\">Privacy</a> · <a href=\"/terms\">Terms</a> · <a href=\"/support\">Support</a>"
   },

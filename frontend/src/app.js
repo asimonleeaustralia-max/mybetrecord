@@ -640,6 +640,20 @@ function publicProfileLink(token) {
   return `${location.origin}/u/${token}`;
 }
 
+const ACCOUNT_DESCRIPTION_MAX_WORDS = 500;
+
+function countWords(text) {
+  const trimmed = (text || "").trim();
+  return trimmed ? trimmed.split(/\s+/).length : 0;
+}
+
+function updateAccountDescriptionWordCount(textarea, counterEl) {
+  if (!textarea || !counterEl) return;
+  const count = countWords(textarea.value);
+  counterEl.textContent = t("settings.accountDescriptionWordCount", { count });
+  counterEl.classList.toggle("hint--warn", count > ACCOUNT_DESCRIPTION_MAX_WORDS);
+}
+
 function formatPublicDiscount(currency, amount) {
   const zeroDecimal = new Set(["BIF", "CLP", "DJF", "GNF", "JPY", "KMF", "KRW", "MGA", "PYG", "RWF", "UGX", "VND", "VUV", "XAF", "XOF", "XPF"]);
   const digits = zeroDecimal.has(currency) ? 0 : 2;
@@ -1345,18 +1359,28 @@ async function renderPublicProfile(token) {
   main.innerHTML = "";
   main.appendChild(clone("tpl-public-profile"));
   const title = $("#publicProfileTitle");
+  const description = $("#publicProfileDescription");
   const summary = $("#publicProfileSummary");
   const body = $("#publicProfileBody");
   const empty = $("#publicProfileEmpty");
   try {
     const profile = await publicApi(`/bets/public/profile/${encodeURIComponent(token)}`);
     title.textContent = profile.display_name || t("publicProfile.title");
+    if (description) {
+      const text = (profile.account_description || "").trim();
+      description.textContent = text;
+      description.hidden = !text;
+    }
     summary.textContent = t("publicProfile.betCount", { count: profile.bet_count });
     const bets = profile.bets || [];
     empty.hidden = bets.length > 0;
     body.innerHTML = bets.map(publicProfileRow).join("");
   } catch {
     title.textContent = t("publicProfile.title");
+    if (description) {
+      description.textContent = "";
+      description.hidden = true;
+    }
     summary.textContent = "";
     body.innerHTML = "";
     empty.hidden = false;
@@ -2504,12 +2528,26 @@ async function renderSettings(section) {
   fillCurrencySelect(form.base_currency, 20, u.base_currency);
   form.bankroll.value = u.bankroll || "";
   form.kelly_multiplier.value = u.kelly_multiplier ?? 1;
+  const accountDescription = $("#accountDescription");
+  const accountDescriptionWordCount = $("#accountDescriptionWordCount");
+  if (accountDescription) {
+    accountDescription.value = u.account_description || "";
+    updateAccountDescriptionWordCount(accountDescription, accountDescriptionWordCount);
+    accountDescription.addEventListener("input", () => {
+      updateAccountDescriptionWordCount(accountDescription, accountDescriptionWordCount);
+    });
+  }
   if (form.public_bets_enabled) form.public_bets_enabled.checked = !!u.public_bets_enabled;
   updatePublicBetsActions(u);
 
   form.addEventListener("submit", async e => {
     e.preventDefault();
     const data = Object.fromEntries(new FormData(form));
+    const description = (data.account_description || "").trim();
+    if (countWords(description) > ACCOUNT_DESCRIPTION_MAX_WORDS) {
+      toast(t("settings.accountDescriptionTooLong"), true);
+      return;
+    }
     const payload = {
       preferred_locale: data.preferred_locale,
       timezone: data.timezone,
@@ -2518,6 +2556,7 @@ async function renderSettings(section) {
       bankroll: Number(data.bankroll || 0),
       kelly_multiplier: Number(data.kelly_multiplier || 1),
       public_bets_enabled: !!form.public_bets_enabled?.checked,
+      account_description: description || null,
     };
     try {
       state.user = await api("/auth/settings", { method: "PATCH", body: payload });

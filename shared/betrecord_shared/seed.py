@@ -459,6 +459,21 @@ def _ensure_promo_stats_token_column() -> None:
             )
 
 
+def _ensure_account_description_column() -> None:
+    """Add account_description to users for optional public profile text."""
+    if "users" not in inspect(engine).get_table_names():
+        return
+    columns = {c["name"] for c in inspect(engine).get_columns("users")}
+    if "account_description" in columns:
+        return
+    dialect = engine.dialect.name
+    with engine.begin() as conn:
+        if dialect == "postgresql":
+            conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS account_description TEXT"))
+        else:
+            conn.execute(text("ALTER TABLE users ADD COLUMN account_description TEXT"))
+
+
 def _ensure_public_bets_columns() -> None:
     """Add public_bets_enabled and public_bets_token to users for public bet records."""
     if "users" not in inspect(engine).get_table_names():

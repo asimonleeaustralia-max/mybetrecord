@@ -37,6 +37,7 @@ class User(Base):
     email: Mapped[str] = mapped_column(String(320), unique=True, index=True, nullable=False)
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
     display_name: Mapped[str | None] = mapped_column(String(120), nullable=True)
+    account_description: Mapped[str | None] = mapped_column(Text, nullable=True)
 
     # Settings
     default_odds_format: Mapped[str] = mapped_column(String(16), default="decimal")  # decimal|american|fractional|hong_kong|malaysian|indonesian
