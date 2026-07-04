@@ -418,7 +418,7 @@
     "unavailable": "Upplýsingar um áætlun eru ekki tiltækar eins og er.",
     "free": "Ókeypis",
     "pro": "Pro",
-    "freeDesc": "Þú ert á ókeypis áætluninni — allt að {{limit}} veðmál á dag.",
+    "freeDesc": "Þú ert á ókeypis áætluninni — allt að {{limit}} veðmál á viku.",
     "proDesc": "Þú ert á Pro — ótakmörkuð dagleg veðmál.",
     "compDesc": "Þú hefur ókeypis Pro aðgang.",
     "compUntil": "Ókeypis aðgangur til {{date}}.",
@@ -441,8 +441,6 @@
     "upgradeSuccess": "Velkomin í Pro! Njóttu ótakmarkaðra veðmála.",
     "upgradeCanceled": "Hætt við útskráningu.",
     "processing": "Verið er að vinna úr uppfærslunni þinni - þetta getur tekið smá stund.",
-    "betsToday": "{{count}} af {{limit}} daglegum veðmálum notuð",
-    "multiplesToday": "{{count}} af {{limit}} daglegum margfeldi notuð",
     "limitReached": "Daglegu hámarki náð — uppfærðu í Pro",
     "manageBilling": "Stjórna innheimtu",
     "promoLabel": "Kynningarkóði",
@@ -450,7 +448,9 @@
     "promoApply": "Sækja um",
     "promoInvalid": "Sá kynningarkóði er ekki gildur.",
     "promoAlreadyUsed": "Þú hefur þegar notað þennan kynningarkóða.",
-    "promoApplied": "{{summary}}"
+    "promoApplied": "{{summary}}",
+    "betsThisWeek": "{{count}} af {{limit}} vikulegum veðmálum notuð",
+    "multiplesThisWeek": "{{count}} af {{limit}} vikulegum margfeldi notuð"
   },
   "home": {
     "meta": {
@@ -487,7 +487,7 @@
     "pricingSub": "Sérhver eiginleiki hér að neðan er innifalinn í báðum áætlunum. Pro fjarlægir daglega skráningarlokið - um $5 USD á mánuði í staðbundinni mynt.",
     "pricingFreeName": "Ókeypis",
     "pricingFreePrice": "Ókeypis",
-    "pricingFreeLimit": "Allt að 5 veðmál og 5 multis á dag",
+    "pricingFreeLimit": "Allt að 5 veðmál og 5 multis á viku",
     "pricingProName": "Pro",
     "pricingProPrice": "{{price}} / mánuði",
     "pricingProLimit": "Ótakmörkuð veðmál og margs á hverjum degi",

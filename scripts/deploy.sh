@@ -58,7 +58,7 @@ Optional:
   FRONTEND_URL (public site origin for password-reset links, e.g. https://www.mybetrecord.com)
   SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASSWORD, SMTP_FROM, SMTP_USE_TLS
   STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, STRIPE_PRODUCT_ID
-  FREE_DAILY_BET_LIMIT (max bets/day on the free plan; default 5)
+  FREE_WEEKLY_BET_LIMIT (max bets/week Mon–Sun on the free plan; default 5)
   AZURE_SUBSCRIPTION_ID (validates active subscription)
 EOF
 }
@@ -271,8 +271,8 @@ deploy_bicep() {
   if [[ -n "${STRIPE_PRODUCT_ID:-}" ]]; then
     extra_params+=("stripeProductId=${STRIPE_PRODUCT_ID}")
   fi
-  if [[ -n "${FREE_DAILY_BET_LIMIT:-}" ]]; then
-    extra_params+=("freeDailyBetLimit=${FREE_DAILY_BET_LIMIT}")
+  if [[ -n "${FREE_WEEKLY_BET_LIMIT:-}" ]]; then
+    extra_params+=("freeWeeklyBetLimit=${FREE_WEEKLY_BET_LIMIT}")
   fi
   if [[ -n "${FRONTEND_URL:-}" ]]; then
     extra_params+=("frontendUrl=${FRONTEND_URL}")

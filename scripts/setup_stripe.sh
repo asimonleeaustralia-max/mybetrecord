@@ -19,7 +19,7 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
 PRODUCT_NAME="mybetrecord Pro"
-PRODUCT_DESCRIPTION="Unlimited daily bets, full analytics, CSV/Excel export, and API access."
+PRODUCT_DESCRIPTION="Unlimited bets, full analytics, CSV/Excel export, and API access."
 WEBHOOK_EVENTS=(
   checkout.session.completed
   customer.subscription.created

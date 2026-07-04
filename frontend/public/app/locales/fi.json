@@ -441,8 +441,6 @@
     "upgradeSuccess": "Tervetuloa Prolle! Nauti rajattomista vedoista.",
     "upgradeCanceled": "Checkout peruttu.",
     "processing": "Päivitystäsi käsitellään – tämä voi kestää hetken.",
-    "betsToday": "{{count}} {{limit}} päivittäisestä vedosta käytetty",
-    "multiplesToday": "{{count}} / {{limit}} päivittäistä kerrannaista käytetty",
     "limitReached": "Päivittäinen raja saavutettu – päivitä Pro-versioon",
     "manageBilling": "Hallinnoi laskutusta",
     "promoLabel": "Tarjouskoodi",
@@ -450,7 +448,9 @@
     "promoApply": "Käytä",
     "promoInvalid": "Tämä tarjouskoodi ei kelpaa.",
     "promoAlreadyUsed": "Olet jo käyttänyt tämän tarjouskoodin.",
-    "promoApplied": "{{summary}}"
+    "promoApplied": "{{summary}}",
+    "betsThisWeek": "{{count}} {{limit}} päivittäisestä vedosta käytetty",
+    "multiplesThisWeek": "{{count}} / {{limit}} päivittäistä kerrannaista käytetty"
   },
   "home": {
     "meta": {

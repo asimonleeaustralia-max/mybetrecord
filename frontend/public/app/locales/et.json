@@ -441,8 +441,6 @@
     "upgradeSuccess": "Tere tulemast Pro-sse! Nautige piiramatut panust.",
     "upgradeCanceled": "Checkout tühistati.",
     "processing": "Teie versiooniuuendust töödeldakse – see võib võtta hetke.",
-    "betsToday": "Kasutatud {{count}} {{limit}} päevasest panusest",
-    "multiplesToday": "Kasutatud {{count}} {{limit}}-st päevasest kordajast",
     "limitReached": "Päevalimiit täis — minge üle Pro versioonile",
     "manageBilling": "Hallake arveldust",
     "promoLabel": "Sooduskood",
@@ -450,7 +448,9 @@
     "promoApply": "Rakenda",
     "promoInvalid": "See sooduskood ei kehti.",
     "promoAlreadyUsed": "Olete seda sooduskoodi juba kasutanud.",
-    "promoApplied": "{{summary}}"
+    "promoApplied": "{{summary}}",
+    "betsThisWeek": "Kasutatud {{count}} {{limit}} päevasest panusest",
+    "multiplesThisWeek": "Kasutatud {{count}} {{limit}}-st päevasest kordajast"
   },
   "home": {
     "meta": {

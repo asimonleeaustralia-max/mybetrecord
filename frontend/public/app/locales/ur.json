@@ -441,8 +441,6 @@
     "upgradeSuccess": "پرو میں خوش آمدید! لامحدود شرطوں سے لطف اٹھائیں۔",
     "upgradeCanceled": "چیک آؤٹ منسوخ کر دیا گیا۔",
     "processing": "آپ کے اپ گریڈ پر کارروائی ہو رہی ہے — اس میں کچھ وقت لگ سکتا ہے۔",
-    "betsToday": "{{count}} کا {{limit}} روزانہ استعمال کیا جاتا ہے۔",
-    "multiplesToday": "{{count}} کا {{limit}} یومیہ ضرب استعمال کیا جاتا ہے۔",
     "limitReached": "روزانہ کی حد تک پہنچ گئی — پرو میں اپ گریڈ کریں۔",
     "manageBilling": "بلنگ کا نظم کریں۔",
     "promoLabel": "پرومو کوڈ",
@@ -450,7 +448,9 @@
     "promoApply": "لگائیں",
     "promoInvalid": "وہ پروموشن کوڈ درست نہیں ہے۔",
     "promoAlreadyUsed": "آپ اس پروموشن کوڈ کو پہلے ہی استعمال کر چکے ہیں۔",
-    "promoApplied": "{{summary}}"
+    "promoApplied": "{{summary}}",
+    "betsThisWeek": "{{count}} کا {{limit}} روزانہ استعمال کیا جاتا ہے۔",
+    "multiplesThisWeek": "{{count}} کا {{limit}} یومیہ ضرب استعمال کیا جاتا ہے۔"
   },
   "home": {
     "meta": {

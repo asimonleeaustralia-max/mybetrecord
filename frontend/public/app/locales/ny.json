@@ -441,8 +441,6 @@
     "upgradeSuccess": "Takulandilani ku Pro! Sangalalani ndi kubetcha zopanda malire.",
     "upgradeCanceled": "Kulipira kwathetsedwa.",
     "processing": "Kusintha kwanu kukukonzedwa - izi zitha kutenga nthawi.",
-    "betsToday": "{{count}} mwa {{limit}} kubetcha tsiku lililonse",
-    "multiplesToday": "{{count}} mwa {{limit}} machulukitsa atsiku ndi tsiku omwe amagwiritsidwa ntchito",
     "limitReached": "Malire atsiku ndi tsiku afikira - sinthani ku Pro",
     "manageBilling": "Konzani zolipirira",
     "promoLabel": "Nambala yampikisano",
@@ -450,7 +448,9 @@
     "promoApply": "Ikani",
     "promoInvalid": "Khodi yotsatsira imeneyo ndiyabwino.",
     "promoAlreadyUsed": "Mwagwiritsa kale ntchito nambala yotsatsira iyi.",
-    "promoApplied": "_PH0__"
+    "promoApplied": "_PH0__",
+    "betsThisWeek": "{{count}} mwa {{limit}} kubetcha tsiku lililonse",
+    "multiplesThisWeek": "{{count}} mwa {{limit}} machulukitsa atsiku ndi tsiku omwe amagwiritsidwa ntchito"
   },
   "home": {
     "meta": {

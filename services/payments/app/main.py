@@ -235,7 +235,7 @@ def get_plan(user: User = Depends(get_current_user)) -> PlanOut:
         subscription_cancel_at_period_end=bool(user.subscription_cancel_at_period_end),
         subscription_current_period_end=user.subscription_current_period_end,
         comp_pro_until=user.comp_pro_until,
-        free_daily_bet_limit=settings.free_daily_bet_limit,
+        free_weekly_bet_limit=settings.free_weekly_bet_limit,
         stripe_configured=stripe_ready,
         pricing=_pricing_out() if stripe_ready else None,
     )

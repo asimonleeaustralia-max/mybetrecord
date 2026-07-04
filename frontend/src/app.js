@@ -460,7 +460,7 @@ function planFromUser(user) {
     subscription_cancel_at_period_end: Boolean(user?.subscription_cancel_at_period_end),
     subscription_current_period_end: user?.subscription_current_period_end || null,
     comp_pro_until: user?.comp_pro_until || null,
-    free_daily_bet_limit: 5,
+    free_weekly_bet_limit: 5,
     stripe_configured: true,
     pricing: staticPricingOut(),
   };
@@ -1053,10 +1053,10 @@ async function loadUsageBanner() {
   const reached = singleReached || multipleReached;
   const counts = [];
   if (usage.limit != null) {
-    counts.push(esc(t("plan.betsToday", { count: usage.count, limit: usage.limit })));
+    counts.push(esc(t("plan.betsThisWeek", { count: usage.count, limit: usage.limit })));
   }
   if (usage.multiple_limit != null) {
-    counts.push(esc(t("plan.multiplesToday", { count: usage.multiple_count, limit: usage.multiple_limit })));
+    counts.push(esc(t("plan.multiplesThisWeek", { count: usage.multiple_count, limit: usage.multiple_limit })));
   }
   banner.className = "usage-banner" + (reached ? " usage-banner--full" : "");
   banner.innerHTML = `
@@ -2771,7 +2771,7 @@ function renderProPlan(body, plan) {
 }
 
 function renderFreePlan(body, plan, pricing) {
-  const limit = plan.free_daily_bet_limit;
+  const limit = plan.free_weekly_bet_limit;
   const blocks = [`<p class="plan-desc">${esc(t("plan.freeDesc", { limit }))}</p>`];
 
   if (!plan.stripe_configured) {

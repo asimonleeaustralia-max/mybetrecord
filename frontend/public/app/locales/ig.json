@@ -441,8 +441,6 @@
     "upgradeSuccess": "Nnọọ na Pro! Nwee obi ụtọ nzọ na-akparaghị ókè.",
     "upgradeCanceled": "Akagbuola ndenye ọpụpụ.",
     "processing": "A na-ahazi nkwalite gị - nke a nwere ike iwe obere oge.",
-    "betsToday": "Ejiri {{count}} nke {{limit}} nzọ kwa ụbọchị",
-    "multiplesToday": "A na-eji {{count}} nke {{limit}} ọnụọgụ kwa ụbọchị",
     "limitReached": "Eruola oke kwa ụbọchị - nkwalite gaa na Pro",
     "manageBilling": "Jikwaa ịgba ụgwọ",
     "promoLabel": "Koodu mgbasa ozi",
@@ -450,7 +448,9 @@
     "promoApply": "Tinye",
     "promoInvalid": "Koodu nkwalite ahụ adịghị mma.",
     "promoAlreadyUsed": "I jirila koodu nkwalite a.",
-    "promoApplied": "{{summary}}"
+    "promoApplied": "{{summary}}",
+    "betsThisWeek": "Ejiri {{count}} nke {{limit}} nzọ kwa ụbọchị",
+    "multiplesThisWeek": "A na-eji {{count}} nke {{limit}} ọnụọgụ kwa ụbọchị"
   },
   "home": {
     "meta": {

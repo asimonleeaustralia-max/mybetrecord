@@ -441,8 +441,6 @@
     "upgradeSuccess": "Vitajte v Pro! Užite si neobmedzené stávky.",
     "upgradeCanceled": "Platba bola zrušená.",
     "processing": "Vaša aktualizácia sa spracováva – môže to chvíľu trvať.",
-    "betsToday": "{{count}} z {{limit}} denných použitých stávok",
-    "multiplesToday": "{{count}} z {{limit}} denných násobkov",
     "limitReached": "Dosiahnutý denný limit – inovujte na Pro",
     "manageBilling": "Spravovať fakturáciu",
     "promoLabel": "Promo kód",
@@ -450,7 +448,9 @@
     "promoApply": "Použiť",
     "promoInvalid": "Tento propagačný kód je neplatný.",
     "promoAlreadyUsed": "Tento propagačný kód ste už použili.",
-    "promoApplied": "{{summary}}"
+    "promoApplied": "{{summary}}",
+    "betsThisWeek": "{{count}} z {{limit}} týždenných použitých stávok",
+    "multiplesThisWeek": "{{count}} z {{limit}} týždenných násobkov"
   },
   "home": {
     "meta": {

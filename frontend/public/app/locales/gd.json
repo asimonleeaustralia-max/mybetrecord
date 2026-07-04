@@ -441,8 +441,6 @@
     "upgradeSuccess": "Fàilte gu Pro! Tlachd a ghabhail air geall gun chrìoch.",
     "upgradeCanceled": "Checkout air a chur dheth.",
     "processing": "Tha an ùrachadh agad ga ghiullachd - faodaidh seo mionaid a thoirt.",
-    "betsToday": "{{count}} de {{limit}} geall làitheil air a chleachdadh",
-    "multiplesToday": "{{count}} de {{limit}} iomadan làitheil air an cleachdadh",
     "limitReached": "Ràinig crìoch làitheil - ùrachadh gu Pro",
     "manageBilling": "Stiùirich bilean",
     "promoLabel": "Còd promo",
@@ -450,7 +448,9 @@
     "promoApply": "Cuir a-steach",
     "promoInvalid": "Chan eil an còd brosnachaidh sin dligheach.",
     "promoAlreadyUsed": "Chleachd thu an còd brosnachaidh seo mu thràth.",
-    "promoApplied": "{{summary}}"
+    "promoApplied": "{{summary}}",
+    "betsThisWeek": "{{count}} de {{limit}} geall làitheil air a chleachdadh",
+    "multiplesThisWeek": "{{count}} de {{limit}} iomadan làitheil air an cleachdadh"
   },
   "home": {
     "meta": {

@@ -441,8 +441,6 @@
     "upgradeSuccess": "Wëllkomm op Pro! Genéisst onlimitéiert Spillwette.",
     "upgradeCanceled": "Kees annuléiert.",
     "processing": "Ären Upgrade gëtt veraarbecht - dëst kann e Moment daueren.",
-    "betsToday": "{{count}} vun {{limit}} deeglech Spillwette benotzt",
-    "multiplesToday": "{{count}} vun {{limit}} deeglech Multiple benotzt",
     "limitReached": "Deeglech Limit erreecht - Upgrade op Pro",
     "manageBilling": "Verwalte Rechnung",
     "promoLabel": "Promo Code",
@@ -450,7 +448,9 @@
     "promoApply": "Gëlle",
     "promoInvalid": "Dëse Promotiounscode ass net valabel.",
     "promoAlreadyUsed": "Dir hutt schonn dëse Promotiouns Code benotzt.",
-    "promoApplied": "{{summary}}"
+    "promoApplied": "{{summary}}",
+    "betsThisWeek": "{{count}} vun {{limit}} deeglech Spillwette benotzt",
+    "multiplesThisWeek": "{{count}} vun {{limit}} deeglech Multiple benotzt"
   },
   "home": {
     "meta": {

@@ -441,8 +441,6 @@
     "upgradeSuccess": "Pro'го кош келиңиз! Чексиз коюмдардан ырахат алыңыз.",
     "upgradeCanceled": "Төлөө жокко чыгарылды.",
     "processing": "Сиздин жаңыртуу иштетилүүдө — бул бир аз убакытты алышы мүмкүн.",
-    "betsToday": "{{limit}} күнүмдүк коюмдардын {{count}} колдонулган",
-    "multiplesToday": "{{limit}} күнүмдүк эселенген {{count}} колдонулган",
     "limitReached": "Күнүмдүк чекке жетти — Pro жаңыртыңыз",
     "manageBilling": "Эсеп коюуну башкаруу",
     "promoLabel": "Промо код",
@@ -450,7 +448,9 @@
     "promoApply": "Колдонуу",
     "promoInvalid": "Бул промо коду жараксыз.",
     "promoAlreadyUsed": "Бул промо кодун мурунтан эле колдонгонсуз.",
-    "promoApplied": "{{summary}}"
+    "promoApplied": "{{summary}}",
+    "betsThisWeek": "{{limit}} күнүмдүк коюмдардын {{count}} колдонулган",
+    "multiplesThisWeek": "{{limit}} күнүмдүк эселенген {{count}} колдонулган"
   },
   "home": {
     "meta": {

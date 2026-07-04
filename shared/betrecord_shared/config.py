@@ -59,10 +59,11 @@ class Settings:
         self.stripe_product_id = os.getenv("STRIPE_PRODUCT_ID", "")
 
         # Free plan limits. Free users may enter at most this many single bets per
-        # day, plus a separate daily allowance of multiple/parlay bets; Pro users
-        # are unlimited. The main functional difference between the plans.
-        self.free_daily_bet_limit = int(os.getenv("FREE_DAILY_BET_LIMIT", "5"))
-        self.free_daily_multiple_limit = int(os.getenv("FREE_DAILY_MULTIPLE_LIMIT", "5"))
+        # calendar week (Mon–Sun in their timezone), plus a separate weekly
+        # allowance of multiple/parlay bets; Pro users are unlimited. The main
+        # functional difference between the plans.
+        self.free_weekly_bet_limit = int(os.getenv("FREE_WEEKLY_BET_LIMIT", "5"))
+        self.free_weekly_multiple_limit = int(os.getenv("FREE_WEEKLY_MULTIPLE_LIMIT", "5"))
         # Abuse prevention — hard cap on total bets per day for free and pro tiers.
         # Not advertised to users.
         self.tier_daily_abuse_limit = int(os.getenv("TIER_DAILY_ABUSE_LIMIT", "500"))

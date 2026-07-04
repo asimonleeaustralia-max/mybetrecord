@@ -441,8 +441,6 @@
     "upgradeSuccess": "Karibu kwenye Pro! Furahia dau zisizo na kikomo.",
     "upgradeCanceled": "Malipo yameghairiwa.",
     "processing": "Uboreshaji wako unachakatwa - hii inaweza kuchukua muda.",
-    "betsToday": "{{count}} kati ya {{limit}} dau za kila siku zimetumika",
-    "multiplesToday": "{{count}} kati ya {{limit}} vizidishio vya kila siku vimetumika",
     "limitReached": "Kikomo cha kila siku kimefikiwa - pata toleo jipya la Pro",
     "manageBilling": "Dhibiti malipo",
     "promoLabel": "Msimbo wa ofa",
@@ -450,7 +448,9 @@
     "promoApply": "Omba",
     "promoInvalid": "Nambari hiyo ya ofa si sahihi.",
     "promoAlreadyUsed": "Tayari umetumia msimbo huu wa ukuzaji.",
-    "promoApplied": "{{summary}}"
+    "promoApplied": "{{summary}}",
+    "betsThisWeek": "{{count}} kati ya {{limit}} dau za kila siku zimetumika",
+    "multiplesThisWeek": "{{count}} kati ya {{limit}} vizidishio vya kila siku vimetumika"
   },
   "home": {
     "meta": {

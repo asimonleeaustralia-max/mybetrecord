@@ -441,8 +441,6 @@
     "upgradeSuccess": "კეთილი იყოს თქვენი მობრძანება Pro! ისიამოვნეთ შეუზღუდავი ფსონებით.",
     "upgradeCanceled": "გადახდა გაუქმდა.",
     "processing": "თქვენი განახლება მუშავდება — ამას შეიძლება რამდენიმე წუთი დასჭირდეს.",
-    "betsToday": "გამოყენებულია {{count}} {{limit}} ყოველდღიური ფსონებიდან",
-    "multiplesToday": "გამოყენებულია {{count}} {{limit}} დღიური ჯერადი",
     "limitReached": "მიღწეულია ყოველდღიური ლიმიტი — განახლება Pro-ზე",
     "manageBilling": "ბილინგის მართვა",
     "promoLabel": "პრომო კოდი",
@@ -450,7 +448,9 @@
     "promoApply": "მიმართეთ",
     "promoInvalid": "ეს სარეკლამო კოდი არასწორია.",
     "promoAlreadyUsed": "თქვენ უკვე გამოიყენეთ ეს სარეკლამო კოდი.",
-    "promoApplied": "{{summary}}"
+    "promoApplied": "{{summary}}",
+    "betsThisWeek": "გამოყენებულია {{count}} {{limit}} ყოველდღიური ფსონებიდან",
+    "multiplesThisWeek": "გამოყენებულია {{count}} {{limit}} დღიური ჯერადი"
   },
   "home": {
     "meta": {

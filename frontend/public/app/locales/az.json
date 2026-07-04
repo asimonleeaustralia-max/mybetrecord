@@ -441,8 +441,6 @@
     "upgradeSuccess": "Pro-ya xoş gəlmisiniz! Limitsiz mərclərdən həzz alın.",
     "upgradeCanceled": "Yoxlama ləğv edildi.",
     "processing": "Təkmilləşdirməniz emal olunur — bu bir an çəkə bilər.",
-    "betsToday": "{{limit}} gündəlik mərclərdən {{count}} istifadə edilmişdir",
-    "multiplesToday": "{{limit}} gündəlik çoxalmanın {{count}} istifadə olunur",
     "limitReached": "Gündəlik limitə çatdı — Pro-ya yüksəldin",
     "manageBilling": "Faturalandırmanı idarə edin",
     "promoLabel": "Promo kodu",
@@ -450,7 +448,9 @@
     "promoApply": "Müraciət edin",
     "promoInvalid": "Həmin promosyon kodu etibarlı deyil.",
     "promoAlreadyUsed": "Siz artıq bu promosyon kodundan istifadə etmisiniz.",
-    "promoApplied": "{{summary}}"
+    "promoApplied": "{{summary}}",
+    "betsThisWeek": "{{limit}} gündəlik mərclərdən {{count}} istifadə edilmişdir",
+    "multiplesThisWeek": "{{limit}} gündəlik çoxalmanın {{count}} istifadə olunur"
   },
   "home": {
     "meta": {

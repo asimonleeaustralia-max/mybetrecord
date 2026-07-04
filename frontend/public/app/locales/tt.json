@@ -441,8 +441,6 @@
     "upgradeSuccess": "Прога рәхим итегез! Чикләнмәгән коймаклардан ләззәтләнегез.",
     "upgradeCanceled": "Түләү юкка чыгарылды.",
     "processing": "Сезнең яңарту эшкәртелә - бу бераз вакыт алырга мөмкин.",
-    "betsToday": "{{limit}} {{limit}} кулланылган көндәлек коймаклар",
-    "multiplesToday": "{{limit}} {{limit}} көн саен кулланыла",
     "limitReached": "Көндәлек лимит җитте - Прога яңарту",
     "manageBilling": "Хисап белән идарә итү",
     "promoLabel": "Промо-код",
@@ -450,14 +448,16 @@
     "promoApply": "Кулланыгыз",
     "promoInvalid": "Бу реклама коды дөрес түгел.",
     "promoAlreadyUsed": "Сез бу реклама кодын куллангансыз.",
-    "promoApplied": "{{summary}}"
+    "promoApplied": "{{summary}}",
+    "betsThisWeek": "{{limit}} {{limit}} кулланылган көндәлек коймаклар",
+    "multiplesThisWeek": "{{limit}} {{limit}} көн саен кулланыла"
   },
   "home": {
     "meta": {
       "title": "mybetrecord - Спорт Бетинг Трекеры, ROI & Келли Стейк Ледгер",
       "description": "Track every bet in one disciplined ledger. ROI, yield, Kelly stakes, CLV, equity curves, and exports — built for people who bet to a number.",
       "pricingTitle": "Pricing — mybetrecord",
-      "pricingDescription": "Free sports betting ledger with full features, or Pro for unlimited daily logging at about $5 USD per month in your local currency."
+      "pricingDescription": "Free sports betting ledger with full features, or Pro for unlimited logging at about $5 USD per month in your local currency."
     },
     "language": "Language",
     "pricing": "Pricing",
@@ -484,13 +484,13 @@
     "featureExportTitle": "Export & API",
     "featureExportDesc": "Download CSV, Excel, or JSON. Generate API keys for scripts and automation.",
     "pricingTitle": "Simple, honest pricing",
-    "pricingSub": "Every feature below is included on both plans. Pro removes the daily logging cap — about $5 USD per month in your local currency.",
+    "pricingSub": "Every feature below is included on both plans. Pro removes the weekly logging cap — about $5 USD per month in your local currency.",
     "pricingFreeName": "Free",
     "pricingFreePrice": "Free",
-    "pricingFreeLimit": "Up to 5 bets and 5 multis per day",
+    "pricingFreeLimit": "Up to 5 bets and 5 multis per week",
     "pricingProName": "Pro",
     "pricingProPrice": "{{price}} / month",
-    "pricingProLimit": "Unlimited bets and multis every day",
+    "pricingProLimit": "Unlimited bets and multis",
     "pricingFeatureLedger": "Full bet ledger — events, selections, stakes, outcomes & P/L",
     "pricingFeatureOdds": "All odds formats — decimal, American, fractional & Asian",
     "pricingFeatureTypes": "Every bet type — win, each-way, over-under, multis & handicap",

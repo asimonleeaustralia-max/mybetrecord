@@ -441,8 +441,6 @@
     "upgradeSuccess": "Byenveni nan Pro! Jwi parye san limit.",
     "upgradeCanceled": "Kesye anile.",
     "processing": "Yo ap trete amelyorasyon ou a - sa ka pran yon ti moman.",
-    "betsToday": "{{count}} nan {{limit}} parye chak jou yo itilize",
-    "multiplesToday": "{{count}} nan {{limit}} miltip chak jou yo itilize",
     "limitReached": "Limit chak jou rive - ajou ak Pro",
     "manageBilling": "Jere bòdwo",
     "promoLabel": "Kòd promo",
@@ -450,14 +448,16 @@
     "promoApply": "Aplike",
     "promoInvalid": "Kòd pwomosyon sa a pa valab.",
     "promoAlreadyUsed": "Ou te deja itilize kòd pwomosyon sa a.",
-    "promoApplied": "{{summary}}"
+    "promoApplied": "{{summary}}",
+    "betsThisWeek": "{{count}} nan {{limit}} parye chak jou yo itilize",
+    "multiplesThisWeek": "{{count}} nan {{limit}} miltip chak jou yo itilize"
   },
   "home": {
     "meta": {
       "title": "mybetrecord — Sports Betting Tracker, ROI & Kelly Stake Ledger",
       "description": "Track every bet in one disciplined ledger. ROI, yield, Kelly stakes, CLV, equity curves, and exports — built for people who bet to a number.",
       "pricingTitle": "Pricing — mybetrecord",
-      "pricingDescription": "Free sports betting ledger with full features, or Pro for unlimited daily logging at about $5 USD per month in your local currency."
+      "pricingDescription": "Free sports betting ledger with full features, or Pro for unlimited logging at about $5 USD per month in your local currency."
     },
     "language": "Language",
     "pricing": "Pricing",

@@ -397,8 +397,31 @@ def _local_day_bounds(user: User) -> tuple[datetime, datetime, str]:
     )
 
 
-def _bets_entered_today(db: Session, user: User, *, is_multiple: Optional[bool] = None) -> int:
-    start_utc, end_utc, _ = _local_day_bounds(user)
+def _local_week_bounds(user: User) -> tuple[datetime, datetime, str]:
+    """Start/end (UTC) of the user's current local calendar week (Mon–Sun).
+
+    Returns the Monday date (ISO) as the period label.
+    """
+    zone = _user_zone(user)
+    now_local = datetime.now(zone)
+    start_local = now_local.replace(hour=0, minute=0, second=0, microsecond=0)
+    start_local = start_local - timedelta(days=start_local.weekday())
+    end_local = start_local + timedelta(days=7)
+    return (
+        start_local.astimezone(timezone.utc),
+        end_local.astimezone(timezone.utc),
+        start_local.date().isoformat(),
+    )
+
+
+def _bets_entered_between(
+    db: Session,
+    user: User,
+    start_utc: datetime,
+    end_utc: datetime,
+    *,
+    is_multiple: Optional[bool] = None,
+) -> int:
     stmt = (
         select(func.count())
         .select_from(Bet)
@@ -413,14 +436,24 @@ def _bets_entered_today(db: Session, user: User, *, is_multiple: Optional[bool] 
     return db.scalar(stmt) or 0
 
 
+def _bets_entered_today(db: Session, user: User, *, is_multiple: Optional[bool] = None) -> int:
+    start_utc, end_utc, _ = _local_day_bounds(user)
+    return _bets_entered_between(db, user, start_utc, end_utc, is_multiple=is_multiple)
+
+
+def _bets_entered_this_week(db: Session, user: User, *, is_multiple: Optional[bool] = None) -> int:
+    start_utc, end_utc, _ = _local_week_bounds(user)
+    return _bets_entered_between(db, user, start_utc, end_utc, is_multiple=is_multiple)
+
+
 def _usage(db: Session, user: User) -> BetUsageOut:
-    _, _, day = _local_day_bounds(user)
-    single_count = _bets_entered_today(db, user, is_multiple=False)
-    multiple_count = _bets_entered_today(db, user, is_multiple=True)
+    _, _, week_start = _local_week_bounds(user)
+    single_count = _bets_entered_this_week(db, user, is_multiple=False)
+    multiple_count = _bets_entered_this_week(db, user, is_multiple=True)
     if user.is_pro:
         return BetUsageOut(
             plan="pro",
-            date=day,
+            date=week_start,
             count=single_count,
             limit=None,
             remaining=None,
@@ -428,11 +461,11 @@ def _usage(db: Session, user: User) -> BetUsageOut:
             multiple_limit=None,
             multiple_remaining=None,
         )
-    limit = settings.free_daily_bet_limit
-    multiple_limit = settings.free_daily_multiple_limit
+    limit = settings.free_weekly_bet_limit
+    multiple_limit = settings.free_weekly_multiple_limit
     return BetUsageOut(
         plan=user.plan or "free",
-        date=day,
+        date=week_start,
         count=single_count,
         limit=limit,
         remaining=max(0, limit - single_count),
@@ -454,25 +487,25 @@ def _enforce_daily_abuse_limit(db: Session, user: User) -> None:
         )
 
 
-def _enforce_daily_limit(db: Session, user: User, *, is_multiple: bool = False) -> None:
-    """Free users get a separate daily allowance for single and multiple bets."""
+def _enforce_weekly_limit(db: Session, user: User, *, is_multiple: bool = False) -> None:
+    """Free users get a separate weekly allowance for single and multiple bets."""
     _enforce_daily_abuse_limit(db, user)
     if user.is_pro:
         return
     if is_multiple:
-        limit = settings.free_daily_multiple_limit
-        if _bets_entered_today(db, user, is_multiple=True) >= limit:
+        limit = settings.free_weekly_multiple_limit
+        if _bets_entered_this_week(db, user, is_multiple=True) >= limit:
             raise HTTPException(
                 status.HTTP_402_PAYMENT_REQUIRED,
                 f"Free plan limit reached: you can enter up to {limit} multiple/parlay "
-                "bets per day. Upgrade to Pro for unlimited bets.",
+                "bets per week. Upgrade to Pro for unlimited bets.",
             )
         return
-    limit = settings.free_daily_bet_limit
-    if _bets_entered_today(db, user, is_multiple=False) >= limit:
+    limit = settings.free_weekly_bet_limit
+    if _bets_entered_this_week(db, user, is_multiple=False) >= limit:
         raise HTTPException(
             status.HTTP_402_PAYMENT_REQUIRED,
-            f"Free plan limit reached: you can enter up to {limit} bets per day. "
+            f"Free plan limit reached: you can enter up to {limit} bets per week. "
             "Upgrade to Pro for unlimited bets.",
         )
 
@@ -481,7 +514,7 @@ def _enforce_daily_limit(db: Session, user: User, *, is_multiple: bool = False) 
 
 @app.get("/bets/usage", response_model=BetUsageOut)
 def bet_usage(user: User = Depends(get_current_user), db: Session = Depends(get_db)) -> BetUsageOut:
-    """Today's bet count against the user's plan limit (null limit == unlimited)."""
+    """This week's bet count against the user's plan limit (null limit == unlimited)."""
     return _usage(db, user)
 
 @app.get("/bets/sports", response_model=list[str])
@@ -646,7 +679,7 @@ def create_bet(
     user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ) -> BetOut:
-    _enforce_daily_limit(db, user, is_multiple=payload.is_multiple)
+    _enforce_weekly_limit(db, user, is_multiple=payload.is_multiple)
     odds_format = payload.odds_format or user.default_odds_format or "decimal"
 
     legs: list[BetLeg] = []

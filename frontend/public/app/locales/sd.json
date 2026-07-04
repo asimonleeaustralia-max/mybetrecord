@@ -441,8 +441,6 @@
     "upgradeSuccess": "ڀليڪار ڪيون ٿا پرو! لامحدود شرطن جو مزو وٺو.",
     "upgradeCanceled": "چيڪ آئوٽ منسوخ ڪيو ويو.",
     "processing": "توهان جي اپ گريڊ تي عمل ڪيو پيو وڃي — اهو هڪ لمحو وٺي سگھي ٿو.",
-    "betsToday": "{{count}} مان {{limit}} روزاني شرط استعمال ڪيا ويا",
-    "multiplesToday": "{{count}} مان {{limit}} روزانو ملز استعمال ٿيل",
     "limitReached": "روزاني حد تائين پهچي وئي - پرو ڏانهن اپڊيٽ ڪريو",
     "manageBilling": "بلنگ جو انتظام ڪريو",
     "promoLabel": "پرومو ڪوڊ",
@@ -450,7 +448,9 @@
     "promoApply": "لاڳو ڪريو",
     "promoInvalid": "اھو پروموشن ڪوڊ صحيح نه آھي.",
     "promoAlreadyUsed": "توھان اڳ ۾ ئي ھي پروموشن ڪوڊ استعمال ڪيو آھي.",
-    "promoApplied": "{{summary}}"
+    "promoApplied": "{{summary}}",
+    "betsThisWeek": "{{count}} مان {{limit}} روزاني شرط استعمال ڪيا ويا",
+    "multiplesThisWeek": "{{count}} مان {{limit}} روزانو ملز استعمال ٿيل"
   },
   "home": {
     "meta": {

@@ -441,8 +441,6 @@
     "upgradeSuccess": "Murakaza neza kuri Pro! Ishimire inshuti zitagira imipaka.",
     "upgradeCanceled": "Kugenzura byahagaritswe.",
     "processing": "Iterambere ryawe ririmo gutunganywa - ibi birashobora gufata akanya.",
-    "betsToday": "{{count}} ya {{limit}} inshundura za buri munsi zikoreshwa",
-    "multiplesToday": "{{count}} ya {{limit}} inshuro nyinshi zikoreshwa buri munsi",
     "limitReached": "Imipaka ya buri munsi yageze - kuzamura kuri Pro",
     "manageBilling": "Gucunga fagitire",
     "promoLabel": "Kode ya promo",
@@ -450,7 +448,9 @@
     "promoApply": "Koresha",
     "promoInvalid": "Iyo kode yo kuzamurwa ntabwo yemewe.",
     "promoAlreadyUsed": "Mumaze gukoresha kode yo kuzamura.",
-    "promoApplied": "{{summary}}"
+    "promoApplied": "{{summary}}",
+    "betsThisWeek": "{{count}} ya {{limit}} inshundura za buri munsi zikoreshwa",
+    "multiplesThisWeek": "{{count}} ya {{limit}} inshuro nyinshi zikoreshwa buri munsi"
   },
   "home": {
     "meta": {

@@ -441,8 +441,6 @@
     "upgradeSuccess": "Вітаем у Pro! Атрымлівайце асалоду ад неабмежаваных ставак.",
     "upgradeCanceled": "Выезд адменены.",
     "processing": "Ваша абнаўленне апрацоўваецца - гэта можа заняць некаторы час.",
-    "betsToday": "Выкарыстана {{count}} з {{limit}} штодзённых ставак",
-    "multiplesToday": "Выкарыстана {{count}} з {{limit}} сутачных кратных",
     "limitReached": "Дзённы ліміт дасягнуты — перайдзіце на Pro",
     "manageBilling": "Кіраванне білінгам",
     "promoLabel": "Прома-код",
@@ -450,7 +448,9 @@
     "promoApply": "Ужыць",
     "promoInvalid": "Гэты прома-код несапраўдны.",
     "promoAlreadyUsed": "Вы ўжо выкарыстоўвалі гэты прома-код.",
-    "promoApplied": "{{summary}}"
+    "promoApplied": "{{summary}}",
+    "betsThisWeek": "Выкарыстана {{count}} з {{limit}} штодзённых ставак",
+    "multiplesThisWeek": "Выкарыстана {{count}} з {{limit}} сутачных кратных"
   },
   "home": {
     "meta": {

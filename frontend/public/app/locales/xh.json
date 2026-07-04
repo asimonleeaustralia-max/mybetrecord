@@ -441,8 +441,6 @@
     "upgradeSuccess": "Wamkelekile kwiPro! Yonwabela ukubheja okungenamkhawulo.",
     "upgradeCanceled": "Ukuphuma kurhoxisiwe.",
     "processing": "Uphuculo lwakho luyenziwa - oku kungathatha umzuzwana.",
-    "betsToday": "{{count}} ye {{limit}} ukubheja kwemihla ngemihla kusetyenzisiwe",
-    "multiplesToday": "{{count}} ye {{limit}} uphindaphindo lwemihla ngemihla olusetyenzisiweyo",
     "limitReached": "Umda wemihla ngemihla ufikeleleke - phucula kwiPro",
     "manageBilling": "Lawula amatyala",
     "promoLabel": "Ikhowudi yokuthengisa",
@@ -450,7 +448,9 @@
     "promoApply": "Faka isicelo",
     "promoInvalid": "Loo khowudi yonyuselo ayisebenzi.",
     "promoAlreadyUsed": "Sele usebenzise le khowudi yonyuselo.",
-    "promoApplied": "_PH0__"
+    "promoApplied": "_PH0__",
+    "betsThisWeek": "{{count}} ye {{limit}} ukubheja kwemihla ngemihla kusetyenzisiwe",
+    "multiplesThisWeek": "{{count}} ye {{limit}} uphindaphindo lwemihla ngemihla olusetyenzisiweyo"
   },
   "home": {
     "meta": {

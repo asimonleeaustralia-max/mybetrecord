@@ -441,8 +441,6 @@
     "upgradeSuccess": "Üdvözöljük a Pro-ban! Élvezze a korlátlan fogadásokat.",
     "upgradeCanceled": "A fizetés törölve.",
     "processing": "A frissítés feldolgozása folyamatban van – ez eltarthat egy ideig.",
-    "betsToday": "{{count}}/{{limit}} napi fogadás felhasználva",
-    "multiplesToday": "{{count}}/{{limit}} napi többszöröse használt",
     "limitReached": "Elérte a napi limitet – frissítsen Pro-ra",
     "manageBilling": "Számlázás kezelése",
     "promoLabel": "Promóciós kód",
@@ -450,7 +448,9 @@
     "promoApply": "Alkalmazni",
     "promoInvalid": "Ez a promóciós kód nem érvényes.",
     "promoAlreadyUsed": "Már felhasználta ezt a promóciós kódot.",
-    "promoApplied": "{{summary}}"
+    "promoApplied": "{{summary}}",
+    "betsThisWeek": "{{count}}/{{limit}} napi fogadás felhasználva",
+    "multiplesThisWeek": "{{count}}/{{limit}} napi többszöröse használt"
   },
   "home": {
     "meta": {

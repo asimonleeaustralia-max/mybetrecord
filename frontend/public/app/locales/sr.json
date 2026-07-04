@@ -441,16 +441,16 @@
     "upgradeSuccess": "Добродошли у Про! Уживајте у неограниченим опкладама.",
     "upgradeCanceled": "Checkout canceled.",
     "processing": "Your upgrade is being processed — this can take a moment.",
-    "betsToday": "{{count}} of {{limit}} daily bets used",
-    "multiplesToday": "{{count}} of {{limit}} daily multiples used",
-    "limitReached": "Daily limit reached — upgrade to Pro",
+    "limitReached": "Weekly limit reached — upgrade to Pro",
     "manageBilling": "Manage billing",
     "promoLabel": "Promo code",
     "promoPlaceholder": "Optional",
     "promoApply": "Apply",
     "promoInvalid": "That promotion code isn't valid.",
     "promoAlreadyUsed": "You have already used this promotion code.",
-    "promoApplied": "{{summary}}"
+    "promoApplied": "{{summary}}",
+    "betsThisWeek": "{{count}} of {{limit}} weekly bets used",
+    "multiplesThisWeek": "{{count}} of {{limit}} weekly multiples used"
   },
   "home": {
     "meta": {

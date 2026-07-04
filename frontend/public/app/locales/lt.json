@@ -441,8 +441,6 @@
     "upgradeSuccess": "Sveiki atvykę į Pro! Mėgaukitės neribotais statymais.",
     "upgradeCanceled": "Patikra atšaukta.",
     "processing": "Jūsų naujovinimas apdorojamas – tai gali užtrukti.",
-    "betsToday": "Naudojama {{count}} iš {{limit}} dienos statymų",
-    "multiplesToday": "Naudojama {{count}} iš {{limit}} kasdieninių kartotinių",
     "limitReached": "Pasiektas dienos limitas – naujovinkite į Pro",
     "manageBilling": "Tvarkyti atsiskaitymą",
     "promoLabel": "Reklamos kodas",
@@ -450,7 +448,9 @@
     "promoApply": "Taikyti",
     "promoInvalid": "Tas reklamos kodas negalioja.",
     "promoAlreadyUsed": "Jūs jau panaudojote šį reklamos kredito kodą.",
-    "promoApplied": "{{summary}}"
+    "promoApplied": "{{summary}}",
+    "betsThisWeek": "Naudojama {{count}} iš {{limit}} dienos statymų",
+    "multiplesThisWeek": "Naudojama {{count}} iš {{limit}} kasdieninių kartotinių"
   },
   "home": {
     "meta": {

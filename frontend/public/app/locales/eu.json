@@ -418,8 +418,8 @@
     "unavailable": "Planaren xehetasunak ez daude eskuragarri une honetan.",
     "free": "Doan",
     "pro": "Pro",
-    "freeDesc": "Doako planean zaude — gehienez {{limit}} apustu egunean.",
-    "proDesc": "Pro-n zaude: eguneko apustu mugagabeak.",
+    "freeDesc": "Doako planean zaude — gehienez {{limit}} apustu astean.",
+    "proDesc": "Pro-n zaude: asteko apustu mugagabeak.",
     "compDesc": "Doako Pro sarbidea duzu.",
     "compUntil": "Doako sarbidea {{date}} arte.",
     "compLifetime": "Bizi osorako Pro sarbidea duzu.",
@@ -441,8 +441,6 @@
     "upgradeSuccess": "Ongi etorri Pro-ra! Gozatu apustu mugagabeak.",
     "upgradeCanceled": "Ordainketa bertan behera utzi da.",
     "processing": "Bertsio-berritzea prozesatzen ari da. Une bat behar du.",
-    "betsToday": "{{count}} erabilitako eguneko {{limit}} apustu",
-    "multiplesToday": "{{count}} {{limit}} eguneko multiploak erabiltzen dira",
     "limitReached": "Eguneko mugara iritsi da: bertsio-berritu Pro-ra",
     "manageBilling": "Kudeatu fakturazioa",
     "promoLabel": "Promozio kodea",
@@ -450,7 +448,9 @@
     "promoApply": "Aplikatu",
     "promoInvalid": "Sustapen-kode horrek ez du balio.",
     "promoAlreadyUsed": "Dagoeneko erabili duzu sustapen-kode hau.",
-    "promoApplied": "{{summary}}"
+    "promoApplied": "{{summary}}",
+    "betsThisWeek": "{{count}} erabilitako asteko {{limit}} apustu",
+    "multiplesThisWeek": "{{count}} {{limit}} asteko multiploak erabiltzen dira"
   },
   "home": {
     "meta": {
@@ -487,7 +487,7 @@
     "pricingSub": "Beheko ezaugarri guztiak bi planetan sartzen dira. Pro-k eguneroko erregistro-muga kentzen du: 5 USD inguru hilero zure tokiko monetan.",
     "pricingFreeName": "Doan",
     "pricingFreePrice": "Doan",
-    "pricingFreeLimit": "Gehienez 5 apustu eta 5 multis egunean",
+    "pricingFreeLimit": "Gehienez 5 apustu eta 5 multis astean",
     "pricingProName": "Pro",
     "pricingProPrice": "{{price}} / hilabete",
     "pricingProLimit": "Apustu mugagabeak eta multis egunero",

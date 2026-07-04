@@ -441,8 +441,6 @@
     "upgradeSuccess": "ወደ Pro እንኳን በደህና መጡ! ያልተገደበ ውርርድ ይደሰቱ።",
     "upgradeCanceled": "ቼክ መውጣት ተሰርዟል።",
     "processing": "ማሻሻያዎ በሂደት ላይ ነው - ይህ ትንሽ ጊዜ ሊወስድ ይችላል።",
-    "betsToday": "{{count}} ከ{{limit}} ዕለታዊ ውርርድ ጥቅም ላይ ውሏል",
-    "multiplesToday": "{{count}} የ{{limit}} ዕለታዊ ብዜቶች ጥቅም ላይ ይውላሉ",
     "limitReached": "ዕለታዊ ገደብ ላይ ደርሷል - ወደ Pro ማሻሻል",
     "manageBilling": "የሂሳብ አከፋፈልን ያስተዳድሩ",
     "promoLabel": "የማስተዋወቂያ ኮድ",
@@ -450,7 +448,9 @@
     "promoApply": "ያመልክቱ",
     "promoInvalid": "ያ የማስተዋወቂያ ኮድ ልክ ያልሆነ ነው።",
     "promoAlreadyUsed": "ይህን የማስተዋወቂያ ኮድ አስቀድመው ተጠቅመዋል።",
-    "promoApplied": "{{summary}}"
+    "promoApplied": "{{summary}}",
+    "betsThisWeek": "{{count}} ከ{{limit}} ዕለታዊ ውርርድ ጥቅም ላይ ውሏል",
+    "multiplesThisWeek": "{{count}} የ{{limit}} ዕለታዊ ብዜቶች ጥቅም ላይ ይውላሉ"
   },
   "home": {
     "meta": {

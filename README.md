@@ -90,8 +90,8 @@ That starts Postgres, all four services, and the frontend. Create an account, se
 
 ### Plans & billing
 
-- **Free** — up to 5 single bets and 5 multiple/parlay bets per day (configurable via `FREE_DAILY_BET_LIMIT` / `FREE_DAILY_MULTIPLE_LIMIT`).
-- **Pro** — unlimited daily bets, ~$5 USD/month (20 currencies; see `shared/betrecord_shared/pricing.py`).
+- **Free** — up to 5 single bets and 5 multiple/parlay bets per calendar week (Mon–Sun; configurable via `FREE_WEEKLY_BET_LIMIT` / `FREE_WEEKLY_MULTIPLE_LIMIT`).
+- **Pro** — unlimited bets, ~$5 USD/month (20 currencies; see `shared/betrecord_shared/pricing.py`).
 
 Billing is **optional**. Without `STRIPE_SECRET_KEY`, everyone stays on Free and upgrade buttons show as unavailable.
 

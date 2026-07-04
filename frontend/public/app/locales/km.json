@@ -441,8 +441,6 @@
     "upgradeSuccess": "សូមស្វាគមន៍មកកាន់ Pro! រីករាយជាមួយការភ្នាល់គ្មានដែនកំណត់។",
     "upgradeCanceled": "ការបង់ប្រាក់ត្រូវបានលុបចោល។",
     "processing": "ការអាប់ដេតរបស់អ្នកកំពុងត្រូវបានដំណើរការ — វាអាចចំណាយពេលបន្តិច។",
-    "betsToday": "{{count}} នៃ {{limit}} ការភ្នាល់ប្រចាំថ្ងៃត្រូវបានប្រើប្រាស់",
-    "multiplesToday": "{{count}} នៃ {{limit}} គុណប្រចាំថ្ងៃបានប្រើ",
     "limitReached": "បានដល់ដែនកំណត់ប្រចាំថ្ងៃ — ដំឡើងកំណែទៅ Pro",
     "manageBilling": "គ្រប់គ្រងការចេញវិក្កយបត្រ",
     "promoLabel": "លេខកូដផ្សព្វផ្សាយ",
@@ -450,7 +448,9 @@
     "promoApply": "អនុវត្ត",
     "promoInvalid": "លេខកូដផ្សព្វផ្សាយនោះមិនត្រឹមត្រូវទេ។",
     "promoAlreadyUsed": "អ្នកបានប្រើលេខកូដផ្សព្វផ្សាយនេះរួចហើយ។",
-    "promoApplied": "{{summary}}"
+    "promoApplied": "{{summary}}",
+    "betsThisWeek": "{{count}} នៃ {{limit}} ការភ្នាល់ប្រចាំថ្ងៃត្រូវបានប្រើប្រាស់",
+    "multiplesThisWeek": "{{count}} នៃ {{limit}} គុណប្រចាំថ្ងៃបានប្រើ"
   },
   "home": {
     "meta": {

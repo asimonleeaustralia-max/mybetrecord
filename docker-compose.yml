@@ -8,8 +8,8 @@ x-service-env: &service-env
   JWT_SECRET: dev-only-change-me
   ENVIRONMENT: development
   CORS_ORIGINS: "*"
-  FREE_DAILY_BET_LIMIT: ${FREE_DAILY_BET_LIMIT:-5}
-  FREE_DAILY_MULTIPLE_LIMIT: ${FREE_DAILY_MULTIPLE_LIMIT:-5}
+  FREE_WEEKLY_BET_LIMIT: ${FREE_WEEKLY_BET_LIMIT:-5}
+  FREE_WEEKLY_MULTIPLE_LIMIT: ${FREE_WEEKLY_MULTIPLE_LIMIT:-5}
 
 x-healthcheck-python: &healthcheck-python
   interval: 10s

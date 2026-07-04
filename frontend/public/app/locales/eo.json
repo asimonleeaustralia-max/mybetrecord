@@ -441,8 +441,6 @@
     "upgradeSuccess": "Bonvenon al Pro! Ĝuu senlimajn vetojn.",
     "upgradeCanceled": "Pago nuligita.",
     "processing": "Via ĝisdatigo estas prilaborata — tio povas daŭri momenton.",
-    "betsToday": "{{count}} el {{limit}} ĉiutagaj vetoj uzataj",
-    "multiplesToday": "{{count}} el {{limit}} ĉiutagaj multobloj uzataj",
     "limitReached": "Ĉiutaga limo atingita — ĝisdatigo al Pro",
     "manageBilling": "Administri fakturadon",
     "promoLabel": "Reklama kodo",
@@ -450,7 +448,9 @@
     "promoApply": "Apliki",
     "promoInvalid": "Tiu reklama kodo ne validas.",
     "promoAlreadyUsed": "Vi jam uzis ĉi tiun reklaman kodon.",
-    "promoApplied": "{{summary}}"
+    "promoApplied": "{{summary}}",
+    "betsThisWeek": "{{count}} el {{limit}} ĉiutagaj vetoj uzataj",
+    "multiplesThisWeek": "{{count}} el {{limit}} ĉiutagaj multobloj uzataj"
   },
   "home": {
     "meta": {

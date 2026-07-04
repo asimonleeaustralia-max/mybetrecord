@@ -441,8 +441,6 @@
     "upgradeSuccess": "Tongasoa eto amin'ny Pro! Ankafizo ny filokana tsy misy fetra.",
     "upgradeCanceled": "Nofoanana ny Checkout.",
     "processing": "Eo am-panaovana ny fanavaozanao - mety haka fotoana kely izany.",
-    "betsToday": "{{count}} amin'ny {{limit}} filokana isan'andro ampiasaina",
-    "multiplesToday": "{{count}} amin'ny {{limit}} isan'andro maromaro ampiasaina",
     "limitReached": "Nahatratra ny fetra isan'andro — fanavaozana ho Pro",
     "manageBilling": "Mitantana faktiora",
     "promoLabel": "Kaody fihenam-bidy",
@@ -450,7 +448,9 @@
     "promoApply": "AMPIHARO",
     "promoInvalid": "Tsy manan-kery io kaody fampiroboroboana io.",
     "promoAlreadyUsed": "Efa nampiasa ity kaody fampiroboroboana ity ianao.",
-    "promoApplied": "{{summary}}"
+    "promoApplied": "{{summary}}",
+    "betsThisWeek": "{{count}} amin'ny {{limit}} filokana isan'andro ampiasaina",
+    "multiplesThisWeek": "{{count}} amin'ny {{limit}} isan'andro maromaro ampiasaina"
   },
   "home": {
     "meta": {

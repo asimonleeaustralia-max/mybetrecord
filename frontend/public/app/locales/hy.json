@@ -441,8 +441,6 @@
     "upgradeSuccess": "Բարի գալուստ Pro! Վայելեք անսահմանափակ խաղադրույքներ:",
     "upgradeCanceled": "Ստուգումը չեղարկվել է:",
     "processing": "Ձեր թարմացումը մշակվում է. դա կարող է մի պահ տևել:",
-    "betsToday": "Օգտագործված {{count}} օրական {{limit}} խաղադրույքներից",
-    "multiplesToday": "Օգտագործված {{count}} օրական {{limit}} բազմապատիկներից",
     "limitReached": "Օրվա սահմանաչափը հասել է. թարմացրե՛ք Pro-ի",
     "manageBilling": "Կառավարեք վճարումը",
     "promoLabel": "Պրոմո կոդ",
@@ -450,7 +448,9 @@
     "promoApply": "Դիմել",
     "promoInvalid": "Այդ խթանման կոդը վավեր չէ:",
     "promoAlreadyUsed": "Դուք արդեն օգտագործել եք այս գովազդային կոդը:",
-    "promoApplied": "{{summary}}"
+    "promoApplied": "{{summary}}",
+    "betsThisWeek": "Օգտագործված {{count}} օրական {{limit}} խաղադրույքներից",
+    "multiplesThisWeek": "Օգտագործված {{count}} օրական {{limit}} բազմապատիկներից"
   },
   "home": {
     "meta": {

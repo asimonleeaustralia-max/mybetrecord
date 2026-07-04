@@ -441,8 +441,6 @@
     "upgradeSuccess": "Pro වෙත සාදරයෙන් පිළිගනිමු! අසීමිත ඔට්ටු භුක්ති විඳින්න.",
     "upgradeCanceled": "පිටවීම අවලංගු කරන ලදී.",
     "processing": "ඔබගේ උත්ශ්‍රේණි කිරීම සකසමින් පවතී - මෙයට මොහොතක් ගත විය හැක.",
-    "betsToday": "දෛනික ඔට්ටු {{limit}} න් {{count}} භාවිතා වේ",
-    "multiplesToday": "දෛනික ගුණාකාර {{limit}} න් {{count}} භාවිතා වේ",
     "limitReached": "දෛනික සීමාව ළඟා විය - Pro වෙත උත්ශ්‍රේණි කරන්න",
     "manageBilling": "බිල්පත් කළමනාකරණය කරන්න",
     "promoLabel": "ප්රවර්ධන කේතය",
@@ -450,7 +448,9 @@
     "promoApply": "අයදුම් කරන්න",
     "promoInvalid": "එම ප්‍රවර්ධන කේතය වලංගු නැත.",
     "promoAlreadyUsed": "ඔබ දැනටමත් මෙම ප්‍රවර්ධන කේතය භාවිතා කර ඇත.",
-    "promoApplied": "{{summary}}"
+    "promoApplied": "{{summary}}",
+    "betsThisWeek": "දෛනික ඔට්ටු {{limit}} න් {{count}} භාවිතා වේ",
+    "multiplesThisWeek": "දෛනික ගුණාකාර {{limit}} න් {{count}} භාවිතා වේ"
   },
   "home": {
     "meta": {

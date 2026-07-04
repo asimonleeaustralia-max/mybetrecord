@@ -441,8 +441,6 @@
     "upgradeSuccess": "Barka da zuwa Pro! Ji daɗin fare marasa iyaka.",
     "upgradeCanceled": "An soke biyan kuɗi",
     "processing": "Ana sarrafa haɓakawar ku - wannan na iya ɗaukar ɗan lokaci.",
-    "betsToday": "{{count}} na {{limit}} ana amfani da fare yau da kullun",
-    "multiplesToday": "{{count}} na {{limit}} ana amfani da yawan adadin yau da kullun",
     "limitReached": "An kai iyakar yau da kullun - haɓakawa zuwa Pro",
     "manageBilling": "Sarrafa lissafin kuɗi",
     "promoLabel": "Lambar kiran kasuwa",
@@ -450,7 +448,9 @@
     "promoApply": "Aiwatar",
     "promoInvalid": "Wannan lambar talla ba ta aiki.",
     "promoAlreadyUsed": "Kun riga kun yi amfani da wannan lambar talla.",
-    "promoApplied": "{{summary}}"
+    "promoApplied": "{{summary}}",
+    "betsThisWeek": "{{count}} na {{limit}} ana amfani da fare yau da kullun",
+    "multiplesThisWeek": "{{count}} na {{limit}} ana amfani da yawan adadin yau da kullun"
   },
   "home": {
     "meta": {

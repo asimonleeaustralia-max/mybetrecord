@@ -649,7 +649,7 @@ def test_plan_defaults_to_free(clients, auth_headers):
     assert body["plan"] == "free"
     assert body["stripe_configured"] is False
     assert body["pricing"] is None
-    assert body["free_daily_bet_limit"] == get_settings().free_daily_bet_limit
+    assert body["free_weekly_bet_limit"] == get_settings().free_weekly_bet_limit
     assert body["subscription_cancel_at_period_end"] is False
 
 
@@ -858,9 +858,9 @@ def _promote_to_pro(email: str) -> None:
         db.commit()
 
 
-def test_bet_usage_tracks_daily_count(clients, auth_headers):
+def test_bet_usage_tracks_weekly_count(clients, auth_headers):
     headers, _ = auth_headers
-    limit = get_settings().free_daily_bet_limit
+    limit = get_settings().free_weekly_bet_limit
 
     usage = clients["bets"].get("/bets/usage", headers=headers).json()
     assert usage["plan"] == "free"
@@ -874,9 +874,9 @@ def test_bet_usage_tracks_daily_count(clients, auth_headers):
     assert usage["remaining"] == limit - 1
 
 
-def test_free_plan_blocks_after_daily_limit(clients, auth_headers):
+def test_free_plan_blocks_after_weekly_limit(clients, auth_headers):
     headers, _ = auth_headers
-    limit = get_settings().free_daily_bet_limit
+    limit = get_settings().free_weekly_bet_limit
 
     for _ in range(limit):
         assert clients["bets"].post("/bets", headers=headers, json={
@@ -884,7 +884,7 @@ def test_free_plan_blocks_after_daily_limit(clients, auth_headers):
             "odds": 2.0, "odds_format": "decimal", "stake": 10,
         }).status_code == 201
 
-    # The next bet that day is rejected with 402 Payment Required.
+    # The next bet that week is rejected with 402 Payment Required.
     blocked = clients["bets"].post("/bets", headers=headers, json={
         "event": "e", "selection": "s", "sport": "Soccer",
         "odds": 2.0, "odds_format": "decimal", "stake": 10,
@@ -892,10 +892,10 @@ def test_free_plan_blocks_after_daily_limit(clients, auth_headers):
     assert blocked.status_code == 402
 
 
-def test_pro_plan_has_no_daily_limit(clients, auth_headers):
+def test_pro_plan_has_no_weekly_limit(clients, auth_headers):
     headers, email = auth_headers
     _promote_to_pro(email)
-    limit = get_settings().free_daily_bet_limit
+    limit = get_settings().free_weekly_bet_limit
 
     for _ in range(limit + 2):
         assert clients["bets"].post("/bets", headers=headers, json={
@@ -1082,7 +1082,7 @@ def test_admin_comp_pro_grants_and_revokes(clients, auth_headers):
 
     usage = clients["bets"].get("/bets/usage", headers=user_headers).json()
     assert usage["plan"] == "free"
-    assert usage["limit"] == get_settings().free_daily_bet_limit
+    assert usage["limit"] == get_settings().free_weekly_bet_limit
 
 
 def test_admin_cannot_disable_self(clients):

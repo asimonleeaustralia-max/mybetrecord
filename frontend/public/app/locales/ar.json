@@ -441,8 +441,6 @@
     "upgradeSuccess": "مرحبا بكم في برو! استمتع برهانات غير محدودة.",
     "upgradeCanceled": "تم إلغاء الدفع.",
     "processing": "تتم الآن معالجة ترقيتك، وقد يستغرق ذلك بعض الوقت.",
-    "betsToday": "{{count}} من {{limit}} الرهانات اليومية المستخدمة",
-    "multiplesToday": "{{count}} من {{limit}} المضاعفات اليومية المستخدمة",
     "limitReached": "تم الوصول إلى الحد اليومي — الترقية إلى Pro",
     "manageBilling": "إدارة الفواتير",
     "promoLabel": "الرمز الترويجي",
@@ -450,7 +448,9 @@
     "promoApply": "يتقدم",
     "promoInvalid": "هذا الرمز الترويجي غير صالح.",
     "promoAlreadyUsed": "لقد استخدمت بالفعل هذا الرمز الترويجي.",
-    "promoApplied": "{{summary}}"
+    "promoApplied": "{{summary}}",
+    "betsThisWeek": "{{count}} من {{limit}} الرهانات الأسبوعية المستخدمة",
+    "multiplesThisWeek": "{{count}} من {{limit}} المضاعفات الأسبوعية المستخدمة"
   },
   "home": {
     "meta": {
@@ -487,7 +487,7 @@
     "pricingSub": "يتم تضمين كل ميزة أدناه في كلا الخطتين. يقوم Pro بإزالة الحد الأقصى للتسجيل اليومي — حوالي 5 دولارات أمريكية شهريًا بعملتك المحلية.",
     "pricingFreeName": "حر",
     "pricingFreePrice": "حر",
-    "pricingFreeLimit": "ما يصل إلى 5 رهانات و5 رهانات متعددة في اليوم",
+    "pricingFreeLimit": "ما يصل إلى 5 رهانات و5 رهانات متعددة في الأسبوع",
     "pricingProName": "برو",
     "pricingProPrice": "{{price}} / شهر",
     "pricingProLimit": "رهانات غير محدودة ومتعددة كل يوم",

@@ -441,8 +441,6 @@
     "upgradeSuccess": "Fáilte go Pro! Bain sult as geallta gan teorainn.",
     "upgradeCanceled": "Seiceáil amach cealaithe.",
     "processing": "Tá d'uasghrádú á phróiseáil - féadfaidh sé seo nóiméad a ghlacadh.",
-    "betsToday": "{{count}} de {{limit}} geallta laethúil a úsáidtear",
-    "multiplesToday": "{{count}} de {{limit}} iolraí laethúla a úsáidtear",
     "limitReached": "Teorainn laethúil bainte amach - uasghrádú go Pro",
     "manageBilling": "Bainistigh billeáil",
     "promoLabel": "Cóid promo",
@@ -450,7 +448,9 @@
     "promoApply": "Cuir iarratas isteach",
     "promoInvalid": "Níl an cód promóisin sin bailí.",
     "promoAlreadyUsed": "D'úsáid tú an cód promóisin seo cheana.",
-    "promoApplied": "{{summary}}"
+    "promoApplied": "{{summary}}",
+    "betsThisWeek": "{{count}} de {{limit}} geallta laethúil a úsáidtear",
+    "multiplesThisWeek": "{{count}} de {{limit}} iolraí laethúla a úsáidtear"
   },
   "home": {
     "meta": {

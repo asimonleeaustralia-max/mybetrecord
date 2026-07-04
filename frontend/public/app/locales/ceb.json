@@ -441,8 +441,6 @@
     "upgradeSuccess": "Welcome sa Pro! Paglingaw sa walay kutub nga pusta.",
     "upgradeCanceled": "Gikansela ang pag-checkout.",
     "processing": "Ang imong pag-upgrade giproseso — kini mahimong magdugay.",
-    "betsToday": "{{count}} sa {{limit}} adlaw-adlaw nga pusta nga gigamit",
-    "multiplesToday": "{{count}} sa {{limit}} inadlaw nga multiples nga gigamit",
     "limitReached": "Naabot ang adlaw-adlaw nga limitasyon - pag-upgrade sa Pro",
     "manageBilling": "Pagdumala sa pagsingil",
     "promoLabel": "Promo code",
@@ -450,7 +448,9 @@
     "promoApply": "Pag-aplay",
     "promoInvalid": "Kana nga code sa promosyon dili balido.",
     "promoAlreadyUsed": "Gigamit na nimo kini nga code sa promosyon.",
-    "promoApplied": "{{summary}}"
+    "promoApplied": "{{summary}}",
+    "betsThisWeek": "{{count}} sa {{limit}} adlaw-adlaw nga pusta nga gigamit",
+    "multiplesThisWeek": "{{count}} sa {{limit}} inadlaw nga multiples nga gigamit"
   },
   "home": {
     "meta": {

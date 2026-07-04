@@ -419,14 +419,14 @@
     "free": "Bepul",
     "pro": "Pro",
     "freeDesc": "Siz Bepul tarif rejasidasiz — kuniga {{limit}} gacha tikish.",
-    "proDesc": "Siz Pro-dasiz — cheksiz kunlik tikish.",
+    "proDesc": "Siz Pro-dasiz — cheksiz haftalik tikish.",
     "compDesc": "Pro-ga bepul kirish huquqiga egasiz.",
     "compUntil": "{{date}} gacha bepul kirish.",
     "compLifetime": "Sizda Pro-dan umrbod bepul foydalanish imkoniyati mavjud.",
     "renewsOn": "{{date}} da yangilanadi.",
     "cancelsOn": "Pro rejangiz {{date}} sanasida bekor qilinadi.",
     "upgradeTitle": "Pro versiyasiga yangilang",
-    "upgradeBlurb": "Cheksiz kunlik tikish. Istalgan vaqtda bekor qiling.",
+    "upgradeBlurb": "Cheksiz haftalik tikish. Istalgan vaqtda bekor qiling.",
     "payCurrency": "Toʻlash",
     "perMonth": "{{price}} / oy",
     "upgrade": "Pro versiyasiga yangilang",
@@ -441,8 +441,6 @@
     "upgradeSuccess": "Pro-ga xush kelibsiz! Cheksiz tikishlardan rohatlaning.",
     "upgradeCanceled": "Hisob-kitob bekor qilindi.",
     "processing": "Yangilanishingiz qayta ishlanmoqda — bu biroz vaqt olishi mumkin.",
-    "betsToday": "{{count}} dan {{limit}} kunlik tikish ishlatilgan",
-    "multiplesToday": "{{limit}} kunlik koʻpaytmalardan {{count}} foydalanilgan",
     "limitReached": "Kunlik limitga yetdi — Pro-ga yangilang",
     "manageBilling": "Hisob-kitoblarni boshqarish",
     "promoLabel": "Kupon kodi",
@@ -450,14 +448,16 @@
     "promoApply": "Murojaat qiling",
     "promoInvalid": "Bu promokod yaroqsiz.",
     "promoAlreadyUsed": "Siz allaqachon ushbu promo-koddan foydalangansiz.",
-    "promoApplied": "{{summary}}"
+    "promoApplied": "{{summary}}",
+    "betsThisWeek": "{{count}} dan {{limit}} haftalik tikish ishlatilgan",
+    "multiplesThisWeek": "{{limit}} haftalik koʻpaytmalardan {{count}} foydalanilgan"
   },
   "home": {
     "meta": {
       "title": "mybetrecord — Sport tikish kuzatuvchisi, ROI va Kelly Stake Ledger",
       "description": "Har bir garovni bitta intizomli daftarda kuzatib boring. ROI, rentabellik, Kelli ulushlari, CLV, kapital egri chiziqlari va eksport - raqamga pul tikadigan odamlar uchun yaratilgan.",
       "pricingTitle": "Narxlar — mybetrecord",
-      "pricingDescription": "To'liq funksiyalarga ega bepul sport tikish kitobi yoki mahalliy valyutada oyiga taxminan $5 USD miqdorida cheksiz kunlik ro'yxatdan o'tish uchun Pro."
+      "pricingDescription": "To'liq funksiyalarga ega bepul sport tikish kitobi yoki mahalliy valyutada oyiga taxminan $5 USD miqdorida cheksiz haftalik ro'yxatdan o'tish uchun Pro."
     },
     "language": "Til",
     "pricing": "Narxlash",

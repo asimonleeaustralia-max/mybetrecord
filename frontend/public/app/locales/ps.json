@@ -441,8 +441,6 @@
     "upgradeSuccess": "پرو ته ښه راغلاست! د نامحدود شرطونو څخه خوند واخلئ.",
     "upgradeCanceled": "چک آوټ لغوه شو.",
     "processing": "ستاسو اپ گریڈ پروسس کیږي - دا یو شیبه وخت نیسي.",
-    "betsToday": "د {{count}} څخه {{limit}} ورځني شرطونه کارول کیږي",
-    "multiplesToday": "د {{count}} د {{limit}} ورځني ضربونه کارول شوي",
     "limitReached": "ورځني حد ته رسیدلی - پرو ته لوړ کړئ",
     "manageBilling": "د بلینګ اداره کول",
     "promoLabel": "پرومو کوډ",
@@ -450,7 +448,9 @@
     "promoApply": "درخواست وکړئ",
     "promoInvalid": "دا د ترویج کوډ اعتبار نلري.",
     "promoAlreadyUsed": "تاسو دمخه د دې ترویج کوډ کارولی دی.",
-    "promoApplied": "{{summary}}"
+    "promoApplied": "{{summary}}",
+    "betsThisWeek": "د {{count}} څخه {{limit}} ورځني شرطونه کارول کیږي",
+    "multiplesThisWeek": "د {{count}} د {{limit}} ورځني ضربونه کارول شوي"
   },
   "home": {
     "meta": {

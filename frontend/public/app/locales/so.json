@@ -441,8 +441,6 @@
     "upgradeSuccess": "Ku soo dhawoow Pro! Ku raaxayso sharad aan xadidnayn.",
     "upgradeCanceled": "Jeedintii waa la joojiyay",
     "processing": "Casriyeyntaada waa la habeeyey - tani waxay qaadan kartaa daqiiqad.",
-    "betsToday": "{{count}} ee {{limit}} maalin walba sharad la isticmaalo",
-    "multiplesToday": "{{count}} ee {{limit}} dhufashada maalinlaha ah ee la isticmaalo",
     "limitReached": "Xadka maalinlaha ah ayaa la gaarey - u cusboonaysii Pro",
     "manageBilling": "Maamul biilasha",
     "promoLabel": "Koodhka xayeysiinta",
@@ -450,7 +448,9 @@
     "promoApply": "Codso",
     "promoInvalid": "Koodhkaas xayaysiisku maaha mid sax ah.",
     "promoAlreadyUsed": "Waxaad horey u isticmaashay summadan xayaysiinta",
-    "promoApplied": "{{summary}}"
+    "promoApplied": "{{summary}}",
+    "betsThisWeek": "{{count}} ee {{limit}} maalin walba sharad la isticmaalo",
+    "multiplesThisWeek": "{{count}} ee {{limit}} dhufashada maalinlaha ah ee la isticmaalo"
   },
   "home": {
     "meta": {

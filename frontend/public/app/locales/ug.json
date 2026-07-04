@@ -441,8 +441,6 @@
     "upgradeSuccess": "Pro غا خۇش كەپسىز! چەكسىز دو تىكىشتىن ھۇزۇرلىنىڭ.",
     "upgradeCanceled": "چىقىم قىلىش ئەمەلدىن قالدۇرۇلدى.",
     "processing": "يېڭىلاش بىر تەرەپ قىلىنىۋاتىدۇ - بۇنىڭغا بىر ئاز ۋاقىت كېتىدۇ.",
-    "betsToday": "{{count}} كۈندىلىك {{limit}} ئىشلىتىلىدۇ",
-    "multiplesToday": "{{count}} {{limit}} كۈندىلىك كۆپ ئىشلىتىلىدىغان",
     "limitReached": "كۈندىلىك چەككە يەتتى - Pro غا يېڭىلاش",
     "manageBilling": "ھېساباتنى باشقۇرۇش",
     "promoLabel": "تەشۋىقات كودى",
@@ -450,7 +448,9 @@
     "promoApply": "ئىلتىماس قىلىڭ",
     "promoInvalid": "بۇ تەشۋىقات كودى ئىناۋەتلىك ئەمەس.",
     "promoAlreadyUsed": "بۇ تەشۋىقات كودىنى ئىشلىتىپ بولدىڭىز.",
-    "promoApplied": "{{summary}}"
+    "promoApplied": "{{summary}}",
+    "betsThisWeek": "{{count}} كۈندىلىك {{limit}} ئىشلىتىلىدۇ",
+    "multiplesThisWeek": "{{count}} {{limit}} كۈندىلىك كۆپ ئىشلىتىلىدىغان"
   },
   "home": {
     "meta": {

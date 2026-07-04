@@ -208,7 +208,7 @@ class PlanOut(BaseModel):
     subscription_cancel_at_period_end: bool = False
     subscription_current_period_end: Optional[datetime] = None
     comp_pro_until: Optional[datetime] = None
-    free_daily_bet_limit: int
+    free_weekly_bet_limit: int
     stripe_configured: bool = False
     # Bundled so the plan page works when extensions block /billing/pricing.
     pricing: Optional[PricingOut] = None
@@ -328,10 +328,11 @@ class PromoCodeStatsOut(BaseModel):
 
 
 class BetUsageOut(BaseModel):
-    """How many bets the user has entered today, against their plan's limit.
+    """How many bets the user has entered this calendar week, against their plan limit.
 
+    `date` is the Monday (ISO date) of the user's current local week (Mon–Sun).
     `count`/`limit`/`remaining` track single bets; the `multiple_*` fields track
-    multiple/parlay bets, which have their own separate daily allowance.
+    multiple/parlay bets, which have their own separate weekly allowance.
     """
     plan: str
     date: str

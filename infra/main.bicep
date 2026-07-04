@@ -44,8 +44,8 @@ param stripeSecretKey string = ''
 @description('Existing Stripe Product id for Pro prices (optional).')
 param stripeProductId string = ''
 
-@description('Max bets a free user can enter per day (Pro is unlimited).')
-param freeDailyBetLimit int = 5
+@description('Max bets a free user can enter per calendar week Mon–Sun (Pro is unlimited).')
+param freeWeeklyBetLimit int = 5
 
 @secure()
 param stripeWebhookSecret string = ''
@@ -185,7 +185,7 @@ var commonEnv = [
   { name: 'JWT_SECRET', secretRef: 'jwt-secret' }
   { name: 'ENVIRONMENT', value: 'production' }
   { name: 'CORS_ORIGINS', value: corsOrigins }
-  { name: 'FREE_DAILY_BET_LIMIT', value: string(freeDailyBetLimit) }
+  { name: 'FREE_WEEKLY_BET_LIMIT', value: string(freeWeeklyBetLimit) }
 ]
 
 var registries = [

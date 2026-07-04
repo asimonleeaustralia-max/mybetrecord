@@ -441,8 +441,6 @@
     "upgradeSuccess": "Kaabo si Pro! Gbadun awọn tẹtẹ ailopin.",
     "upgradeCanceled": "Ti fagile isanwo.",
     "processing": "Igbesoke rẹ ti wa ni ilọsiwaju - eyi le gba iṣẹju diẹ.",
-    "betsToday": "{{count}} ti {{limit}} ojoojumọ bets lo",
-    "multiplesToday": "{{count}} ti {{limit}} iye owo lojoojumọ ti a lo",
     "limitReached": "Iwọn opin ojoojumọ ti de - igbesoke si Pro",
     "manageBilling": "Ṣakoso awọn ìdíyelé",
     "promoLabel": "Promo koodu",
@@ -450,7 +448,9 @@
     "promoApply": "Waye",
     "promoInvalid": "Koodu igbega yẹn ko wulo.",
     "promoAlreadyUsed": "O ti lo koodu igbega yii tẹlẹ.",
-    "promoApplied": "{{summary}}"
+    "promoApplied": "{{summary}}",
+    "betsThisWeek": "{{count}} ti {{limit}} ojoojumọ bets lo",
+    "multiplesThisWeek": "{{count}} ti {{limit}} iye owo lojoojumọ ti a lo"
   },
   "home": {
     "meta": {

@@ -56,7 +56,7 @@ class User(Base):
     last_login_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
 
-    # Billing / subscription. Free is the default; Pro lifts the daily bet cap.
+    # Billing / subscription. Free is the default; Pro lifts the weekly bet cap.
     # Stripe is the source of truth — these fields cache its state so the rest
     # of the app can gate features without calling Stripe on every request.
     plan: Mapped[str] = mapped_column(String(16), default="free")  # free | pro

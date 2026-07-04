@@ -441,8 +441,6 @@
     "upgradeSuccess": "Croeso i Pro! Mwynhewch betiau diderfyn.",
     "upgradeCanceled": "Desg dalu wedi'i chanslo.",
     "processing": "Mae eich uwchraddiad yn cael ei brosesu - gall hyn gymryd eiliad.",
-    "betsToday": "{{count}} o {{limit}} betiau dyddiol a ddefnyddir",
-    "multiplesToday": "{{count}} o {{limit}} lluosrifau dyddiol a ddefnyddir",
     "limitReached": "Cyrhaeddwyd y terfyn dyddiol - uwchraddio i Pro",
     "manageBilling": "Rheoli bilio",
     "promoLabel": "Cod hyrwyddo",
@@ -450,7 +448,9 @@
     "promoApply": "Ymgeisiwch",
     "promoInvalid": "Nid yw'r cod hyrwyddo hwnnw'n ddilys.",
     "promoAlreadyUsed": "Rydych chi eisoes wedi defnyddio'r cod hyrwyddo hwn.",
-    "promoApplied": "{{summary}}"
+    "promoApplied": "{{summary}}",
+    "betsThisWeek": "{{count}} o {{limit}} betiau dyddiol a ddefnyddir",
+    "multiplesThisWeek": "{{count}} o {{limit}} lluosrifau dyddiol a ddefnyddir"
   },
   "home": {
     "meta": {

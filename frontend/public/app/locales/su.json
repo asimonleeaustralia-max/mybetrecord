@@ -441,8 +441,6 @@
     "upgradeSuccess": "Wilujeng sumping di Pro! Ngarasakeun bets taya.",
     "upgradeCanceled": "Checkout dibolaykeun.",
     "processing": "Pamutahiran anjeun nuju diproses - ieu tiasa sakedap.",
-    "betsToday": "{{count}} tina {{limit}} bets poean dipaké",
-    "multiplesToday": "{{count}} tina {{limit}} lilipetan poean dipaké",
     "limitReached": "wates poean ngahontal - ningkatkeun ka Pro",
     "manageBilling": "Ngatur tagihan",
     "promoLabel": "Kodeu promo",
@@ -450,7 +448,9 @@
     "promoApply": "Larapkeun",
     "promoInvalid": "Kode promosi éta henteu sah.",
     "promoAlreadyUsed": "Anjeun parantos nganggo kode promosi ieu.",
-    "promoApplied": "{{summary}}"
+    "promoApplied": "{{summary}}",
+    "betsThisWeek": "{{count}} tina {{limit}} bets poean dipaké",
+    "multiplesThisWeek": "{{count}} tina {{limit}} lilipetan poean dipaké"
   },
   "home": {
     "meta": {
