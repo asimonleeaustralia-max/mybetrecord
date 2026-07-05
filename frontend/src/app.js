@@ -3253,10 +3253,13 @@ async function loadAdminLandingHits() {
       <td>${esc(h.isp || "—")}</td>
       <td>${esc(h.isp_country || "—")}</td>
       <td>${esc(h.browser || "—")}</td>
+      <td>${esc(h.browser_language || "—")}</td>
+      <td>${esc(h.operating_system || "—")}</td>
+      <td>${esc(h.timezone || "—")}</td>
       <td>${landingVisitorBadge(h.is_bot)}</td>
       <td title="${esc(h.referrer || "")}">${esc(shortReferrer(h.referrer))}</td>
     </tr>`).join("")
-    || `<tr><td colspan="7" class="empty">${t("admin.noLandingHits")}</td></tr>`;
+    || `<tr><td colspan="10" class="empty">${t("admin.noLandingHits")}</td></tr>`;
 }
 
 function syncAdminPromoForm() {

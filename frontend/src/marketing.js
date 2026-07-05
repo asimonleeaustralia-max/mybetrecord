@@ -70,6 +70,8 @@
       path: "/",
       referrer: document.referrer || null,
       promo_code: promo ? promo.trim() : null,
+      browser_language: navigator.language || null,
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || null,
     });
     if (navigator.sendBeacon) {
       navigator.sendBeacon("/auth/track/landing", new Blob([payload], { type: "application/json" }));

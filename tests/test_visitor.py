@@ -1,11 +1,21 @@
 """Tests for visitor header parsing."""
 
-from betrecord_shared.visitor import client_country, is_bot, parse_browser
+from betrecord_shared.visitor import client_country, is_bot, parse_browser, parse_os
 
 
 def test_parse_browser_chrome():
     ua = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0 Safari/537.36"
     assert parse_browser(ua) == "Chrome 120"
+
+
+def test_parse_os_windows():
+    ua = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0 Safari/537.36"
+    assert parse_os(ua) == "Windows"
+
+
+def test_parse_os_android():
+    ua = "Mozilla/5.0 (Linux; Android 13; Pixel 7) Chrome/120.0.0.0 Mobile Safari/537.36"
+    assert parse_os(ua) == "Android 13"
 
 
 def test_is_bot_detects_crawler():

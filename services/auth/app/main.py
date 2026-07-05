@@ -51,7 +51,7 @@ from betrecord_shared.security import (
     verify_password,
 )
 from betrecord_shared.ip_lookup import lookup_ip
-from betrecord_shared.visitor import client_country, is_bot, parse_browser
+from betrecord_shared.visitor import client_country, is_bot, parse_browser, parse_os
 
 settings = get_settings()
 app = FastAPI(title="mybetrecord · auth", version="0.1.0")
@@ -113,12 +113,17 @@ def track_landing(payload: LandingTrackIn, request: Request, db: Session = Depen
         if ip_info:
             isp = ip_info.isp
             isp_country = ip_info.country
+    browser_language = (payload.browser_language or "").strip()[:32] or None
+    timezone = (payload.timezone or "").strip()[:64] or None
     db.add(
         LandingHit(
             path=path,
             ip_address=ip,
             user_agent=ua[:512] if ua else None,
             browser=parse_browser(ua),
+            browser_language=browser_language,
+            operating_system=parse_os(ua),
+            timezone=timezone,
             country=client_country(dict(request.headers)),
             isp=isp,
             isp_country=isp_country,

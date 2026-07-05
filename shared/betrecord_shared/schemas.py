@@ -407,6 +407,8 @@ class LandingTrackIn(BaseModel):
     path: str = "/"
     referrer: Optional[str] = None
     promo_code: Optional[str] = Field(default=None, max_length=64)
+    browser_language: Optional[str] = Field(default=None, max_length=32)
+    timezone: Optional[str] = Field(default=None, max_length=64)
 
 
 class LandingHitOut(BaseModel):
@@ -416,6 +418,9 @@ class LandingHitOut(BaseModel):
     ip_address: Optional[str]
     user_agent: Optional[str]
     browser: Optional[str]
+    browser_language: Optional[str] = None
+    operating_system: Optional[str] = None
+    timezone: Optional[str] = None
     country: Optional[str]
     isp: Optional[str] = None
     isp_country: Optional[str] = None

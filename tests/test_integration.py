@@ -957,7 +957,12 @@ def test_landing_track_and_admin_list(clients):
     ua = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36"
     r = clients["auth"].post(
         "/auth/track/landing",
-        json={"path": "/", "referrer": "https://www.google.com/"},
+        json={
+            "path": "/",
+            "referrer": "https://www.google.com/",
+            "browser_language": "en-AU",
+            "timezone": "Australia/Sydney",
+        },
         headers={"User-Agent": ua},
     )
     assert r.status_code == 204
@@ -975,6 +980,9 @@ def test_landing_track_and_admin_list(clients):
     assert len(body) >= 2
     human = next(h for h in body if not h["is_bot"])
     assert human["browser"].startswith("Chrome")
+    assert human["browser_language"] == "en-AU"
+    assert human["operating_system"] == "Windows"
+    assert human["timezone"] == "Australia/Sydney"
     assert human["is_bot"] is False
     assert human["referrer"] == "https://www.google.com/"
     assert any(h["is_bot"] for h in body)

@@ -443,6 +443,29 @@ def _ensure_landing_isp_columns() -> None:
                 )
 
 
+def _ensure_landing_client_columns() -> None:
+    """Add browser_language, operating_system, and timezone to landing_hits."""
+    if "landing_hits" not in inspect(engine).get_table_names():
+        return
+    columns = {c["name"] for c in inspect(engine).get_columns("landing_hits")}
+    dialect = engine.dialect.name
+    specs = (
+        ("browser_language", "VARCHAR(32)"),
+        ("operating_system", "VARCHAR(64)"),
+        ("timezone", "VARCHAR(64)"),
+    )
+    with engine.begin() as conn:
+        for name, col_type in specs:
+            if name in columns:
+                continue
+            if dialect == "postgresql":
+                conn.execute(
+                    text(f"ALTER TABLE landing_hits ADD COLUMN IF NOT EXISTS {name} {col_type}")
+                )
+            else:
+                conn.execute(text(f"ALTER TABLE landing_hits ADD COLUMN {name} {col_type}"))
+
+
 def _ensure_landing_promo_column() -> None:
     """Add promo_code to landing_hits for promo referral tracking."""
     if "landing_hits" not in inspect(engine).get_table_names():

@@ -44,6 +44,36 @@ def parse_browser(user_agent: str | None) -> str:
     return "Unknown"
 
 
+_OS_PATTERNS: list[tuple[re.Pattern[str], str, bool]] = [
+    (re.compile(r"Windows NT 10\.0", re.I), "Windows", False),
+    (re.compile(r"Windows NT 6\.3", re.I), "Windows 8.1", False),
+    (re.compile(r"Windows NT 6\.[12]", re.I), "Windows 7/8", False),
+    (re.compile(r"Windows", re.I), "Windows", False),
+    (re.compile(r"(?:iPhone|iPad|iPod).*OS ([\d_]+)", re.I), "iOS", True),
+    (re.compile(r"(?:iPhone|iPad|iPod)", re.I), "iOS", False),
+    (re.compile(r"Android ([\d.]+)", re.I), "Android", True),
+    (re.compile(r"Android", re.I), "Android", False),
+    (re.compile(r"CrOS", re.I), "ChromeOS", False),
+    (re.compile(r"Mac OS X ([\d_]+)", re.I), "macOS", True),
+    (re.compile(r"Macintosh", re.I), "macOS", False),
+    (re.compile(r"Linux", re.I), "Linux", False),
+]
+
+
+def parse_os(user_agent: str | None) -> str:
+    if not user_agent:
+        return "Unknown"
+    for pattern, name, has_version in _OS_PATTERNS:
+        m = pattern.search(user_agent)
+        if not m:
+            continue
+        if has_version:
+            version = m.group(1).replace("_", ".").split(".")[0]
+            return f"{name} {version}" if version.isdigit() else name
+        return name
+    return "Unknown"
+
+
 def client_country(headers: dict[str, str]) -> str | None:
     """Best-effort ISO country code from common CDN / proxy headers."""
     for key in (
