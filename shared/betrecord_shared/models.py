@@ -146,6 +146,8 @@ class LandingHit(Base):
     user_agent: Mapped[str | None] = mapped_column(String(512), nullable=True)
     browser: Mapped[str | None] = mapped_column(String(64), nullable=True)
     country: Mapped[str | None] = mapped_column(String(2), nullable=True, index=True)
+    isp: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    isp_country: Mapped[str | None] = mapped_column(String(2), nullable=True, index=True)
     is_bot: Mapped[bool] = mapped_column(Boolean, default=False, index=True)
     referrer: Mapped[str | None] = mapped_column(String(512), nullable=True)
     promo_code: Mapped[str | None] = mapped_column(String(64), index=True, nullable=True)

@@ -406,6 +406,43 @@ def _ensure_last_login_at_column() -> None:
             conn.execute(text("ALTER TABLE users ADD COLUMN last_login_at DATETIME"))
 
 
+def _ensure_landing_isp_columns() -> None:
+    """Add isp and isp_country to landing_hits for IP geolocation."""
+    if "landing_hits" not in inspect(engine).get_table_names():
+        return
+    columns = {c["name"] for c in inspect(engine).get_columns("landing_hits")}
+    dialect = engine.dialect.name
+    with engine.begin() as conn:
+        if "isp" not in columns:
+            if dialect == "postgresql":
+                conn.execute(
+                    text("ALTER TABLE landing_hits ADD COLUMN IF NOT EXISTS isp VARCHAR(128)")
+                )
+            else:
+                conn.execute(text("ALTER TABLE landing_hits ADD COLUMN isp VARCHAR(128)"))
+        if "isp_country" not in columns:
+            if dialect == "postgresql":
+                conn.execute(
+                    text(
+                        "ALTER TABLE landing_hits ADD COLUMN IF NOT EXISTS isp_country VARCHAR(2)"
+                    )
+                )
+                conn.execute(
+                    text(
+                        "CREATE INDEX IF NOT EXISTS ix_landing_hits_isp_country "
+                        "ON landing_hits (isp_country)"
+                    )
+                )
+            else:
+                conn.execute(text("ALTER TABLE landing_hits ADD COLUMN isp_country VARCHAR(2)"))
+                conn.execute(
+                    text(
+                        "CREATE INDEX IF NOT EXISTS ix_landing_hits_isp_country "
+                        "ON landing_hits (isp_country)"
+                    )
+                )
+
+
 def _ensure_landing_promo_column() -> None:
     """Add promo_code to landing_hits for promo referral tracking."""
     if "landing_hits" not in inspect(engine).get_table_names():

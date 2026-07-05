@@ -50,6 +50,7 @@ from betrecord_shared.security import (
     hash_password_reset_token,
     verify_password,
 )
+from betrecord_shared.ip_lookup import lookup_ip
 from betrecord_shared.visitor import client_country, is_bot, parse_browser
 
 settings = get_settings()
@@ -104,13 +105,23 @@ def track_landing(payload: LandingTrackIn, request: Request, db: Session = Depen
     promo_code = (payload.promo_code or "").strip()[:64] or None
     if promo_code:
         promo_code = promo_code.upper()
+    ip = _client_ip(request)
+    isp = None
+    isp_country = None
+    if ip:
+        ip_info = lookup_ip(ip)
+        if ip_info:
+            isp = ip_info.isp
+            isp_country = ip_info.country
     db.add(
         LandingHit(
             path=path,
-            ip_address=_client_ip(request),
+            ip_address=ip,
             user_agent=ua[:512] if ua else None,
             browser=parse_browser(ua),
             country=client_country(dict(request.headers)),
+            isp=isp,
+            isp_country=isp_country,
             is_bot=is_bot(ua),
             referrer=referrer,
             promo_code=promo_code,

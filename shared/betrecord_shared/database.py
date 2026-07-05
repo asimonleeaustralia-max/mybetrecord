@@ -65,6 +65,7 @@ def init_db() -> None:
         _ensure_billing_columns,
         _ensure_comp_pro_until_column,
         _ensure_landing_promo_column,
+        _ensure_landing_isp_columns,
         _ensure_promo_stats_token_column,
         _ensure_public_bets_columns,
         _ensure_account_description_column,
@@ -103,6 +104,7 @@ def init_db() -> None:
     _ensure_billing_columns()
     _ensure_comp_pro_until_column()
     _ensure_landing_promo_column()
+    _ensure_landing_isp_columns()
     _ensure_promo_stats_token_column()
     _ensure_public_bets_columns()
     _ensure_account_description_column()

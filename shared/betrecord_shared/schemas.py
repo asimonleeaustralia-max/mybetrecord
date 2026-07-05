@@ -417,6 +417,8 @@ class LandingHitOut(BaseModel):
     user_agent: Optional[str]
     browser: Optional[str]
     country: Optional[str]
+    isp: Optional[str] = None
+    isp_country: Optional[str] = None
     is_bot: bool
     referrer: Optional[str]
     promo_code: Optional[str] = None

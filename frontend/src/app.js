@@ -505,6 +505,27 @@ function formatDt(iso) {
   return `${date} ${time}`;
 }
 
+function formatBrowserLocalDt(iso) {
+  if (!iso) return "—";
+  const d = new Date(iso);
+  const tzOpt = { timeZone: browserTimeZone() };
+  const date = i18n.formatLocaleDate(d, { day: "2-digit", month: "short", year: "numeric", ...tzOpt });
+  const time = i18n.formatLocaleTime(d, { hour: "2-digit", minute: "2-digit", ...tzOpt });
+  return `${date} ${time}`;
+}
+
+function browserTimeZoneDisplayLabel() {
+  const tz = browserTimeZone();
+  const off = timezoneOffsetLabel(tz);
+  return off ? `${tz} ${off}` : tz;
+}
+
+function updateAdminLandingWhenHeader() {
+  const th = $("#adminLandingWhenHeader");
+  if (!th) return;
+  th.textContent = t("admin.whenWithTz", { tz: browserTimeZoneDisplayLabel() });
+}
+
 function toast(msg, isErr = false) {
   const el = $("#toast");
   el.textContent = msg;
@@ -3223,17 +3244,19 @@ function shortReferrer(ref) {
 }
 
 async function loadAdminLandingHits() {
+  updateAdminLandingWhenHeader();
   const hits = await api("/auth/admin/landing-hits");
   $("#adminLandingBody").innerHTML = hits.map(h => `
     <tr>
-      <td class="num">${formatDt(h.created_at)}</td>
+      <td class="num">${formatBrowserLocalDt(h.created_at)}</td>
       <td class="num">${esc(h.ip_address || "—")}</td>
-      <td>${esc(h.country || "—")}</td>
+      <td>${esc(h.isp || "—")}</td>
+      <td>${esc(h.isp_country || "—")}</td>
       <td>${esc(h.browser || "—")}</td>
       <td>${landingVisitorBadge(h.is_bot)}</td>
       <td title="${esc(h.referrer || "")}">${esc(shortReferrer(h.referrer))}</td>
     </tr>`).join("")
-    || `<tr><td colspan="6" class="empty">${t("admin.noLandingHits")}</td></tr>`;
+    || `<tr><td colspan="7" class="empty">${t("admin.noLandingHits")}</td></tr>`;
 }
 
 function syncAdminPromoForm() {
