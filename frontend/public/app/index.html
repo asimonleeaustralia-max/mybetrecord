@@ -21,6 +21,9 @@
   <!-- ───────────────────────── Auth gate ───────────────────────── -->
   <section id="auth" class="auth" hidden>
     <div class="auth__panel">
+      <div class="auth__locale">
+        <select id="authLocaleSelect" data-i18n-attr="aria-label" data-i18n="home.language"></select>
+      </div>
       <a href="/" class="wordmark wordmark--lg">my<span>bet</span>record</a>
       <p class="auth__tag" data-i18n="auth.tagline">A disciplined ledger for people who bet to a number.</p>
 
@@ -710,11 +713,17 @@
         if (loading) loading.hidden = false;
         var loc = store.getItem("mbr_token")
           ? "en"
-          : (window.i18n.getLocaleCookie() || window.i18n.getLoginLocale());
+          : await window.i18n.getLoginLocale();
         await window.i18n.initI18n(loc);
         document.title = window.i18n.t("meta.title");
         if (!store.getItem("mbr_token") && auth) {
           window.i18n.applyI18n(auth);
+          await window.i18n.bindLocaleSelect(document.getElementById("authLocaleSelect"), {
+            onChange: function () {
+              document.title = window.i18n.t("meta.title");
+              window.i18n.applyI18n(auth);
+            },
+          });
           if (loading) loading.hidden = true;
           auth.hidden = false;
         }

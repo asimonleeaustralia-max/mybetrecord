@@ -789,6 +789,15 @@ function updateAdminNav() {
 function bindEvents() {
   bindModalEvents();
   initPasswordToggles();
+  const authLocale = $("#authLocaleSelect");
+  if (authLocale) {
+    i18n.bindLocaleSelect(authLocale, {
+      onChange: () => {
+        document.title = t("meta.title");
+        i18n.applyI18n($("#auth"));
+      },
+    }).catch(err => console.error("Auth locale select failed:", err));
+  }
 
   $$("[data-auth-tab]").forEach(btn => btn.addEventListener("click", () => {
     const tab = btn.dataset.authTab;
@@ -3429,21 +3438,21 @@ async function start() {
     }
     const shareToken = getShareToken();
     if (shareToken) {
-      await i18n.initI18n(i18n.getLoginLocale?.() || "en");
+      await i18n.initI18n(await i18n.getLoginLocale());
       document.title = t("share.title");
       await renderPublicShare(shareToken);
       return;
     }
     const promoStatsToken = getPromoStatsToken();
     if (promoStatsToken) {
-      await i18n.initI18n(i18n.getLoginLocale?.() || "en");
+      await i18n.initI18n(await i18n.getLoginLocale());
       document.title = t("promoStats.title");
       await renderPublicPromoStats(promoStatsToken);
       return;
     }
     const publicBetsToken = getPublicBetsToken();
     if (publicBetsToken) {
-      await i18n.initI18n(i18n.getLoginLocale?.() || "en");
+      await i18n.initI18n(await i18n.getLoginLocale());
       document.title = t("publicProfile.title");
       await renderPublicProfile(publicBetsToken);
       return;
@@ -3451,7 +3460,7 @@ async function start() {
     if (getResetTokenFromHash()) {
       setToken(null);
       showAuthLoading();
-      await i18n.initI18n(i18n.getLoginLocale?.() || "en");
+      await i18n.initI18n(await i18n.getLoginLocale());
       document.title = t("meta.title");
       i18n.applyI18n(document);
       showAuth();
@@ -3463,7 +3472,7 @@ async function start() {
       await boot({ loading: false });
     } else {
       showAuthLoading();
-      await i18n.initI18n(i18n.getLoginLocale());
+      await i18n.initI18n(await i18n.getLoginLocale());
       document.title = t("meta.title");
       i18n.applyI18n(document);
       if (getVerifyTokenFromHash()) {

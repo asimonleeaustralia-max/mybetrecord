@@ -120,18 +120,18 @@
 
   async function boot() {
     trackLandingVisit();
-    const loc = window.i18n.getLoginLocale();
+    const loc = await window.i18n.getLoginLocale();
     await window.i18n.initI18n(loc);
 
     const select = document.getElementById("localeSelect");
-    if (select) {
-      select.innerHTML = window.i18n.languageOptions(window.i18n.currentLocale());
-      select.addEventListener("change", async () => {
-        await window.i18n.setLocale(select.value, { persistCookie: true, updateTitle: false });
+    await window.i18n.bindLocaleSelect(select, {
+      persistCookie: true,
+      updateTitle: false,
+      onChange: () => {
         applyPageMeta();
         updateProPrice();
-      });
-    }
+      },
+    });
 
     window.i18n.applyI18n(document);
     applyPageMeta();

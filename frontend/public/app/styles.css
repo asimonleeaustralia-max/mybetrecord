@@ -67,6 +67,23 @@ a.wordmark:focus-visible { outline: 2px solid var(--brass); outline-offset: 2px;
   padding: 32px 28px;
   box-shadow: 0 24px 60px -20px rgba(0,0,0,.5);
 }
+.auth__locale {
+  display: flex;
+  justify-content: flex-end;
+  margin: -8px 0 12px;
+}
+.auth__locale select {
+  font: 500 .82rem var(--sans);
+  color: var(--muted);
+  background: var(--canvas);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 6px 10px;
+  cursor: pointer;
+  max-width: 100%;
+}
+.auth__locale select:hover { border-color: rgba(0,0,0,.2); color: var(--ink); }
+.auth__locale select:focus { outline: 2px solid var(--brass); outline-offset: 2px; }
 .auth__tag { color: var(--muted); margin: 6px 0 22px; font-size: .92rem; }
 .seg {
   display: grid; grid-template-columns: 1fr 1fr;

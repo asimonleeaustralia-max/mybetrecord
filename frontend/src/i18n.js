@@ -84,11 +84,25 @@ function getLocaleCookie() {
   return normalizeLocale(getCookie(LOCALE_COOKIE));
 }
 
-/** Login screen: browser language unless returning user (locale cookie). */
-function getLoginLocale() {
+/** First visit: browser language. Returning visitor: locale cookie (if set). */
+async function getLoginLocale() {
+  await loadCatalog();
   const saved = getLocaleCookie();
   if (saved) return saved;
   return browserLocale();
+}
+
+async function bindLocaleSelect(select, { persistCookie = true, updateTitle = true, onChange } = {}) {
+  if (!select || select.dataset.localeBound) return;
+  await loadCatalog();
+  const code = currentLocale();
+  select.innerHTML = languageOptions(code);
+  select.value = code;
+  select.dataset.localeBound = "1";
+  select.addEventListener("change", async () => {
+    await setLocale(select.value, { persistCookie, updateTitle });
+    onChange?.();
+  });
 }
 
 function currentLocale() {
@@ -244,6 +258,7 @@ window.i18n = {
   t,
   applyI18n,
   getLoginLocale,
+  bindLocaleSelect,
   getLocaleCookie,
   setLocaleCookie,
   currentLocale,
