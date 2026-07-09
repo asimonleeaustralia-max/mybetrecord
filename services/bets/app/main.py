@@ -166,6 +166,7 @@ def _recompute(bet: Bet, user: User, db: Session) -> None:
         bet.kelly_stake = None
         bet.model_edge_pct = None
         bet.model_kelly_stake = None
+        bet.tipster_edge_pct = None
         return
 
     multiplier = user.kelly_multiplier or 1.0
@@ -190,6 +191,11 @@ def _recompute(bet: Bet, user: User, db: Session) -> None:
     else:
         bet.model_edge_pct = None
         bet.model_kelly_stake = None
+
+    if bet.tipster_implied_odds and bet.tipster_implied_odds > 1.0:
+        bet.tipster_edge_pct = bm.edge_pct_from_implied(bet.odds_decimal, bet.tipster_implied_odds)
+    else:
+        bet.tipster_edge_pct = None
 
 
 def _serialise(bet: Bet) -> BetOut:
@@ -730,6 +736,7 @@ def create_bet(
         bet_model=payload.bet_model,
         model_implied_odds=payload.model_implied_odds,
         personal_implied_odds=payload.personal_implied_odds,
+        tipster_implied_odds=payload.tipster_implied_odds,
         closing_odds=payload.closing_odds,
         closing_odds_exchange=payload.closing_odds_exchange,
         bookmaker=payload.bookmaker,
@@ -818,7 +825,8 @@ def update_bet(
     for field in (
         "tournament", "event", "selection", "sport", "bet_type", "side", "placed_at", "event_at", "settled_at", "stake", "currency",
         "each_way", "place_fraction", "placed", "free_bet", "outcome", "cash_out_amount",
-        "bet_model", "model_implied_odds", "personal_implied_odds", "closing_odds", "closing_odds_exchange",
+        "bet_model", "model_implied_odds", "personal_implied_odds", "tipster_implied_odds",
+        "closing_odds", "closing_odds_exchange",
         "bookmaker", "portal", "exchange_commission_pct", "tipster", "bet_broker", "notes",
     ):
         if field in skip:

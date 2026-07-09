@@ -192,7 +192,9 @@
     "maxLegs": "Berbilang boleh mempunyai paling banyak {{max}} pilihan.",
     "needTwoLegs": "Berbilang memerlukan sekurang-kurangnya 2 pilihan.",
     "legMissingFields": "Setiap pilihan memerlukan acara dan pilihan.",
-    "legBadOdds": "Setiap pilihan memerlukan kemungkinan yang sah lebih daripada 1."
+    "legBadOdds": "Setiap pilihan memerlukan kemungkinan yang sah lebih daripada 1.",
+    "tipsterImplied": "Tipster implied odds (decimal)",
+    "tipsterEdge": "Tipster edge"
   },
   "reports": {
     "title": "Laporan",

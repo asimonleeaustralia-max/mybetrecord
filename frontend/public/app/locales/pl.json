@@ -192,7 +192,9 @@
     "maxLegs": "Wielokrotność może mieć maksymalnie {{max}} selekcji.",
     "needTwoLegs": "Wielokrotność wymaga co najmniej 2 selekcji.",
     "legMissingFields": "Każdy wybór wymaga zdarzenia i selekcji.",
-    "legBadOdds": "Każdy wybór wymaga prawidłowego kursu większego niż 1."
+    "legBadOdds": "Każdy wybór wymaga prawidłowego kursu większego niż 1.",
+    "tipsterImplied": "Tipster implied odds (decimal)",
+    "tipsterEdge": "Tipster edge"
   },
   "reports": {
     "title": "Raporty",

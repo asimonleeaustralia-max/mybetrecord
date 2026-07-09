@@ -192,7 +192,9 @@
     "maxLegs": "Viacnásobný počet môže mať najviac {{max}} výberov.",
     "needTwoLegs": "Viacnásobná vyžaduje aspoň 2 výbery.",
     "legMissingFields": "Každý výber potrebuje udalosť a výber.",
-    "legBadOdds": "Každý výber potrebuje platný kurz väčší ako 1."
+    "legBadOdds": "Každý výber potrebuje platný kurz väčší ako 1.",
+    "tipsterImplied": "Tipster implied odds (decimal)",
+    "tipsterEdge": "Tipster edge"
   },
   "reports": {
     "title": "Správy",

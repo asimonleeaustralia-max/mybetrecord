@@ -192,7 +192,9 @@
     "maxLegs": "ਇੱਕ ਮਲਟੀਪਲ ਵਿੱਚ ਵੱਧ ਤੋਂ ਵੱਧ {{max}} ਚੋਣ ਹੋ ਸਕਦੀਆਂ ਹਨ।",
     "needTwoLegs": "ਇੱਕ ਮਲਟੀਪਲ ਨੂੰ ਘੱਟੋ-ਘੱਟ 2 ਚੋਣ ਦੀ ਲੋੜ ਹੁੰਦੀ ਹੈ।",
     "legMissingFields": "ਹਰੇਕ ਚੋਣ ਨੂੰ ਇੱਕ ਇਵੈਂਟ ਅਤੇ ਇੱਕ ਚੋਣ ਦੀ ਲੋੜ ਹੁੰਦੀ ਹੈ।",
-    "legBadOdds": "ਹਰੇਕ ਚੋਣ ਲਈ 1 ਤੋਂ ਵੱਧ ਵੈਧ ਔਕੜਾਂ ਦੀ ਲੋੜ ਹੁੰਦੀ ਹੈ।"
+    "legBadOdds": "ਹਰੇਕ ਚੋਣ ਲਈ 1 ਤੋਂ ਵੱਧ ਵੈਧ ਔਕੜਾਂ ਦੀ ਲੋੜ ਹੁੰਦੀ ਹੈ।",
+    "tipsterImplied": "Tipster implied odds (decimal)",
+    "tipsterEdge": "Tipster edge"
   },
   "reports": {
     "title": "ਰਿਪੋਰਟਾਂ",

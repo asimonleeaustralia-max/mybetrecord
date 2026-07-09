@@ -192,7 +192,9 @@
     "maxLegs": "Вишеструко може имати највише __ПХ0__ избора.",
     "needTwoLegs": "За вишеструку су потребна најмање 2 избора.",
     "legMissingFields": "За сваку селекцију је потребан догађај и избор.",
-    "legBadOdds": "За сваки избор су потребне важеће квоте веће од 1."
+    "legBadOdds": "За сваки избор су потребне важеће квоте веће од 1.",
+    "tipsterImplied": "Tipster implied odds (decimal)",
+    "tipsterEdge": "Tipster edge"
   },
   "reports": {
     "title": "Извештаји",

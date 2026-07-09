@@ -192,7 +192,9 @@
     "maxLegs": "'n Veelvoud kan hoogstens {{max}} seleksies hê.",
     "needTwoLegs": "'n Veelvoud benodig ten minste 2 seleksies.",
     "legMissingFields": "Elke seleksie benodig 'n geleentheid en 'n seleksie.",
-    "legBadOdds": "Elke keuse benodig geldige kans groter as 1."
+    "legBadOdds": "Elke keuse benodig geldige kans groter as 1.",
+    "tipsterImplied": "Tipster geïmpliseerde kans (desimale)",
+    "tipsterEdge": "Tipster rand"
   },
   "reports": {
     "title": "Verslae",
@@ -265,7 +267,26 @@
     "timezone": "Tydsone",
     "timezoneHint": "gebruik vir datums en tye in die toepassing",
     "supportContact": "Het jy hulp nodig? E-pos <a href=\"mailto:support@mybetrecord.com\">support@mybetrecord.com</a>",
-    "legalLinks": "<a href=\"/privacy\">Privaatheid</a> · <a href=\"/terms\">Bepalings</a> · <a href=\"/support\">Ondersteuning</a>"
+    "legalLinks": "<a href=\"/privacy\">Privaatheid</a> · <a href=\"/terms\">Bepalings</a> · <a href=\"/support\">Ondersteuning</a>",
+    "account": "Rekening",
+    "email": "E-pos",
+    "changePassword": "Verander wagwoord",
+    "currentPassword": "Huidige wagwoord",
+    "passwordChanged": "Wagwoord is opgedateer",
+    "currentPasswordIncorrect": "Huidige wagwoord is verkeerd",
+    "publicBetsTitle": "Openbare verbintenis rekord",
+    "publicBetsEnabled": "Maak my weddenskappe publiek sigbaar (leesalleen)",
+    "publicBetsHint": "Enigiemand met die skakel kan jou weddenskappe sien sonder om aan te meld. Sensitiewe besonderhede soos P/L en beroepswedder is versteek.",
+    "publicBetsCopyLink": "Kopieer publieke skakel",
+    "publicBetsLinkCopied": "Publieke skakel is gekopieer",
+    "accountDescription": "Rekeningbeskrywing",
+    "publicNickname": "Openbare bynaam",
+    "publicNicknamePlaceholder": "bv. Simon L.",
+    "publicNicknameHint": "Dit is die naam wat op jou publieke verbintenisrekord gewys word. Jou e-pos word nooit publiek vertoon nie.",
+    "accountDescriptionPlaceholder": "Vertel besoekers van jou wedderybenadering, fokussport of rekordhoudingstyl.",
+    "accountDescriptionHint": "Opsioneel. Getoon op jou publieke verbintenis rekord. Maksimum 500 woorde.",
+    "accountDescriptionWordCount": "{{count}} / 500 woorde",
+    "accountDescriptionTooLong": "Rekeningbeskrywing moet 500 woorde of minder wees"
   },
   "admin": {
     "title": "Admin",
@@ -383,7 +404,18 @@
     "compClear": "Verwyder komp",
     "compUntil": "Kompar tot {{date}}",
     "compApplied": "Komplimentêre Pro-toegang is opgedateer",
-    "compCleared": "Komplimentêre Pro-toegang is verwyder"
+    "compCleared": "Komplimentêre Pro-toegang is verwyder",
+    "whenWithTz": "Wanneer ({{tz}})",
+    "isp": "ISP",
+    "ispCountry": "ISP land",
+    "browserLanguage": "Blaaiertaal",
+    "operatingSystem": "Bedryfstelsel",
+    "timezone": "Tydsone",
+    "promoStatsShare": "Deel statistieke",
+    "promoStatsRevoke": "Herroep statistiekskakel",
+    "promoStatsLinkCopied": "Publieke statistiekskakel is gekopieer",
+    "promoStatsRevokeConfirm": "Herroep hierdie publieke statistiekskakel? Enigiemand met die skakel sal nie meer gebruik kan sien nie.",
+    "promoStatsRevoked": "Publieke statistiekskakel is herroep"
   },
   "errors": {
     "requestFailed": "Versoek het misluk",
@@ -586,5 +618,18 @@
         "body": "<p>'n <strong>weddenskapgrootboek</strong> is bloot 'n volledige, chronologiese rekord van jou weddenskappe: wat jy gesteun het, teen watter kans, vir hoeveel en hoe dit afgehandel is. Dink daaraan as die verskil tussen raai of jy reg is vir die seisoen en <em>weet</em>.</p>\n<h2>Waarom sigblaaie misluk</h2>\n<p>Die meeste wedders begin in Excel of Google Blaaie. Dit werk totdat:</p>\n<ul>\n<li>Formules breek wanneer jy elkerigting- of ruilkommissiekolomme byvoeg</li>\n<li>Jy vergeet om 'n leemte of uitbetaling aan te teken</li>\n<li>Jy kan nie volgens tipper of sport sny sonder om spiltafels te herbou nie</li>\n</ul>\n<p>'n Toegewyde grootboek normaliseer kanse, herbereken wins op elke wysiging, en hou verslae konsekwent.</p>\n<h2>Wat om op te neem</h2>\n<p>Lê ten minste aan:</p>\n<ol>\n<li><strong>Gebeurtenis en keuse</strong> — genoeg detail om maande later die weddenskap te herken</li>\n<li><strong>Inleg en geldeenheid</strong></li>\n<li><strong>Kans</strong> (in watter formaat die boek ook al vertoon)</li>\n<li><strong>Uitkoms</strong> — hangende, wen, verlies, nietig</li>\n<li><strong>Gevestigde wins</strong> – of laat sagteware dit van uitkomsreëls aflei</li>\n</ol>\n<p>Gevorderde velde wat skerp spoorsnyers van gemaklike notanemers skei:</p>\n<ul>\n<li>Persoonlike geïmpliseerde kanse (jou billike prys)</li>\n<li>Slotlynkans (vir CLV)</li>\n<li>Tipster of modelbron</li>\n<li>Besprekingmaker en kommissie</li>\n</ul>\n<h2>Grootboek vs joernaal</h2>\n<p>Mense gebruik &ldquo;weddenskapjoernaal&rdquo; en &ldquo;weddenskapgrootboek&rdquo; uitruilbaar. Streng, 'n joernaal kan narratiewe notas insluit (&ldquo;gehaas gevoel&rdquo;, &ldquo;lyn verskuif&rdquo;); 'n grootboek beklemtoon getalle. Die beste hulpmiddels kombineer albei: gestruktureerde data plus vryteksnotas per weddenskap.</p>\n<h2>Wie het een nodig?</h2>\n<p>Enigiemand wat weddery as 'n vaardigheidspeletjie eerder as loterykaartjies behandel:</p>\n<ul>\n<li>Gepasde wedders wat kwalifiserende en gratis weddenskappe dop</li>\n<li>Beurshandelaars wat kommissie-aangepaste opbrengs meet</li>\n<li>Tipster-volgelinge wat geadverteerde ROI verifieer</li>\n<li>Ontspanningswedders wat eerlike bankrekeningbestuur wil hê</li>\n</ul>\n<h2>Begin begin</h2>\n<p>Kies een sportsoort of marktipe en teken die volgende 20 weddenskappe aan sonder om jou proses te verander. Hersien stakingskoers, gemiddelde kans en wins per week. Daardie basislyn is meer werd as enige fooitjie.</p>\n<p><strong>Spoor dit in mybetrecord:</strong> skep 'n gratis rekening, stel jou bankrekening en verstekkansformaat, en teken jou eerste weddenskap minder as 'n minuut aan.</p>"
       }
     }
+  },
+  "promoStats": {
+    "title": "Promosie gebruik",
+    "publicNote": "Leesalleen-aansig",
+    "users": "Gebruikers",
+    "totalDiscounted": "Totaal afslag",
+    "notFound": "Hierdie promosiestatistiekbladsy kon nie gevind word nie."
+  },
+  "publicProfile": {
+    "title": "Openbare verbintenis rekord",
+    "betCount": "{{count}} weddenskappe",
+    "empty": "Nog geen weddenskappe nie.",
+    "notFound": "Hierdie publieke weddenskaprekord kon nie gevind word nie."
   }
 }

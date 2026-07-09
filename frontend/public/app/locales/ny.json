@@ -192,7 +192,9 @@
     "maxLegs": "Ochuluka akhoza kukhala ndi zosankha zosachepera {{max}}.",
     "needTwoLegs": "Zosankha zingapo zimafuna zosachepera ziwiri.",
     "legMissingFields": "Kusankha kulikonse kumafunikira chochitika ndi kusankha.",
-    "legBadOdds": "Kusankhidwa kulikonse kumafunikira mikangano yovomerezeka kuposa 1."
+    "legBadOdds": "Kusankhidwa kulikonse kumafunikira mikangano yovomerezeka kuposa 1.",
+    "tipsterImplied": "Tipster implied odds (decimal)",
+    "tipsterEdge": "Tipster edge"
   },
   "reports": {
     "title": "Malipoti",

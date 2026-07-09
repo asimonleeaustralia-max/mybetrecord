@@ -192,7 +192,9 @@
     "maxLegs": "Një shumëfish mund të ketë më së shumti {{max}} zgjedhje.",
     "needTwoLegs": "Një shumëfish ka nevojë për të paktën 2 zgjedhje.",
     "legMissingFields": "Çdo përzgjedhje ka nevojë për një ngjarje dhe një përzgjedhje.",
-    "legBadOdds": "Çdo përzgjedhje ka nevojë për shanse të vlefshme më të mëdha se 1."
+    "legBadOdds": "Çdo përzgjedhje ka nevojë për shanse të vlefshme më të mëdha se 1.",
+    "tipsterImplied": "Tipster implied odds (decimal)",
+    "tipsterEdge": "Tipster edge"
   },
   "reports": {
     "title": "Raportet",

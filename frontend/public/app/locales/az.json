@@ -192,7 +192,9 @@
     "maxLegs": "Çoxluğun ən çoxu {{max}} seçimi ola bilər.",
     "needTwoLegs": "Çoxlu ən azı 2 seçim lazımdır.",
     "legMissingFields": "Hər seçim bir hadisə və seçim tələb edir.",
-    "legBadOdds": "Hər seçim üçün 1-dən çox etibarlı əmsal lazımdır."
+    "legBadOdds": "Hər seçim üçün 1-dən çox etibarlı əmsal lazımdır.",
+    "tipsterImplied": "Tipster nəzərdə tutulan əmsallar (ondalıq)",
+    "tipsterEdge": "Tipster kənarı"
   },
   "reports": {
     "title": "Hesabatlar",
@@ -265,7 +267,26 @@
     "timezone": "Saat qurşağı",
     "timezoneHint": "proqramda tarixlər və vaxtlar üçün istifadə olunur",
     "supportContact": "Kömək lazımdır? <a href=\"mailto:support@mybetrecord.com\">support@mybetrecord.com</a> ünvanına e-poçt göndərin",
-    "legalLinks": "<a href=\"/privacy\">Məxfilik</a> · <a href=\"/terms\">Şərtlər</a> · <a href=\"/support\">Dəstək</a>"
+    "legalLinks": "<a href=\"/privacy\">Məxfilik</a> · <a href=\"/terms\">Şərtlər</a> · <a href=\"/support\">Dəstək</a>",
+    "account": "Hesab",
+    "email": "E-poçt",
+    "changePassword": "Parolu dəyişdirin",
+    "currentPassword": "Cari parol",
+    "passwordChanged": "Parol yeniləndi",
+    "currentPasswordIncorrect": "Cari parol səhvdir",
+    "publicBetsTitle": "İctimai mərc rekordu",
+    "publicBetsEnabled": "Bahislərimi hamı üçün görünən etmək (yalnız oxumaq üçün)",
+    "publicBetsHint": "Linki olan hər kəs daxil olmadan mərclərinizə baxa bilər. P/L və bukmeker kimi həssas detallar gizlədilir.",
+    "publicBetsCopyLink": "İctimai linki kopyalayın",
+    "publicBetsLinkCopied": "İctimai link kopyalandı",
+    "accountDescription": "Hesabın təsviri",
+    "publicNickname": "İctimai ləqəb",
+    "publicNicknamePlaceholder": "məs. Simon L.",
+    "publicNicknameHint": "Bu, ictimai mərc rekordunuzda göstərilən addır. E-poçtunuz heç vaxt açıq şəkildə göstərilmir.",
+    "accountDescriptionPlaceholder": "Ziyarətçilərə bahis yanaşmanız, diqqət yetirdiyiniz idman növləri və ya qeydlər aparma tərziniz haqqında məlumat verin.",
+    "accountDescriptionHint": "Könüllü. İctimai mərc rekordunuzda göstərilir. Maksimum 500 söz.",
+    "accountDescriptionWordCount": "{{count}} / 500 söz",
+    "accountDescriptionTooLong": "Hesabın təsviri 500 və ya daha az sözdən ibarət olmalıdır"
   },
   "admin": {
     "title": "Admin",
@@ -383,7 +404,18 @@
     "compClear": "Komp. silin",
     "compUntil": "{{date}} tarixinə qədər yığışdırın",
     "compApplied": "Pulsuz Pro girişi yeniləndi",
-    "compCleared": "Pulsuz Pro girişi silindi"
+    "compCleared": "Pulsuz Pro girişi silindi",
+    "whenWithTz": "Nə vaxt ({{tz}})",
+    "isp": "ISP",
+    "ispCountry": "ISP ölkəsi",
+    "browserLanguage": "Brauzer dili",
+    "operatingSystem": "Əməliyyat sistemi",
+    "timezone": "Saat qurşağı",
+    "promoStatsShare": "Statistikanı paylaşın",
+    "promoStatsRevoke": "Statistika linkini ləğv edin",
+    "promoStatsLinkCopied": "İctimai statistika linki kopyalandı",
+    "promoStatsRevokeConfirm": "Bu ictimai statistika linki ləğv edilsin? Linki olan hər kəs daha istifadəyə baxa bilməyəcək.",
+    "promoStatsRevoked": "İctimai statistika linki ləğv edildi"
   },
   "errors": {
     "requestFailed": "Sorğu alınmadı",
@@ -586,5 +618,18 @@
         "body": "<p><strong>Mərc dəftəri</strong> sadəcə mərclərinizin tam, xronoloji qeydidir: nəyi dəstəklədiyiniz, hansı əmsallarla, nə qədər və necə həll edildiyi. Bunu mövsümə hazır olub-olmadığınızı təxmin etmək və <em>bilmək</em> arasındakı fərq kimi düşünün.</p>\n<h2>Cədvəllər niyə uğursuz olur</h2>\n<p>Əksər mərc edənlər Excel və ya Google Cədvəldə başlayır. Bu vaxta qədər işləyir:</p>\n<ul>\n<li>Hərtərəfli əlavə etdiyiniz və ya komissiya sütunlarını dəyişdirdiyiniz zaman düsturlar pozulur</li>\n<li>Boşluq və ya nağd pul çıxarmağı unutmusunuz</li>\n<li>Siz pivot masaları yenidən qurmadan məsləhətçi və ya idmanla kəsə bilməzsiniz</li>\n</ul>\n<p>Xüsusi kitab əmsalları normallaşdırır, hər redaktədə mənfəəti yenidən hesablayır və hesabatları ardıcıl saxlayır.</p>\n<h2>Nə yazılmalı</h2>\n<p>Minimum daxil olun:</p>\n<ol>\n<li><strong>Tədbir və seçim</strong> — aylar sonra mərci tanımaq üçün kifayət qədər detal</li>\n<li><strong>Pay və valyuta</strong></li>\n<li><strong>Odds</strong> (kitabın göstərdiyi formatdan asılı olmayaraq)</li>\n<li><strong>Nəticə</strong> — gözlənilən, qalibiyyət, itki, etibarsız</li>\n<li><strong>Məlumatlaşdırılmış mənfəət</strong> — və ya proqram təminatının onu nəticə qaydalarından əldə etməsinə icazə verin</li>\n</ol>\n<p>Kəskin izləyiciləri təsadüfi qeyd aparanlardan ayıran təkmil sahələr:</p>\n<ul>\n<li>Şəxsi nəzərdə tutulan əmsallar (sizin ədalətli qiymətiniz)</li>\n<li>Bağlanış xətti əmsalları (CLV üçün)</li>\n<li>Tipster və ya model mənbəyi</li>\n<li>Bukmeker və komissiya</li>\n</ul>\n<h2>Ledger vs jurnal</h2>\n<p>İnsanlar &ldquo;stavka jurnalından&rdquo; və &ldquo;stavka kitabçası&rdquo; bir-birini əvəz edə bilər. Ciddi şəkildə, jurnala povest qeydləri daxil ola bilər (&ldquo;tələsik hiss olunur&rdquo;, &ldquo;sətir köçürülüb&rdquo;); kitabça rəqəmləri vurğulayır. Ən yaxşı alətlər hər ikisini birləşdirir: strukturlaşdırılmış məlumat və hər mərc üçün pulsuz mətn qeydləri.</p>\n<h2>Kimə lazımdır?</h2>\n<p>Mərəzi lotereya biletləri deyil, bacarıq oyunu kimi qəbul edən hər kəs:</p>\n<ul>\n<li>Müvafiq və pulsuz mərcləri izləyən uyğunlaşdırılmış mərcçilər</li>\n<li>Komissiya ilə düzəliş edilmiş gəliri ölçən birja treyderləri</li>\n<li>Reklam edilmiş ROI-ni yoxlayan tipster izləyiciləri</li>\n<li>Dürüst bankroll idarəçiliyi istəyən əyləncə punters</li>\n</ul>\n<h2>Başlanır</h2>\n<p>Bir idman və ya bazar növünü seçin və prosesinizi dəyişmədən növbəti 20 mərcinizi daxil edin. Həftəyə görə tətil dərəcəsini, orta əmsalları və mənfəəti nəzərdən keçirin. Bu əsas hər hansı məsləhətdən daha dəyərlidir.</p>\n<p><strong>Bunu mybetrecord-da izləyin:</strong> pulsuz hesab yaradın, bankroll və defolt əmsal formatını təyin edin və bir dəqiqədən az müddətdə ilk mərcinizi daxil edin.</p>"
       }
     }
+  },
+  "promoStats": {
+    "title": "Promo istifadə",
+    "publicNote": "Yalnız oxumaq üçün görünüş",
+    "users": "İstifadəçilər",
+    "totalDiscounted": "Ümumi endirim edildi",
+    "notFound": "Bu promo statistika səhifəsini tapmaq mümkün olmadı."
+  },
+  "publicProfile": {
+    "title": "İctimai mərc rekordu",
+    "betCount": "{{count}} mərclər",
+    "empty": "Hələ mərc yoxdur.",
+    "notFound": "Bu açıq mərc rekordunu tapmaq mümkün olmadı."
   }
 }

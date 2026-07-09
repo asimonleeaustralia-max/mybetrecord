@@ -192,7 +192,9 @@
     "maxLegs": "Ọpọ le ni pupọ julọ awọn aṣayan {{max}}.",
     "needTwoLegs": "A ọpọ nilo ni o kere 2 yiyan.",
     "legMissingFields": "Aṣayan kọọkan nilo iṣẹlẹ ati yiyan.",
-    "legBadOdds": "Aṣayan kọọkan nilo awọn aidọgba to wulo ti o tobi ju 1 lọ."
+    "legBadOdds": "Aṣayan kọọkan nilo awọn aidọgba to wulo ti o tobi ju 1 lọ.",
+    "tipsterImplied": "Tipster implied odds (decimal)",
+    "tipsterEdge": "Tipster edge"
   },
   "reports": {
     "title": "Iroyin",

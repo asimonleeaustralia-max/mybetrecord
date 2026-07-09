@@ -192,7 +192,9 @@
     "maxLegs": "Un multiplu poate avea cel mult {{max}} selecții.",
     "needTwoLegs": "Un multiplu necesită cel puțin 2 selecții.",
     "legMissingFields": "Fiecare selecție are nevoie de un eveniment și de o selecție.",
-    "legBadOdds": "Fiecare selecție are nevoie de cote valide mai mari de 1."
+    "legBadOdds": "Fiecare selecție are nevoie de cote valide mai mari de 1.",
+    "tipsterImplied": "Tipster implied odds (decimal)",
+    "tipsterEdge": "Tipster edge"
   },
   "reports": {
     "title": "Rapoarte",

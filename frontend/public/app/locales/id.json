@@ -192,7 +192,9 @@
     "maxLegs": "Kelipatan dapat memiliki paling banyak {{max}} pilihan.",
     "needTwoLegs": "Kelipatan membutuhkan setidaknya 2 pilihan.",
     "legMissingFields": "Setiap seleksi membutuhkan acara dan seleksi.",
-    "legBadOdds": "Setiap pilihan membutuhkan odds valid yang lebih besar dari 1."
+    "legBadOdds": "Setiap pilihan membutuhkan odds valid yang lebih besar dari 1.",
+    "tipsterImplied": "Peluang tersirat keterangan rahasia (desimal)",
+    "tipsterEdge": "Tepi keterangan rahasia"
   },
   "reports": {
     "title": "Laporan",
@@ -265,7 +267,26 @@
     "timezone": "Zona waktu",
     "timezoneHint": "digunakan untuk tanggal dan waktu di aplikasi",
     "supportContact": "Butuh bantuan? Email <a href=\"mailto:support@mybetrecord.com\">support@mybetrecord.com</a>",
-    "legalLinks": "<a href=\"/privacy\">Privasi</a> · <a href=\"/terms\">Ketentuan</a> · <a href=\"/support\">Dukungan</a>"
+    "legalLinks": "<a href=\"/privacy\">Privasi</a> · <a href=\"/terms\">Ketentuan</a> · <a href=\"/support\">Dukungan</a>",
+    "account": "Akun",
+    "email": "E-mail",
+    "changePassword": "Ubah kata sandi",
+    "currentPassword": "Kata sandi saat ini",
+    "passwordChanged": "Kata sandi diperbarui",
+    "currentPasswordIncorrect": "Kata sandi saat ini salah",
+    "publicBetsTitle": "Rekor taruhan publik",
+    "publicBetsEnabled": "Jadikan taruhan saya dapat dilihat secara publik (hanya baca)",
+    "publicBetsHint": "Siapa pun yang memiliki tautan dapat melihat taruhan Anda tanpa masuk. Detail sensitif seperti P/L dan bandar taruhan disembunyikan.",
+    "publicBetsCopyLink": "Salin tautan publik",
+    "publicBetsLinkCopied": "Tautan publik disalin",
+    "accountDescription": "Deskripsi akun",
+    "publicNickname": "Nama panggilan publik",
+    "publicNicknamePlaceholder": "misalnya Simon L.",
+    "publicNicknameHint": "Ini adalah nama yang ditampilkan pada catatan taruhan publik Anda. Email Anda tidak pernah ditampilkan secara publik.",
+    "accountDescriptionPlaceholder": "Beritahu pengunjung tentang pendekatan taruhan Anda, fokus olahraga, atau gaya pencatatan.",
+    "accountDescriptionHint": "Opsional. Ditampilkan pada catatan taruhan publik Anda. Maks 500 kata.",
+    "accountDescriptionWordCount": "{{count}} / 500 kata",
+    "accountDescriptionTooLong": "Deskripsi akun harus 500 kata atau kurang"
   },
   "admin": {
     "title": "Admin",
@@ -383,7 +404,18 @@
     "compClear": "Hapus komp",
     "compUntil": "Komp sampai {{date}}",
     "compApplied": "Akses Pro gratis diperbarui",
-    "compCleared": "Akses Pro gratis dihapus"
+    "compCleared": "Akses Pro gratis dihapus",
+    "whenWithTz": "Kapan ({{tz}})",
+    "isp": "ISP",
+    "ispCountry": "negara ISP",
+    "browserLanguage": "Bahasa peramban",
+    "operatingSystem": "Sistem operasi",
+    "timezone": "Zona waktu",
+    "promoStatsShare": "Bagikan statistik",
+    "promoStatsRevoke": "Cabut tautan statistik",
+    "promoStatsLinkCopied": "Tautan statistik publik disalin",
+    "promoStatsRevokeConfirm": "Cabut tautan statistik publik ini? Siapa pun yang memiliki tautan tidak dapat lagi melihat penggunaan.",
+    "promoStatsRevoked": "Tautan statistik publik dicabut"
   },
   "errors": {
     "requestFailed": "Permintaan gagal",
@@ -586,5 +618,18 @@
         "body": "<p><strong>Buku besar taruhan</strong> hanyalah catatan kronologis lengkap dari taruhan Anda: apa yang Anda dukung, berapa peluangnya, berapa besarnya, dan bagaimana penyelesaiannya. Anggap saja ini sebagai perbedaan antara menebak apakah Anda siap menghadapi musim ini dan <em>mengetahui</em>.</p>\n<h2>Mengapa spreadsheet gagal</h2>\n<p>Kebanyakan petaruh memulai di Excel atau Google Sheets. Itu berfungsi sampai:</p>\n<ul>\n<li>Rumus rusak saat Anda menambahkan kolom komisi sekali jalan atau menukar</li>\n<li>Anda lupa mencatat kekosongan atau pembayaran tunai</li>\n<li>Anda tidak dapat membagi berdasarkan keterangan rahasia atau olahraga tanpa membangun kembali tabel pivot</li>\n</ul>\n<p>Buku besar khusus menormalkan peluang, menghitung ulang keuntungan pada setiap pengeditan, dan menjaga konsistensi laporan.</p>\n<h2>Apa yang harus dicatat</h2>\n<p>Minimal, catat:</p>\n<ol>\n<li><strong>Acara dan seleksi</strong> — detail yang cukup untuk mengenali taruhan beberapa bulan kemudian</li>\n<li><strong>Saham dan mata uang</strong></li>\n<li><strong>Peluang</strong> (dalam format apa pun yang ditampilkan buku)</li>\n<li><strong>Hasil</strong> — tertunda, menang, kalah, batal</li>\n<li><strong>Keuntungan tetap</strong> — atau biarkan perangkat lunak memperolehnya dari aturan hasil</li>\n</ol>\n<p>Bidang lanjutan yang memisahkan pelacak tajam dari pencatat biasa:</p>\n<ul>\n<li>Peluang tersirat pribadi (harga wajar Anda)</li>\n<li>Odds garis penutup (untuk CLV)</li>\n<li>Tipster atau sumber model</li>\n<li>Taruhan dan komisi</li>\n</ul>\n<h2>Buku besar vs jurnal</h2>\n<p>Orang-orang menggunakan &ldquo;jurnal taruhan&rdquo; dan &ldquo;buku besar taruhan&rdquo; secara bergantian. Sebenarnya, jurnal mungkin menyertakan catatan naratif (\"terasa terburu-buru\", \"baris berpindah\"); buku besar menekankan angka. Alat terbaik menggabungkan keduanya: data terstruktur ditambah catatan teks bebas per taruhan.</p>\n<h2>Siapa yang membutuhkannya?</h2>\n<p>Siapa pun yang memperlakukan taruhan sebagai permainan keterampilan dan bukan tiket lotere:</p>\n<ul>\n<li>Petarung yang cocok melacak taruhan yang memenuhi syarat dan gratis</li>\n<li>Pedagang bursa mengukur hasil yang disesuaikan dengan komisi</li>\n<li>Pengikut keterangan rahasia memverifikasi ROI yang diiklankan</li>\n<li>Pemain rekreasional yang menginginkan manajemen bankroll yang jujur</li>\n</ul>\n<h2>Memulai</h2>\n<p>Pilih satu olahraga atau jenis pasar dan catat 20 taruhan berikutnya tanpa mengubah proses Anda. Tinjau tingkat kesepakatan, peluang rata-rata, dan keuntungan per minggu. Nilai dasar tersebut lebih berharga daripada tip apa pun.</p>\n<p><strong>Lacak ini di mybetrecord:</strong> buat akun gratis, atur uang Anda dan format peluang default, dan catat taruhan pertama Anda dalam waktu kurang dari satu menit.</p>"
       }
     }
+  },
+  "promoStats": {
+    "title": "Pemakaian promo",
+    "publicNote": "Tampilan hanya baca",
+    "users": "Pengguna",
+    "totalDiscounted": "Diskon total",
+    "notFound": "Halaman statistik promo ini tidak dapat ditemukan."
+  },
+  "publicProfile": {
+    "title": "Rekor taruhan publik",
+    "betCount": "{{count}} taruhan",
+    "empty": "Belum ada taruhan.",
+    "notFound": "Rekor taruhan publik ini tidak dapat ditemukan."
   }
 }

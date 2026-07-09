@@ -192,7 +192,9 @@
     "maxLegs": "Кілька може мати щонайбільше {{max}} вибраних елементів.",
     "needTwoLegs": "Для множинності потрібно вибрати принаймні 2.",
     "legMissingFields": "Кожен вибір потребує події та виділення.",
-    "legBadOdds": "Для кожного вибору потрібен дійсний коефіцієнт більше 1."
+    "legBadOdds": "Для кожного вибору потрібен дійсний коефіцієнт більше 1.",
+    "tipsterImplied": "Tipster implied odds (decimal)",
+    "tipsterEdge": "Tipster edge"
   },
   "reports": {
     "title": "Звіти",

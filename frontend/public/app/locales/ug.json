@@ -192,7 +192,9 @@
     "maxLegs": "كۆپ ساندا كۆپ بولغاندا {{max}} تاللاشقا بولىدۇ.",
     "needTwoLegs": "كۆپ قېتىم كەم دېگەندە 2 تاللاشقا ئېھتىياجلىق.",
     "legMissingFields": "ھەر بىر تاللاش بىر پائالىيەت ۋە تاللاشقا موھتاج.",
-    "legBadOdds": "ھەر بىر تاللاشتا 1 دىن چوڭ ئۈنۈملۈك پەرق بار."
+    "legBadOdds": "ھەر بىر تاللاشتا 1 دىن چوڭ ئۈنۈملۈك پەرق بار.",
+    "tipsterImplied": "Tipster implied odds (decimal)",
+    "tipsterEdge": "Tipster edge"
   },
   "reports": {
     "title": "دوكلات",

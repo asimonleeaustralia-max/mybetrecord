@@ -192,7 +192,9 @@
     "maxLegs": "多个最多可以有 {{max}} 选择。",
     "needTwoLegs": "多重需要至少 2 个选择。",
     "legMissingFields": "每个选择都需要一个事件和一个选择。",
-    "legBadOdds": "每个选择都需要大于 1 的有效赔率。"
+    "legBadOdds": "每个选择都需要大于 1 的有效赔率。",
+    "tipsterImplied": "提示者隐含赔率（十进制）",
+    "tipsterEdge": "提示者边缘"
   },
   "reports": {
     "title": "报告",
@@ -265,7 +267,26 @@
     "timezone": "时区",
     "timezoneHint": "用于应用程序中的日期和时间",
     "supportContact": "需要帮助吗？电子邮件<a href=\"mailto:support@mybetrecord.com\">support@mybetrecord.com</a>",
-    "legalLinks": "<a href=\"/privacy\">隐私</a> · <a href=\"/terms\">条款</a> · <a href=\"/support\">支持</a>"
+    "legalLinks": "<a href=\"/privacy\">隐私</a> · <a href=\"/terms\">条款</a> · <a href=\"/support\">支持</a>",
+    "account": "帐户",
+    "email": "电子邮件",
+    "changePassword": "更改密码",
+    "currentPassword": "当前密码",
+    "passwordChanged": "密码已更新",
+    "currentPasswordIncorrect": "当前密码不正确",
+    "publicBetsTitle": "公开投注记录",
+    "publicBetsEnabled": "让我的赌注公开可见（只读）",
+    "publicBetsHint": "知道该链接的任何人都可以在不登录的情况下查看您的投注。盈亏和博彩公司等敏感详细信息被隐藏。",
+    "publicBetsCopyLink": "复制公共链接",
+    "publicBetsLinkCopied": "公共链接已复制",
+    "accountDescription": "账户描述",
+    "publicNickname": "公开昵称",
+    "publicNicknamePlaceholder": "例如西蒙·L。",
+    "publicNicknameHint": "这是您的公开投注记录中显示的名称。您的电子邮件永远不会公开显示。",
+    "accountDescriptionPlaceholder": "告诉访客您的投注方式、关注的体育项目或记录保存方式。",
+    "accountDescriptionHint": "选修的。显示在您的公开投注记录中。最多 500 字。",
+    "accountDescriptionWordCount": "{{count}} / 500 字",
+    "accountDescriptionTooLong": "帐户描述不得超过 500 字"
   },
   "admin": {
     "title": "行政",
@@ -383,7 +404,18 @@
     "compClear": "删除补偿",
     "compUntil": "直到 {{date}} 为止",
     "compApplied": "免费 Pro 访问权限已更新",
-    "compCleared": "取消了免费专业版访问权限"
+    "compCleared": "取消了免费专业版访问权限",
+    "whenWithTz": "当 ({{tz}})",
+    "isp": "互联网服务供应商",
+    "ispCountry": "ISP国家",
+    "browserLanguage": "浏览器语言",
+    "operatingSystem": "操作系统",
+    "timezone": "时区",
+    "promoStatsShare": "分享统计数据",
+    "promoStatsRevoke": "撤销统计链接",
+    "promoStatsLinkCopied": "已复制公共统计数据链接",
+    "promoStatsRevokeConfirm": "撤销此公开统计数据链接吗？知道该链接的任何人将无法再查看使用情况。",
+    "promoStatsRevoked": "公开统计链接已撤销"
   },
   "errors": {
     "requestFailed": "请求失败",
@@ -586,5 +618,18 @@
         "body": "<p><strong>投注分类帐</strong>只是您投注的完整、按时间顺序的记录：您支持什么、赔率是多少、投注金额以及如何结算。将其视为猜测您是否适合这个赛季和<em>知道</em>之间的区别。</p>\n<h2>电子表格为何失败</h2>\n<p>大多数投注者都是从 Excel 或 Google 表格开始。这一直有效，直到：</p>\n<ul>\n<li>当您添加单向或交易所佣金列时，公式会被破坏</li>\n<li>您忘记记录作废或提现</li>\n<li>如果不重建数据透视表，您就无法按提示者或体育进行切片</li>\n</ul>\n<p>专用账本可以标准化赔率，重新计算每次编辑的利润，并保持报告的一致性。</p>\n<h2>记录什么</h2>\n<p>至少记录：</p>\n<ol>\n<li><strong>事件和选择</strong> - 足够的细节可以在几个月后识别赌注</li>\n<li><strong>股份和货币</strong></li>\n<li><strong>赔率</strong>（以书籍显示的任何格式）</li>\n<li><strong>结果</strong> — 待定、获胜、失败、无效</li>\n<li><strong>已结算利润</strong> - 或者让软件根据结果规则得出利润</li>\n</ol>\n<p>高级领域将敏锐的追踪者与随意的记笔记者区分开来：</p>\n<ul>\n<li>个人隐含赔率（您的合理价格）</li>\n<li>收盘赔率（CLV）</li>\n<li>线人或模特来源</li>\n<li>博彩公司和佣金</li>\n</ul>\n<h2>分类帐与日记帐</h2>\n<p>人们使用“博彩日记”和“投注分类账”可以互换。严格来说，日记可能包括叙述性注释（“感觉很匆忙”、“行移动了”）；账本强调数字。最好的工具将两者结合起来：结构化数据加上每次投注的自由文本注释。</p>\n<h2>谁需要一个？</h2>\n<p>任何将博彩视为技巧游戏而不是彩票的人：</p>\n<ul>\n<li>匹配的投注者跟踪合格投注和免费投注</li>\n<li>交易所交易员衡量佣金调整后的收益率</li>\n<li>线人关注者正在验证广告中的投资回报率</li>\n<li>想要诚实资金管理的休闲投注者</li>\n</ul>\n<h2>开始使用</h2>\n<p>选择一项运动或市场类型并记录接下来的 20 个投注，而无需更改您的流程。按周查看中签率、平均赔率和利润。该基线比任何提示都更有价值。</p>\n<p><strong>在 mybetrecord 中跟踪此情况：</strong>创建一个免费帐户，设置您的资金和默认赔率格式，并在一分钟内记录您的第一个投注。</p>"
       }
     }
+  },
+  "promoStats": {
+    "title": "促销使用",
+    "publicNote": "只读视图",
+    "users": "用户",
+    "totalDiscounted": "总折扣",
+    "notFound": "找不到此促销统计页面。"
+  },
+  "publicProfile": {
+    "title": "公开投注记录",
+    "betCount": "{{count}} 投注",
+    "empty": "还没有下注。",
+    "notFound": "无法找到该公开投注记录。"
   }
 }

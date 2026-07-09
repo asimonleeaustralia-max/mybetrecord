@@ -192,7 +192,9 @@
     "maxLegs": "Is féidir le roghanna {{max}} ar a mhéad a bheith ag iolrach.",
     "needTwoLegs": "Teastaíonn 2 rogha ar a laghad ar iolrach.",
     "legMissingFields": "Tá imeacht agus rogha de dhíth ar gach rogha.",
-    "legBadOdds": "Teastaíonn corrlaigh bhailí níos mó ná 1 do gach roghnúchán."
+    "legBadOdds": "Teastaíonn corrlaigh bhailí níos mó ná 1 do gach roghnúchán.",
+    "tipsterImplied": "Roghanna intuigthe Tipster (deichiúil)",
+    "tipsterEdge": "Imeall Tipster"
   },
   "reports": {
     "title": "Tuarascálacha",
@@ -265,7 +267,26 @@
     "timezone": "Crios ama",
     "timezoneHint": "a úsáidtear le haghaidh dátaí agus amanna san aip",
     "supportContact": "Cabhair uait? Ríomhphost <a href=\"mailto:support@mybetrecord.com\">support@mybetrecord.com</a>",
-    "legalLinks": "<a href=\"/privacy\">Príobháideachas</a> · <a href=\"/terms\">Téarmaí</a> · <a href=\"/support\">Tacaíocht</a>"
+    "legalLinks": "<a href=\"/privacy\">Príobháideachas</a> · <a href=\"/terms\">Téarmaí</a> · <a href=\"/support\">Tacaíocht</a>",
+    "account": "Cuntas",
+    "email": "Ríomhphost",
+    "changePassword": "Athraigh pasfhocal",
+    "currentPassword": "Focal faire reatha",
+    "passwordChanged": "Pasfhocal nuashonraithe",
+    "currentPasswordIncorrect": "Tá an pasfhocal reatha mícheart",
+    "publicBetsTitle": "Taifead geall poiblí",
+    "publicBetsEnabled": "Déan mo chuid geallta a fheiceáil go poiblí (inléite amháin)",
+    "publicBetsHint": "Is féidir le haon duine a bhfuil an nasc aige do chuid geallta a fheiceáil gan síniú isteach. Tá sonraí íogaire ar nós P/L agus geallghlacadóir i bhfolach.",
+    "publicBetsCopyLink": "Cóipeáil nasc poiblí",
+    "publicBetsLinkCopied": "Cóipeáladh nasc poiblí",
+    "accountDescription": "Cur síos ar an gcuntas",
+    "publicNickname": "Leasainm poiblí",
+    "publicNicknamePlaceholder": "e.g. Síomón L.",
+    "publicNicknameHint": "Seo é an t-ainm a thaispeántar ar do thaifead geall poiblí. Ní thaispeánfar do ríomhphost riamh go poiblí.",
+    "accountDescriptionPlaceholder": "Inis do chuairteoirí faoi do chur chuige gealltóireachta, spóirt fócas, nó stíl coimeád taifead.",
+    "accountDescriptionHint": "Roghnach. Taispeántar ar do thaifead geall poiblí. 500 focal ar a mhéad.",
+    "accountDescriptionWordCount": "{{count}} / 500 focal",
+    "accountDescriptionTooLong": "Caithfidh 500 focal nó níos lú a bheith i gcur síos cuntais"
   },
   "admin": {
     "title": "Riarachán",
@@ -383,7 +404,18 @@
     "compClear": "Bain comp",
     "compUntil": "Comp go dtí {{date}}",
     "compApplied": "Rochtain Pro saor in aisce nuashonraithe",
-    "compCleared": "Baineadh rochtain Pro saor in aisce"
+    "compCleared": "Baineadh rochtain Pro saor in aisce",
+    "whenWithTz": "Cathain ({{tz}})",
+    "isp": "ISP",
+    "ispCountry": "tír ISP",
+    "browserLanguage": "Teanga brabhsálaithe",
+    "operatingSystem": "Córas oibriúcháin",
+    "timezone": "Crios ama",
+    "promoStatsShare": "Comhroinn staitisticí",
+    "promoStatsRevoke": "nasc stats a chúlghairm",
+    "promoStatsLinkCopied": "Cóipeáladh an nasc stats poiblí",
+    "promoStatsRevokeConfirm": "An bhfuil fonn ort an nasc stats poiblí seo a chúlghairm? Ní bheidh aon duine a bhfuil an nasc in ann úsáid a fheiceáil a thuilleadh.",
+    "promoStatsRevoked": "Cúlghairm nasc stats poiblí"
   },
   "errors": {
     "requestFailed": "Theip ar an iarratas",
@@ -586,5 +618,18 @@
         "body": "<p>Is éard atá i <strong>mórleabhar gealltóireachta</strong> ach taifead iomlán croineolaíoch ar do chuid geall: cad a thacaigh leat, cad é mar a bhí, cé mhéad, agus conas a shocraigh sé. Smaoinigh air mar an difríocht idir buille faoi thuairim an bhfuil tú sásta leis an séasúr agus <em>fios</em>.</p>\n<h2>Cén fáth a dteipeann ar scarbhileoga</h2>\n<p>Tosaíonn formhór na ngealltóirí in Excel nó in Google Sheets. Oibríonn sé sin go dtí:</p>\n<ul>\n<li>Briseann na foirmlí nuair a chuireann tú colúin choimisiúin leis nó nuair a mhalartaítear iad</li>\n<li>Déanann tú dearmad ar fholamh nó ar airgead tirim a logáil amach</li>\n<li>Ní féidir leat slisniú le leideanna nó le spórt gan táblaí maighdeog a atógáil</li>\n</ul>\n<p>Gnáthaíonn mórleabhar tiomnaithe corrlaigh, athríomhann sé brabús ar gach eagar, agus coinníonn sé tuairiscí comhsheasmhach.</p>\n<h2>A bhfuil le taifeadadh</h2>\n<p>Ar a laghad, logáil isteach:</p>\n<ol>\n<li><strong>Imeacht agus roghnú</strong> — dóthain sonraí chun an geall a aithint míonna ina dhiaidh sin</li>\n<li><strong>Ceallta agus airgeadra</strong></li>\n<li><strong> Rogha</strong> (i cibé formáid a thaispeánann an leabhar)</li>\n<li><strong>Toradh</strong> — ar feitheamh, bua, cailliúint, neamhní</li>\n<li><strong>Brabús socraithe</strong> — nó lig do bhogearraí é a dhíorthú ó rialacha toraidh</li>\n</ol>\n<p>Réimsí chun cinn a scarann na lorgairí géara ó dhaoine a ghlactar le nótaí ócáideacha:</p>\n<ul>\n<li>Cothromanna pearsanta intuigthe (do phraghas cothrom)</li>\n<li>Corranna na línte deiridh (do CLV)</li>\n<li>Tipster nó foinse mhúnla</li>\n<li>Geallghlacadóir agus coimisiún</li>\n</ul>\n<h2>Mórleabhar vs dialann</h2>\n<p>Úsáideann daoine &ldquo;dialann gealltóireachta&rdquo; agus &ldquo;mórleabhar gealltóireachta&rdquo; go hidirmhalartaithe. Go daingean, d’fhéadfadh nótaí insinte a bheith i irisleabhar (&ldquo;feelt rushed&rdquo;, &ldquo;line moved&rdquo;); cuireann mórleabhar béim ar uimhreacha. Comhcheanglaíonn na huirlisí is fearr an dá cheann: sonraí struchtúrtha móide nótaí saor-théacs in aghaidh an gheallta.</p>\n<h2>Cé atá ag teastáil?</h2>\n<p>Duine ar bith a chaitheann le gealltóireacht mar chluiche scile seachas ticéid crannchuir:</p>\n<ul>\n<li>Gealltóirí meaitseála a rianaíonn geallta cáilitheacha agus saora</li>\n<li>Trádálaithe malairte a thomhaiseann an toradh arna choigeartú ag an gcoimisiún</li>\n<li>Leantóirí Tipster ag fíorú ROI fógartha</li>\n<li>Punters áineasa atá ag iarraidh bainistíocht ionraic bankroll</li>\n</ul>\n<h2>Ag tosú</h2>\n<p>Roghnaigh spórt nó cineál margaidh amháin agus logáil an chéad 20 geall eile gan do phróiseas a athrú. Athbhreithnigh an ráta stailce, na corrlaigh ar an meán, agus an brabús de réir na seachtaine. Is fiú níos mó ná leid ar bith an bhunlíne sin.</p>\n<p><strong>Rianaigh é seo i mybetrecord:</strong> cruthaigh cuntas saor in aisce, socraigh do bankroll agus formáid corrlaigh réamhshocraithe, agus logáil isteach do chéad geall i gceann nóiméad.</p>"
       }
     }
+  },
+  "promoStats": {
+    "title": "Úsáid promo",
+    "publicNote": "Amharc inléite amháin",
+    "users": "Úsáideoirí",
+    "totalDiscounted": "Iomlán lascainithe",
+    "notFound": "Níorbh fhéidir an leathanach promo stats seo a aimsiú."
+  },
+  "publicProfile": {
+    "title": "Taifead geall poiblí",
+    "betCount": "{{count}} geallta",
+    "empty": "Níl geallta fós.",
+    "notFound": "Níorbh fhéidir an taifead geall poiblí seo a aimsiú."
   }
 }

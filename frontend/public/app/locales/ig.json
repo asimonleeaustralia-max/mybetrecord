@@ -192,7 +192,9 @@
     "maxLegs": "Otutu nwere ike inwe nhọrọ kacha {{max}}.",
     "needTwoLegs": "Otutu chọrọ opekata mpe nhọrọ 2.",
     "legMissingFields": "Nhọrọ ọ bụla chọrọ mmemme na nhọrọ.",
-    "legBadOdds": "Nhọrọ ọ bụla chọrọ ohere dị mma karịa 1."
+    "legBadOdds": "Nhọrọ ọ bụla chọrọ ohere dị mma karịa 1.",
+    "tipsterImplied": "Tipster implied odds (decimal)",
+    "tipsterEdge": "Tipster edge"
   },
   "reports": {
     "title": "Akụkọ",
@@ -265,7 +267,26 @@
     "timezone": "Mpaghara oge",
     "timezoneHint": "eji maka ụbọchị na oge na ngwa",
     "supportContact": "Achọrọ enyemaka? Email <a href=\"mailto:support@mybetrecord.com\">support@mybetrecord.com</a>",
-    "legalLinks": "<a href=\"/privacy\">Nzuzo</a> · <a href=\"/terms\"> Usoro</a> · <a href=\"/support\">Nkwado</a>"
+    "legalLinks": "<a href=\"/privacy\">Nzuzo</a> · <a href=\"/terms\"> Usoro</a> · <a href=\"/support\">Nkwado</a>",
+    "account": "Account",
+    "email": "Email",
+    "changePassword": "Change password",
+    "currentPassword": "Current password",
+    "passwordChanged": "Password updated",
+    "currentPasswordIncorrect": "Current password is incorrect",
+    "publicBetsTitle": "Public bet record",
+    "publicBetsEnabled": "Make my bets publicly viewable (read-only)",
+    "publicBetsHint": "Anyone with the link can view your bets without signing in. Sensitive details like P/L and bookmaker are hidden.",
+    "publicBetsCopyLink": "Copy public link",
+    "publicBetsLinkCopied": "Public link copied",
+    "accountDescription": "Account description",
+    "publicNickname": "Public nickname",
+    "publicNicknamePlaceholder": "e.g. Simon L.",
+    "publicNicknameHint": "This is the name shown on your public bet record. Your email is never displayed publicly.",
+    "accountDescriptionPlaceholder": "Tell visitors about your betting approach, focus sports, or record-keeping style.",
+    "accountDescriptionHint": "Optional. Shown on your public bet record. Max 500 words.",
+    "accountDescriptionWordCount": "{{count}} / 500 words",
+    "accountDescriptionTooLong": "Account description must be 500 words or fewer"
   },
   "admin": {
     "title": "Admin",
@@ -383,7 +404,18 @@
     "compClear": "Wepu comp",
     "compUntil": "Comp ruo {{date}}",
     "compApplied": "A na-emelite ohere nnabata Pro",
-    "compCleared": "Wepụrụ ohere nnabata Pro"
+    "compCleared": "Wepụrụ ohere nnabata Pro",
+    "whenWithTz": "When ({{tz}})",
+    "isp": "ISP",
+    "ispCountry": "ISP country",
+    "browserLanguage": "Browser language",
+    "operatingSystem": "Operating system",
+    "timezone": "Timezone",
+    "promoStatsShare": "Share stats",
+    "promoStatsRevoke": "Revoke stats link",
+    "promoStatsLinkCopied": "Public stats link copied",
+    "promoStatsRevokeConfirm": "Revoke this public stats link? Anyone with the link will no longer be able to view usage.",
+    "promoStatsRevoked": "Public stats link revoked"
   },
   "errors": {
     "requestFailed": "Arịrịọ agaghị",
@@ -586,5 +618,18 @@
         "body": "<p>A <strong>ledger ịkụ nzọ</strong> bụ naanị ndekọ zuru oke, ndekọ usoro oge nke ndị ọrụ gị: ihe ị kwadoro, kedu ihe ọ bụ, maka ego ole, yana otu o siri dozie. Were ya dị ka ihe dị iche n'ịma ma ị ga-eru maka oge na <em>ịma</em>.</p>\n<h2>Gịnị kpatara akwụkwọ ntanye ji ada </h2>\nỌtụtụ ndị na-ere ahịa na-amalite na Excel ma ọ bụ Google Sheets. Nke ahụ na-arụ ọrụ ruo mgbe:</p>\n<ul>\n<li>Formula na-agbaji mgbe ị na-agbakwunye kọlụm kọmịlị ụzọ ọ bụla ma ọ bụ mgbanwe</li>\n<li>Ị chefuola ịbanye ebe efu ma ọ bụ enweghị ego</li>\n<li>Ịnweghị ike ibeji site na onye ndụmọdụ ma ọ bụ egwuregwu na-ewughachighị tebụl pivot</li>\n</ul>\n<p> Akwụkwọ ndekọ aha raara onwe ya nye na-eme ka ọ dị mma, na-akwụghachi uru na ndezi ọ bụla, ma na-edobe akụkọ na-agbanwe agbanwe.</p>\n<h2>Ihe ị ga-edekọ </h2>\n<p>Opekempe, log:</p>\n<ol>\n<li><strong>Emmemme na nhọrọ</strong> — zuru ezu iji mata nzọ ọnwa ka e mesịrị</li>\n<li><strong>Stake na ego</strong></li>\n<li><strong>Ahụhụ</strong>(n'ụdị ọ bụla akwụkwọ ahụ gosipụtara) </li>\n<li><strong>Ihe pụta</strong> — na-echere, mmeri, mfu, efu</li>\n<li><strong>Enwetara uru</strong> - ma ọ bụ ka ngwanro nweta ya site na iwu nsonaazụ</li>\n</ol>\n<p>Ogige dị elu nke kewapụrụ ndị na-egwu egwu dị nkọ na ndị na-ede akwụkwọ nkịtị:</p>\n<ul>\n<li>Atụmatụ nke onwe (ọnụahịa gị ziri ezi) </li>\n<li>Akara mmechi (maka CLV) </li>\n<li>Tipster ma ọ bụ isi mmalite ụdị</li>\n<li>Onye na-ede akwụkwọ na onye ọrụ</li>\n</ul>\n<h2>Ledger vs akwụkwọ akụkọ</h2>\n<p>Ndị mmadụ na-eji &ldquo;akwụkwọ ịkụ nzọ&rdquo; na \"akwụkwọ akụkọ ịkụ nzọ\" rdquo; na-agbanwe agbanwe. Kpọmkwem, akwụkwọ akụkọ nwere ike ịgụnye ndetu akụkọ (&ldquo; nwere mmetụta ọsọ ọsọ&rdquo;, & ldquo;line kpaliri&rdquo;); akwụkwọ akụkọ na-emesi ọnụọgụgụ ike. Ngwa kachasị mma jikọtara ha abụọ: data ahaziri gbakwunyere ndetu ederede efu kwa nzọ.</p>\n<h2>Ònye chọrọ otu?</h2>\n<p>Onye ọ bụla nke na-ewere ịkụ nzọ dị ka egwuregwu nka karịa tiketi lọtrị:</p>\n<ul>\n<li>Ndị nzọ dakọtara na-esochi ntozu na nzọ efu</li>\n<li>Ndị na-ere ahịa mgbanwe na-atụ mkpụrụ emeziri ahazi</li>\n<li>Ndị na-eso ụzọ Tipster na-enyocha ROI a kpọsara </li>\n<li>Ndị na-egwu egwuregwu ntụrụndụ chọrọ njikwa banki n'eziokwu</li>\n</ul>\n<h2>Ịmalite </h2>\nHọrọ otu egwuregwu ma ọ bụ ụdị ahịa wee banye nzọ 20 na-esote na-agbanweghị usoro gị. Nyochaa ọnụego iku ume, nkezi ohere, yana uru n'izu. Usoro ntọala ahụ bara uru karịa ndụmọdụ ọ bụla.</p>\n<p><strong>Sochie nke a na mybetrecord:</strong>mepụta akaụntụ efu, tọọ ụlọ akụ gị na usoro ihe ndabara, wee banye nzọ mbụ gị n'ime obere nkeji.</p>"
       }
     }
+  },
+  "promoStats": {
+    "title": "Promo usage",
+    "publicNote": "Read-only view",
+    "users": "Users",
+    "totalDiscounted": "Total discounted",
+    "notFound": "This promo stats page could not be found."
+  },
+  "publicProfile": {
+    "title": "Public bet record",
+    "betCount": "{{count}} bets",
+    "empty": "No bets yet.",
+    "notFound": "This public bet record could not be found."
   }
 }

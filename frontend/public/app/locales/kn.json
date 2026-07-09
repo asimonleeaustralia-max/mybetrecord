@@ -192,7 +192,9 @@
     "maxLegs": "ಬಹುಪಾಲು {{max}} ಆಯ್ಕೆಗಳನ್ನು ಹೊಂದಿರಬಹುದು.",
     "needTwoLegs": "ಮಲ್ಟಿಪಲ್‌ಗೆ ಕನಿಷ್ಠ 2 ಆಯ್ಕೆಗಳ ಅಗತ್ಯವಿದೆ.",
     "legMissingFields": "ಪ್ರತಿ ಆಯ್ಕೆಗೆ ಈವೆಂಟ್ ಮತ್ತು ಆಯ್ಕೆಯ ಅಗತ್ಯವಿದೆ.",
-    "legBadOdds": "ಪ್ರತಿ ಆಯ್ಕೆಗೆ 1 ಕ್ಕಿಂತ ಹೆಚ್ಚಿನ ಮಾನ್ಯ ಆಡ್ಸ್ ಅಗತ್ಯವಿದೆ."
+    "legBadOdds": "ಪ್ರತಿ ಆಯ್ಕೆಗೆ 1 ಕ್ಕಿಂತ ಹೆಚ್ಚಿನ ಮಾನ್ಯ ಆಡ್ಸ್ ಅಗತ್ಯವಿದೆ.",
+    "tipsterImplied": "Tipster implied odds (decimal)",
+    "tipsterEdge": "Tipster edge"
   },
   "reports": {
     "title": "ವರದಿಗಳು",

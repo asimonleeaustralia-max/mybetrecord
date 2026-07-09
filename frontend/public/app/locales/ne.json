@@ -192,7 +192,9 @@
     "maxLegs": "धेरैमा बढीमा {{max}} चयनहरू हुन सक्छन्।",
     "needTwoLegs": "एक बहुलाई कम्तिमा 2 चयनहरू आवश्यक पर्दछ।",
     "legMissingFields": "प्रत्येक चयनलाई घटना र चयन चाहिन्छ।",
-    "legBadOdds": "प्रत्येक चयनलाई १ भन्दा बढि मान्य बाधाहरू चाहिन्छ।"
+    "legBadOdds": "प्रत्येक चयनलाई १ भन्दा बढि मान्य बाधाहरू चाहिन्छ।",
+    "tipsterImplied": "Tipster implied odds (decimal)",
+    "tipsterEdge": "Tipster edge"
   },
   "reports": {
     "title": "रिपोर्टहरू",

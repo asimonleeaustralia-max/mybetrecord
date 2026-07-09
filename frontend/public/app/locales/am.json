@@ -192,7 +192,9 @@
     "maxLegs": "ብዙ ቢበዛ {{max}} ምርጫዎች ሊኖሩት ይችላል።",
     "needTwoLegs": "ብዙ ቁጥር ቢያንስ 2 ምርጫዎችን ይፈልጋል።",
     "legMissingFields": "እያንዳንዱ ምርጫ አንድ ክስተት እና ምርጫ ያስፈልገዋል.",
-    "legBadOdds": "እያንዳንዱ ምርጫ ከ 1 በላይ ትክክለኛ ዕድሎችን ይፈልጋል።"
+    "legBadOdds": "እያንዳንዱ ምርጫ ከ 1 በላይ ትክክለኛ ዕድሎችን ይፈልጋል።",
+    "tipsterImplied": "ቲፕስተር በተዘዋዋሪ ዕድሎች (አስርዮሽ)",
+    "tipsterEdge": "የቲፕስተር ጠርዝ"
   },
   "reports": {
     "title": "ሪፖርቶች",
@@ -265,7 +267,26 @@
     "timezone": "የሰዓት ሰቅ",
     "timezoneHint": "በመተግበሪያው ውስጥ ለቀናት እና ጊዜ ጥቅም ላይ ይውላል",
     "supportContact": "እርዳታ ይፈልጋሉ? ኢሜል <a href=\"mailto:support@mybetrecord.com\">support@mybetrecord.com</a>",
-    "legalLinks": "<a href=\"/privacy\">ግላዊነት</a> · <a href=\"/terms\">ውሎች</a> · <a href=\"/support\">ድጋፍ</a>"
+    "legalLinks": "<a href=\"/privacy\">ግላዊነት</a> · <a href=\"/terms\">ውሎች</a> · <a href=\"/support\">ድጋፍ</a>",
+    "account": "መለያ",
+    "email": "ኢሜይል",
+    "changePassword": "የይለፍ ቃል ቀይር",
+    "currentPassword": "የአሁኑ ሚስጥራዊ ማለፊያ ቁልፍ",
+    "passwordChanged": "የይለፍ ቃል ዘምኗል",
+    "currentPasswordIncorrect": "የአሁኑ የይለፍ ቃል የተሳሳተ ነው።",
+    "publicBetsTitle": "የህዝብ ውርርድ መዝገብ",
+    "publicBetsEnabled": "ውርርዶቼን በይፋ እንዲታዩ አድርጉ (ተነባቢ-ብቻ)",
+    "publicBetsHint": "አገናኙ ያለው ማንኛውም ሰው ውርርድዎን ሳይገቡ ማየት ይችላል። እንደ P/L እና bookmaker ያሉ ሚስጥራዊነት ያላቸው ዝርዝሮች ተደብቀዋል።",
+    "publicBetsCopyLink": "ይፋዊ አገናኝን ይቅዱ",
+    "publicBetsLinkCopied": "የህዝብ ግንኙነት ተቀድቷል።",
+    "accountDescription": "የመለያ መግለጫ",
+    "publicNickname": "የአደባባይ ቅጽል ስም",
+    "publicNicknamePlaceholder": "ለምሳሌ. ሲሞን ኤል.",
+    "publicNicknameHint": "ይህ በአደባባይ ውርርድ መዝገብዎ ላይ የሚታየው ስም ነው። ኢሜልዎ በጭራሽ በይፋ አይታይም።",
+    "accountDescriptionPlaceholder": "ስለ ውርርድ አቀራረብህ፣ ትኩረት ስፖርቶች ወይም የመዝገብ አያያዝ ዘይቤ ለጎብኚዎች ንገራቸው።",
+    "accountDescriptionHint": "አማራጭ። በይፋዊ ውርርድ መዝገብዎ ላይ ይታያል። ከፍተኛው 500 ቃላት።",
+    "accountDescriptionWordCount": "{{count}}/ 500 ቃላት",
+    "accountDescriptionTooLong": "የመለያ መግለጫ 500 ቃላት ወይም ከዚያ ያነሰ መሆን አለበት።"
   },
   "admin": {
     "title": "አስተዳዳሪ",
@@ -383,7 +404,18 @@
     "compClear": "ኮምፑን ያስወግዱ",
     "compUntil": "እስከ {{date}} ድረስ",
     "compApplied": "Complimentary Pro መዳረሻ ተዘምኗል",
-    "compCleared": "Complimentary Pro መዳረሻ ተወግዷል"
+    "compCleared": "Complimentary Pro መዳረሻ ተወግዷል",
+    "whenWithTz": "መቼ ({{tz}})",
+    "isp": "አይኤስፒ",
+    "ispCountry": "አይኤስፒ አገር",
+    "browserLanguage": "የአሳሽ ቋንቋ",
+    "operatingSystem": "ስርዓተ ክወና",
+    "timezone": "የሰዓት ሰቅ",
+    "promoStatsShare": "ስታቲስቲክስን አጋራ",
+    "promoStatsRevoke": "የስታቲስቲክስ ማገናኛን ሰርዝ",
+    "promoStatsLinkCopied": "የህዝብ ስታቲስቲክስ አገናኝ ተቀድቷል።",
+    "promoStatsRevokeConfirm": "ይህ ይፋዊ የስታቲስቲክስ አገናኝ ይሻር? አገናኙ ያለው ማንኛውም ሰው ከአሁን በኋላ አጠቃቀምን ማየት አይችልም።",
+    "promoStatsRevoked": "ይፋዊ የስታቲስቲክስ ግንኙነት ተሰርዟል።"
   },
   "errors": {
     "requestFailed": "ጥያቄው አልተሳካም።",
@@ -586,5 +618,18 @@
         "body": "<p>የመወራረድ ደብተር</strong> በቀላሉ የተሟላ የዋጋዎችዎ የጊዜ ቅደም ተከተል ነው፡ ምን እንደደገፉ፣ በምን ዕድል፣ በምን ያህል መጠን እና እንዴት እንደተፈታ። ለወቅቱ ዝግጁ መሆንዎን በመገመት እና በ<em>ማወቅ</em> መካከል ያለውን ልዩነት አድርገው ያስቡት።</p>\n<h2>ለምን የተመን ሉሆች አልተሳኩም</h2>\n<p>አብዛኞቹ ተወራሪዎች የሚጀምሩት በኤክሴል ወይም ጎግል ሉሆች ነው። እስከ፡</p> ድረስ ይሰራል\n<ul>\n<li>በየመንገድ ሲጨምሩ ወይም የኮሚሽን አምዶችን ሲለዋወጡ ቀመሮች ይቋረጣሉ\n<li> ባዶ ወይም ገንዘብ ማውጣት ረስተዋል</li>\nየምስሶ ሰንጠረዦችን እንደገና ሳይገነቡ በቲከር ወይም በስፖርት መቆራረጥ አይችሉም</li>\n</ul>\n<p>የተወሰነ መዝገብ ዕድሎችን መደበኛ ያደርጋል፣ በእያንዳንዱ አርትዖት ላይ ያለውን ትርፍ ያሰላል እና ሪፖርቶችን ወጥነት ያለው ያደርገዋል።</p>\n<h2>ምን እንደሚቀዳ </h2>\n<p>ቢያንስ መዝገብ፡</p>\n<ol>\n<li><strong>ክስተት እና ምርጫ</strong> — ከወራት በኋላ ውርርድን ለመለየት በቂ ዝርዝር</li>\n<li><strong>ካስማ እና ምንዛሬ</strong></li>\n<li><strong>አጋጣሚዎች</strong>(መጽሐፉ በሚያሳየው በማንኛውም መልኩ)</li>\n<li><strong>ውጤት</strong> — በመጠባበቅ ላይ፣ ማሸነፍ፣ ማጣት፣ ባዶነት</li>\n<li><strong>የተቀመጠ ትርፍ</strong> — ወይም ሶፍትዌሩ ከውጤት ደንቦች እንዲያገኘው ይፍቀዱለት</li>\n</ol>\n<p>ሹል መከታተያዎችን ከመደበኛ ማስታወሻ ሰሪዎች የሚለዩ የላቁ መስኮች፡</p>\n<ul>\n<li>የግል በተዘዋዋሪ ዕድሎች (የእርስዎ ትክክለኛ ዋጋ)</li>\n<li>የመዝጊያ መስመር ዕድሎች (ለ CLV)</li>\n<li>Tipster ወይም ሞዴል ምንጭ</li>\n<li>መጽሐፍ ሰሪ እና ኮሚሽን</li>\n</ul>\n<h2>ሊጀር vs ጆርናል </ h2>\n<p>ሰዎች የውርርድ መጽሔትን ይጠቀማሉ&rdquo; እና & ውርርድ ደብተር & rdquo; በተለዋዋጭ. በጥብቅ, አንድ መጽሔት ትረካ ማስታወሻዎች ሊያካትት ይችላል (& ldquo; ቸኩሎ ተሰማኝ & rdquo;, & ldquo; መስመር ተንቀሳቅሷል & rdquo;); የሂሳብ መዝገብ ቁጥሮችን አፅንዖት ይሰጣል. ምርጡ መሳሪያዎች ሁለቱንም ያዋህዳሉ፡ የተዋቀረ ውሂብ እና ነፃ የጽሁፍ ማስታወሻዎች በየውርርድ።</p>\n<h2>ማነው የሚያስፈልገው?</h2>\n<p>ከሎተሪ ቲኬቶች ይልቅ ውርርድን እንደ ችሎታ ጨዋታ የሚቆጥር ማንኛውም ሰው፡</p>\n<ul>\n<li>ተዛማጆች ብቁ እና ነጻ ውርርድን መከታተል</li>\n<li>በኮሚሽን የተስተካከለ ምርትን የሚለኩ ነጋዴዎች</li>\n<li>የቲፕስተር ተከታዮች የማስታወቂያውን ROI እያረጋገጡ ነው</li>\n<li>ታማኝ የባንኮች አስተዳደርን የሚፈልጉ የመዝናኛ ተኳሾች</li>\n</ul>\n<h2>መጀመር</h2>\n<p>አንድ አይነት ስፖርት ወይም የገበያ አይነት ምረጥ እና ሂደትህን ሳትቀይር ቀጣዮቹን 20 ውርርድ አስመዝግባ። የስራ ማቆም አድማ መጠንን፣ አማካይ ዕድሎችን እና ትርፍን በሳምንት ይገምግሙ። ያ መነሻ መስመር ከማንኛውም ጠቃሚ ምክር የበለጠ ዋጋ ያለው ነው።</p>\n<p><strong>ይህን በ mybetrecord ውስጥ ይከታተሉት፡</strong> ነፃ መለያ ይፍጠሩ፣ የባንክ ደብተርዎን እና ነባሪ ዕድሎችን ቅርጸት ያዘጋጁ እና የመጀመሪያ ውርርድዎን ከአንድ ደቂቃ በታች ያስገቡ።</p>"
       }
     }
+  },
+  "promoStats": {
+    "title": "የማስተዋወቂያ አጠቃቀም",
+    "publicNote": "ተነባቢ-ብቻ እይታ",
+    "users": "ተጠቃሚዎች",
+    "totalDiscounted": "አጠቃላይ ቅናሽ",
+    "notFound": "ይህ የማስተዋወቂያ ስታቲስቲክስ ገጽ ሊገኝ አልቻለም።"
+  },
+  "publicProfile": {
+    "title": "የህዝብ ውርርድ መዝገብ",
+    "betCount": "{{count}} ውርርድ",
+    "empty": "እስካሁን ምንም ውርርድ የለም።",
+    "notFound": "ይህ ይፋዊ ውርርድ መዝገብ ሊገኝ አልቻለም።"
   }
 }

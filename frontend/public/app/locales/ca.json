@@ -192,7 +192,9 @@
     "maxLegs": "Un múltiple pot tenir com a màxim {{max}} seleccions.",
     "needTwoLegs": "Un múltiple necessita almenys 2 seleccions.",
     "legMissingFields": "Cada selecció necessita un esdeveniment i una selecció.",
-    "legBadOdds": "Cada selecció necessita unes probabilitats vàlides superiors a 1."
+    "legBadOdds": "Cada selecció necessita unes probabilitats vàlides superiors a 1.",
+    "tipsterImplied": "Probabilitats implícites del pronòstic (decimal)",
+    "tipsterEdge": "Bord de tipster"
   },
   "reports": {
     "title": "Informes",
@@ -265,7 +267,26 @@
     "timezone": "Zona horària",
     "timezoneHint": "utilitzat per a les dates i hores a l'aplicació",
     "supportContact": "Necessites ajuda? Envia un correu electrònic a <a href=\"mailto:support@mybetrecord.com\">support@mybetrecord.com</a>",
-    "legalLinks": "<a href=\"/privacy\">Privadesa</a> · <a href=\"/terms\">Condicions</a> · <a href=\"/support\">Suport</a>"
+    "legalLinks": "<a href=\"/privacy\">Privadesa</a> · <a href=\"/terms\">Condicions</a> · <a href=\"/support\">Suport</a>",
+    "account": "Compte",
+    "email": "Correu electrònic",
+    "changePassword": "Canvia la contrasenya",
+    "currentPassword": "Contrasenya actual",
+    "passwordChanged": "Contrasenya actualitzada",
+    "currentPasswordIncorrect": "La contrasenya actual és incorrecta",
+    "publicBetsTitle": "Registre d'apostes públiques",
+    "publicBetsEnabled": "Fer que les meves apostes siguin visibles públicament (només de lectura)",
+    "publicBetsHint": "Qualsevol persona que tingui l'enllaç pot veure les teves apostes sense iniciar la sessió. S'amaguen els detalls sensibles, com ara P/L i la casa d'apostes.",
+    "publicBetsCopyLink": "Copia l'enllaç públic",
+    "publicBetsLinkCopied": "S'ha copiat l'enllaç públic",
+    "accountDescription": "Descripció del compte",
+    "publicNickname": "Àlies públic",
+    "publicNicknamePlaceholder": "p. ex. Simon L.",
+    "publicNicknameHint": "Aquest és el nom que es mostra al vostre registre d'apostes públiques. El vostre correu electrònic no es mostra mai públicament.",
+    "accountDescriptionPlaceholder": "Expliqueu als visitants el vostre enfocament d'apostes, l'enfocament esportiu o el vostre estil de manteniment de registres.",
+    "accountDescriptionHint": "Opcional. Es mostra al vostre registre d'apostes públiques. Màxim 500 paraules.",
+    "accountDescriptionWordCount": "{{count}} / 500 paraules",
+    "accountDescriptionTooLong": "La descripció del compte ha de tenir 500 paraules o menys"
   },
   "admin": {
     "title": "Admin",
@@ -383,7 +404,18 @@
     "compClear": "Elimina comp",
     "compUntil": "Compta fins a {{date}}",
     "compApplied": "Accés professional gratuït actualitzat",
-    "compCleared": "S'ha eliminat l'accés professional gratuït"
+    "compCleared": "S'ha eliminat l'accés professional gratuït",
+    "whenWithTz": "Quan ({{tz}})",
+    "isp": "ISP",
+    "ispCountry": "País ISP",
+    "browserLanguage": "Idioma del navegador",
+    "operatingSystem": "Sistema operatiu",
+    "timezone": "Zona horària",
+    "promoStatsShare": "Comparteix estadístiques",
+    "promoStatsRevoke": "Revoca l'enllaç d'estadístiques",
+    "promoStatsLinkCopied": "S'ha copiat l'enllaç d'estadístiques públiques",
+    "promoStatsRevokeConfirm": "Vols revocar aquest enllaç d'estadístiques públiques? Qualsevol persona que tingui l'enllaç ja no podrà veure l'ús.",
+    "promoStatsRevoked": "Enllaç d'estadístiques públiques revocat"
   },
   "errors": {
     "requestFailed": "La sol·licitud ha fallat",
@@ -586,5 +618,18 @@
         "body": "<p>Un <strong>llibre d'apostes</strong> és simplement un registre complet i cronològic de les vostres apostes: què heu recolzat, a quina probabilitat, quant i com es va liquidar. Penseu en això com la diferència entre endevinar si esteu preparat per a la temporada i <em>saber</em>.</p>\n<h2>Per què fallen els fulls de càlcul</h2>\n<p>La majoria dels apostadors comencen a Excel o a Google Sheets. Funciona fins a:</p>\n<ul>\n<li>Les fórmules es trenquen quan afegiu columnes de comissió d'intercanvi o de cada sentit</li>\n<li>T'oblidis de registrar una cancel·lació o un pagament</li>\n<li>No podeu tallar per informador o esport sense reconstruir les taules dinàmiques</li>\n</ul>\n<p>Un llibre major dedicat normalitza les probabilitats, torna a calcular els beneficis de cada edició i manté els informes coherents.</p>\n<h2>Què cal gravar</h2>\n<p>Com a mínim, registre:</p>\n<ol>\n<li><strong>Esdeveniment i selecció</strong>: detalls suficients per reconèixer l'aposta mesos més tard</li>\n<li><strong>Aposta i moneda</strong></li>\n<li><strong>Probabilitats</strong> (en qualsevol format que mostri el llibre)</li>\n<li><strong>Resultat</strong>: pendent, victòria, pèrdua, nul</li>\n<li><strong>Guanys liquidats</strong>: o deixeu que el programari el derivi de les regles de resultats</li>\n</ol>\n<p>Camps avançats que separen els seguidors nítids dels que prenen notes ocasionals:</p>\n<ul>\n<li>Propostes implícites personals (el vostre preu just)</li>\n<li>Probabilitat de la línia de tancament (per a CLV)</li>\n<li>Tipster o font del model</li>\n<li>Apostes i comissions</li>\n</ul>\n<h2>Ledger vs diari</h2>\n<p>La gent utilitza el &ldquo;diari d'apostes&rdquor; i &ldquo;llibre d'apostes&rdquor; indistintament. En sentit estricte, un diari pot incloure notes narratives (&ldquo;sentir pressa&rdquo;, &ldquo;linea moguda&rdquo;); un llibre major posa èmfasi en els números. Les millors eines combinen totes dues: dades estructurades i notes de text lliure per aposta.</p>\n<h2>Qui en necessita un?</h2>\n<p>Qualsevol persona que tracti les apostes com un joc d'habilitat en lloc de bitllets de loteria:</p>\n<ul>\n<li>Apostadors coincidents que fan un seguiment de les apostes qualificatives i gratuïtes</li>\n<li>Comerciants de borsa que mesuren el rendiment ajustat per comissió</li>\n<li>Seguidors de informadors que verifiquen el ROI anunciat</li>\n<li>Apostadors recreatius que volen una gestió honesta del pressupost</li>\n</ul>\n<h2>Com començar</h2>\n<p>Trieu un esport o tipus de mercat i registreu les 20 apostes següents sense canviar el vostre procés. Reviseu la taxa de vaga, les probabilitats mitjanes i els beneficis per setmana. Aquesta línia de base val més que qualsevol propina.</p>\n<p><strong>Fes un seguiment d'això a mybetrecord:</strong> creeu un compte gratuït, configureu el vostre format de capital i de quotes predeterminat i registreu la vostra primera aposta en menys d'un minut.</p>"
       }
     }
+  },
+  "promoStats": {
+    "title": "Ús promocional",
+    "publicNote": "Vista de només lectura",
+    "users": "Usuaris",
+    "totalDiscounted": "Total descomptat",
+    "notFound": "No s'ha pogut trobar aquesta pàgina d'estadístiques promocionals."
+  },
+  "publicProfile": {
+    "title": "Registre d'apostes públiques",
+    "betCount": "{{count}} apostes",
+    "empty": "Encara no hi ha apostes.",
+    "notFound": "No s'ha pogut trobar aquest registre d'apostes públiques."
   }
 }

@@ -192,7 +192,9 @@
     "maxLegs": "多個最多可以有 {{max}} 選擇。",
     "needTwoLegs": "多重需要至少 2 個選擇。",
     "legMissingFields": "每個選擇都需要一個事件和一個選擇。",
-    "legBadOdds": "每個選擇都需要大於 1 的有效賠率。"
+    "legBadOdds": "每個選擇都需要大於 1 的有效賠率。",
+    "tipsterImplied": "Tipster implied odds (decimal)",
+    "tipsterEdge": "Tipster edge"
   },
   "reports": {
     "title": "報告",

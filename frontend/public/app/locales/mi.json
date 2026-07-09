@@ -192,7 +192,9 @@
     "maxLegs": "Ka taea e te maha te {{max}} te nuinga o nga whiringa.",
     "needTwoLegs": "Ko te maha e hiahia ana kia 2 nga whiringa.",
     "legMissingFields": "Ko ia kowhiringa he huihuinga me tetahi whiringa.",
-    "legBadOdds": "Me nui ake i te 1 ia whiringa."
+    "legBadOdds": "Me nui ake i te 1 ia whiringa.",
+    "tipsterImplied": "Tipster implied odds (decimal)",
+    "tipsterEdge": "Tipster edge"
   },
   "reports": {
     "title": "Ripoata",

@@ -192,7 +192,9 @@
     "maxLegs": "Gall lluosrif fod â dewisiadau {{max}} ar y mwyaf.",
     "needTwoLegs": "Mae angen o leiaf 2 ddetholiad ar luosog.",
     "legMissingFields": "Mae angen digwyddiad a detholiad ar bob detholiad.",
-    "legBadOdds": "Mae angen ods dilys o fwy nag 1 ar bob detholiad."
+    "legBadOdds": "Mae angen ods dilys o fwy nag 1 ar bob detholiad.",
+    "tipsterImplied": "Ods awgrymedig Tipster (degol)",
+    "tipsterEdge": "Tipster ymyl"
   },
   "reports": {
     "title": "Adroddiadau",
@@ -265,7 +267,26 @@
     "timezone": "Cylchfa amser",
     "timezoneHint": "a ddefnyddir ar gyfer dyddiadau ac amseroedd yn yr ap",
     "supportContact": "Angen help? E-bost <a href=\"mailto:support@mybetrecord.com\">support@mybetrecord.com</a>",
-    "legalLinks": "<a href=\"/privacy\">Preifatrwydd</a> · <a href=\"/terms\">Telerau</a> · <a href=\"/support\">Cymorth</a>"
+    "legalLinks": "<a href=\"/privacy\">Preifatrwydd</a> · <a href=\"/terms\">Telerau</a> · <a href=\"/support\">Cymorth</a>",
+    "account": "Cyfrif",
+    "email": "Ebost",
+    "changePassword": "Newid cyfrinair",
+    "currentPassword": "Cyfrinair cyfredol",
+    "passwordChanged": "Cyfrinair wedi'i ddiweddaru",
+    "currentPasswordIncorrect": "Mae'r cyfrinair presennol yn anghywir",
+    "publicBetsTitle": "Cofnod bet cyhoeddus",
+    "publicBetsEnabled": "Gwneud fy betiau i'w gweld yn gyhoeddus (darllen yn unig)",
+    "publicBetsHint": "Gall unrhyw un sydd â'r ddolen weld eich betiau heb fewngofnodi. Mae manylion sensitif fel P/L a bwci wedi'u cuddio.",
+    "publicBetsCopyLink": "Copïo dolen gyhoeddus",
+    "publicBetsLinkCopied": "Dolen gyhoeddus wedi'i chopïo",
+    "accountDescription": "Disgrifiad o'r cyfrif",
+    "publicNickname": "Llysenw cyhoeddus",
+    "publicNicknamePlaceholder": "e.e. Simon L.",
+    "publicNicknameHint": "Dyma'r enw a ddangosir ar eich cofnod bet cyhoeddus. Nid yw eich e-bost byth yn cael ei arddangos yn gyhoeddus.",
+    "accountDescriptionPlaceholder": "Dywedwch wrth ymwelwyr am eich dull betio, ffocws chwaraeon, neu arddull cadw cofnodion.",
+    "accountDescriptionHint": "Dewisol. Wedi'i ddangos ar eich cofnod bet cyhoeddus. Uchafswm o 500 o eiriau.",
+    "accountDescriptionWordCount": "{{count}} / 500 gair",
+    "accountDescriptionTooLong": "Rhaid i ddisgrifiad cyfrif fod yn 500 gair neu lai"
   },
   "admin": {
     "title": "Gweinyddol",
@@ -383,7 +404,18 @@
     "compClear": "Dileu comp",
     "compUntil": "Comp tan {{date}}",
     "compApplied": "Mynediad Pro Cyflenwol wedi'i ddiweddaru",
-    "compCleared": "Mynediad Pro Cyflenwol wedi'i ddileu"
+    "compCleared": "Mynediad Pro Cyflenwol wedi'i ddileu",
+    "whenWithTz": "Pryd ({{tz}})",
+    "isp": "ISP",
+    "ispCountry": "ISP wlad",
+    "browserLanguage": "Iaith porwr",
+    "operatingSystem": "System weithredu",
+    "timezone": "Cylchfa Amser",
+    "promoStatsShare": "Rhannu ystadegau",
+    "promoStatsRevoke": "Diddymu'r ddolen stats",
+    "promoStatsLinkCopied": "Dolen stats cyhoeddus wedi'i chopïo",
+    "promoStatsRevokeConfirm": "Diddymu'r cyswllt ystadegau cyhoeddus hwn? Ni fydd unrhyw un sydd â'r ddolen bellach yn gallu gweld defnydd.",
+    "promoStatsRevoked": "Dolen stats cyhoeddus wedi'i dirymu"
   },
   "errors": {
     "requestFailed": "Methodd y cais",
@@ -586,5 +618,18 @@
         "body": "<p>Yn syml, mae <strong>cyfriflyfr betio</strong> yn gofnod cronolegol, cyflawn o'ch cyflog: yr hyn a gefnogwyd gennych, pa ods, faint, a sut y setlo. Meddyliwch amdano fel y gwahaniaeth rhwng dyfalu a ydych yn barod am y tymor a <em>gwybod</em>.</p>\n<h2>Pam bod taenlenni'n methu</ h2>\n<p>Mae'r rhan fwyaf o bettors yn cychwyn yn Excel neu Google Sheets. Mae hynny'n gweithio tan:</p>\n<ul>\n<li>Mae fformiwlâu yn torri pan fyddwch chi'n ychwanegu colofnau comisiwn bob ffordd neu'n cyfnewid</li>\n<li>Rydych chi'n anghofio logio gwagle neu arian parod</li>\n<li>Ni allwch sleisio fesul tipster neu chwaraeon heb ailadeiladu byrddau colyn</li>\n</ul>\n<p>Mae cyfriflyfr pwrpasol yn normaleiddio ods, yn ailgyfrifo elw ar bob golygiad, ac yn cadw adroddiadau'n gyson.</p>\n<h2>Beth i'w gofnodi</h2>\n<p>Ar y lleiaf, log:</p>\n<ol>\n<li><strong>Digwyddiad a dewis</strong> — digon o fanylion i adnabod y bet fisoedd yn ddiweddarach</li>\n<li><strong>Stake ac arian cyfred</strong></li>\n<li><strong>Ods</strong> (ym mha bynnag fformat mae'r llyfr yn ei ddangos)</li>\n<li><strong>Canlyniad</strong> — ar y gweill, ennill, colled, gwagle</li>\n<li><strong>Elw wedi'i setlo</strong> — neu adael i feddalwedd ei ddeillio o reolau canlyniad</li>\n</ol>\n<p>Meysydd uwch sy'n gwahanu tracwyr miniog oddi wrth gymerwyr nodiadau achlysurol:</p>\n<ul>\n<li>Ods personol a awgrymir (eich pris teg)</li>\n<li>Ods llinell cau (ar gyfer CLV)</li>\n<li>Tipster neu ffynhonnell fodel</li>\n<li>Bwci a chomisiwn</li>\n</ul>\n<h2>Ledger vs dyddlyfr</h2>\n<p>Mae pobl yn defnyddio &ldquo;dyddlyfr betio&rdquo; a &ldquo;cyfriflyfr betio&rdquo; yn gyfnewidiol. Yn fanwl gywir, gallai cyfnodolyn gynnwys nodiadau naratif (&ldquo;feel rushed&rdquo;, &ldquo;line moved&rdquo;); cyfriflyfr yn pwysleisio rhifau. Mae'r offer gorau yn cyfuno'r ddau: data strwythuredig ynghyd â nodiadau testun rhydd fesul bet.</p>\n<h2>Pwy sydd angen un?</h2>\n<p>Unrhyw un sy'n trin betio fel gêm sgil yn hytrach na thocynnau loteri:</p>\n<ul>\n<li>Bettors cyfatebol yn olrhain betiau cymwys a rhad ac am ddim</li>\n<li>Masnachwyr cyfnewid yn mesur cynnyrch wedi'i addasu gan gomisiwn</li>\n<li>Dilynwyr Tipster yn dilysu ROI a hysbysebwyd</li>\n<li>Punters hamdden sydd eisiau rheolaeth banc gonest</li>\n</ul>\n<h2>Cychwyn arni</h2>\n<p>Dewiswch un math o gamp neu farchnad a logiwch yr 20 bet nesaf heb newid eich proses. Adolygu cyfradd streic, ods cyfartalog, ac elw fesul wythnos. Mae'r llinell sylfaen honno'n werth mwy nag unrhyw awgrym.</p>\n<p><strong>Traciwch hyn yn mybetrecord:</strong> crëwch gyfrif rhad ac am ddim, gosodwch eich banc a'ch fformat ods rhagosodedig, a mewngofnodwch eich bet cyntaf mewn llai na munud.</p>"
       }
     }
+  },
+  "promoStats": {
+    "title": "Defnydd hyrwyddo",
+    "publicNote": "Golwg darllen yn unig",
+    "users": "Defnyddwyr",
+    "totalDiscounted": "Cyfanswm wedi'i ddisgowntio",
+    "notFound": "Nid oedd modd dod o hyd i'r dudalen ystadegau hyrwyddo hon."
+  },
+  "publicProfile": {
+    "title": "Cofnod bet cyhoeddus",
+    "betCount": "{{count}} betiau",
+    "empty": "Dim betiau eto.",
+    "notFound": "Nid oedd modd dod o hyd i'r cofnod bet cyhoeddus hwn."
   }
 }

@@ -192,7 +192,9 @@
     "maxLegs": "Večkratnik ima lahko največ {{max}} izbir.",
     "needTwoLegs": "Večkratnik potrebuje vsaj 2 izbiri.",
     "legMissingFields": "Vsak izbor potrebuje dogodek in izbor.",
-    "legBadOdds": "Vsak izbor zahteva veljavno kvoto, večjo od 1."
+    "legBadOdds": "Vsak izbor zahteva veljavno kvoto, večjo od 1.",
+    "tipsterImplied": "Tipster implied odds (decimal)",
+    "tipsterEdge": "Tipster edge"
   },
   "reports": {
     "title": "Poročila",

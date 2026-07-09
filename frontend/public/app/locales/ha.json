@@ -192,7 +192,9 @@
     "maxLegs": "Yawanci na iya samun mafi yawan zaɓuka {{max}}.",
     "needTwoLegs": "Yawanci yana buƙatar aƙalla zaɓuɓɓuka 2.",
     "legMissingFields": "Kowane zaɓi yana buƙatar taron da zaɓi.",
-    "legBadOdds": "Kowane zaɓi yana buƙatar ingantacciyar ƙima fiye da 1."
+    "legBadOdds": "Kowane zaɓi yana buƙatar ingantacciyar ƙima fiye da 1.",
+    "tipsterImplied": "Ƙididdigar ƙididdiga na Tipster (dicimal)",
+    "tipsterEdge": "Tipster baki"
   },
   "reports": {
     "title": "Rahotanni",
@@ -265,7 +267,26 @@
     "timezone": "Yankin lokaci",
     "timezoneHint": "da aka yi amfani da shi don kwanakin da lokuta a cikin app",
     "supportContact": "Kuna buƙatar taimako? Imel <a href=\"mailto:support@mybetrecord.com\">support@mybetrecord.com</a>",
-    "legalLinks": "<a href=\"/privacy\">Sirri</a> · <a href=\"/terms\">Sharuɗɗa</a> · <a href=\"/support\">Taimako</a>"
+    "legalLinks": "<a href=\"/privacy\">Sirri</a> · <a href=\"/terms\">Sharuɗɗa</a> · <a href=\"/support\">Taimako</a>",
+    "account": "Account",
+    "email": "Email",
+    "changePassword": "Change password",
+    "currentPassword": "Current password",
+    "passwordChanged": "Password updated",
+    "currentPasswordIncorrect": "Current password is incorrect",
+    "publicBetsTitle": "Public bet record",
+    "publicBetsEnabled": "Make my bets publicly viewable (read-only)",
+    "publicBetsHint": "Anyone with the link can view your bets without signing in. Sensitive details like P/L and bookmaker are hidden.",
+    "publicBetsCopyLink": "Copy public link",
+    "publicBetsLinkCopied": "Public link copied",
+    "accountDescription": "Account description",
+    "publicNickname": "Public nickname",
+    "publicNicknamePlaceholder": "e.g. Simon L.",
+    "publicNicknameHint": "This is the name shown on your public bet record. Your email is never displayed publicly.",
+    "accountDescriptionPlaceholder": "Tell visitors about your betting approach, focus sports, or record-keeping style.",
+    "accountDescriptionHint": "Optional. Shown on your public bet record. Max 500 words.",
+    "accountDescriptionWordCount": "{{count}} / 500 words",
+    "accountDescriptionTooLong": "Account description must be 500 words or fewer"
   },
   "admin": {
     "title": "Admin",
@@ -383,7 +404,18 @@
     "compClear": "Cire comp",
     "compUntil": "Comp har zuwa {{date}}",
     "compApplied": "An sabunta damar samun damar Pro",
-    "compCleared": "An cire damar samun damar Pro"
+    "compCleared": "An cire damar samun damar Pro",
+    "whenWithTz": "When ({{tz}})",
+    "isp": "ISP",
+    "ispCountry": "ISP country",
+    "browserLanguage": "Browser language",
+    "operatingSystem": "Operating system",
+    "timezone": "Timezone",
+    "promoStatsShare": "Share stats",
+    "promoStatsRevoke": "Revoke stats link",
+    "promoStatsLinkCopied": "Public stats link copied",
+    "promoStatsRevokeConfirm": "Revoke this public stats link? Anyone with the link will no longer be able to view usage.",
+    "promoStatsRevoked": "Public stats link revoked"
   },
   "errors": {
     "requestFailed": "Buƙatar ta kasa",
@@ -586,5 +618,18 @@
         "body": "<p>A<strong>Littafin yin fare</strong> shine kawai cikakken, rikodin tarihin ku na wagers: abin da kuka goyi baya, menene rashin daidaituwa, nawa, da yadda aka daidaita. Ka yi la'akari da shi a matsayin bambanci tsakanin hasashen ko kun gama kakar wasa da <em>sani</em>.</p>\n<h2>Me yasa marubutu suka gaza</h2>\nYawancin masu cin amana suna farawa a cikin Excel ko Google Sheets. Wannan yana aiki har zuwa:</p>\n<ul>\n<li>Formula suna karya lokacin da kuka ƙara kowane-hanyoyi ko musanya ginshiƙan hukumar</li>\n<li>Kuna mantawa da shiga fanko ko tsabar kuɗi</li>\n<li>Ba za ku iya yanke ta hanyar mai ba da shawara ko wasa ba tare da sake gina teburin pivot</li>\n</ul>\n<p>Littafin sadaukarwa yana daidaita daidaito, yana lissafin riba akan kowane gyara, kuma yana kiyaye rahotanni daidai gwargwado.</p>\n<h2>Abin da za a yi rikodin </h2>\n<p>Aƙalla, shiga:</p>\n<ol>\n<li><strong>Tattaunawa da zaɓi</strong> - isassun cikakkun bayanai don gane fare watanni daga baya</li>\n<li><strong>Ske da currency</strong></li>\n<li><strong>Sauran</strong>(a kowane irin tsari da littafin ya nuna)</li>\n<li><strong>Sakamako</strong> — yana jiran, nasara, asara, banza</li>\n<li><strong>Ribar da aka daidaita</strong> - ko bari software ta samo shi daga ka'idojin sakamako</li>\n</ol>\n<p>Filayen ci gaba waɗanda ke raba masu bin diddigin kaifi da masu ɗaukar rubutu na yau da kullun:</p>\n<ul>\n<li>Rashin daidaituwa na sirri (farashin ku na gaskiya) </li>\n<li>Matsalolin rufewa (na CLV) </li>\n<li>Tipster ko tushen abin ƙira</li>\n<li>Mai yin littafi da kwamishina</li>\n</ul>\n<h2>Ledger vs jarida </ h2>\n<p>Mutane suna amfani da &ldquo;mujallar betting&rdquo; da & ldquo;littafin yin fare&rdquo; musanya. A taƙaice, jarida na iya haɗawa da bayanan ba da labari (&ldquo;ji gaggauce&rdquo;, & ldquo;layi motsi&rdquo;); littafi yana jaddada lambobi. Mafi kyawun kayan aikin sun haɗa duka biyu: bayanan da aka tsara tare da bayanan rubutu kyauta kowane fare.</p>\n<h2>Wane ne yake buƙatar ɗaya?</h2>\n<p>Duk wanda ya ɗauki yin fare azaman wasan fasaha maimakon tikitin caca:</p>\n<ul>\n<li>Waɗanda suka dace da masu cin amana suna bin diddigin cancanta da fare kyauta</li>\n<li>Yan kasuwan musanya suna auna madaidaicin yawan amfanin gona</li>\n<li>Mabiyan Tipster suna tabbatar da tallan ROI</li>\n<li>Masu wasa na nishaɗi waɗanda ke son sarrafa banki na gaskiya</li>\n</ul>\n<h2>Farawa </h2>\n<p>Zaɓi nau'in wasa ɗaya ko nau'in kasuwa sannan ku shiga fare 20 na gaba ba tare da canza tsarin ku ba. Bitar adadin yajin aiki, matsakaicin rashin daidaito, da riba ta mako. Wannan tushen yana da daraja fiye da kowane tukwici.</p>\n<p><strong>Bibi da wannan a cikin mybetrecord:</strong> ƙirƙirar asusun kyauta, saita bankin ku da tsarin rashin daidaituwa, sannan ku shiga fare na farko cikin ƙasa da minti ɗaya.</p>"
       }
     }
+  },
+  "promoStats": {
+    "title": "Amfanin talla",
+    "publicNote": "Duba karanta kawai",
+    "users": "Masu amfani",
+    "totalDiscounted": "Jimlar rangwame",
+    "notFound": "Ba a iya samun wannan shafin ƙididdiga na talla ba."
+  },
+  "publicProfile": {
+    "title": "Rikodin fare na jama'a",
+    "betCount": "{{count}} fare",
+    "empty": "Babu fare tukuna.",
+    "notFound": "Ba a iya samun wannan rikodin fare na jama'a ba."
   }
 }

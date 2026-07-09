@@ -192,7 +192,9 @@
     "maxLegs": "Якчанд метавонад ҳадди аксар {{max}} интихоб дошта бошад.",
     "needTwoLegs": "Якчанд ба ҳадди аққал 2 интихоб ниёз дорад.",
     "legMissingFields": "Ҳар як интихоб ба рӯйдод ва интихоб ниёз дорад.",
-    "legBadOdds": "Ҳар як интихоб коэффисиентҳои аз 1 зиёдро талаб мекунад."
+    "legBadOdds": "Ҳар як интихоб коэффисиентҳои аз 1 зиёдро талаб мекунад.",
+    "tipsterImplied": "Tipster implied odds (decimal)",
+    "tipsterEdge": "Tipster edge"
   },
   "reports": {
     "title": "Ҳисоботҳо",

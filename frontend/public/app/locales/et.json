@@ -157,7 +157,7 @@
     "whatYouLay": "Mida sa lamasid",
     "side": "Külg",
     "sideBack": "Tagasi",
-    "sideLay": "Lay",
+    "sideLay": "Lama",
     "backersStake": "Toetaja panus",
     "backersStakeHint": "Teie kasum, kui mängija võidab",
     "liability": "Vastutus",
@@ -192,7 +192,9 @@
     "maxLegs": "Mitmel võib olla kuni {{max}} valikut.",
     "needTwoLegs": "Mitmik vajab vähemalt kahte valikut.",
     "legMissingFields": "Iga valik vajab sündmust ja valikut.",
-    "legBadOdds": "Iga valiku puhul peab kehtiv koefitsient olema suurem kui 1."
+    "legBadOdds": "Iga valiku puhul peab kehtiv koefitsient olema suurem kui 1.",
+    "tipsterImplied": "Tipsteri kaudsed koefitsiendid (kümnendkohad)",
+    "tipsterEdge": "Tipster serv"
   },
   "reports": {
     "title": "Aruanded",
@@ -265,7 +267,26 @@
     "timezone": "Ajavöönd",
     "timezoneHint": "kasutatakse rakenduses kuupäevade ja kellaaegade jaoks",
     "supportContact": "Vajad abi? Saada meil aadressile <a href=\"mailto:support@mybetrecord.com\">support@mybetrecord.com</a>",
-    "legalLinks": "<a href=\"/privacy\">Privaatsus</a> · <a href=\"/terms\">Tingimused</a> · <a href=\"/support\">Tugi</a>"
+    "legalLinks": "<a href=\"/privacy\">Privaatsus</a> · <a href=\"/terms\">Tingimused</a> · <a href=\"/support\">Tugi</a>",
+    "account": "konto",
+    "email": "Meil",
+    "changePassword": "Muuda parooli",
+    "currentPassword": "Praegune parool",
+    "passwordChanged": "Parool uuendatud",
+    "currentPasswordIncorrect": "Praegune parool on vale",
+    "publicBetsTitle": "Avalik kihlveo rekord",
+    "publicBetsEnabled": "Muuda minu ennustused avalikult vaadatavaks (kirjutuskaitstud)",
+    "publicBetsHint": "Igaüks, kellel on link, saab teie panuseid vaadata ilma sisse logimata. Tundlikud üksikasjad, nagu P/L ja kihlveokontorid, on peidetud.",
+    "publicBetsCopyLink": "Kopeeri avalik link",
+    "publicBetsLinkCopied": "Avalik link on kopeeritud",
+    "accountDescription": "Konto kirjeldus",
+    "publicNickname": "Avalik hüüdnimi",
+    "publicNicknamePlaceholder": "nt. Simon L.",
+    "publicNicknameHint": "See on nimi, mis kuvatakse teie avalikul panuste kirjel. Teie e-posti ei kuvata kunagi avalikult.",
+    "accountDescriptionPlaceholder": "Rääkige külastajatele oma panustamisviisist, keskenduge spordile või arvestuse pidamise stiilile.",
+    "accountDescriptionHint": "Valikuline. Kuvatakse teie avalikul panusekirjel. Max 500 sõna.",
+    "accountDescriptionWordCount": "{{count}} / 500 sõna",
+    "accountDescriptionTooLong": "Konto kirjeldus peab olema kuni 500 sõna pikkune"
   },
   "admin": {
     "title": "Admin",
@@ -383,7 +404,18 @@
     "compClear": "Eemalda komp",
     "compUntil": "Kompleks kuni {{date}}",
     "compApplied": "Tasuta Pro juurdepääs on värskendatud",
-    "compCleared": "Tasuta Pro juurdepääs eemaldatud"
+    "compCleared": "Tasuta Pro juurdepääs eemaldatud",
+    "whenWithTz": "Millal ({{tz}})",
+    "isp": "ISP",
+    "ispCountry": "ISP riik",
+    "browserLanguage": "Brauseri keel",
+    "operatingSystem": "Operatsioonisüsteem",
+    "timezone": "Ajavöönd",
+    "promoStatsShare": "Jaga statistikat",
+    "promoStatsRevoke": "Tühista statistika link",
+    "promoStatsLinkCopied": "Avalik statistika link on kopeeritud",
+    "promoStatsRevokeConfirm": "Kas tühistada see avaliku statistika link? Kõik, kellel on link, ei saa enam kasutust vaadata.",
+    "promoStatsRevoked": "Avaliku statistika link tühistati"
   },
   "errors": {
     "requestFailed": "Taotlus ebaõnnestus",
@@ -586,5 +618,18 @@
         "body": "<p><strong>Panuraamat</strong> on lihtsalt täielik ja kronoloogiline kirje teie panuste kohta: mida toetasite, mis koefitsiendiga, kui palju ja kuidas see arveldati. Mõelge sellele kui hooajale sobiva oletamise ja <em>teadmise</em> erinevusele.</p>\n<h2>Miks arvutustabelid ebaõnnestuvad</h2>\n<p>Enamik panustajaid alustab Excelis või Google'i arvutustabelites. See töötab kuni:</p>\n<ul>\n<li>Valemid katkevad, kui lisate igasuunalisi või vahetate komisjonitasu veerge</li>\n<li>Unustasite registreerida tühisuse või väljamakse</li>\n<li>Pöördtabeleid uuesti üles ehitamata ei saa te näpunäidete või spordialade järgi tükeldada.</li>\n</ul>\n<p>Spetsiaalne pearaamat normaliseerib koefitsiendid, arvutab iga muudatuse kasumi ümber ja hoiab aruanded järjepidevana.</p>\n<h2>Mida salvestada</h2>\n<p>Logige vähemalt:</p>\n<ol>\n<li><strong>Sündmus ja valik</strong> – piisavalt üksikasju, et ennustus kuud hiljem ära tunda</li>\n<li><strong>Panus ja valuuta</strong></li>\n<li><strong>Koefitsiendid</strong> (ükskõik millises vormingus raamatus kuvatakse)</li>\n<li><strong>Tulemus</strong> – ootel, võit, kaotus, tühine</li>\n<li><strong>Arveldatud kasum</strong> – või laske tarkvaral see tuletada tulemusreeglitest</li>\n</ol>\n<p>Täpsemad väljad, mis eraldavad teravaid jälgijaid tavalistest märkmete tegijatest:</p>\n<ul>\n<li>Isiklik kaudne koefitsient (teie õiglane hind)</li>\n<li>Suletava rea koefitsiendid (CLV jaoks)</li>\n<li>Nõuandja või mudeli allikas</li>\n<li>Kihlveokontor ja komisjonitasu</li>\n</ul>\n<h2>Pearaamat vs päevik</h2>\n<p>Inimesed kasutavad &ldquo;kihlveoajakirja&rdquo; ja &bdquo;ennustusreskontra&rdquo; vaheldumisi. Rangelt võib päevik sisaldada jutustavaid märkmeid (&ldquo;tundsin kiirustamist&ldquo;, &bdquo;rida liigutatud&rdquo;); pearaamat rõhutab numbreid. Parimad tööriistad ühendavad mõlemad: struktureeritud andmed ja vabatekstimärkmed panuse kohta.</p>\n<h2>Kellele seda vaja on?</h2>\n<p>Igaüks, kes käsitleb kihlvedu pigem osavusmänguna kui loteriipiletitena:</p>\n<ul>\n<li>Sobivad panustajad jälgivad kvalifitseeruvaid ja tasuta panuseid</li>\n<li>Börsikauplejad, kes mõõdavad komisjonitasudega korrigeeritud tulu</li>\n<li>Nõuandjate jälgijad, kes kontrollivad reklaamitud ROI-d</li>\n<li>Meelelahutuslikud mängijad, kes soovivad ausat rahahaldust</li>\n</ul>\n<h2>Alustamine</h2>\n<p>Valige üks spordiala või turu tüüp ja logige järgmised 20 panust ilma protsessi muutmata. Vaadake läbi löögisagedus, keskmine koefitsient ja kasum nädala kaupa. See lähtepunkt on rohkem väärt kui ükski jootraha.</p>\n<p><strong>Jälgige seda mybetrecordis:</strong> looge tasuta konto, määrake oma pangaroll ja koefitsientide vaikevorming ning logige oma esimene panus vähem kui minuti pärast.</p>"
       }
     }
+  },
+  "promoStats": {
+    "title": "Promo kasutamine",
+    "publicNote": "Kirjutuskaitstud vaade",
+    "users": "Kasutajad",
+    "totalDiscounted": "Kokku allahinnatud",
+    "notFound": "Seda reklaamistatistika lehte ei leitud."
+  },
+  "publicProfile": {
+    "title": "Avalik kihlveo rekord",
+    "betCount": "{{count}} panused",
+    "empty": "Panuseid veel pole.",
+    "notFound": "Seda avalikku panusekirjet ei leitud."
   }
 }

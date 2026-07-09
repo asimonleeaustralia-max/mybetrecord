@@ -192,7 +192,9 @@
     "maxLegs": "Ny maromaro dia afaka manana safidy {{max}} raha be indrindra.",
     "needTwoLegs": "Mila safidy 2 farafahakeliny ny maromaro.",
     "legMissingFields": "Mila hetsika sy fifantenana ny fifantenana tsirairay.",
-    "legBadOdds": "Ny fifantenana tsirairay dia mila vintana manan-kery mihoatra ny 1."
+    "legBadOdds": "Ny fifantenana tsirairay dia mila vintana manan-kery mihoatra ny 1.",
+    "tipsterImplied": "Tipster implied odds (decimal)",
+    "tipsterEdge": "Tipster edge"
   },
   "reports": {
     "title": "tatitra",

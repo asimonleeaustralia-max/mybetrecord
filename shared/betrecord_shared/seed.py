@@ -230,6 +230,8 @@ def _ensure_modelling_edge_columns() -> None:
         ("personal_edge_pct", "FLOAT"),
         ("model_edge_pct", "FLOAT"),
         ("model_kelly_stake", "FLOAT"),
+        ("tipster_implied_odds", "FLOAT"),
+        ("tipster_edge_pct", "FLOAT"),
     ]
     pending = [(name, sql_type) for name, sql_type in additions if name not in columns]
     if not pending:

@@ -192,7 +192,9 @@
     "maxLegs": "Egy többszörös legfeljebb {{max}} kijelölést tartalmazhat.",
     "needTwoLegs": "A többszöröshöz legalább 2 kijelölés szükséges.",
     "legMissingFields": "Minden kiválasztáshoz szükség van egy eseményre és egy válogatásra.",
-    "legBadOdds": "Minden kiválasztáshoz 1-nél nagyobb érvényes odds szükséges."
+    "legBadOdds": "Minden kiválasztáshoz 1-nél nagyobb érvényes odds szükséges.",
+    "tipsterImplied": "Tipster implied odds (decimal)",
+    "tipsterEdge": "Tipster edge"
   },
   "reports": {
     "title": "Jelentések",
@@ -265,7 +267,26 @@
     "timezone": "Időzóna",
     "timezoneHint": "dátumokhoz és időpontokhoz használják az alkalmazásban",
     "supportContact": "Segítségre van szüksége? E-mail küldése: <a href=\"mailto:support@mybetrecord.com\">support@mybetrecord.com</a>",
-    "legalLinks": "<a href=\"/privacy\">Adatvédelem</a> · <a href=\"/terms\">Feltételek</a> · <a href=\"/support\">Támogatás</a>"
+    "legalLinks": "<a href=\"/privacy\">Adatvédelem</a> · <a href=\"/terms\">Feltételek</a> · <a href=\"/support\">Támogatás</a>",
+    "account": "Account",
+    "email": "Email",
+    "changePassword": "Change password",
+    "currentPassword": "Current password",
+    "passwordChanged": "Password updated",
+    "currentPasswordIncorrect": "Current password is incorrect",
+    "publicBetsTitle": "Public bet record",
+    "publicBetsEnabled": "Make my bets publicly viewable (read-only)",
+    "publicBetsHint": "Anyone with the link can view your bets without signing in. Sensitive details like P/L and bookmaker are hidden.",
+    "publicBetsCopyLink": "Copy public link",
+    "publicBetsLinkCopied": "Public link copied",
+    "accountDescription": "Account description",
+    "publicNickname": "Public nickname",
+    "publicNicknamePlaceholder": "e.g. Simon L.",
+    "publicNicknameHint": "This is the name shown on your public bet record. Your email is never displayed publicly.",
+    "accountDescriptionPlaceholder": "Tell visitors about your betting approach, focus sports, or record-keeping style.",
+    "accountDescriptionHint": "Optional. Shown on your public bet record. Max 500 words.",
+    "accountDescriptionWordCount": "{{count}} / 500 words",
+    "accountDescriptionTooLong": "Account description must be 500 words or fewer"
   },
   "admin": {
     "title": "Adminisztrátor",
@@ -383,7 +404,18 @@
     "compClear": "Távolítsa el a komp",
     "compUntil": "Teljesítés eddig: {{date}}",
     "compApplied": "Az ingyenes Pro hozzáférés frissítve",
-    "compCleared": "Az ingyenes Pro hozzáférés megszűnt"
+    "compCleared": "Az ingyenes Pro hozzáférés megszűnt",
+    "whenWithTz": "When ({{tz}})",
+    "isp": "ISP",
+    "ispCountry": "ISP country",
+    "browserLanguage": "Browser language",
+    "operatingSystem": "Operating system",
+    "timezone": "Timezone",
+    "promoStatsShare": "Share stats",
+    "promoStatsRevoke": "Revoke stats link",
+    "promoStatsLinkCopied": "Public stats link copied",
+    "promoStatsRevokeConfirm": "Revoke this public stats link? Anyone with the link will no longer be able to view usage.",
+    "promoStatsRevoked": "Public stats link revoked"
   },
   "errors": {
     "requestFailed": "A kérés sikertelen",
@@ -586,5 +618,18 @@
         "body": "<p>A <strong>fogadási könyv</strong> egyszerűen teljes, időrendi sorrendben rögzíti tétjeit: mit támogatott, milyen szorzóval, mennyiért és hogyan rendeződött. Tekintsd úgy fel, mint a különbséget aközött, hogy kitalálod, hogy felkészültél-e a szezonra, és a <em>tudás</em> között.</p>\n<h2>Miért nem működnek a táblázatok?</h2>\n<p>A legtöbb fogadó az Excelben vagy a Google Táblázatokban indul. Ez addig működik, amíg:</p>\n<ul>\n<li>A képletek megszakadnak, amikor mindenirányú vagy csere jutalék oszlopokat ad hozzá</li>\n<li>Elfelejtette naplózni az érvénytelenítést vagy a kifizetést</li>\n<li>Nem lehet szeletelni tipster vagy sport szerint a pivot táblák újjáépítése nélkül</li>\n</ul>\n<p>A dedikált főkönyv normalizálja az esélyeket, minden szerkesztéskor újraszámolja a nyereséget, és konzisztens jelentéseket biztosít.</p>\n<h2>Mit kell rögzíteni</h2>\n<p>Minimum naplózza:</p>\n<ol>\n<li><strong>Esemény és kiválasztás</strong> – elég részlet ahhoz, hogy hónapokkal később felismerjük a fogadást</li>\n<li><strong>Tét és pénznem</strong></li>\n<li><strong>Odds</strong> (bármilyen formátumban, amit a könyv megjelenít)</li>\n<li><strong>Eredmény</strong> – függőben, győzelem, vereség, érvénytelen</li>\n<li><strong>Elszámolt nyereség</strong> – vagy hagyja, hogy a szoftver az eredményszabályokból származtassa azt</li>\n</ol>\n<p>Speciális mezők, amelyek elválasztják az éles nyomkövetőket a hétköznapi jegyzetelőktől:</p>\n<ul>\n<li>Személyes vélt odds (az Ön tisztességes ára)</li>\n<li>Zárósor esélyei (CLV esetén)</li>\n<li>Tippadó vagy modellforrás</li>\n<li>Bukméker és jutalék</li>\n</ul>\n<h2>Főkönyv és napló</h2>\n<p>Az emberek a &ldquo;fogadási naplót&rdquo; és a &bdquo;fogadási főkönyv&rdquo; felcserélhetően. Szigorúan véve a napló tartalmazhat narratív jegyzeteket (&ldquo;elsietett&ldquo;, &bdquo;sor elmozdult&rdquo;); a főkönyv a számokat hangsúlyozza. A legjobb eszközök a kettőt kombinálják: strukturált adatok és szabad szöveges megjegyzések fogadásonként.</p>\n<h2>Kinek van szüksége ilyenre?</h2>\n<p>Bárki, aki a fogadást ügyességi játékként kezeli a sorsjegyek helyett:</p>\n<ul>\n<li>A megfelelő fogadók nyomon követik a minősítő és ingyenes fogadásokat</li>\n<li>A jutalékkal kiigazított hozamot mérő tőzsdei kereskedők</li>\n<li>A meghirdetett ROI-t ellenőrző tippelő követők</li>\n<li>Rekreációs fogadók, akik őszinte bankroll-kezelésre vágynak</li>\n</ul>\n<h2>Kezdő lépések</h2>\n<p>Válasszon ki egy sportágat vagy piactípust, és naplózza a következő 20 fogadást anélkül, hogy megváltoztatná a folyamatot. Tekintse át a támadási arányt, az átlagos esélyeket és a nyereséget heti bontásban. Ez az alapérték többet ér minden borravalónál.</p>\n<p><strong>Kövesse ezt a mybetrecord-ban:</strong> hozzon létre egy ingyenes számlát, állítsa be bankrollját és alapértelmezett oddsformátumát, és naplózza első fogadását egy percen belül.</p>"
       }
     }
+  },
+  "promoStats": {
+    "title": "Promo usage",
+    "publicNote": "Read-only view",
+    "users": "Users",
+    "totalDiscounted": "Total discounted",
+    "notFound": "This promo stats page could not be found."
+  },
+  "publicProfile": {
+    "title": "Public bet record",
+    "betCount": "{{count}} bets",
+    "empty": "No bets yet.",
+    "notFound": "This public bet record could not be found."
   }
 }

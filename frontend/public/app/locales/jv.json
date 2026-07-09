@@ -192,7 +192,9 @@
     "maxLegs": "A macem-macem bisa duwe paling {{max}} pilihan.",
     "needTwoLegs": "A sawetara mbutuhake paling 2 pilihan.",
     "legMissingFields": "Saben pilihan mbutuhake acara lan pilihan.",
-    "legBadOdds": "Saben pilihan mbutuhake kemungkinan sing bener luwih saka 1."
+    "legBadOdds": "Saben pilihan mbutuhake kemungkinan sing bener luwih saka 1.",
+    "tipsterImplied": "Tipster implied odds (decimal)",
+    "tipsterEdge": "Tipster edge"
   },
   "reports": {
     "title": "Laporan",

@@ -294,7 +294,7 @@
             <label><span data-i18n="form.closingBookmaker">Closing odds bookmaker (decimal)</span><input name="closing_odds" inputmode="decimal" placeholder="2.30" /></label>
             <label><span data-i18n="form.closingExchange">Closing odds exchange (decimal)</span><input name="closing_odds_exchange" inputmode="decimal" placeholder="2.28" /></label>
           </div>
-          <div class="grid2 implied-grid">
+          <div class="grid3 implied-grid">
             <div class="implied-col">
               <label><span data-i18n="form.modelImplied">Model implied odds (decimal)</span><input name="model_implied_odds" inputmode="decimal" placeholder="2.20" /></label>
               <div class="calc-results" data-calc="model" hidden>
@@ -318,6 +318,15 @@
                 <p class="kelly calc-field" data-role="kelly-wrap" hidden>
                   <span class="calc-field__label" data-i18n="form.personalKellyStake">Personal Kelly stake</span>
                   <span class="calc-field__value" data-role="kelly"></span>
+                </p>
+              </div>
+            </div>
+            <div class="implied-col">
+              <label><span data-i18n="form.tipsterImplied">Tipster implied odds (decimal)</span><input name="tipster_implied_odds" inputmode="decimal" placeholder="2.15" /></label>
+              <div class="calc-results" data-calc="tipster" hidden>
+                <p class="kelly calc-field">
+                  <span class="calc-field__label" data-i18n="form.tipsterEdge">Tipster edge</span>
+                  <span class="calc-field__value" data-role="edge"></span>
                 </p>
               </div>
             </div>

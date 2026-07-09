@@ -1502,7 +1502,7 @@ async function renderForm(id) {
     syncOutcomeOptions(form);
     updateSettlementPreview(form);
   });
-  ["odds", "odds_denominator", "personal_implied_odds", "model_implied_odds"].forEach(n => {
+  ["odds", "odds_denominator", "personal_implied_odds", "model_implied_odds", "tipster_implied_odds"].forEach(n => {
     const el = form.elements.namedItem(n);
     if (el) el.addEventListener("input", () => {
       updateModellingCalcs(form);
@@ -2026,7 +2026,7 @@ function kellyFromImplied(oddsDec, impliedDec, bankroll, multiplier) {
   return { fraction: f, stake: f * bankroll };
 }
 
-function updateCalcBlock(form, kind, implied, oddsDec, bankroll, mult, currency) {
+function updateCalcBlock(form, kind, implied, oddsDec, bankroll, mult, currency, { kelly = true } = {}) {
   const block = form.querySelector(`[data-calc="${kind}"]`);
   if (!block) return;
   const hasImplied = Number.isFinite(implied) && implied > 1;
@@ -2042,19 +2042,18 @@ function updateCalcBlock(form, kind, implied, oddsDec, bankroll, mult, currency)
       ? t("form.edgeValue", { pct: edge.toFixed(2) })
       : t("form.edgeNeedsOdds");
   }
-  const kelly = kellyFromImplied(oddsDec, implied, bankroll, mult);
-  if (kellyWrap) {
-    const showKelly = bankroll > 0 && oddsDec > 1;
-    kellyWrap.hidden = !showKelly;
-    if (showKelly && kellyVal) {
-      kellyVal.textContent = kelly && kelly.fraction > 0
-        ? t("form.kellySuggest", {
-            stake: money(kelly.stake),
-            currency,
-            pct: (kelly.fraction * 100).toFixed(1),
-          })
-        : t("form.kellyNoEdge");
-    }
+  if (!kelly || !kellyWrap) return;
+  const kellyResult = kellyFromImplied(oddsDec, implied, bankroll, mult);
+  const showKelly = bankroll > 0 && oddsDec > 1;
+  kellyWrap.hidden = !showKelly;
+  if (showKelly && kellyVal) {
+    kellyVal.textContent = kellyResult && kellyResult.fraction > 0
+      ? t("form.kellySuggest", {
+          stake: money(kellyResult.stake),
+          currency,
+          pct: (kellyResult.fraction * 100).toFixed(1),
+        })
+      : t("form.kellyNoEdge");
   }
 }
 
@@ -2066,8 +2065,10 @@ function updateModellingCalcs(form = $("#betForm")) {
   const oddsDec = betDecimalOdds(form);
   const personal = parseFloat(form.elements.namedItem("personal_implied_odds")?.value);
   const model = parseFloat(form.elements.namedItem("model_implied_odds")?.value);
+  const tipster = parseFloat(form.elements.namedItem("tipster_implied_odds")?.value);
   updateCalcBlock(form, "personal", personal, oddsDec, bankroll, mult, currency);
   updateCalcBlock(form, "model", model, oddsDec, bankroll, mult, currency);
+  updateCalcBlock(form, "tipster", tipster, oddsDec, bankroll, mult, currency, { kelly: false });
 }
 
 function localDatetimeInputValue(d = new Date()) {
@@ -2185,7 +2186,7 @@ function readOptionalDatetimeField(form, name) {
 }
 
 const NUM_FIELDS = ["odds", "odds_denominator", "stake", "place_fraction", "cash_out_amount",
-  "model_implied_odds", "personal_implied_odds", "closing_odds", "closing_odds_exchange", "exchange_commission_pct"];
+  "model_implied_odds", "personal_implied_odds", "tipster_implied_odds", "closing_odds", "closing_odds_exchange", "exchange_commission_pct"];
 
 function readForm(form) {
   const data = Object.fromEntries(new FormData(form));
@@ -2269,6 +2270,7 @@ function fillForm(form, b) {
   set("closing_odds_exchange", b.closing_odds_exchange);
   set("model_implied_odds", b.model_implied_odds);
   set("personal_implied_odds", b.personal_implied_odds);
+  set("tipster_implied_odds", b.tipster_implied_odds);
   set("exchange_commission_pct", b.exchange_commission_pct);
   set("bookmaker", b.bookmaker);
   if (form.portal) form.portal.value = b.portal || "";

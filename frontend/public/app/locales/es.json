@@ -192,7 +192,9 @@
     "maxLegs": "Un múltiplo puede tener como máximo {{max}} selecciones.",
     "needTwoLegs": "Un múltiplo necesita al menos 2 selecciones.",
     "legMissingFields": "Cada selección necesita un evento y una selección.",
-    "legBadOdds": "Cada selección necesita probabilidades válidas mayores que 1."
+    "legBadOdds": "Cada selección necesita probabilidades válidas mayores que 1.",
+    "tipsterImplied": "Cuotas implícitas del tipster (decimal)",
+    "tipsterEdge": "Ventaja del informante"
   },
   "reports": {
     "title": "Informes",
@@ -265,7 +267,26 @@
     "timezone": "Huso horario",
     "timezoneHint": "utilizado para fechas y horas en la aplicación",
     "supportContact": "¿Necesitar ayuda? Correo electrónico <a href=\"mailto:support@mybetrecord.com\">support@mybetrecord.com</a>",
-    "legalLinks": "<a href=\"/privacy\">Privacidad</a> · <a href=\"/terms\">Términos</a> · <a href=\"/support\">Soporte</a>"
+    "legalLinks": "<a href=\"/privacy\">Privacidad</a> · <a href=\"/terms\">Términos</a> · <a href=\"/support\">Soporte</a>",
+    "account": "Cuenta",
+    "email": "Correo electrónico",
+    "changePassword": "Cambiar la contraseña",
+    "currentPassword": "Contraseña actual",
+    "passwordChanged": "Contraseña actualizada",
+    "currentPasswordIncorrect": "La contraseña actual es incorrecta",
+    "publicBetsTitle": "Récord de apuestas públicas",
+    "publicBetsEnabled": "Hacer que mis apuestas sean visibles públicamente (solo lectura)",
+    "publicBetsHint": "Cualquiera que tenga el enlace puede ver sus apuestas sin iniciar sesión. Los detalles confidenciales como P/L y la casa de apuestas están ocultos.",
+    "publicBetsCopyLink": "Copiar enlace público",
+    "publicBetsLinkCopied": "Enlace público copiado",
+    "accountDescription": "Descripción de la cuenta",
+    "publicNickname": "Apodo público",
+    "publicNicknamePlaceholder": "p.ej. Simón L.",
+    "publicNicknameHint": "Este es el nombre que aparece en su registro de apuestas públicas. Su correo electrónico nunca se muestra públicamente.",
+    "accountDescriptionPlaceholder": "Informe a los visitantes sobre su enfoque de apuestas, deportes de enfoque o estilo de mantenimiento de registros.",
+    "accountDescriptionHint": "Opcional. Se muestra en su registro de apuestas públicas. Máximo 500 palabras.",
+    "accountDescriptionWordCount": "{{count}} / 500 palabras",
+    "accountDescriptionTooLong": "La descripción de la cuenta debe tener 500 palabras o menos."
   },
   "admin": {
     "title": "Administración",
@@ -383,7 +404,18 @@
     "compClear": "Eliminar compilación",
     "compUntil": "Comp hasta {{date}}",
     "compApplied": "Acceso Pro gratuito actualizado",
-    "compCleared": "Se eliminó el acceso Pro gratuito"
+    "compCleared": "Se eliminó el acceso Pro gratuito",
+    "whenWithTz": "Cuando ({{tz}})",
+    "isp": "ISP",
+    "ispCountry": "País del ISP",
+    "browserLanguage": "Idioma del navegador",
+    "operatingSystem": "Sistema operativo",
+    "timezone": "Zona horaria",
+    "promoStatsShare": "Compartir estadísticas",
+    "promoStatsRevoke": "Revocar enlace de estadísticas",
+    "promoStatsLinkCopied": "Enlace de estadísticas públicas copiado",
+    "promoStatsRevokeConfirm": "¿Revocar este enlace de estadísticas públicas? Cualquiera que tenga el enlace ya no podrá ver el uso.",
+    "promoStatsRevoked": "Enlace de estadísticas públicas revocado"
   },
   "errors": {
     "requestFailed": "Solicitud fallida",
@@ -586,5 +618,18 @@
         "body": "<p>Un <strong>libro de apuestas</strong> es simplemente un registro cronológico completo de sus apuestas: qué respaldó, con qué probabilidades, por cuánto y cómo se resolvió. Piensa en ello como la diferencia entre adivinar si estás listo para la temporada y <em>saber</em>.</p>\n<h2>Por qué fallan las hojas de cálculo</h2>\n<p>La mayoría de los apostadores comienzan en Excel o Google Sheets. Eso funciona hasta:</p>\n<ul>\n<li>Las fórmulas se rompen al agregar columnas de comisión de cada sentido o de intercambio</li>\n<li>Olvidaste registrar una anulación o un retiro de efectivo</li>\n<li>No se puede dividir por tipster o deporte sin reconstruir las tablas dinámicas</li>\n</ul>\n<p>Un libro de contabilidad dedicado normaliza las probabilidades, vuelve a calcular las ganancias en cada edición y mantiene los informes consistentes.</p>\n<h2>Qué grabar</h2>\n<p>Como mínimo, registre:</p>\n<ol>\n<li><strong>Evento y selección</strong>: detalles suficientes para reconocer la apuesta meses después</li>\n<li><strong>Apuesta y moneda</strong></li>\n<li><strong>Cuotas</strong> (en cualquier formato que muestre el libro)</li>\n<li><strong>Resultado</strong>: pendiente, ganadora, perdida, nula</li>\n<li><strong>Beneficios liquidados</strong> o dejar que el software los obtenga de las reglas de resultados</li>\n</ol>\n<p>Campos avanzados que separan a los rastreadores inteligentes de los que toman notas ocasionales:</p>\n<ul>\n<li>Cuotas implícitas personales (su precio justo)</li>\n<li>Cuotas de línea de cierre (para CLV)</li>\n<li>Tipster o fuente modelo</li>\n<li>Casa de apuestas y comisión</li>\n</ul>\n<h2>Libro mayor frente a diario</h2>\n<p>La gente usa el \"diario de apuestas\" para escribir y \"libro mayor de apuestas\" indistintamente. Estrictamente, un diario podría incluir notas narrativas (\"me sentí apresurado\", \"línea movida\"); un libro de contabilidad enfatiza los números. Las mejores herramientas combinan ambos: datos estructurados más notas de texto libre por apuesta.</p>\n<h2>¿Quién necesita uno?</h2>\n<p>Cualquiera que trate las apuestas como un juego de habilidad en lugar de como billetes de lotería:</p>\n<ul>\n<li>Apostadores igualados que rastrean las apuestas calificadas y gratuitas</li>\n<li>Comerciantes de bolsa midiendo el rendimiento ajustado por comisiones</li>\n<li>Seguidores de tipsters que verifican el ROI anunciado</li>\n<li>Apostadores recreativos que desean una gestión honesta de sus fondos</li>\n</ul>\n<h2>Empezando</h2>\n<p>Elija un deporte o tipo de mercado y registre las siguientes 20 apuestas sin cambiar su proceso. Revise la tasa de strike, las probabilidades promedio y las ganancias por semana. Esa base vale más que cualquier consejo.</p>\n<p><strong>Haz un seguimiento de esto en mybetrecord:</strong> crea una cuenta gratuita, establece tus fondos y el formato de probabilidades predeterminado, y registra tu primera apuesta en menos de un minuto.</p>"
       }
     }
+  },
+  "promoStats": {
+    "title": "Uso de la promoción",
+    "publicNote": "Vista de solo lectura",
+    "users": "Usuarios",
+    "totalDiscounted": "Total descontado",
+    "notFound": "No se pudo encontrar esta página de estadísticas de promoción."
+  },
+  "publicProfile": {
+    "title": "Récord de apuestas públicas",
+    "betCount": "{{count}} apuestas",
+    "empty": "Aún no hay apuestas.",
+    "notFound": "No se pudo encontrar este registro de apuesta pública."
   }
 }

@@ -192,7 +192,9 @@
     "maxLegs": "Useilla voi olla enintään {{max}} valintaa.",
     "needTwoLegs": "Usein tarvitaan vähintään 2 valintaa.",
     "legMissingFields": "Jokainen valinta tarvitsee tapahtuman ja valinnan.",
-    "legBadOdds": "Jokaisen valinnan kelvollisen kertoimen on oltava suurempi kuin 1."
+    "legBadOdds": "Jokaisen valinnan kelvollisen kertoimen on oltava suurempi kuin 1.",
+    "tipsterImplied": "Tipsterin implisiittiset kertoimet (desimaali)",
+    "tipsterEdge": "Tipster reuna"
   },
   "reports": {
     "title": "Raportit",
@@ -265,7 +267,26 @@
     "timezone": "Aikavyöhyke",
     "timezoneHint": "käytetään päivämäärät ja kellonajat sovelluksessa",
     "supportContact": "Tarvitsetko apua? Lähetä sähköpostia <a href=\"mailto:support@mybetrecord.com\">support@mybetrecord.com</a>",
-    "legalLinks": "<a href=\"/privacy\">Tietosuoja</a> · <a href=\"/terms\">Ehdot</a> · <a href=\"/support\">Tuki</a>"
+    "legalLinks": "<a href=\"/privacy\">Tietosuoja</a> · <a href=\"/terms\">Ehdot</a> · <a href=\"/support\">Tuki</a>",
+    "account": "Tili",
+    "email": "Sähköposti",
+    "changePassword": "Vaihda salasana",
+    "currentPassword": "Nykyinen salasana",
+    "passwordChanged": "Salasana päivitetty",
+    "currentPasswordIncorrect": "Nykyinen salasana on virheellinen",
+    "publicBetsTitle": "Julkinen vetoennätys",
+    "publicBetsEnabled": "Aseta vetoni julkisesti katseltaviksi (vain luku)",
+    "publicBetsHint": "Kaikki linkin saaneet voivat tarkastella vetojasi kirjautumatta sisään. Arkaluonteiset tiedot, kuten P/L ja vedonvälittäjä, on piilotettu.",
+    "publicBetsCopyLink": "Kopioi julkinen linkki",
+    "publicBetsLinkCopied": "Julkinen linkki kopioitu",
+    "accountDescription": "Tilin kuvaus",
+    "publicNickname": "Julkinen lempinimi",
+    "publicNicknamePlaceholder": "esim. Simon L.",
+    "publicNicknameHint": "Tämä on julkisessa vedonlyöntitietueessasi näkyvä nimi. Sähköpostiasi ei koskaan näytetä julkisesti.",
+    "accountDescriptionPlaceholder": "Kerro vierailijoille vedonlyönnistä, keskittymisestä urheiluun tai kirjanpitotyylistäsi.",
+    "accountDescriptionHint": "Valinnainen. Näkyy julkisessa vedonlyönnissäsi. Max 500 sanaa.",
+    "accountDescriptionWordCount": "{{count}} / 500 sanaa",
+    "accountDescriptionTooLong": "Tilin kuvauksessa saa olla enintään 500 sanaa"
   },
   "admin": {
     "title": "Admin",
@@ -383,7 +404,18 @@
     "compClear": "Poista komp",
     "compUntil": "Comp {{date}} asti",
     "compApplied": "Ilmainen Pro-käyttöoikeus päivitetty",
-    "compCleared": "Ilmainen Pro-käyttöoikeus poistettu"
+    "compCleared": "Ilmainen Pro-käyttöoikeus poistettu",
+    "whenWithTz": "Milloin ({{tz}})",
+    "isp": "ISP",
+    "ispCountry": "ISP maa",
+    "browserLanguage": "Selaimen kieli",
+    "operatingSystem": "Käyttöjärjestelmä",
+    "timezone": "Aikavyöhyke",
+    "promoStatsShare": "Jaa tilastot",
+    "promoStatsRevoke": "Peruuta tilastolinkki",
+    "promoStatsLinkCopied": "Julkiset tilastot -linkki kopioitu",
+    "promoStatsRevokeConfirm": "Perutaanko tämä julkisten tilastojen linkki? Kaikki linkin saaneet eivät voi enää tarkastella käyttöä.",
+    "promoStatsRevoked": "Julkiset tilastot -linkki peruutettu"
   },
   "errors": {
     "requestFailed": "Pyyntö epäonnistui",
@@ -586,5 +618,18 @@
         "body": "<p><strong>Vedonlyöntikirja</strong> on yksinkertaisesti täydellinen, kronologinen tallenne panoksistasi: mitä olet tukenut, millä kertoimilla, kuinka paljon ja miten se ratkesi. Ajattele sitä erona sen välillä, oletko valmis kaudelle, ja <em>tietämisen</em> välillä.</p>\n<h2>Miksi laskentataulukot epäonnistuvat</h2>\n<p>Useimmat vedonlyöjät aloittavat Excelissä tai Google Sheetsissä. Toimii kunnes:</p>\n<ul>\n<li>Kaavat katkeavat, kun lisäät jokasuuntaisia tai vaihdat välityspalkkioita</li>\n<li>Unohdat kirjata mitätöinnin tai kotiutuksen</li>\n<li>Et voi leikata tipsterin tai urheilulajin mukaan rakentamatta uudelleen pivot-taulukoita</li>\n</ul>\n<p>Oma pääkirja normalisoi kertoimet, laskee voiton uudelleen jokaisesta muokkauksesta ja pitää raportit johdonmukaisina.</p>\n<h2>Mitä tallennetaan</h2>\n<p>Kirjaa vähintään:</p>\n<ol>\n<li><strong>Tapahtuma ja valinta</strong> – tarpeeksi yksityiskohtia vedon tunnistamiseen kuukausia myöhemmin</li>\n<li><strong>Panos ja valuutta</strong></li>\n<li><strong>Odds</strong> (missä tahansa kirjan näyttämässä muodossa)</li>\n<li><strong>Tulos</strong> – odottaa, voitto, tappio, mitätön</li>\n<li><strong>Keskustettu voitto</strong> – tai anna ohjelmiston johtaa se tulossäännöistä</li>\n</ol>\n<p>Lisäkentät, jotka erottavat terävät jäljittäjät satunnaisista muistiinpanojen kirjoittajista:</p>\n<ul>\n<li>Henkilökohtainen oletetut kertoimet (käypä hintasi)</li>\n<li>Loppuviivan kertoimet (CLV:lle)</li>\n<li>Vinkkejä tai mallilähde</li>\n<li>Vedonvälittäjä ja välityspalkkiot</li>\n</ul>\n<h2>Pääkirja vs. päiväkirja</h2>\n<p>Ihmiset käyttävät &ldquo;vedonlyöntipäiväkirjaa&rdquo; ja &bdquo;vedonlyöntikirja&rdquo; vaihtokelpoisesti. Tarkkaan ottaen päiväkirja voi sisältää selostusmerkintöjä (&ldquo;kiireellinen&ldquo;, &ldquo;riviä siirretty&rdquo;); pääkirja korostaa numeroita. Parhaissa työkaluissa yhdistyvät molemmat: jäsennelty data sekä vapaatekstihuomautukset vetoa kohden.</p>\n<h2>Kuka tarvitsee sellaisen?</h2>\n<p>Kaikki, jotka pitävät vedonlyöntiä taitopelinä arpajaisten sijaan:</p>\n<ul>\n<li>Osaavat vedonlyöjät, jotka seuraavat kelpaavia ja ilmaisia vetoja</li>\n<li>Pörssikauppiaat, jotka mittaavat provisiokorjattua tuottoa</li>\n<li>Vinkkiseuraajat vahvistavat mainostetun sijoitetun pääoman tuottoprosentin</li>\n<li>Vapaa-ajan pelaajille, jotka haluavat rehellistä pelikassan hallintaa</li>\n</ul>\n<h2>Aloitusopas</h2>\n<p>Valitse yksi laji tai markkinatyyppi ja kirjaa seuraavat 20 vetoa muuttamatta prosessiasi. Tarkista lakkoprosentti, keskimääräiset kertoimet ja voitto viikoittain. Tämä lähtökohta on arvokkaampi kuin mikään vihje.</p>\n<p><strong>Seuraa tätä mybetrecordissa:</strong> luo ilmainen tili, aseta pelikassasi ja oletuskertoimesi muoto ja kirjaa ensimmäinen vetosi alle minuutissa.</p>"
       }
     }
+  },
+  "promoStats": {
+    "title": "Promo-käyttö",
+    "publicNote": "Vain luku -näkymä",
+    "users": "Käyttäjät",
+    "totalDiscounted": "Yhteensä alennettu",
+    "notFound": "Tätä kampanjatilastosivua ei löytynyt."
+  },
+  "publicProfile": {
+    "title": "Julkinen vetoennätys",
+    "betCount": "{{count}} vetoa",
+    "empty": "Ei vielä vetoja.",
+    "notFound": "Tätä julkista vetotietuetta ei löytynyt."
   }
 }

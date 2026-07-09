@@ -192,7 +192,9 @@
     "maxLegs": "Bir çoklu en fazla {{max}} seçime sahip olabilir.",
     "needTwoLegs": "Bir çoklu için en az 2 seçim gerekir.",
     "legMissingFields": "Her seçimin bir etkinliğe ve bir seçime ihtiyacı vardır.",
-    "legBadOdds": "Her seçimin 1'den büyük geçerli oranlara ihtiyacı vardır."
+    "legBadOdds": "Her seçimin 1'den büyük geçerli oranlara ihtiyacı vardır.",
+    "tipsterImplied": "Tipster'ın ima ettiği oranlar (ondalık)",
+    "tipsterEdge": "Tipster avantajı"
   },
   "reports": {
     "title": "Raporlar",
@@ -265,7 +267,26 @@
     "timezone": "Saat dilimi",
     "timezoneHint": "uygulamadaki tarihler ve saatler için kullanılır",
     "supportContact": "Yardıma mı ihtiyacınız var? <a href=\"mailto:support@mybetrecord.com\">support@mybetrecord.com</a> adresine e-posta gönderin",
-    "legalLinks": "<a href=\"/privacy\">Gizlilik</a> · <a href=\"/terms\">Şartlar</a> · <a href=\"/support\">Destek</a>"
+    "legalLinks": "<a href=\"/privacy\">Gizlilik</a> · <a href=\"/terms\">Şartlar</a> · <a href=\"/support\">Destek</a>",
+    "account": "Hesap",
+    "email": "E-posta",
+    "changePassword": "Şifre değiştir",
+    "currentPassword": "Mevcut Şifre",
+    "passwordChanged": "Şifre güncellendi",
+    "currentPasswordIncorrect": "Mevcut şifre yanlış",
+    "publicBetsTitle": "Herkese açık bahis kaydı",
+    "publicBetsEnabled": "Bahislerimi herkesin görebileceği hale getir (salt okunur)",
+    "publicBetsHint": "Bağlantıya sahip olan herkes oturum açmadan bahislerinizi görüntüleyebilir. P/L ve bahis şirketi gibi hassas ayrıntılar gizlenir.",
+    "publicBetsCopyLink": "Genel bağlantıyı kopyala",
+    "publicBetsLinkCopied": "Herkese açık bağlantı kopyalandı",
+    "accountDescription": "Hesap açıklaması",
+    "publicNickname": "Herkese açık takma ad",
+    "publicNicknamePlaceholder": "örneğin Simon L.",
+    "publicNicknameHint": "Bu, genel bahis kaydınızda gösterilen addır. E-postanız hiçbir zaman herkese açık olarak görüntülenmez.",
+    "accountDescriptionPlaceholder": "Ziyaretçilere bahis yaklaşımınız, odaklandığınız sporlar veya kayıt tutma tarzınız hakkında bilgi verin.",
+    "accountDescriptionHint": "İsteğe bağlı. Herkese açık bahis kaydınızda gösterilir. Maksimum 500 kelime.",
+    "accountDescriptionWordCount": "{{count}} / 500 kelime",
+    "accountDescriptionTooLong": "Hesap açıklaması 500 kelime veya daha az olmalıdır"
   },
   "admin": {
     "title": "Yönetici",
@@ -383,7 +404,18 @@
     "compClear": "Comp'ı kaldır",
     "compUntil": "{{date}} tarihine kadar telafi",
     "compApplied": "Ücretsiz Pro erişimi güncellendi",
-    "compCleared": "Ücretsiz Pro erişimi kaldırıldı"
+    "compCleared": "Ücretsiz Pro erişimi kaldırıldı",
+    "whenWithTz": "Ne zaman ({{tz}})",
+    "isp": "İSS",
+    "ispCountry": "İSS ülkesi",
+    "browserLanguage": "Tarayıcı dili",
+    "operatingSystem": "İşletim sistemi",
+    "timezone": "Saat dilimi",
+    "promoStatsShare": "İstatistikleri paylaş",
+    "promoStatsRevoke": "İstatistik bağlantısını iptal et",
+    "promoStatsLinkCopied": "Genel istatistikler bağlantısı kopyalandı",
+    "promoStatsRevokeConfirm": "Bu genel istatistik bağlantısı iptal edilsin mi? Bağlantıya sahip olan hiç kimse artık kullanımı görüntüleyemeyecektir.",
+    "promoStatsRevoked": "Genel istatistik bağlantısı iptal edildi"
   },
   "errors": {
     "requestFailed": "İstek başarısız oldu",
@@ -533,7 +565,7 @@
   },
   "blog": {
     "meta": {
-      "title": "Blog — mybetrecord",
+      "title": "Blog – mybetrecord",
       "description": "Bahis defterleri, yatırım getirisi, Kelly kriteri, kapanış değeri ve spor bahis analizleri hakkında kılavuzlar."
     },
     "indexTitle": "Bahis analitiği kılavuzları",
@@ -586,5 +618,18 @@
         "body": "<p>Bir <strong>bahis defteri</strong>, bahislerinizin eksiksiz, kronolojik bir kaydıdır: neyi, hangi oranda, ne kadar desteklediğiniz ve nasıl sonuçlandırıldığı. Bunu, sezona hazır olup olmadığınızı tahmin etmek ile <em>bilmek</em> arasındaki fark olarak düşünün.</p>\n<h2>E-tablolar neden başarısız oluyor?</h2>\n<p>Bahisçilerin çoğu Excel veya Google E-Tablolar'da başlar. Bu, şu tarihe kadar işe yarar:</p>\n<ul>\n<li>Her yön eklediğinizde veya komisyon sütunlarını değiştirdiğinizde formüller bozulur</li>\n<li>Geçersiz giriş yapmayı veya para çekmeyi unuttunuz</li>\n<li>Pivot tabloları yeniden oluşturmadan tahminlere veya spora göre dilimleme yapamazsınız</li>\n</ul>\n<p>Özel bir defter, olasılıkları normalleştirir, her düzenlemede karı yeniden hesaplar ve raporların tutarlı kalmasını sağlar.</p>\n<h2>Ne kaydedilmeli</h2>\n<p>En azından şunları günlüğe kaydedin:</p>\n<ol>\n<li><strong>Etkinlik ve seçim</strong> — aylar sonra bahisin anlaşılmasına yetecek kadar ayrıntı</li>\n<li><strong>Bahis ve para birimi</strong></li>\n<li><strong>Oranlar</strong> (kitap hangi formatta görüntülenirse)</li>\n<li><strong>Sonuç</strong> — beklemede, galibiyet, mağlubiyet, geçersiz</li>\n<li><strong>Ödenmiş kâr</strong> — veya yazılımın bunu sonuç kurallarından elde etmesine izin verin</li>\n</ol>\n<p>Keskin takipçilerini sıradan not alan kişilerden ayıran gelişmiş alanlar:</p>\n<ul>\n<li>Kişisel zımni oranlar (adil fiyatınız)</li>\n<li>Kapanış satırı oranları (CLV için)</li>\n<li>İpucu veya model kaynağı</li>\n<li>Bahis şirketi ve komisyon</li>\n</ul>\n<h2>Defter ve günlük karşılaştırması</h2>\n<p>İnsanlar &ldquo;bahis günlüğü&rdquo; ve \"bahis defteri\"; birbirinin yerine kullanılabilir. Kesinlikle, bir günlük, anlatı notları içerebilir (\"acele edilmiş hissettim\", \"satır taşındı\"); bir defter sayıları vurgular. En iyi araçlar her ikisini de birleştirir: yapılandırılmış veriler ve bahis başına serbest metin notları.</p>\n<h2>Kimin ihtiyacı var?</h2>\n<p>Bahisleri piyango biletleri yerine bir beceri oyunu olarak ele alan herkes:</p>\n<ul>\n<li>Nitelikli ve ücretsiz bahisleri takip eden eşleşen bahisçiler</li>\n<li>Komisyona göre ayarlanmış getiriyi ölçen borsa yatırımcıları</li>\n<li>Tipster takipçileri reklamın yatırım getirisini doğruluyor</li>\n<li>Dürüst hazır para yönetimi isteyen eğlence amaçlı bahisçiler</li>\n</ul>\n<h2>Başlarken</h2>\n<p>Bir spor veya pazar türü seçin ve işleminizi değiştirmeden sonraki 20 bahsi kaydedin. Grev oranını, ortalama oranları ve haftaya göre kârı inceleyin. Bu temel çizgi herhangi bir ipucundan daha değerlidir.</p>\n<p><strong>Bunu mybetrecord'da takip edin:</strong> ücretsiz bir hesap oluşturun, hazır paranızı ve varsayılan oran biçiminizi ayarlayın ve ilk bahsinizi bir dakikadan kısa sürede kaydedin.</p>"
       }
     }
+  },
+  "promoStats": {
+    "title": "Promosyon kullanımı",
+    "publicNote": "Salt okunur görünüm",
+    "users": "Kullanıcılar",
+    "totalDiscounted": "Toplam indirimli",
+    "notFound": "Bu promosyon istatistik sayfası bulunamadı."
+  },
+  "publicProfile": {
+    "title": "Herkese açık bahis kaydı",
+    "betCount": "{{count}} bahisler",
+    "empty": "Henüz bahis yok.",
+    "notFound": "Bu genel bahis kaydı bulunamadı."
   }
 }

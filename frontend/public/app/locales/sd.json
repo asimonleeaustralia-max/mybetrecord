@@ -192,7 +192,9 @@
     "maxLegs": "هڪ گھڻائي ٿي سگھي ٿو وڌ ۾ وڌ {{max}} چونڊون.",
     "needTwoLegs": "ھڪڙي گھڻن کي گھٽ ۾ گھٽ 2 چونڊ جي ضرورت آھي.",
     "legMissingFields": "هر چونڊ کي هڪ واقعي ۽ هڪ چونڊ جي ضرورت آهي.",
-    "legBadOdds": "هر چونڊ لاءِ 1 کان وڌيڪ صحيح اختلافن جي ضرورت آهي."
+    "legBadOdds": "هر چونڊ لاءِ 1 کان وڌيڪ صحيح اختلافن جي ضرورت آهي.",
+    "tipsterImplied": "Tipster implied odds (decimal)",
+    "tipsterEdge": "Tipster edge"
   },
   "reports": {
     "title": "رپورٽون",

@@ -192,7 +192,9 @@
     "maxLegs": "Vairākiem var būt ne vairāk kā {{max}} atlases.",
     "needTwoLegs": "Vairākiem ir nepieciešamas vismaz 2 atlases.",
     "legMissingFields": "Katrai izlasei ir nepieciešams pasākums un izlase.",
-    "legBadOdds": "Katrai atlasei ir jābūt derīgam koeficientam, kas lielāks par 1."
+    "legBadOdds": "Katrai atlasei ir jābūt derīgam koeficientam, kas lielāks par 1.",
+    "tipsterImplied": "Tipster implied odds (decimal)",
+    "tipsterEdge": "Tipster edge"
   },
   "reports": {
     "title": "Pārskati",

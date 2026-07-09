@@ -192,7 +192,9 @@
     "maxLegs": "En multipel kan ha högst {{max}} val.",
     "needTwoLegs": "En multipel behöver minst 2 val.",
     "legMissingFields": "Varje urval behöver en händelse och ett urval.",
-    "legBadOdds": "Varje val behöver giltiga odds större än 1."
+    "legBadOdds": "Varje val behöver giltiga odds större än 1.",
+    "tipsterImplied": "Tipster implied odds (decimal)",
+    "tipsterEdge": "Tipster edge"
   },
   "reports": {
     "title": "Rapporter",

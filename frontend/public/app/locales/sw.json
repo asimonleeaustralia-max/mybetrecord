@@ -192,7 +192,9 @@
     "maxLegs": "Kizidishio kinaweza kuwa na chaguo {{max}} zaidi.",
     "needTwoLegs": "Nyingi inahitaji angalau chaguo 2.",
     "legMissingFields": "Kila uteuzi unahitaji tukio na uteuzi.",
-    "legBadOdds": "Kila uteuzi unahitaji odd halali zinazozidi 1."
+    "legBadOdds": "Kila uteuzi unahitaji odd halali zinazozidi 1.",
+    "tipsterImplied": "Odds zilizodokezwa za Tipster (desimali)",
+    "tipsterEdge": "Makali ya Tipster"
   },
   "reports": {
     "title": "Ripoti",
@@ -265,7 +267,26 @@
     "timezone": "Saa za eneo",
     "timezoneHint": "kutumika kwa tarehe na nyakati katika programu",
     "supportContact": "Je, unahitaji usaidizi? Barua pepe <a href=\"mailto:support@mybetrecord.com\">support@mybetrecord.com</a>",
-    "legalLinks": "<a href=\"/privacy\">Faragha</a> · <a href=\"/terms\">Masharti</a> · <a href=\"/support\">Usaidizi</a>"
+    "legalLinks": "<a href=\"/privacy\">Faragha</a> · <a href=\"/terms\">Masharti</a> · <a href=\"/support\">Usaidizi</a>",
+    "account": "Akaunti",
+    "email": "Barua pepe",
+    "changePassword": "Badilisha nenosiri",
+    "currentPassword": "Nenosiri la sasa",
+    "passwordChanged": "Nenosiri limesasishwa",
+    "currentPasswordIncorrect": "Nenosiri la sasa si sahihi",
+    "publicBetsTitle": "Rekodi ya kamari ya umma",
+    "publicBetsEnabled": "Fanya dau zangu zionekane hadharani (kusoma pekee)",
+    "publicBetsHint": "Mtu yeyote aliye na kiungo anaweza kuona dau zako bila kuingia. Maelezo nyeti kama vile P/L na bookmaker yamefichwa.",
+    "publicBetsCopyLink": "Nakili kiungo cha umma",
+    "publicBetsLinkCopied": "Kiungo cha umma kimenakiliwa",
+    "accountDescription": "Maelezo ya akaunti",
+    "publicNickname": "Jina la utani la umma",
+    "publicNicknamePlaceholder": "k.m. Simon L.",
+    "publicNicknameHint": "Hili ndilo jina linaloonyeshwa kwenye rekodi yako ya kamari ya umma. Barua pepe yako haionyeshwi hadharani.",
+    "accountDescriptionPlaceholder": "Waambie wageni kuhusu mbinu yako ya kamari, michezo lenga, au mtindo wa kuweka rekodi.",
+    "accountDescriptionHint": "Hiari. Imeonyeshwa kwenye rekodi yako ya kamari ya umma. Upeo wa maneno 500.",
+    "accountDescriptionWordCount": "{{count}} / maneno 500",
+    "accountDescriptionTooLong": "Maelezo ya akaunti lazima yawe na maneno 500 au chini"
   },
   "admin": {
     "title": "Msimamizi",
@@ -383,7 +404,18 @@
     "compClear": "Ondoa comp",
     "compUntil": "Shindano hadi {{date}}",
     "compApplied": "Imesasisha ufikiaji wa Pro bila malipo",
-    "compCleared": "Idhini isiyolipishwa ya Pro imeondolewa"
+    "compCleared": "Idhini isiyolipishwa ya Pro imeondolewa",
+    "whenWithTz": "Lini ({{tz}})",
+    "isp": "ISP",
+    "ispCountry": "Nchi ya ISP",
+    "browserLanguage": "Lugha ya kivinjari",
+    "operatingSystem": "Mfumo wa uendeshaji",
+    "timezone": "Saa za eneo",
+    "promoStatsShare": "Shiriki takwimu",
+    "promoStatsRevoke": "Batilisha kiungo cha takwimu",
+    "promoStatsLinkCopied": "Kiungo cha takwimu za umma kimenakiliwa",
+    "promoStatsRevokeConfirm": "Ungependa kubatilisha kiungo hiki cha takwimu za umma? Mtu yeyote aliye na kiungo hataweza tena kuona matumizi.",
+    "promoStatsRevoked": "Kiungo cha takwimu za umma kimebatilishwa"
   },
   "errors": {
     "requestFailed": "Ombi halijafaulu",
@@ -586,5 +618,18 @@
         "body": "<p>Leja ya <strong>ya kamari</strong> ni rekodi kamili, ya mpangilio wa dau zako: ulichounga mkono, kwa uwezekano gani, kwa kiasi gani, na jinsi ilivyotulia. Ifikirie kama tofauti kati ya kubahatisha ikiwa uko tayari kwa msimu huu na <em>kujua</em>.</p>\n<h2>Kwa nini lahajedwali zinashindwa</h2>\n<p>Wadau wengi huanza katika Excel au Majedwali ya Google. Hiyo inafanya kazi hadi:</p>\n<ul>\n<li>Fomula huvunjika unapoongeza kila njia au kubadilisha safu wima za tume</li>\n<li>Umesahau kuweka utupu au kutoa pesa</li>\n<li>Huwezi kugawanya kwa tipster au mchezo bila kujenga upya jedwali egemeo</li>\n</ul>\n<p>Kitaja mahususi hurekebisha uwezekano, hurejesha faida kwa kila uhariri, na huweka ripoti sawa.</p>\n<h2>Cha kurekodi</h2>\n<p>Kwa uchache, andika:</p>\n<ol>\n<li><strong>Tukio na uteuzi</strong> — maelezo ya kutosha kutambua dau miezi baadaye</li>\n<li><strong>Dau na sarafu</strong></li>\n<li><strong>Odds</strong> (katika umbizo lolote ambalo kitabu kinaonyesha)</li>\n<li><strong>Matokeo</strong> — inasubiri, kushinda, kushindwa, batili</li>\n<li><strong>Faida iliyotulia</strong> — au ruhusu programu ipate kutoka kwa kanuni za matokeo</li>\n</ol>\n<p>Sehemu za kina ambazo hutenganisha vifuatiliaji vikali kutoka kwa watumaji wa kawaida:</p>\n<ul>\n<li>Odds za kibinafsi (bei yako nzuri)</li>\n<li>Odds za kufunga (kwa CLV)</li>\n<li>Kidokezo au chanzo cha mfano</li>\n<li>Mtengeneza vitabu na tume</li>\n</ul>\n<h2>Leja dhidi ya jarida</h2>\n<p>Watu hutumia &ldquo;jarida la kamari&rdquo; na &ldquo;leja ya kamari&rdquo; kwa kubadilishana. Kwa hakika, jarida linaweza kujumuisha maelezo masimulizi (&ldquo;ilionekana kuharakishwa&rdquo;, &ldquo;mstari umehamishwa&rdquo;); kitabu kinasisitiza nambari. Zana bora huchanganya zote mbili: data iliyopangwa pamoja na vidokezo vya maandishi bila malipo kwa kila dau.</p>\n<h2>Nani anahitaji moja?</h2>\n<p>Yeyote anayechukulia kamari kama mchezo wa ujuzi badala ya tikiti za bahati nasibu:</p>\n<ul>\n<li>Wadau wanaolingana wanaofuatilia dau zinazofuzu na zisizolipishwa</li>\n<li>Wafanyabiashara wa kubadilishana wanapima mavuno yaliyorekebishwa na tume</li>\n<li>Wafuasi wa Tipster wanaothibitisha ROI iliyotangazwa</li>\n<li>Wadadisi wa burudani wanaotaka usimamizi wa uorodheshaji wa benki kwa uaminifu</li>\n</ul>\n<h2>Kuanza</h2>\n<p>Chagua mchezo mmoja au aina ya soko na uweke dau 20 zinazofuata bila kubadilisha mchakato wako. Kagua kiwango cha mgomo, wastani wa uwezekano na faida kwa wiki. Msingi huo una thamani zaidi kuliko kidokezo chochote.</p>\n<p><strong>Fuatilia hili katika mybetrecord:</strong> fungua akaunti isiyolipishwa, weka orodha yako ya benki na odds chaguo-msingi, na uweke dau lako la kwanza chini ya dakika moja.</p>"
       }
     }
+  },
+  "promoStats": {
+    "title": "Matumizi ya promo",
+    "publicNote": "Mwonekano wa kusoma pekee",
+    "users": "Watumiaji",
+    "totalDiscounted": "Jumla iliyopunguzwa",
+    "notFound": "Ukurasa huu wa takwimu za ofa haukuweza kupatikana."
+  },
+  "publicProfile": {
+    "title": "Rekodi ya kamari ya umma",
+    "betCount": "{{count}} dau",
+    "empty": "Bado hakuna dau.",
+    "notFound": "Rekodi hii ya kamari ya umma haikuweza kupatikana."
   }
 }

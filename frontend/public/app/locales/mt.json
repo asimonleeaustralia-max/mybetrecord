@@ -192,7 +192,9 @@
     "maxLegs": "Multiplu jista' jkollu l-aktar {{max}} selezzjonijiet.",
     "needTwoLegs": "Multiplu jeħtieġ mill-inqas 2 selezzjonijiet.",
     "legMissingFields": "Kull għażla teħtieġ avveniment u għażla.",
-    "legBadOdds": "Kull għażla teħtieġ odds validi akbar minn 1."
+    "legBadOdds": "Kull għażla teħtieġ odds validi akbar minn 1.",
+    "tipsterImplied": "Tipster implied odds (decimal)",
+    "tipsterEdge": "Tipster edge"
   },
   "reports": {
     "title": "Rapporti",

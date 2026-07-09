@@ -500,6 +500,7 @@ class BetBase(BaseModel):
     bet_model: Optional[str] = None
     model_implied_odds: Optional[float] = None
     personal_implied_odds: Optional[float] = None
+    tipster_implied_odds: Optional[float] = None
     closing_odds: Optional[float] = None
     closing_odds_exchange: Optional[float] = None
 
@@ -568,6 +569,7 @@ class BetUpdate(BaseModel):
     bet_model: Optional[str] = None
     model_implied_odds: Optional[float] = None
     personal_implied_odds: Optional[float] = None
+    tipster_implied_odds: Optional[float] = None
     closing_odds: Optional[float] = None
     closing_odds_exchange: Optional[float] = None
     bookmaker: Optional[str] = None
@@ -606,8 +608,10 @@ class BetOut(BaseModel):
     bet_model: Optional[str]
     model_implied_odds: Optional[float]
     personal_implied_odds: Optional[float]
+    tipster_implied_odds: Optional[float]
     personal_edge_pct: Optional[float]
     model_edge_pct: Optional[float]
+    tipster_edge_pct: Optional[float]
     kelly_stake: Optional[float]
     model_kelly_stake: Optional[float]
     closing_odds: Optional[float]

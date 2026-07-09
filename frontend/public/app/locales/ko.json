@@ -192,7 +192,9 @@
     "maxLegs": "다중에는 최대 {{max}}개의 항목을 선택할 수 있습니다.",
     "needTwoLegs": "다중에는 최소 2개의 항목을 선택해야 합니다.",
     "legMissingFields": "각 선택에는 이벤트와 선택이 필요합니다.",
-    "legBadOdds": "각 선택에는 1보다 큰 유효한 확률이 필요합니다."
+    "legBadOdds": "각 선택에는 1보다 큰 유효한 확률이 필요합니다.",
+    "tipsterImplied": "팁스터 암시 배당률(소수점)",
+    "tipsterEdge": "팁스터 엣지"
   },
   "reports": {
     "title": "보고서",
@@ -265,7 +267,26 @@
     "timezone": "시간대",
     "timezoneHint": "앱의 날짜와 시간에 사용됩니다.",
     "supportContact": "도움이 필요하신가요? <a href=\"mailto:support@mybetrecord.com\">support@mybetrecord.com</a>으로 이메일을 보내세요.",
-    "legalLinks": "<a href=\"/privacy\">개인정보 보호</a> · <a href=\"/terms\">약관</a> · <a href=\"/support\">지원</a>"
+    "legalLinks": "<a href=\"/privacy\">개인정보 보호</a> · <a href=\"/terms\">약관</a> · <a href=\"/support\">지원</a>",
+    "account": "계정",
+    "email": "이메일",
+    "changePassword": "비밀번호 변경",
+    "currentPassword": "현재 비밀번호",
+    "passwordChanged": "비밀번호가 업데이트되었습니다.",
+    "currentPasswordIncorrect": "현재 비밀번호가 올바르지 않습니다.",
+    "publicBetsTitle": "공개 베팅 기록",
+    "publicBetsEnabled": "내 베팅을 공개적으로 볼 수 있도록 설정(읽기 전용)",
+    "publicBetsHint": "링크가 있는 사람은 누구나 로그인하지 않고도 베팅을 볼 수 있습니다. 손익 및 북메이커와 같은 민감한 세부 정보는 숨겨집니다.",
+    "publicBetsCopyLink": "공개 링크 복사",
+    "publicBetsLinkCopied": "공개 링크가 복사되었습니다.",
+    "accountDescription": "계정 설명",
+    "publicNickname": "공개 별명",
+    "publicNicknamePlaceholder": "예를 들어 사이먼 L.",
+    "publicNicknameHint": "이는 귀하의 공개 베팅 기록에 표시되는 이름입니다. 귀하의 이메일은 공개적으로 표시되지 않습니다.",
+    "accountDescriptionPlaceholder": "방문자에게 베팅 접근 방식, 스포츠 집중, 기록 유지 스타일에 대해 알려주세요.",
+    "accountDescriptionHint": "선택 과목. 공개 베팅 기록에 표시됩니다. 최대 500단어.",
+    "accountDescriptionWordCount": "{{count}} / 500 단어",
+    "accountDescriptionTooLong": "계정 설명은 500단어 이하여야 합니다."
   },
   "admin": {
     "title": "관리자",
@@ -383,7 +404,18 @@
     "compClear": "광고 제거",
     "compUntil": "{{date}}까지 보상",
     "compApplied": "무료 Pro 액세스 업데이트됨",
-    "compCleared": "무료 Pro 액세스가 제거되었습니다."
+    "compCleared": "무료 Pro 액세스가 제거되었습니다.",
+    "whenWithTz": "언제 ({{tz}})",
+    "isp": "ISP",
+    "ispCountry": "ISP 국가",
+    "browserLanguage": "브라우저 언어",
+    "operatingSystem": "운영 체제",
+    "timezone": "시간대",
+    "promoStatsShare": "통계 공유",
+    "promoStatsRevoke": "통계 링크 취소",
+    "promoStatsLinkCopied": "공개 통계 링크가 복사되었습니다.",
+    "promoStatsRevokeConfirm": "이 공개 통계 링크를 취소하시겠습니까? 링크가 있는 사람은 더 이상 사용량을 볼 수 없습니다.",
+    "promoStatsRevoked": "공개 통계 링크가 취소되었습니다."
   },
   "errors": {
     "requestFailed": "요청 실패",
@@ -586,5 +618,18 @@
         "body": "<p><strong>베팅 원장</strong>은 베팅 내용, 배당률, 금액, 정산 방법 등 베팅에 대한 완전한 연대순 기록입니다. 시즌을 맞이할지 추측하는 것과 <em>알고 있는 것</em>의 차이라고 생각하세요.</p>\n<h2>스프레드시트가 실패하는 이유</h2>\n<p>대부분의 베터는 Excel이나 Google Sheets로 시작합니다. 다음까지 작동합니다:</p>\n<ul>\n<li>편도 또는 교환 수수료 열을 추가하면 수식이 깨집니다.</li>\n<li>무효 또는 현금 인출을 기록하는 것을 잊었습니다.</li>\n<li>피벗 테이블을 재구성하지 않고는 팁스터나 스포츠별로 슬라이스할 수 없습니다.</li>\n</ul>\n<p>전용 원장이 확률을 정규화하고, 편집할 때마다 이익을 다시 계산하며, 보고서의 일관성을 유지합니다.</p>\n<h2>녹음할 내용</h2>\n<p>최소한 기록:</p>\n<올>\n<li><strong>이벤트 및 선택</strong> - 몇 달 후 베팅을 인식할 수 있을 만큼 충분한 세부정보</li>\n<li><strong>지분 및 통화</strong></li>\n<li><strong>확률</strong>(책에 표시되는 형식에 상관없음)</li>\n<li><strong>결과</strong> — 보류, 승리, 패배, 무효</li>\n<li><strong>정산 이익</strong> — 또는 소프트웨어가 결과 규칙에서 이익을 도출하도록 허용</li>\n</ol>\n<p>명확한 추적자와 일상적인 메모 작성자를 구분하는 고급 필드:</p>\n<ul>\n<li>개인적인 내재 배당률(공정한 가격)</li>\n<li>마감 라인 배당률(CLV의 경우)</li>\n<li>팁스터 또는 모델 출처</li>\n<li>북메이커 및 커미션</li>\n</ul>\n<h2>원장 대 저널</h2>\n<p>사람들은 &ldquo;베팅 저널&rdquo;을 사용합니다. 및 &ldquo;베팅 원장&rdquo; 교대로. 엄밀히 말하면, 저널에는 서술형 메모(\"급한 느낌\", \"줄이 움직였습니다\")가 포함될 수 있습니다. 원장은 숫자를 강조합니다. 최고의 도구는 구조화된 데이터와 베팅당 자유 텍스트 메모를 모두 결합합니다.</p>\n<h2>누구에게 필요한가요?</h2>\n<p>배팅을 복권이 아닌 스킬 게임으로 여기는 사람:</p>\n<ul>\n<li>적격 베팅과 무료 베팅을 추적하는 매칭 베터</li>\n<li>수수료 조정 수익률을 측정하는 거래소 거래자</li>\n<li>광고된 ROI를 검증하는 정보 제공자 팔로어</li>\n<li>정직한 자금 관리를 원하는 여가 활동</li>\n</ul>\n<h2>시작하기</h2>\n<p>하나의 스포츠 또는 시장 유형을 선택하고 프로세스를 변경하지 않고 다음 20개의 베팅을 기록하세요. 적중률, 평균 배당률, 주별 수익을 검토하세요. 그 기준은 어떤 팁보다 더 가치가 있습니다.</p>\n<p><strong>mybetrecord에서 추적:</strong> 무료 계정을 만들고, 자금과 기본 배당률 형식을 설정하고, 1분 이내에 첫 번째 베팅을 기록하세요.</p>"
       }
     }
+  },
+  "promoStats": {
+    "title": "프로모션 사용",
+    "publicNote": "읽기 전용 보기",
+    "users": "사용자",
+    "totalDiscounted": "총 할인",
+    "notFound": "이 프로모션 통계 페이지를 찾을 수 없습니다."
+  },
+  "publicProfile": {
+    "title": "공개 베팅 기록",
+    "betCount": "{{count}} 베팅",
+    "empty": "아직 베팅이 없습니다.",
+    "notFound": "이 공개 베팅 기록을 찾을 수 없습니다."
   }
 }

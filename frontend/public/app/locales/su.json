@@ -192,7 +192,9 @@
     "maxLegs": "A sababaraha tiasa gaduh paling {{max}} selections.",
     "needTwoLegs": "A sababaraha peryogi sahenteuna 2 pilihan.",
     "legMissingFields": "Unggal pilihan peryogi acara sareng pilihan.",
-    "legBadOdds": "Unggal pilihan peryogi odds anu sah langkung ti 1."
+    "legBadOdds": "Unggal pilihan peryogi odds anu sah langkung ti 1.",
+    "tipsterImplied": "Tipster implied odds (decimal)",
+    "tipsterEdge": "Tipster edge"
   },
   "reports": {
     "title": "Laporan",

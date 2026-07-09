@@ -192,7 +192,9 @@
     "maxLegs": "Okuningi kungaba nokukhetha okungenani okungu-{{max}}.",
     "needTwoLegs": "Okuningi kudinga okungenani ukukhetha okungu-2.",
     "legMissingFields": "Ukukhetha ngakunye kudinga umcimbi nokukhetha.",
-    "legBadOdds": "Ukukhetha ngakunye kudinga okungavamile okuvumelekile okukhulu kuno-1."
+    "legBadOdds": "Ukukhetha ngakunye kudinga okungavamile okuvumelekile okukhulu kuno-1.",
+    "tipsterImplied": "Tipster implied odds (decimal)",
+    "tipsterEdge": "Tipster edge"
   },
   "reports": {
     "title": "Imibiko",

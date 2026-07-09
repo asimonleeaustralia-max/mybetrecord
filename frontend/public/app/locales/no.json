@@ -192,7 +192,9 @@
     "maxLegs": "Et multiplum kan ha maksimalt {{max}} valg.",
     "needTwoLegs": "Et multiplum trenger minst 2 valg.",
     "legMissingFields": "Hvert utvalg trenger et arrangement og et utvalg.",
-    "legBadOdds": "Hvert valg trenger gyldige odds høyere enn 1."
+    "legBadOdds": "Hvert valg trenger gyldige odds høyere enn 1.",
+    "tipsterImplied": "Tipster implied odds (decimal)",
+    "tipsterEdge": "Tipster edge"
   },
   "reports": {
     "title": "Rapporter",

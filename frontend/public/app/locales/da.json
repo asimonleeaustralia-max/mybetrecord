@@ -192,7 +192,9 @@
     "maxLegs": "Et multiplum kan højst have {{max}} valg.",
     "needTwoLegs": "Et multiplum har brug for mindst 2 valg.",
     "legMissingFields": "Hvert valg har brug for en begivenhed og et udvalg.",
-    "legBadOdds": "Hvert valg kræver gyldige odds større end 1."
+    "legBadOdds": "Hvert valg kræver gyldige odds større end 1.",
+    "tipsterImplied": "Tipster implicit odds (decimal)",
+    "tipsterEdge": "Tipper kant"
   },
   "reports": {
     "title": "Rapporter",
@@ -265,7 +267,26 @@
     "timezone": "Tidszone",
     "timezoneHint": "bruges til datoer og tidspunkter i appen",
     "supportContact": "Har du brug for hjælp? E-mail <a href=\"mailto:support@mybetrecord.com\">support@mybetrecord.com</a>",
-    "legalLinks": "<a href=\"/privacy\">Privatliv</a> · <a href=\"/terms\">Vilkår</a> · <a href=\"/support\">Support</a>"
+    "legalLinks": "<a href=\"/privacy\">Privatliv</a> · <a href=\"/terms\">Vilkår</a> · <a href=\"/support\">Support</a>",
+    "account": "Konto",
+    "email": "E-mail",
+    "changePassword": "Skift adgangskode",
+    "currentPassword": "Nuværende adgangskode",
+    "passwordChanged": "Adgangskode opdateret",
+    "currentPasswordIncorrect": "Nuværende adgangskode er forkert",
+    "publicBetsTitle": "Offentlig indsatsrekord",
+    "publicBetsEnabled": "Gør mine væddemål offentligt synlige (skrivebeskyttet)",
+    "publicBetsHint": "Alle med linket kan se dine væddemål uden at logge ind. Følsomme detaljer som P/L og bookmaker er skjult.",
+    "publicBetsCopyLink": "Kopiér offentligt link",
+    "publicBetsLinkCopied": "Offentligt link er kopieret",
+    "accountDescription": "Kontobeskrivelse",
+    "publicNickname": "Offentligt kaldenavn",
+    "publicNicknamePlaceholder": "f.eks. Simon L.",
+    "publicNicknameHint": "Dette er navnet, der vises på din offentlige indsats. Din e-mail vises aldrig offentligt.",
+    "accountDescriptionPlaceholder": "Fortæl besøgende om din væddemålstilgang, fokus på sport eller registreringsstil.",
+    "accountDescriptionHint": "Valgfri. Vises på din offentlige indsats. Max 500 ord.",
+    "accountDescriptionWordCount": "{{count}} / 500 ord",
+    "accountDescriptionTooLong": "Kontobeskrivelsen skal være på 500 ord eller derunder"
   },
   "admin": {
     "title": "Admin",
@@ -383,7 +404,18 @@
     "compClear": "Fjern comp",
     "compUntil": "Comp indtil {{date}}",
     "compApplied": "Gratis Pro-adgang opdateret",
-    "compCleared": "Gratis Pro-adgang fjernet"
+    "compCleared": "Gratis Pro-adgang fjernet",
+    "whenWithTz": "Hvornår ({{tz}})",
+    "isp": "ISP",
+    "ispCountry": "ISP-land",
+    "browserLanguage": "Browsersprog",
+    "operatingSystem": "Operativsystem",
+    "timezone": "Tidszone",
+    "promoStatsShare": "Del statistik",
+    "promoStatsRevoke": "Tilbagekald statistiklink",
+    "promoStatsLinkCopied": "Offentlig statistik-link er kopieret",
+    "promoStatsRevokeConfirm": "Vil du tilbagekalde dette offentlige statistiklink? Alle med linket vil ikke længere kunne se brugen.",
+    "promoStatsRevoked": "Offentlig statistik link tilbagekaldt"
   },
   "errors": {
     "requestFailed": "Anmodningen mislykkedes",
@@ -586,5 +618,18 @@
         "body": "<p>En <strong>væddemålsbog</strong> er simpelthen en komplet, kronologisk registrering af dine indsatser: hvad du støttede, til hvilke odds, for hvor meget, og hvordan det blev afgjort. Tænk på det som forskellen mellem at gætte, om du er klar til sæsonen og <em>vide</em>.</p>\n<h2>Hvorfor regneark mislykkes</h2>\n<p>De fleste spillere starter i Excel eller Google Sheets. Det virker indtil:</p>\n<ul>\n<li>Formler går i stykker, når du tilføjer kolonner for hver vej eller udveksler kommission</li>\n<li>Du glemmer at logge en tomgang eller udbetaling</li>\n<li>Du kan ikke skære efter tipper eller sport uden at genopbygge pivottabeller</li>\n</ul>\n<p>En dedikeret hovedbog normaliserer odds, genberegner fortjeneste ved hver redigering og holder rapporter konsistente.</p>\n<h2>Hvad skal optages</h2>\n<p>Log som minimum:</p>\n<ol>\n<li><strong>Begivenhed og valg</strong> — nok detaljer til at genkende væddemålet måneder senere</li>\n<li><strong>Indsats og valuta</strong></li>\n<li><strong>Odds</strong> (uanset hvilket format bogen viser)</li>\n<li><strong>Resultat</strong> – afventer, sejr, tab, ugyldig</li>\n<li><strong>Afregnet fortjeneste</strong> – eller lad software udlede det fra udfaldsregler</li>\n</ol>\n<p>Avancerede felter, der adskiller skarpe sporere fra tilfældige notetagere:</p>\n<ul>\n<li>Personlige underforståede odds (din fair pris)</li>\n<li>Lukkelinjeodds (for CLV)</li>\n<li>Tipster eller modelkilde</li>\n<li>Bookmaker og kommission</li>\n</ul>\n<h2>Rekontro versus journal</h2>\n<p>Folk bruger &ldquo;betting journal&rdquo; og &ldquo;væddemålsbog&rdquo; i flæng. Strengt taget kan en journal indeholde fortællende noter (&ldquo;følte sig forhastet&rdquo;, &ldquo;linje flyttet&rdquo;); en hovedbog understreger tal. De bedste værktøjer kombinerer begge dele: strukturerede data plus fritekstnoter pr. indsats.</p>\n<h2>Hvem har brug for en?</h2>\n<p>Enhver, der behandler væddemål som et færdighedsspil frem for lotterisedler:</p>\n<ul>\n<li>Matchede spillere, der sporer kvalificerende og gratis væddemål</li>\n<li>Børshandlere, der måler provisionsjusteret afkast</li>\n<li>Tipster-følgere, der bekræfter annonceret ROI</li>\n<li>Rekreative spillere, der ønsker ærlig bankrollstyring</li>\n</ul>\n<h2>Kom godt i gang</h2>\n<p>Vælg en sports- eller markedstype, og log de næste 20 væddemål uden at ændre din proces. Gennemgå strejkefrekvens, gennemsnitlige odds og fortjeneste pr. uge. Den baseline er mere værd end noget tip.</p>\n<p><strong>Spor dette i mybetrecord:</strong> opret en gratis konto, indstil din bankroll og standard oddsformat, og log dit første væddemål på under et minut.</p>"
       }
     }
+  },
+  "promoStats": {
+    "title": "Promo brug",
+    "publicNote": "Skrivebeskyttet visning",
+    "users": "Brugere",
+    "totalDiscounted": "Samlet rabat",
+    "notFound": "Denne kampagnestatistikside kunne ikke findes."
+  },
+  "publicProfile": {
+    "title": "Offentlig indsatsrekord",
+    "betCount": "{{count}} indsatser",
+    "empty": "Ingen væddemål endnu.",
+    "notFound": "Denne offentlige indsats kunne ikke findes."
   }
 }

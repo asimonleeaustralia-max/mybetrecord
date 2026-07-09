@@ -269,8 +269,10 @@ class Bet(Base):
     bet_model: Mapped[str | None] = mapped_column(String(120), nullable=True)
     model_implied_odds: Mapped[float | None] = mapped_column(Float, nullable=True)     # decimal
     personal_implied_odds: Mapped[float | None] = mapped_column(Float, nullable=True)  # decimal
+    tipster_implied_odds: Mapped[float | None] = mapped_column(Float, nullable=True)   # decimal
     personal_edge_pct: Mapped[float | None] = mapped_column(Float, nullable=True)        # computed
     model_edge_pct: Mapped[float | None] = mapped_column(Float, nullable=True)           # computed
+    tipster_edge_pct: Mapped[float | None] = mapped_column(Float, nullable=True)       # computed
     kelly_stake: Mapped[float | None] = mapped_column(Float, nullable=True)            # personal Kelly stake
     model_kelly_stake: Mapped[float | None] = mapped_column(Float, nullable=True)      # model Kelly stake
     closing_odds: Mapped[float | None] = mapped_column(Float, nullable=True)           # decimal, bookmaker

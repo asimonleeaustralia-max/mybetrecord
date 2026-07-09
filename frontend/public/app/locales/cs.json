@@ -192,7 +192,9 @@
     "maxLegs": "Vícenásobek může mít maximálně {{max}} výběrů.",
     "needTwoLegs": "Vícenásobný potřebuje alespoň 2 výběry.",
     "legMissingFields": "Každý výběr potřebuje událost a výběr.",
-    "legBadOdds": "Každý výběr potřebuje platný kurz větší než 1."
+    "legBadOdds": "Každý výběr potřebuje platný kurz větší než 1.",
+    "tipsterImplied": "Implikovaný kurz tipéra (desetinně)",
+    "tipsterEdge": "Sklápěcí hrana"
   },
   "reports": {
     "title": "Zprávy",
@@ -265,7 +267,26 @@
     "timezone": "Časové pásmo",
     "timezoneHint": "používá se pro data a časy v aplikaci",
     "supportContact": "Potřebujete pomoc? E-mail <a href=\"mailto:support@mybetrecord.com\">support@mybetrecord.com</a>",
-    "legalLinks": "<a href=\"/privacy\">Ochrana osobních údajů</a> · <a href=\"/terms\">Podmínky</a> · <a href=\"/support\">Podpora</a>"
+    "legalLinks": "<a href=\"/privacy\">Ochrana osobních údajů</a> · <a href=\"/terms\">Podmínky</a> · <a href=\"/support\">Podpora</a>",
+    "account": "Účet",
+    "email": "E-mail",
+    "changePassword": "Změňte heslo",
+    "currentPassword": "Aktuální heslo",
+    "passwordChanged": "Heslo aktualizováno",
+    "currentPasswordIncorrect": "Aktuální heslo je nesprávné",
+    "publicBetsTitle": "Záznam veřejné sázky",
+    "publicBetsEnabled": "Zpřístupnit mé sázky veřejně (pouze pro čtení)",
+    "publicBetsHint": "Kdokoli, kdo má odkaz, může zobrazit vaše sázky bez přihlášení. Citlivé detaily, jako je zisk a ztráta a bookmaker, jsou skryté.",
+    "publicBetsCopyLink": "Zkopírujte veřejný odkaz",
+    "publicBetsLinkCopied": "Veřejný odkaz zkopírován",
+    "accountDescription": "Popis účtu",
+    "publicNickname": "Veřejná přezdívka",
+    "publicNicknamePlaceholder": "např. Simon L.",
+    "publicNicknameHint": "Toto je jméno zobrazené na vašem záznamu o veřejné sázce. Váš e-mail se nikdy nezobrazuje veřejně.",
+    "accountDescriptionPlaceholder": "Řekněte návštěvníkům o svém sázení, sportovním zaměření nebo stylu vedení záznamů.",
+    "accountDescriptionHint": "Volitelný. Zobrazeno ve vašem záznamu o veřejné sázce. Maximálně 500 slov.",
+    "accountDescriptionWordCount": "{{count}} / 500 slov",
+    "accountDescriptionTooLong": "Popis účtu musí mít 500 slov nebo méně"
   },
   "admin": {
     "title": "Admin",
@@ -383,7 +404,18 @@
     "compClear": "Odebrat komp",
     "compUntil": "Porovnat do {{date}}",
     "compApplied": "Aktualizován bezplatný přístup Pro",
-    "compCleared": "Bezplatný přístup Pro odebrán"
+    "compCleared": "Bezplatný přístup Pro odebrán",
+    "whenWithTz": "Kdy ({{tz}})",
+    "isp": "ISP",
+    "ispCountry": "země ISP",
+    "browserLanguage": "Jazyk prohlížeče",
+    "operatingSystem": "Operační systém",
+    "timezone": "Časové pásmo",
+    "promoStatsShare": "Sdílejte statistiky",
+    "promoStatsRevoke": "Zrušit odkaz na statistiky",
+    "promoStatsLinkCopied": "Odkaz na veřejné statistiky zkopírován",
+    "promoStatsRevokeConfirm": "Zrušit tento odkaz na veřejné statistiky? Kdokoli s odkazem již nebude moci zobrazit využití.",
+    "promoStatsRevoked": "Odkaz na veřejné statistiky byl zrušen"
   },
   "errors": {
     "requestFailed": "Požadavek se nezdařil",
@@ -586,5 +618,18 @@
         "body": "<p><strong>Kniha sázek</strong> je jednoduše úplný, chronologický záznam vašich sázek: co jste podpořili, v jakém kurzu, za kolik a jak se to vypořádalo. Berte to jako rozdíl mezi hádaním, zda jste připraveni na sezónu, a <em>věděním</em>.</p>\n<h2>Proč tabulky selhávají</h2>\n<p>Většina sázkařů začíná v Excelu nebo Tabulkách Google. To funguje do:</p>\n<ul>\n<li>Vzorce se přeruší, když přidáte sloupce provize za každou cestu nebo výměnu</li>\n<li>Zapomněli jste přihlásit neplatnost nebo výběr peněz</li>\n<li>Nemůžete krájet podle tipaře nebo sportu, aniž byste znovu sestavili kontingenční tabulky</li>\n</ul>\n<p>Vyhrazená účetní kniha normalizuje šance, přepočítává zisk při každé úpravě a udržuje konzistentní přehledy.</p>\n<h2>Co zaznamenat</h2>\n<p>Zaznamenejte minimálně:</p>\n<ol>\n<li><strong>Událost a výběr</strong> – dostatek podrobností, aby bylo možné rozpoznat sázku o měsíce později</li>\n<li><strong>Podíl a měna</strong></li>\n<li><strong>Šance</strong> (v jakémkoli formátu, který kniha zobrazuje)</li>\n<li><strong>Výsledek</strong> – čekající, výhra, prohra, neplatné</li>\n<li><strong>Vyrovnaný zisk</strong> – nebo jej nechte software odvodit z pravidel výsledku</li>\n</ol>\n<p>Pokročilá pole, která oddělují ostré trackery od příležitostných zapisovatelů:</p>\n<ul>\n<li>Osobní implied odds (vaše spravedlivá cena)</li>\n<li>Šance na uzavření (pro CLV)</li>\n<li>Zdroj tipovačky nebo modelu</li>\n<li>Bookmaker a provize</li>\n</ul>\n<h2>Účetní kniha vs deník</h2>\n<p>Lidé používají &ldquo;deník sázek&rdquo; a &ldquo;kniha sázek&ldquo; zaměnitelně. Přesněji řečeno, časopis může obsahovat narativní poznámky (\"pocit spěchu\", \"řádek posunutý\"); účetní kniha zdůrazňuje čísla. Nejlepší nástroje kombinují obojí: strukturovaná data plus poznámky s volným textem na sázku.</p>\n<h2>Kdo ho potřebuje?</h2>\n<p>Každý, kdo považuje sázení za dovednostní hru spíše než za losy:</p>\n<ul>\n<li>Uzavření sázkaři sledující kvalifikační a bezplatné sázky</li>\n<li>Obchodníci na burzách měří výnos upravený o provizi</li>\n<li>Sledovatelé tipů ověřující inzerovanou návratnost investic</li>\n<li>Rekreační sázkaři, kteří chtějí poctivý bankroll management</li>\n</ul>\n<h2>Začínáme</h2>\n<p>Vyberte si jeden sport nebo typ trhu a zapište si dalších 20 sázek, aniž byste změnili svůj postup. Zkontrolujte míru stávek, průměrné kurzy a zisk po týdnech. Tato základní linie má větší cenu než jakýkoli tip.</p>\n<p><strong>Sledujte to v mybetrecord:</strong> vytvořte si bezplatný účet, nastavte svůj bankroll a výchozí formát kurzů a přihlaste svou první sázku do minuty.</p>"
       }
     }
+  },
+  "promoStats": {
+    "title": "Propagační použití",
+    "publicNote": "Zobrazení pouze pro čtení",
+    "users": "Uživatelé",
+    "totalDiscounted": "Celkem zlevněné",
+    "notFound": "Tuto stránku s promo statistikami nelze nalézt."
+  },
+  "publicProfile": {
+    "title": "Záznam veřejné sázky",
+    "betCount": "{{count}} sázek",
+    "empty": "Zatím žádné sázky.",
+    "notFound": "Tento záznam veřejné sázky nebyl nalezen."
   }
 }

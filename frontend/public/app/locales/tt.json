@@ -192,7 +192,9 @@
     "maxLegs": "Күпчелек {{max}} сайлау мөмкинлегенә ия.",
     "needTwoLegs": "Күп тапкыр ким дигәндә 2 сайлау кирәк.",
     "legMissingFields": "Eachәрбер сайлау вакыйгага һәм сайлауга мохтаҗ.",
-    "legBadOdds": "Eachәрбер сайлау 1 дән зуррак булырга тиеш."
+    "legBadOdds": "Eachәрбер сайлау 1 дән зуррак булырга тиеш.",
+    "tipsterImplied": "Tipster implied odds (decimal)",
+    "tipsterEdge": "Tipster edge"
   },
   "reports": {
     "title": "Докладлар",

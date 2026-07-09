@@ -192,7 +192,9 @@
     "maxLegs": "Margfeldi getur að hámarki haft {{max}} val.",
     "needTwoLegs": "Margfeldi þarf að minnsta kosti 2 val.",
     "legMissingFields": "Hvert val þarf viðburð og val.",
-    "legBadOdds": "Hvert val þarf gildar líkur sem eru hærri en 1."
+    "legBadOdds": "Hvert val þarf gildar líkur sem eru hærri en 1.",
+    "tipsterImplied": "Tipster implied odds (decimal)",
+    "tipsterEdge": "Tipster edge"
   },
   "reports": {
     "title": "Skýrslur",
@@ -265,7 +267,26 @@
     "timezone": "Tímabelti",
     "timezoneHint": "notað fyrir dagsetningar og tíma í appinu",
     "supportContact": "Þarftu aðstoð? Netfang <a href=\"mailto:support@mybetrecord.com\">support@mybetrecord.com</a>",
-    "legalLinks": "<a href=\"/privacy\">Persónuvernd</a> · <a href=\"/terms\">Skilmálar</a> · <a href=\"/support\">Stuðningur</a>"
+    "legalLinks": "<a href=\"/privacy\">Persónuvernd</a> · <a href=\"/terms\">Skilmálar</a> · <a href=\"/support\">Stuðningur</a>",
+    "account": "Account",
+    "email": "Email",
+    "changePassword": "Change password",
+    "currentPassword": "Current password",
+    "passwordChanged": "Password updated",
+    "currentPasswordIncorrect": "Current password is incorrect",
+    "publicBetsTitle": "Public bet record",
+    "publicBetsEnabled": "Make my bets publicly viewable (read-only)",
+    "publicBetsHint": "Anyone with the link can view your bets without signing in. Sensitive details like P/L and bookmaker are hidden.",
+    "publicBetsCopyLink": "Copy public link",
+    "publicBetsLinkCopied": "Public link copied",
+    "accountDescription": "Account description",
+    "publicNickname": "Public nickname",
+    "publicNicknamePlaceholder": "e.g. Simon L.",
+    "publicNicknameHint": "This is the name shown on your public bet record. Your email is never displayed publicly.",
+    "accountDescriptionPlaceholder": "Tell visitors about your betting approach, focus sports, or record-keeping style.",
+    "accountDescriptionHint": "Optional. Shown on your public bet record. Max 500 words.",
+    "accountDescriptionWordCount": "{{count}} / 500 words",
+    "accountDescriptionTooLong": "Account description must be 500 words or fewer"
   },
   "admin": {
     "title": "Admin",
@@ -383,7 +404,18 @@
     "compClear": "Fjarlægðu comp",
     "compUntil": "Samkeppni til {{date}}",
     "compApplied": "Ókeypis Pro aðgangur uppfærður",
-    "compCleared": "Ókeypis Pro aðgangur fjarlægður"
+    "compCleared": "Ókeypis Pro aðgangur fjarlægður",
+    "whenWithTz": "When ({{tz}})",
+    "isp": "ISP",
+    "ispCountry": "ISP country",
+    "browserLanguage": "Browser language",
+    "operatingSystem": "Operating system",
+    "timezone": "Timezone",
+    "promoStatsShare": "Share stats",
+    "promoStatsRevoke": "Revoke stats link",
+    "promoStatsLinkCopied": "Public stats link copied",
+    "promoStatsRevokeConfirm": "Revoke this public stats link? Anyone with the link will no longer be able to view usage.",
+    "promoStatsRevoked": "Public stats link revoked"
   },
   "errors": {
     "requestFailed": "Beiðni mistókst",
@@ -586,5 +618,18 @@
         "body": "<p><strong>veðmálabók</strong> er einfaldlega heill, tímaröð yfir veðmálin þín: hvað þú studdir, á hvaða líkum, hversu mikið og hvernig þau leystust. Hugsaðu um það sem muninn á því að giska á hvort þú sért tilbúinn fyrir tímabilið og <em>vita</em>.</p>\n<h2>Af hverju töflureiknar mistakast</h2>\n<p>Flestir veðmálamenn byrja í Excel eða Google Sheets. Það virkar þar til:</p>\n<ul>\n<li>Formúlur brotna þegar þú bætir við hvorri leið eða skiptast á þóknunardálkum</li>\n<li>Þú gleymir að skrá ógildingu eða útborgun</li>\n<li>Þú getur ekki sneið eftir tipster eða sport án þess að endurbyggja snúningstöflur</li>\n</ul>\n<p>Sérstök fjárhagsbók staðlar líkurnar, endurreikur hagnað við hverja breytingu og heldur skýrslum í samræmi.</p>\n<h2>Hvað á að taka upp</h2>\n<p>Að minnsta kosti skráðu þig inn:</p>\n<ol>\n<li><strong>Viðburður og val</strong> — nógu smáatriði til að þekkja veðmálið mánuðum síðar</li>\n<li><strong>Hlutur og gjaldmiðill</strong></li>\n<li><strong>Líkur</strong> (í hvaða sniði sem bókin sýnir)</li>\n<li><strong>Niðurstaða</strong> — í bið, sigur, tap, ógilt</li>\n<li><strong>Ágættur hagnaður</strong> – eða láttu hugbúnað fá hann út frá útkomureglum</li>\n</ol>\n<p>Ítarlegir reitir sem skilja skarpa rekja spor einhvers frá óformlegum glósurum:</p>\n<ul>\n<li>Persónulegar óbeina líkur (sanngjarnt verð þitt)</li>\n<li>Lokunarlínulíkur (fyrir CLV)</li>\n<li>Tipster eða líkan heimild</li>\n<li>Boðsali og þóknun</li>\n</ul>\n<h2>Fagbók vs dagbók</h2>\n<p>Fólk notar &ldquo;veðmáladagbók&rdquo; og &ldquo;veðmálabók&rdquo; til skiptis. Strangt til tekið, dagbók gæti innihaldið frásagnarskýrslur (&ldquo;finnst flýtt&rdquo;, &ldquo;lína færð&rdquo;); höfuðbók leggur áherslu á tölur. Bestu verkfærin sameina hvort tveggja: skipulögð gögn ásamt frjálsum textaskýringum fyrir hvert veðmál.</p>\n<h2>Hver þarf einn?</h2>\n<p>Sá sem lítur á veðmál sem færnileik frekar en lottómiða:</p>\n<ul>\n<li>Samsvaraðir veðmenn fylgjast með tímabundnum og ókeypis veðmálum</li>\n<li>Verðbréfakaupmenn sem mæla þóknunarleiðrétta ávöxtun</li>\n<li>Fylgjendur ábendinga sem staðfesta auglýsta arðsemi</li>\n<li>Afþreyingarviðmið sem vilja heiðarlega bankastjórnun</li>\n</ul>\n<h2>Hefst</h2>\n<p>Veldu eina íþrótt eða markaðstegund og skráðu næstu 20 veðmál án þess að breyta ferlinu þínu. Skoðaðu verkfallshlutfall, meðallíkur og hagnað eftir viku. Sú grunnlína er meira virði en nokkur þjórfé.</p>\n<p><strong>Fylgstu með þessu í mybetrecord:</strong> búðu til ókeypis reikning, stilltu bankareikninginn þinn og sjálfgefið stuðlasnið og skráðu fyrsta veðmálið þitt eftir innan við mínútu.</p>"
       }
     }
+  },
+  "promoStats": {
+    "title": "Promo usage",
+    "publicNote": "Read-only view",
+    "users": "Users",
+    "totalDiscounted": "Total discounted",
+    "notFound": "This promo stats page could not be found."
+  },
+  "publicProfile": {
+    "title": "Public bet record",
+    "betCount": "{{count}} bets",
+    "empty": "No bets yet.",
+    "notFound": "This public bet record could not be found."
   }
 }

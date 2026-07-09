@@ -192,7 +192,9 @@
     "maxLegs": "Một bội số có thể có tối đa {{max}} lựa chọn.",
     "needTwoLegs": "Một bội số cần ít nhất 2 lựa chọn.",
     "legMissingFields": "Mỗi lựa chọn cần một sự kiện và một lựa chọn.",
-    "legBadOdds": "Mỗi lựa chọn cần tỷ lệ cược hợp lệ lớn hơn 1."
+    "legBadOdds": "Mỗi lựa chọn cần tỷ lệ cược hợp lệ lớn hơn 1.",
+    "tipsterImplied": "Tỷ lệ cược ngụ ý của Tipster (thập phân)",
+    "tipsterEdge": "cạnh tipter"
   },
   "reports": {
     "title": "Báo cáo",
@@ -265,7 +267,26 @@
     "timezone": "Múi giờ",
     "timezoneHint": "được sử dụng cho ngày và giờ trong ứng dụng",
     "supportContact": "Cần giúp đỡ? Email <a href=\"mailto:support@mybetrecord.com\">support@mybetrecord.com</a>",
-    "legalLinks": "<a href=\"/privacy\">Quyền riêng tư</a> · <a href=\"/terms\">Điều khoản</a> · <a href=\"/support\">Hỗ trợ</a>"
+    "legalLinks": "<a href=\"/privacy\">Quyền riêng tư</a> · <a href=\"/terms\">Điều khoản</a> · <a href=\"/support\">Hỗ trợ</a>",
+    "account": "Tài khoản",
+    "email": "E-mail",
+    "changePassword": "Thay đổi mật khẩu",
+    "currentPassword": "Mật khẩu hiện tại",
+    "passwordChanged": "Đã cập nhật mật khẩu",
+    "currentPasswordIncorrect": "Mật khẩu hiện tại không chính xác",
+    "publicBetsTitle": "Hồ sơ đặt cược công khai",
+    "publicBetsEnabled": "Đặt cược của tôi ở chế độ có thể xem công khai (chỉ đọc)",
+    "publicBetsHint": "Bất kỳ ai có liên kết đều có thể xem cược của bạn mà không cần đăng nhập. Các chi tiết nhạy cảm như P/L và nhà cái đều bị ẩn.",
+    "publicBetsCopyLink": "Sao chép liên kết công khai",
+    "publicBetsLinkCopied": "Đã sao chép liên kết công khai",
+    "accountDescription": "Mô tả tài khoản",
+    "publicNickname": "Biệt hiệu công khai",
+    "publicNicknamePlaceholder": "ví dụ. Simon L.",
+    "publicNicknameHint": "Đây là tên được hiển thị trong hồ sơ cá cược công khai của bạn. Email của bạn không bao giờ được hiển thị công khai.",
+    "accountDescriptionPlaceholder": "Cho khách truy cập biết về cách tiếp cận cá cược, các môn thể thao trọng tâm hoặc phong cách lưu giữ hồ sơ của bạn.",
+    "accountDescriptionHint": "Không bắt buộc. Hiển thị trên hồ sơ đặt cược công khai của bạn. Tối đa 500 từ.",
+    "accountDescriptionWordCount": "{{count}} / 500 từ",
+    "accountDescriptionTooLong": "Mô tả tài khoản phải từ 500 từ trở xuống"
   },
   "admin": {
     "title": "Quản trị viên",
@@ -383,7 +404,18 @@
     "compClear": "Xóa máy tính",
     "compUntil": "Tính cho đến {{date}}",
     "compApplied": "Đã cập nhật quyền truy cập Pro miễn phí",
-    "compCleared": "Đã xóa quyền truy cập Pro miễn phí"
+    "compCleared": "Đã xóa quyền truy cập Pro miễn phí",
+    "whenWithTz": "Khi ({{tz}})",
+    "isp": "ISP",
+    "ispCountry": "Quốc gia ISP",
+    "browserLanguage": "Ngôn ngữ trình duyệt",
+    "operatingSystem": "Hệ điều hành",
+    "timezone": "Múi giờ",
+    "promoStatsShare": "Chia sẻ số liệu thống kê",
+    "promoStatsRevoke": "Thu hồi liên kết thống kê",
+    "promoStatsLinkCopied": "Đã sao chép liên kết thống kê công khai",
+    "promoStatsRevokeConfirm": "Thu hồi liên kết thống kê công khai này? Bất kỳ ai có liên kết sẽ không thể xem mức sử dụng được nữa.",
+    "promoStatsRevoked": "Liên kết thống kê công khai đã bị thu hồi"
   },
   "errors": {
     "requestFailed": "Yêu cầu không thành công",
@@ -586,5 +618,18 @@
         "body": "<p><strong>Sổ cái cá cược</strong> chỉ đơn giản là một bản ghi đầy đủ, theo trình tự thời gian về các lần đặt cược của bạn: số tiền bạn ủng hộ, tỷ lệ cược, số tiền và cách giải quyết. Hãy coi đó là sự khác biệt giữa việc đoán xem bạn có sẵn sàng tham gia mùa giải và <em>biết</em> hay không.</p>\n<h2>Tại sao bảng tính bị lỗi</h2>\n<p>Hầu hết người đặt cược đều bắt đầu bằng Excel hoặc Google Trang tính. Điều đó có hiệu quả cho đến khi:</p>\n<ul>\n<li>Công thức bị phá vỡ khi bạn thêm từng cột hoặc trao đổi cột hoa hồng</li>\n<li>Bạn quên đăng nhập khoảng trống hoặc rút tiền</li>\n<li>Bạn không thể cắt theo người nổi tiếng hoặc môn thể thao mà không xây dựng lại bảng tổng hợp</li>\n</ul>\n<p>Sổ cái chuyên dụng giúp bình thường hóa tỷ lệ cược, tính toán lại lợi nhuận trên mỗi lần chỉnh sửa và giữ cho các báo cáo luôn nhất quán.</p>\n<h2>Ghi lại những gì</h2>\n<p>Tối thiểu, hãy ghi nhật ký:</p>\n<ol>\n<li><strong>Sự kiện và lựa chọn</strong> — đủ chi tiết để nhận ra khoản đặt cược vài tháng sau</li>\n<li><strong>Cổ phần và tiền tệ</strong></li>\n<li><strong>Tỷ lệ cược</strong> (ở bất kỳ định dạng nào sách hiển thị)</li>\n<li><strong>Kết quả</strong> — đang chờ xử lý, thắng, thua, vô hiệu</li>\n<li><strong>Lợi nhuận đã xác định</strong> — hoặc để phần mềm lấy nó từ các quy tắc kết quả</li>\n</ol>\n<p>Các trường nâng cao giúp phân biệt người theo dõi sắc bén với người ghi chú thông thường:</p>\n<ul>\n<li>Tỷ lệ cược ngụ ý cá nhân (giá hợp lý của bạn)</li>\n<li>Tỷ lệ cược cuối trận (đối với CLV)</li>\n<li>Tipster hoặc nguồn mô hình</li>\n<li>Nhà cái và hoa hồng</li>\n</ul>\n<h2>Sổ cái và nhật ký</h2>\n<p>Mọi người sử dụng &ldquo;nhật ký cá cược&rdquo; và &ldquo;sổ cái cá cược&rdquo; có thể thay thế cho nhau. Nói đúng ra, một cuốn nhật ký có thể bao gồm các ghi chú tường thuật (&ldquo;cảm thấy vội vã&rdquo;, &ldquo;chuyển dòng&rdquo;); sổ cái nhấn mạnh vào các con số. Các công cụ tốt nhất kết hợp cả hai: dữ liệu có cấu trúc cộng với ghi chú văn bản tự do cho mỗi lần đặt cược.</p>\n<h2>Ai cần?</h2>\n<p>Bất cứ ai coi cá cược như một trò chơi kỹ năng hơn là vé số:</p>\n<ul>\n<li>Người đặt cược phù hợp theo dõi cược đủ điều kiện và cược miễn phí</li>\n<li>Nhà giao dịch trao đổi đo lường lợi nhuận được điều chỉnh theo hoa hồng</li>\n<li>Người theo dõi Tipster xác minh ROI được quảng cáo</li>\n<li>Người chơi cá cược giải trí muốn quản lý ngân hàng một cách trung thực</li>\n</ul>\n<h2>Bắt đầu</h2>\n<p>Chọn một môn thể thao hoặc loại thị trường và ghi lại 20 cược tiếp theo mà không thay đổi quy trình của bạn. Xem lại tỷ lệ thực hiện, tỷ lệ cược trung bình và lợi nhuận theo tuần. Đường cơ sở đó có giá trị hơn bất kỳ mẹo nào.</p>\n<p><strong>Theo dõi điều này trong mybetrecord:</strong> tạo một tài khoản miễn phí, đặt định dạng ngân hàng và tỷ lệ cược mặc định của bạn, đồng thời ghi lại lần đặt cược đầu tiên của bạn trong vòng chưa đầy một phút.</p>"
       }
     }
+  },
+  "promoStats": {
+    "title": "Khuyến mãi sử dụng",
+    "publicNote": "Chế độ xem chỉ đọc",
+    "users": "Người dùng",
+    "totalDiscounted": "Tổng số giảm giá",
+    "notFound": "Không thể tìm thấy trang thống kê khuyến mãi này."
+  },
+  "publicProfile": {
+    "title": "Hồ sơ đặt cược công khai",
+    "betCount": "{{count}} cược",
+    "empty": "Chưa có cược nào.",
+    "notFound": "Không thể tìm thấy hồ sơ đặt cược công khai này."
   }
 }

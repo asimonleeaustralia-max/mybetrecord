@@ -192,7 +192,9 @@
     "maxLegs": "E Multiple kann maximal {{max}} Auswiel hunn.",
     "needTwoLegs": "E Multiple brauch op d'mannst 2 Selektiounen.",
     "legMissingFields": "All Auswiel brauch en Event an eng Auswiel.",
-    "legBadOdds": "All Auswiel brauch valabel Chance méi wéi 1."
+    "legBadOdds": "All Auswiel brauch valabel Chance méi wéi 1.",
+    "tipsterImplied": "Tipster implied odds (decimal)",
+    "tipsterEdge": "Tipster edge"
   },
   "reports": {
     "title": "Berichter",

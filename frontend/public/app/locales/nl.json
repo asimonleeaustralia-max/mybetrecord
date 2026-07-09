@@ -192,7 +192,9 @@
     "maxLegs": "Een veelvoud kan maximaal {{max}} selecties hebben.",
     "needTwoLegs": "Een veelvoud heeft minimaal 2 selecties nodig.",
     "legMissingFields": "Elke selectie heeft een evenement en een selectie nodig.",
-    "legBadOdds": "Voor elke selectie zijn geldige odds groter dan 1 nodig."
+    "legBadOdds": "Voor elke selectie zijn geldige odds groter dan 1 nodig.",
+    "tipsterImplied": "Tipster implied odds (decimal)",
+    "tipsterEdge": "Tipster edge"
   },
   "reports": {
     "title": "Rapporten",

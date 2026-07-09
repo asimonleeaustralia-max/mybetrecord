@@ -192,7 +192,9 @@
     "maxLegs": "Ang isang maramihan ay maaaring magkaroon ng hindi hihigit sa {{max}} na mga pagpipilian.",
     "needTwoLegs": "Ang isang maramihang ay nangangailangan ng hindi bababa sa 2 mga pagpipilian.",
     "legMissingFields": "Ang bawat pagpili ay nangangailangan ng isang kaganapan at isang pagpipilian.",
-    "legBadOdds": "Ang bawat pagpipilian ay nangangailangan ng wastong logro na higit sa 1."
+    "legBadOdds": "Ang bawat pagpipilian ay nangangailangan ng wastong logro na higit sa 1.",
+    "tipsterImplied": "Tipster implied odds (decimal)",
+    "tipsterEdge": "Tipster edge"
   },
   "reports": {
     "title": "Mga ulat",

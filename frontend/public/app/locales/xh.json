@@ -192,7 +192,9 @@
     "maxLegs": "Isininzi sinokuba noninzi lwe- {{max}} ukhetho.",
     "needTwoLegs": "I-multiple idinga ubuncinane ukhetho olu-2.",
     "legMissingFields": "Ukhetho ngalunye lufuna isiganeko kunye nokukhetha.",
-    "legBadOdds": "Ukhetho ngalunye lufuna ii-odds ezisebenzayo ezingaphezu kwe-1."
+    "legBadOdds": "Ukhetho ngalunye lufuna ii-odds ezisebenzayo ezingaphezu kwe-1.",
+    "tipsterImplied": "Tipster implied odds (decimal)",
+    "tipsterEdge": "Tipster edge"
   },
   "reports": {
     "title": "Iingxelo",

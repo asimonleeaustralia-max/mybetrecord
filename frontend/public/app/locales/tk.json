@@ -192,7 +192,9 @@
     "maxLegs": "Köpüsinde iň köp {{max}} saýlama bolup biler.",
     "needTwoLegs": "Köplenç azyndan 2 saýlama zerur.",
     "legMissingFields": "Her saýlama bir waka we saýlama gerek.",
-    "legBadOdds": "Her saýlama 1-den uly ähtimallyk gerek."
+    "legBadOdds": "Her saýlama 1-den uly ähtimallyk gerek.",
+    "tipsterImplied": "Tipster implied odds (decimal)",
+    "tipsterEdge": "Tipster edge"
   },
   "reports": {
     "title": "Hasabat",

@@ -192,7 +192,9 @@
     "maxLegs": "Un multiple peut avoir au plus {{max}} sélections.",
     "needTwoLegs": "Un multiple nécessite au moins 2 sélections.",
     "legMissingFields": "Chaque sélection nécessite un événement et une sélection.",
-    "legBadOdds": "Chaque sélection nécessite des cotes valides supérieures à 1."
+    "legBadOdds": "Chaque sélection nécessite des cotes valides supérieures à 1.",
+    "tipsterImplied": "Cotes implicites du pronostiqueur (décimales)",
+    "tipsterEdge": "Bord du pronostiqueur"
   },
   "reports": {
     "title": "Rapports",
@@ -265,7 +267,26 @@
     "timezone": "Fuseau horaire",
     "timezoneHint": "utilisé pour les dates et les heures dans l'application",
     "supportContact": "Besoin d'aide ? Envoyer un e-mail à <a href=\"mailto:support@mybetrecord.com\">support@mybetrecord.com</a>",
-    "legalLinks": "<a href=\"/privacy\">Confidentialité</a> · <a href=\"/terms\">Conditions</a> · <a href=\"/support\">Assistance</a>"
+    "legalLinks": "<a href=\"/privacy\">Confidentialité</a> · <a href=\"/terms\">Conditions</a> · <a href=\"/support\">Assistance</a>",
+    "account": "Compte",
+    "email": "E-mail",
+    "changePassword": "Changer le mot de passe",
+    "currentPassword": "Mot de passe actuel",
+    "passwordChanged": "Mot de passe mis à jour",
+    "currentPasswordIncorrect": "Le mot de passe actuel est incorrect",
+    "publicBetsTitle": "Record de pari public",
+    "publicBetsEnabled": "Rendre mes paris visibles publiquement (lecture seule)",
+    "publicBetsHint": "Toute personne disposant du lien peut consulter vos paris sans se connecter. Les détails sensibles tels que le P/L et le bookmaker sont masqués.",
+    "publicBetsCopyLink": "Copier le lien public",
+    "publicBetsLinkCopied": "Lien public copié",
+    "accountDescription": "Description du compte",
+    "publicNickname": "Surnom public",
+    "publicNicknamePlaceholder": "par ex. Simon L.",
+    "publicNicknameHint": "Il s'agit du nom indiqué sur votre dossier de pari public. Votre email n'est jamais affiché publiquement.",
+    "accountDescriptionPlaceholder": "Informez les visiteurs de votre approche en matière de paris, de vos sports ciblés ou de votre style de tenue de registres.",
+    "accountDescriptionHint": "Facultatif. Indiqué sur votre dossier de pari public. Maximum 500 mots.",
+    "accountDescriptionWordCount": "{{count}} / 500 mots",
+    "accountDescriptionTooLong": "La description du compte doit contenir 500 mots ou moins"
   },
   "admin": {
     "title": "Administrateur",
@@ -383,7 +404,18 @@
     "compClear": "Supprimer la composition",
     "compUntil": "Comp jusqu'au {{date}}",
     "compApplied": "Accès Pro gratuit mis à jour",
-    "compCleared": "Accès Pro gratuit supprimé"
+    "compCleared": "Accès Pro gratuit supprimé",
+    "whenWithTz": "Quand ({{tz}})",
+    "isp": "FAI",
+    "ispCountry": "Pays du FAI",
+    "browserLanguage": "Langue du navigateur",
+    "operatingSystem": "Système opérateur",
+    "timezone": "Fuseau horaire",
+    "promoStatsShare": "Partager les statistiques",
+    "promoStatsRevoke": "Révoquer le lien de statistiques",
+    "promoStatsLinkCopied": "Lien vers les statistiques publiques copié",
+    "promoStatsRevokeConfirm": "Révoquer ce lien de statistiques publiques ? Toute personne disposant du lien ne pourra plus voir l'utilisation.",
+    "promoStatsRevoked": "Lien vers les statistiques publiques révoqué"
   },
   "errors": {
     "requestFailed": "La demande a échoué",
@@ -586,5 +618,18 @@
         "body": "<p>Un <strong>registre de paris</strong> est simplement un enregistrement chronologique complet de vos paris : ce que vous avez parié, à quelles cotes, pour combien et comment ils ont été réglés. Considérez cela comme la différence entre deviner si vous êtes prêt pour la saison et <em>savoir</em>.</p>\n<h2>Pourquoi les feuilles de calcul échouent</h2>\n<p>La plupart des parieurs commencent avec Excel ou Google Sheets. Cela fonctionne jusqu'à :</p>\n<ul>\n<li>Les formules s'interrompent lorsque vous ajoutez des colonnes de commissions aller-retour ou d'échange</li>\n<li>Vous oubliez de consigner une annulation ou un retrait</li>\n<li>Vous ne pouvez pas découper par pronostiqueur ou par sport sans reconstruire les tableaux croisés dynamiques</li>\n</ul>\n<p>Un registre dédié normalise les cotes, recalcule les bénéfices à chaque modification et assure la cohérence des rapports.</p>\n<h2>Ce qu'il faut enregistrer</h2>\n<p>Au minimum, connectez-vous :</p>\n<ol>\n<li><strong>Événement et sélection</strong> : suffisamment de détails pour reconnaître le pari des mois plus tard</li>\n<li><strong>Mise et devise</strong></li>\n<li><strong>Cotes</strong> (quel que soit le format affiché par le livre)</li>\n<li><strong>Résultat</strong> : en attente, victoire, perte, annulation</li>\n<li><strong>Bénéfice réglé</strong> – ou laissez le logiciel le déduire des règles de résultat</li>\n</ol>\n<p>Champs avancés qui séparent les trackers pointus des preneurs de notes occasionnels :</p>\n<ul>\n<li>Cotes implicites personnelles (votre juste prix)</li>\n<li>Cotes de clôture (pour CLV)</li>\n<li>Pronostiqueur ou source du modèle</li>\n<li>Bookmaker et commission</li>\n</ul>\n<h2>Grand livre ou journal</h2>\n<p>Les gens utilisent le « journal de paris » et &laquo;grand livre des paris&raquo; de manière interchangeable. À proprement parler, un journal peut inclure des notes narratives (« je me suis senti précipité », « la ligne a été déplacée ») ; un grand livre met l'accent sur les chiffres. Les meilleurs outils combinent les deux : des données structurées et des notes en texte libre par pari.</p>\n<h2>Qui en a besoin ?</h2>\n<p>Quiconque considère les paris comme un jeu d'adresse plutôt que comme des billets de loterie :</p>\n<ul>\n<li>Parieurs correspondants suivant les paris qualificatifs et gratuits</li>\n<li>Les traders en bourse mesurant le rendement ajusté en fonction des commissions</li>\n<li>Abonnés du pronostiqueur vérifiant le retour sur investissement annoncé</li>\n<li>Parieurs récréatifs souhaitant une gestion honnête de leur bankroll</li>\n</ul>\n<h2>Démarrer</h2>\n<p>Choisissez un sport ou un type de marché et enregistrez les 20 prochains paris sans modifier votre processus. Examinez le taux de grève, les cotes moyennes et les bénéfices par semaine. Cette ligne de base vaut plus que n'importe quel conseil.</p>\n<p><strong>Suivez cela dans mybetrecord :</strong> créez un compte gratuit, définissez votre bankroll et le format de cotes par défaut, et enregistrez votre premier pari en moins d'une minute.</p>"
       }
     }
+  },
+  "promoStats": {
+    "title": "Utilisation promotionnelle",
+    "publicNote": "Vue en lecture seule",
+    "users": "Utilisateurs",
+    "totalDiscounted": "Total réduit",
+    "notFound": "Cette page de statistiques promotionnelles est introuvable."
+  },
+  "publicProfile": {
+    "title": "Record de pari public",
+    "betCount": "Paris {{count}}",
+    "empty": "Aucun pari pour l'instant.",
+    "notFound": "Ce record de pari public est introuvable."
   }
 }

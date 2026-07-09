@@ -192,7 +192,9 @@
     "maxLegs": "Un múltiplo pode ter como máximo {{max}} seleccións.",
     "needTwoLegs": "Un múltiple necesita polo menos 2 seleccións.",
     "legMissingFields": "Cada selección necesita un evento e unha selección.",
-    "legBadOdds": "Cada selección necesita probabilidades válidas superiores a 1."
+    "legBadOdds": "Cada selección necesita probabilidades válidas superiores a 1.",
+    "tipsterImplied": "Tipster implied odds (decimal)",
+    "tipsterEdge": "Tipster edge"
   },
   "reports": {
     "title": "Informes",
@@ -265,7 +267,26 @@
     "timezone": "Fuso horario",
     "timezoneHint": "usado para datas e horas na aplicación",
     "supportContact": "Necesitas axuda? Correo electrónico <a href=\"mailto:support@mybetrecord.com\">support@mybetrecord.com</a>",
-    "legalLinks": "<a href=\"/privacy\">Privacidade</a> · <a href=\"/terms\">Condicións</a> · <a href=\"/support\">Asistencia</a>"
+    "legalLinks": "<a href=\"/privacy\">Privacidade</a> · <a href=\"/terms\">Condicións</a> · <a href=\"/support\">Asistencia</a>",
+    "account": "Account",
+    "email": "Email",
+    "changePassword": "Change password",
+    "currentPassword": "Current password",
+    "passwordChanged": "Password updated",
+    "currentPasswordIncorrect": "Current password is incorrect",
+    "publicBetsTitle": "Public bet record",
+    "publicBetsEnabled": "Make my bets publicly viewable (read-only)",
+    "publicBetsHint": "Anyone with the link can view your bets without signing in. Sensitive details like P/L and bookmaker are hidden.",
+    "publicBetsCopyLink": "Copy public link",
+    "publicBetsLinkCopied": "Public link copied",
+    "accountDescription": "Account description",
+    "publicNickname": "Public nickname",
+    "publicNicknamePlaceholder": "e.g. Simon L.",
+    "publicNicknameHint": "This is the name shown on your public bet record. Your email is never displayed publicly.",
+    "accountDescriptionPlaceholder": "Tell visitors about your betting approach, focus sports, or record-keeping style.",
+    "accountDescriptionHint": "Optional. Shown on your public bet record. Max 500 words.",
+    "accountDescriptionWordCount": "{{count}} / 500 words",
+    "accountDescriptionTooLong": "Account description must be 500 words or fewer"
   },
   "admin": {
     "title": "Admin",
@@ -383,7 +404,18 @@
     "compClear": "Eliminar comp",
     "compUntil": "Comp ata {{date}}",
     "compApplied": "Acceso Pro gratuíto actualizado",
-    "compCleared": "Eliminouse o acceso profesional gratuíto"
+    "compCleared": "Eliminouse o acceso profesional gratuíto",
+    "whenWithTz": "When ({{tz}})",
+    "isp": "ISP",
+    "ispCountry": "ISP country",
+    "browserLanguage": "Browser language",
+    "operatingSystem": "Operating system",
+    "timezone": "Timezone",
+    "promoStatsShare": "Share stats",
+    "promoStatsRevoke": "Revoke stats link",
+    "promoStatsLinkCopied": "Public stats link copied",
+    "promoStatsRevokeConfirm": "Revoke this public stats link? Anyone with the link will no longer be able to view usage.",
+    "promoStatsRevoked": "Public stats link revoked"
   },
   "errors": {
     "requestFailed": "Produciuse un erro na solicitude",
@@ -586,5 +618,18 @@
         "body": "<p>Un <strong>libro de apostas</strong> é simplemente un rexistro completo e cronolóxico das túas apostas: o que apoiaste, con que probabilidades, canto e como se liquidou. Pense nisto como a diferenza entre adiviñar se estás preparado para a tempada e <em>saber</em>.</p>\n<h2>Por que fallan as follas de cálculo</h2>\n<p>A maioría dos apostantes comezan en Excel ou en Follas de cálculo de Google. Isto funciona ata:</p>\n<ul>\n<li>As fórmulas rompen cando engades columnas de comisións de cada sentido ou intercambias</li>\n<li>Esqueceches iniciar sesión nun baleiro ou retirada de efectivo</li>\n<li>Non podes dividir por tipster ou deporte sen reconstruír táboas dinámicas</li>\n</ul>\n<p>Un rexistro dedicado normaliza as probabilidades, calcula os beneficios en cada edición e mantén os informes consistentes.</p>\n<h2>Que gravar</h2>\n<p>Como mínimo, rexistrar:</p>\n<ol>\n<li><strong>Evento e selección</strong>: detalles suficientes para recoñecer a aposta meses despois</li>\n<li><strong>Aposta e moeda</strong></li>\n<li><strong>Probabilidades</strong> (en calquera formato que mostre o libro)</li>\n<li><strong>Resultado</strong>: pendente, vitoria, derrota, anulación</li>\n<li><strong>Beneficios liquidados</strong> ou deixa que o software o derive das regras de resultados</li>\n</ol>\n<p>Campos avanzados que separan os rastreadores nítidos dos que toman notas ocasionais:</p>\n<ul>\n<li>Probabilidades implícitas persoais (o teu prezo xusto)</li>\n<li>Probabilidades de peche de liña (para CLV)</li>\n<li>Tipster ou fonte do modelo</li>\n<li>Casa de apostas e comisión</li>\n</ul>\n<h2>Ledger vs journal</h2>\n<p>As persoas usan o &ldquo;diario de apostas&rdquo; e &ldquo;libro de apostas&rdquo; indistintamente. En rigor, un diario pode incluír notas narrativas (&ldquo;sentiuse precipitado&rdquo;, &ldquo;liña movida&rdquo;); un libro maior enfatiza os números. As mellores ferramentas combinan ambas: datos estruturados e notas de texto libre por aposta.</p>\n<h2>Quen precisa un?</h2>\n<p>Calquera persoa que trate as apostas como un xogo de habilidade en lugar de billetes de lotería:</p>\n<ul>\n<li>Apostadores coincidentes que fan un seguimento das apostas gratuítas e de cualificación</li>\n<li>Comerciantes de bolsa que miden o rendemento axustado pola comisión</li>\n<li>Seguidores de informadores verificando o ROI anunciado</li>\n<li>Apostas recreativas que queren unha xestión honesta dos fondos</li>\n</ul>\n<h2>Comezar</h2>\n<p>Escolle un deporte ou tipo de mercado e rexistra as seguintes 20 apostas sen cambiar o teu proceso. Revisa a taxa de folga, as probabilidades medias e os beneficios por semana. Esa liña de base vale máis que calquera propina.</p>\n<p><strong>Rastrexa isto en mybetrecord:</strong> crea unha conta gratuíta, establece o teu banco e o formato de probabilidade predeterminado e rexistra a túa primeira aposta en menos dun minuto.</p>"
       }
     }
+  },
+  "promoStats": {
+    "title": "Promo usage",
+    "publicNote": "Read-only view",
+    "users": "Users",
+    "totalDiscounted": "Total discounted",
+    "notFound": "This promo stats page could not be found."
+  },
+  "publicProfile": {
+    "title": "Public bet record",
+    "betCount": "{{count}} bets",
+    "empty": "No bets yet.",
+    "notFound": "This public bet record could not be found."
   }
 }

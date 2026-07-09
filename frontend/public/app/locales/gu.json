@@ -192,7 +192,9 @@
     "maxLegs": "બહુવિધમાં વધુમાં વધુ {{max}} પસંદગીઓ હોઈ શકે છે.",
     "needTwoLegs": "બહુવિધને ઓછામાં ઓછી 2 પસંદગીની જરૂર છે.",
     "legMissingFields": "દરેક પસંદગીને ઇવેન્ટ અને પસંદગીની જરૂર હોય છે.",
-    "legBadOdds": "દરેક પસંદગીને 1 કરતા વધારે માન્ય મતભેદની જરૂર છે."
+    "legBadOdds": "દરેક પસંદગીને 1 કરતા વધારે માન્ય મતભેદની જરૂર છે.",
+    "tipsterImplied": "ટીપસ્ટર ગર્ભિત મતભેદ (દશાંશ)",
+    "tipsterEdge": "ટીપસ્ટર ધાર"
   },
   "reports": {
     "title": "અહેવાલો",
@@ -265,7 +267,26 @@
     "timezone": "સમય ઝોન",
     "timezoneHint": "એપ્લિકેશનમાં તારીખો અને સમય માટે વપરાય છે",
     "supportContact": "મદદની જરૂર છે? ઇમેઇલ <a href=\"mailto:support@mybetrecord.com\">support@mybetrecord.com</a>",
-    "legalLinks": "<a href=\"/privacy\">ગોપનીયતા</a> · <a href=\"/terms\">શરતો</a> · <a href=\"/support\">સપોર્ટ</a>"
+    "legalLinks": "<a href=\"/privacy\">ગોપનીયતા</a> · <a href=\"/terms\">શરતો</a> · <a href=\"/support\">સપોર્ટ</a>",
+    "account": "એકાઉન્ટ",
+    "email": "ઈમેલ",
+    "changePassword": "પાસવર્ડ બદલો",
+    "currentPassword": "Current password",
+    "passwordChanged": "Password updated",
+    "currentPasswordIncorrect": "Current password is incorrect",
+    "publicBetsTitle": "Public bet record",
+    "publicBetsEnabled": "Make my bets publicly viewable (read-only)",
+    "publicBetsHint": "Anyone with the link can view your bets without signing in. Sensitive details like P/L and bookmaker are hidden.",
+    "publicBetsCopyLink": "Copy public link",
+    "publicBetsLinkCopied": "Public link copied",
+    "accountDescription": "Account description",
+    "publicNickname": "Public nickname",
+    "publicNicknamePlaceholder": "e.g. Simon L.",
+    "publicNicknameHint": "This is the name shown on your public bet record. Your email is never displayed publicly.",
+    "accountDescriptionPlaceholder": "Tell visitors about your betting approach, focus sports, or record-keeping style.",
+    "accountDescriptionHint": "Optional. Shown on your public bet record. Max 500 words.",
+    "accountDescriptionWordCount": "{{count}} / 500 words",
+    "accountDescriptionTooLong": "Account description must be 500 words or fewer"
   },
   "admin": {
     "title": "એડમિન",
@@ -383,7 +404,18 @@
     "compClear": "કોમ્પ દૂર કરો",
     "compUntil": "{{date}} સુધી કોમ્પ",
     "compApplied": "સ્તુત્ય પ્રો ઍક્સેસ અપડેટ",
-    "compCleared": "સ્તુત્ય પ્રો એક્સેસ કાઢી નાખ્યો"
+    "compCleared": "સ્તુત્ય પ્રો એક્સેસ કાઢી નાખ્યો",
+    "whenWithTz": "When ({{tz}})",
+    "isp": "ISP",
+    "ispCountry": "ISP country",
+    "browserLanguage": "Browser language",
+    "operatingSystem": "Operating system",
+    "timezone": "Timezone",
+    "promoStatsShare": "Share stats",
+    "promoStatsRevoke": "Revoke stats link",
+    "promoStatsLinkCopied": "Public stats link copied",
+    "promoStatsRevokeConfirm": "Revoke this public stats link? Anyone with the link will no longer be able to view usage.",
+    "promoStatsRevoked": "Public stats link revoked"
   },
   "errors": {
     "requestFailed": "વિનંતી નિષ્ફળ",
@@ -586,5 +618,18 @@
         "body": "<p>એ <strong>શરત ખાતાવહી</strong> એ ફક્ત તમારા હોડનો સંપૂર્ણ, કાલક્રમિક રેકોર્ડ છે: તમે શું સમર્થન આપ્યું, કયા મતભેદો પર, કેટલા માટે અને તે કેવી રીતે સ્થાયી થયા. તમે સીઝન માટે તૈયાર છો કે કેમ તે અનુમાન લગાવવું અને <em>જાણવું</em> વચ્ચેના તફાવત તરીકે તેને વિચારો.</p>\n<h2>સ્પ્રેડશીટ્સ કેમ નિષ્ફળ થાય છે</h2>\n<p>મોટા ભાગના શરત Excel અથવા Google શીટ્સમાં શરૂ થાય છે. તે ત્યાં સુધી કાર્ય કરે છે:</p>\n<ul>\n<li>જ્યારે તમે દરેક રીતે અથવા એક્સચેન્જ કમિશન કૉલમ ઉમેરો છો ત્યારે ફોર્મ્યુલા તૂટી જાય છે</li>\n<li>તમે રદબાતલ અથવા કેશ-આઉટ લોગ કરવાનું ભૂલી જાઓ છો</li>\n<li>તમે પીવટ કોષ્ટકો પુનઃબીલ્ડ કર્યા વિના ટીપસ્ટર અથવા રમત દ્વારા કાપી શકતા નથી</li>\n</ul>\n<p>સમર્પિત ખાતાવહી મતભેદને સામાન્ય બનાવે છે, દરેક સંપાદન પર નફાની પુનઃ ગણતરી કરે છે અને અહેવાલોને સુસંગત રાખે છે.</p>\n<h2>શું રેકોર્ડ કરવું</h2>\n<p>ઓછામાં ઓછું લોગ કરો:</p>\n<ol>\n<li><strong>ઇવેન્ટ અને પસંદગી</strong> — મહિના પછી શરતને ઓળખવા માટે પૂરતી વિગત</li>\n<li><strong>સ્ટેક અને ચલણ</strong></li>\n<li><strong>ઓડ્સ</strong> (પુસ્તક ગમે તે ફોર્મેટમાં દર્શાવે છે)</li>\n<li><strong>પરિણામ</strong> — બાકી, જીત, હાર, રદબાતલ</li>\n<li><strong>ઉપયોગી નફો</strong> — અથવા સોફ્ટવેરને તેને પરિણામના નિયમોમાંથી મેળવવા દો</li>\n</ol>\n<p>અદ્યતન ક્ષેત્રો કે જે શાર્પ ટ્રેકર્સને કેઝ્યુઅલ નોંધ લેનારાઓથી અલગ કરે છે:</p>\n<ul>\n<li>વ્યક્તિગત ગર્ભિત મતભેદ (તમારી વાજબી કિંમત)</li>\n<li>ક્લોઝિંગ લાઇન ઓડ્સ (CLV માટે)</li>\n<li>ટિપસ્ટર અથવા મોડેલ સ્ત્રોત</li>\n<li>બુકમેકર અને કમિશન</li>\n</ul>\n<h2>લેજર વિ જર્નલ</h2>\n<p>લોકો &ldquo;બેટિંગ જર્નલ&rdquo; અને &ldquo;શરત ખાતાવહી&rdquo; એકબીજાના બદલે સખત રીતે, એક જર્નલમાં વર્ણનાત્મક નોંધો શામેલ હોઈ શકે છે (&ldquo;લાગ્યું છે&rdquo;, &ldquo;લાઇન ખસેડવામાં આવી છે&rdquo;); ખાતાવહી સંખ્યાઓ પર ભાર મૂકે છે. શ્રેષ્ઠ સાધનો બંનેને જોડે છે: સંરચિત ડેટા વત્તા શરત દીઠ ફ્રી-ટેક્સ્ટ નોંધો.</p>\n<h2>કોને તેની જરૂર છે?</h2>\n<p>કોઈપણ વ્યક્તિ જે સટ્ટાબાજીને લોટરી ટિકિટને બદલે કૌશલ્યની રમત માને છે:</p>\n<ul>\n<li>ક્વોલિફાઇંગ અને ફ્રી બેટ્સ ટ્રેકિંગ મેળ ખાતા સટ્ટાખોરો</li>\n<li>કમિશન-સમાયોજિત ઉપજને માપતા એક્સચેન્જ ટ્રેડર્સ</li>\n<li>જાહેરાત કરેલ ROI ની ચકાસણી કરતા ટીપસ્ટર અનુયાયીઓ</li>\n<li>મનોરંજન પંટર્સ કે જેઓ પ્રમાણિક બેંકરોલ મેનેજમેન્ટ ઇચ્છે છે</li>\n</ul>\n<h2>પ્રારંભ કરો</h2>\n<p>એક રમત અથવા બજારનો પ્રકાર પસંદ કરો અને તમારી પ્રક્રિયા બદલ્યા વિના આગામી 20 બેટ્સ લોગ કરો. સપ્તાહ દ્વારા સ્ટ્રાઈક રેટ, સરેરાશ મતભેદ અને નફાની સમીક્ષા કરો. તે આધારરેખા કોઈપણ ટીપ કરતાં વધુ મૂલ્યવાન છે.</p>\n<p><strong>માયબેટ્રેકોર્ડમાં આને ટ્રૅક કરો:</strong> એક મફત ખાતું બનાવો, તમારું બેંકરોલ અને ડિફોલ્ટ ઓડ્સ ફોર્મેટ સેટ કરો અને એક મિનિટની અંદર તમારી પ્રથમ શરત લોગ ઇન કરો.</p>"
       }
     }
+  },
+  "promoStats": {
+    "title": "પ્રોમો ઉપયોગ",
+    "publicNote": "ફક્ત વાંચવા માટેનું દૃશ્ય",
+    "users": "વપરાશકર્તાઓ",
+    "totalDiscounted": "કુલ ડિસ્કાઉન્ટેડ",
+    "notFound": "આ પ્રોમો આંકડા પૃષ્ઠ શોધી શકાયું નથી."
+  },
+  "publicProfile": {
+    "title": "જાહેર બીઇટી રેકોર્ડ",
+    "betCount": "{{count}} બેટ્સ",
+    "empty": "હજુ સુધી કોઈ બેટ્સ નથી.",
+    "notFound": "આ સાર્વજનિક શરત રેકોર્ડ શોધી શકાયો નથી."
   }
 }

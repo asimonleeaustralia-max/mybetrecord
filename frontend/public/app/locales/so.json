@@ -192,7 +192,9 @@
     "maxLegs": "Wax badan ayaa yeelan kara ugu badnaan {{max}} doorashooyin",
     "needTwoLegs": "Kuwo badan ayaa u baahan ugu yaraan 2 doorasho.",
     "legMissingFields": "Xulasho kastaa waxay u baahan tahay dhacdo iyo doorasho.",
-    "legBadOdds": "Xulasho kastaa waxay u baahan tahay qiyam sax ah oo ka badan 1."
+    "legBadOdds": "Xulasho kastaa waxay u baahan tahay qiyam sax ah oo ka badan 1.",
+    "tipsterImplied": "Tipster implied odds (decimal)",
+    "tipsterEdge": "Tipster edge"
   },
   "reports": {
     "title": "Warbixinada",

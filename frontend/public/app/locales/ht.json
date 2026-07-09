@@ -192,7 +192,9 @@
     "maxLegs": "Yon miltip ka gen omwen {{max}} seleksyon.",
     "needTwoLegs": "Yon miltip bezwen omwen 2 seleksyon.",
     "legMissingFields": "Chak seleksyon bezwen yon evènman ak yon seleksyon.",
-    "legBadOdds": "Chak seleksyon bezwen chans valab ki pi gran pase 1."
+    "legBadOdds": "Chak seleksyon bezwen chans valab ki pi gran pase 1.",
+    "tipsterImplied": "Tipster implied odds (decimal)",
+    "tipsterEdge": "Tipster edge"
   },
   "reports": {
     "title": "Rapò",

@@ -192,7 +192,9 @@
     "maxLegs": "Višestruki broj može imati najviše {{max}} odabira.",
     "needTwoLegs": "Za višestruku su potrebna najmanje 2 odabira.",
     "legMissingFields": "Svaki odabir treba događaj i odabir.",
-    "legBadOdds": "Za svaki odabir potrebni su važeći tečajevi veći od 1."
+    "legBadOdds": "Za svaki odabir potrebni su važeći tečajevi veći od 1.",
+    "tipsterImplied": "Tipster implied odds (decimal)",
+    "tipsterEdge": "Tipster edge"
   },
   "reports": {
     "title": "izvješća",
@@ -265,7 +267,26 @@
     "timezone": "Vremenska zona",
     "timezoneHint": "koristi se za datume i vremena u aplikaciji",
     "supportContact": "Trebate pomoć? Pošaljite e-poruku <a href=\"mailto:support@mybetrecord.com\">support@mybetrecord.com</a>",
-    "legalLinks": "<a href=\"/privacy\">Privatnost</a> · <a href=\"/terms\">Uvjeti</a> · <a href=\"/support\">Podrška</a>"
+    "legalLinks": "<a href=\"/privacy\">Privatnost</a> · <a href=\"/terms\">Uvjeti</a> · <a href=\"/support\">Podrška</a>",
+    "account": "Account",
+    "email": "Email",
+    "changePassword": "Change password",
+    "currentPassword": "Current password",
+    "passwordChanged": "Password updated",
+    "currentPasswordIncorrect": "Current password is incorrect",
+    "publicBetsTitle": "Public bet record",
+    "publicBetsEnabled": "Make my bets publicly viewable (read-only)",
+    "publicBetsHint": "Anyone with the link can view your bets without signing in. Sensitive details like P/L and bookmaker are hidden.",
+    "publicBetsCopyLink": "Copy public link",
+    "publicBetsLinkCopied": "Public link copied",
+    "accountDescription": "Account description",
+    "publicNickname": "Public nickname",
+    "publicNicknamePlaceholder": "e.g. Simon L.",
+    "publicNicknameHint": "This is the name shown on your public bet record. Your email is never displayed publicly.",
+    "accountDescriptionPlaceholder": "Tell visitors about your betting approach, focus sports, or record-keeping style.",
+    "accountDescriptionHint": "Optional. Shown on your public bet record. Max 500 words.",
+    "accountDescriptionWordCount": "{{count}} / 500 words",
+    "accountDescriptionTooLong": "Account description must be 500 words or fewer"
   },
   "admin": {
     "title": "Administrator",
@@ -383,7 +404,18 @@
     "compClear": "Ukloni komp",
     "compUntil": "Kompenzacija do {{date}}",
     "compApplied": "Ažuriran besplatni Pro pristup",
-    "compCleared": "Besplatni Pro pristup uklonjen"
+    "compCleared": "Besplatni Pro pristup uklonjen",
+    "whenWithTz": "When ({{tz}})",
+    "isp": "ISP",
+    "ispCountry": "ISP country",
+    "browserLanguage": "Browser language",
+    "operatingSystem": "Operating system",
+    "timezone": "Timezone",
+    "promoStatsShare": "Share stats",
+    "promoStatsRevoke": "Revoke stats link",
+    "promoStatsLinkCopied": "Public stats link copied",
+    "promoStatsRevokeConfirm": "Revoke this public stats link? Anyone with the link will no longer be able to view usage.",
+    "promoStatsRevoked": "Public stats link revoked"
   },
   "errors": {
     "requestFailed": "Zahtjev nije uspio",
@@ -586,5 +618,18 @@
         "body": "<p><strong>Knjiga klađenja</strong> jednostavno je potpuna, kronološka evidencija vaših uloga: što ste poduprli, s kojim izgledima, za koliko i kako je podmireno. Zamislite to kao razliku između pogađanja jeste li spremni za sezonu i <em>znanja</em>.</p>\n<h2>Zašto proračunske tablice ne uspijevaju</h2>\n<p>Većina kladitelja počinje u Excelu ili Google tablicama. To radi do:</p>\n<ul>\n<li>Formule se prekidaju kada dodate stupce provizije za svaku stranu ili zamjenu</li>\n<li>Zaboravili ste prijaviti poništenje ili isplatu</li>\n<li>Ne možete rezati po tipsteru ili sportu bez ponovne izrade zaokretnih tablica</li>\n</ul>\n<p>Posebna knjiga normalizira izglede, ponovno izračunava dobit pri svakom uređivanju i održava izvješća dosljednima.</p>\n<h2>Što snimiti</h2>\n<p>Minimalno, zapisnik:</p>\n<ol>\n<li><strong>Događaj i odabir</strong> — dovoljno detalja da se oklada prepozna mjesecima kasnije</li>\n<li><strong>Ulog i valuta</strong></li>\n<li><strong>Izgledi</strong> (u bilo kojem formatu koji knjiga prikazuje)</li>\n<li><strong>Ishod</strong> — na čekanju, pobjeda, poraz, poništavanje</li>\n<li><strong>Uspoređeni profit</strong> — ili pustite softver da ga izvuče iz pravila ishoda</li>\n</ol>\n<p>Napredna polja koja odvajaju oštre tragače od povremenih bilježnika:</p>\n<ul>\n<li>Osobni implicirani izgledi (vaša poštena cijena)</li>\n<li>Izgledi u završnoj liniji (za CLV)</li>\n<li>Izvor savjetnika ili modela</li>\n<li>Kladionica i provizija</li>\n</ul>\n<h2>Glavna knjiga protiv dnevnika</h2>\n<p>Ljudi koriste &ldquo;dnevnik klađenja&rdquo; i &ldquo;knjiga kladionica&rdquo; naizmjenično. Strogo, dnevnik može sadržavati narativne bilješke (&ldquo;požurio&rdquo;, &ldquo;redak pomaknut&rdquo;); knjiga naglašava brojeve. Najbolji alati kombiniraju oboje: strukturirane podatke plus bilješke slobodnog teksta po okladi.</p>\n<h2>Tko treba?</h2>\n<p>Svi koji klađenje tretiraju kao igru vještine, a ne kao srećke:</p>\n<ul>\n<li>Upareni kladitelji koji prate kvalificirajuće i besplatne oklade</li>\n<li>Trgovci na burzi mjere prinos prilagođen provizijama</li>\n<li>Sljedbenici tipstera potvrđuju oglašeni ROI</li>\n<li>Rekreativni kladioničari koji žele pošteno upravljanje novčanim sredstvima</li>\n</ul>\n<h2>Početak</h2>\n<p>Odaberite jedan sport ili vrstu tržišta i zabilježite sljedećih 20 oklada bez promjene postupka. Pregledajte stopu pogodaka, prosječne izglede i dobit po tjednu. Ta osnovna vrijednost vrijedi više od bilo koje napojnice.</p>\n<p><strong>Pratite ovo u mybetrecordu:</strong> kreirajte besplatni račun, postavite bankovni iznos i format zadanih kvota i prijavite svoju prvu okladu ispod minute.</p>"
       }
     }
+  },
+  "promoStats": {
+    "title": "Promo usage",
+    "publicNote": "Read-only view",
+    "users": "Users",
+    "totalDiscounted": "Total discounted",
+    "notFound": "This promo stats page could not be found."
+  },
+  "publicProfile": {
+    "title": "Public bet record",
+    "betCount": "{{count}} bets",
+    "empty": "No bets yet.",
+    "notFound": "This public bet record could not be found."
   }
 }

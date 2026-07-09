@@ -192,7 +192,9 @@
     "maxLegs": "Un multiplo può avere al massimo {{max}} selezioni.",
     "needTwoLegs": "Un multiplo necessita di almeno 2 selezioni.",
     "legMissingFields": "Ogni selezione necessita di un evento e di una selezione.",
-    "legBadOdds": "Ogni selezione necessita di quote valide superiori a 1."
+    "legBadOdds": "Ogni selezione necessita di quote valide superiori a 1.",
+    "tipsterImplied": "Tipster implied odds (decimal)",
+    "tipsterEdge": "Tipster edge"
   },
   "reports": {
     "title": "Rapporti",
@@ -265,7 +267,26 @@
     "timezone": "Fuso orario",
     "timezoneHint": "utilizzato per date e orari nell'app",
     "supportContact": "Hai bisogno di aiuto? Invia un'e-mail a <a href=\"mailto:support@mybetrecord.com\">support@mybetrecord.com</a>",
-    "legalLinks": "<a href=\"/privacy\">Privacy</a> · <a href=\"/terms\">Termini</a> · <a href=\"/support\">Supporto</a>"
+    "legalLinks": "<a href=\"/privacy\">Privacy</a> · <a href=\"/terms\">Termini</a> · <a href=\"/support\">Supporto</a>",
+    "account": "Account",
+    "email": "Email",
+    "changePassword": "Change password",
+    "currentPassword": "Current password",
+    "passwordChanged": "Password updated",
+    "currentPasswordIncorrect": "Current password is incorrect",
+    "publicBetsTitle": "Public bet record",
+    "publicBetsEnabled": "Make my bets publicly viewable (read-only)",
+    "publicBetsHint": "Anyone with the link can view your bets without signing in. Sensitive details like P/L and bookmaker are hidden.",
+    "publicBetsCopyLink": "Copy public link",
+    "publicBetsLinkCopied": "Public link copied",
+    "accountDescription": "Account description",
+    "publicNickname": "Public nickname",
+    "publicNicknamePlaceholder": "e.g. Simon L.",
+    "publicNicknameHint": "This is the name shown on your public bet record. Your email is never displayed publicly.",
+    "accountDescriptionPlaceholder": "Tell visitors about your betting approach, focus sports, or record-keeping style.",
+    "accountDescriptionHint": "Optional. Shown on your public bet record. Max 500 words.",
+    "accountDescriptionWordCount": "{{count}} / 500 words",
+    "accountDescriptionTooLong": "Account description must be 500 words or fewer"
   },
   "admin": {
     "title": "Ammin",
@@ -383,7 +404,18 @@
     "compClear": "Rimuovere comp",
     "compUntil": "Comp fino al {{date}}",
     "compApplied": "Accesso Pro gratuito aggiornato",
-    "compCleared": "Accesso Pro gratuito rimosso"
+    "compCleared": "Accesso Pro gratuito rimosso",
+    "whenWithTz": "When ({{tz}})",
+    "isp": "ISP",
+    "ispCountry": "ISP country",
+    "browserLanguage": "Browser language",
+    "operatingSystem": "Operating system",
+    "timezone": "Timezone",
+    "promoStatsShare": "Share stats",
+    "promoStatsRevoke": "Revoke stats link",
+    "promoStatsLinkCopied": "Public stats link copied",
+    "promoStatsRevokeConfirm": "Revoke this public stats link? Anyone with the link will no longer be able to view usage.",
+    "promoStatsRevoked": "Public stats link revoked"
   },
   "errors": {
     "requestFailed": "Richiesta non riuscita",
@@ -586,5 +618,18 @@
         "body": "<p>Un <strong>registro delle scommesse</strong> è semplicemente un registro completo e cronologico delle tue scommesse: cosa hai sostenuto, con quali quote, per quanto e come sono state stabilite. Considerala come la differenza tra indovinare se sei pronto per la stagione e <em>sapere</em>.</p>\n<h2>Perché i fogli di calcolo falliscono</h2>\n<p>La maggior parte degli scommettitori inizia con Excel o Fogli Google. Funziona fino al:</p>\n<ul>\n<li>Le formule si interrompono quando aggiungi colonne di commissione a senso unico o di scambio</li>\n<li>Ti dimentichi di registrare uno storno o un prelievo</li>\n<li>Non puoi suddividere per informatore o sport senza ricostruire le tabelle pivot</li>\n</ul>\n<p>Un registro dedicato normalizza le quote, ricalcola il profitto a ogni modifica e mantiene i report coerenti.</p>\n<h2>Cosa registrare</h2>\n<p>Al minimo, registra:</p>\n<ol>\n<li><strong>Evento e selezione</strong>: dettagli sufficienti per riconoscere la scommessa mesi dopo</li>\n<li><strong>Puntata e valuta</strong></li>\n<li><strong>Quote</strong> (in qualunque formato venga visualizzato il libro)</li>\n<li><strong>Risultato</strong>: in sospeso, vittoria, perdita, nulla</li>\n<li><strong>Utili definiti</strong> o lasciare che il software lo derivi dalle regole dei risultati</li>\n</ol>\n<p>Campi avanzati che separano i tracciatori precisi da coloro che prendono appunti casualmente:</p>\n<ul>\n<li>Quote implicite personali (il tuo giusto prezzo)</li>\n<li>Quote sulla linea di chiusura (per CLV)</li>\n<li>Tipster o fonte del modello</li>\n<li>Bookmaker e commissioni</li>\n</ul>\n<h2>Registro o diario</h2>\n<p>Le persone usano il \"diario delle scommesse\" e \"registro delle scommesse\" in modo intercambiabile. A rigor di termini, un diario potrebbe includere note narrative (\"mi sono sentito affrettato\", \"la riga è stata spostata\"); un registro enfatizza i numeri. Gli strumenti migliori combinano entrambi: dati strutturati più note di testo libero per scommessa.</p>\n<h2>Chi ne ha bisogno?</h2>\n<p>Chiunque consideri le scommesse come un gioco di abilità piuttosto che come biglietti della lotteria:</p>\n<ul>\n<li>Scommettitori abbinati che tengono traccia delle scommesse qualificanti e gratuite</li>\n<li>Operatori di Borsa che misurano il rendimento corretto per le commissioni</li>\n<li>Seguaci del tipster che verificano il ROI pubblicizzato</li>\n<li>Scommettitori ricreativi che desiderano una gestione onesta del bankroll</li>\n</ul>\n<h2>Inizia</h2>\n<p>Scegli uno sport o un tipo di mercato e registra le prossime 20 scommesse senza modificare il processo. Controlla il tasso di strike, le quote medie e il profitto per settimana. Questa linea di base vale più di qualsiasi suggerimento.</p>\n<p><strong>Traccialo su mybetrecord:</strong> crea un account gratuito, imposta il tuo bankroll e il formato predefinito delle quote e registra la tua prima scommessa in meno di un minuto.</p>"
       }
     }
+  },
+  "promoStats": {
+    "title": "Promo usage",
+    "publicNote": "Read-only view",
+    "users": "Users",
+    "totalDiscounted": "Total discounted",
+    "notFound": "This promo stats page could not be found."
+  },
+  "publicProfile": {
+    "title": "Public bet record",
+    "betCount": "{{count}} bets",
+    "empty": "No bets yet.",
+    "notFound": "This public bet record could not be found."
   }
 }

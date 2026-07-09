@@ -192,7 +192,9 @@
     "maxLegs": "Բազմապատիկը կարող է ունենալ առավելագույնը {{max}} ընտրություն:",
     "needTwoLegs": "Բազմաթիվին անհրաժեշտ է առնվազն 2 ընտրություն:",
     "legMissingFields": "Յուրաքանչյուր ընտրության կարիք ունի իրադարձություն և ընտրություն:",
-    "legBadOdds": "Յուրաքանչյուր ընտրության համար անհրաժեշտ է 1-ից ավելի վավեր հավանականություն:"
+    "legBadOdds": "Յուրաքանչյուր ընտրության համար անհրաժեշտ է 1-ից ավելի վավեր հավանականություն:",
+    "tipsterImplied": "Tipster implied odds (decimal)",
+    "tipsterEdge": "Tipster edge"
   },
   "reports": {
     "title": "Հաշվետվություններ",
@@ -265,7 +267,26 @@
     "timezone": "Ժամային գոտի",
     "timezoneHint": "օգտագործվում է հավելվածում ամսաթվերի և ժամերի համար",
     "supportContact": "Օգնությա՞ն է պետք: Էլփոստ <a href=\"mailto:support@mybetrecord.com\">support@mybetrecord.com</a>",
-    "legalLinks": "<a href=\"/privacy\">Գաղտնիություն</a> · <a href=\"/terms\">Պայմաններ</a> · <a href=\"/support\">Աջակցություն</a>"
+    "legalLinks": "<a href=\"/privacy\">Գաղտնիություն</a> · <a href=\"/terms\">Պայմաններ</a> · <a href=\"/support\">Աջակցություն</a>",
+    "account": "Account",
+    "email": "Email",
+    "changePassword": "Change password",
+    "currentPassword": "Current password",
+    "passwordChanged": "Password updated",
+    "currentPasswordIncorrect": "Current password is incorrect",
+    "publicBetsTitle": "Public bet record",
+    "publicBetsEnabled": "Make my bets publicly viewable (read-only)",
+    "publicBetsHint": "Anyone with the link can view your bets without signing in. Sensitive details like P/L and bookmaker are hidden.",
+    "publicBetsCopyLink": "Copy public link",
+    "publicBetsLinkCopied": "Public link copied",
+    "accountDescription": "Account description",
+    "publicNickname": "Public nickname",
+    "publicNicknamePlaceholder": "e.g. Simon L.",
+    "publicNicknameHint": "This is the name shown on your public bet record. Your email is never displayed publicly.",
+    "accountDescriptionPlaceholder": "Tell visitors about your betting approach, focus sports, or record-keeping style.",
+    "accountDescriptionHint": "Optional. Shown on your public bet record. Max 500 words.",
+    "accountDescriptionWordCount": "{{count}} / 500 words",
+    "accountDescriptionTooLong": "Account description must be 500 words or fewer"
   },
   "admin": {
     "title": "Ադմին",
@@ -383,7 +404,18 @@
     "compClear": "Հեռացնել կոմպ",
     "compUntil": "Համակարգել մինչև {{date}}",
     "compApplied": "Անվճար Pro մուտքը թարմացվել է",
-    "compCleared": "Անվճար Pro մուտքը հեռացված է"
+    "compCleared": "Անվճար Pro մուտքը հեռացված է",
+    "whenWithTz": "When ({{tz}})",
+    "isp": "ISP",
+    "ispCountry": "ISP country",
+    "browserLanguage": "Browser language",
+    "operatingSystem": "Operating system",
+    "timezone": "Timezone",
+    "promoStatsShare": "Share stats",
+    "promoStatsRevoke": "Revoke stats link",
+    "promoStatsLinkCopied": "Public stats link copied",
+    "promoStatsRevokeConfirm": "Revoke this public stats link? Anyone with the link will no longer be able to view usage.",
+    "promoStatsRevoked": "Public stats link revoked"
   },
   "errors": {
     "requestFailed": "Հարցումը ձախողվեց",
@@ -586,5 +618,18 @@
         "body": "<p><strong>Խաղադրույքների մատյանը</strong> պարզապես ձեր խաղադրույքների ամբողջական, ժամանակագրական գրառումն է՝ ինչ եք աջակցել, ինչ գործակցով, որքանով և ինչպես է այն վճարվել: Մտածեք դրա մասին որպես տարբերություն գուշակելու, թե արդյոք պատրաստ եք սեզոնին և <em>իմանալ</em>:</p>\n<h2>Ինչու են ձախողվում աղյուսակները</h2>\n<p>Խաղադրույք կատարողների մեծ մասը սկսում են Excel-ից կամ Google Sheets-ից: Դա աշխատում է մինչև՝</p>\n<ul>\n<li>Բանաձեւերը կոտրվում են, երբ ավելացնում եք միակողմանի կամ փոխանակման հանձնաժողովի սյունակներ</li>\n<li>Դուք մոռացել եք մուտք գործել անվավեր կամ կանխիկացում</li>\n<li>Դուք չեք կարող կտրատել ըստ ցուցիչի կամ սպորտի առանց առանցքային աղյուսակների վերակառուցման</li>\n</ul>\n<p>Նվիրված մատյանը նորմալացնում է հավանականությունները, վերահաշվարկում է շահույթը յուրաքանչյուր խմբագրման ժամանակ և պահպանում է հաշվետվությունները:</p>\n<h2>Ինչ ձայնագրել</h2>\n<p>Առնվազն գրանցվեք՝</p>\n<ol>\n<li><strong>Իրադարձություն և ընտրություն</strong> — բավականաչափ մանրամասներ՝ ամիսներ անց խաղադրույքը ճանաչելու համար</li>\n<li><strong>Խցիկ և արժույթ</strong></li>\n<li><strong>Հավանականություններ</strong> (ինչ ձևաչափով էլ ցուցադրվի գիրքը)</li>\n<li><strong>Արդյունք</strong> — առկախ, հաղթանակ, պարտություն, անվավեր</li>\n<li><strong>Մուտքագրված շահույթ</strong> — կամ թույլ տվեք, որ ծրագրակազմն այն ստանա արդյունքի կանոններից</li>\n</ol>\n<p>Ընդլայնված դաշտեր, որոնք առանձնացնում են սուր հետագծերը սովորական գրառումներ կատարողներից.</p>\n<ul>\n<li>Անձնական ենթադրյալ հավանականություն (ձեր արդար գինը)</li>\n<li>Փակման գծի հավանականություն (CLV-ի համար)</li>\n<li>Tipster կամ մոդելի աղբյուր</li>\n<li>Բուքմեյքեր և միջնորդավճար</li>\n</ul>\n<h2>Լեջերն ընդդեմ ամսագրի</h2>\n<p>Մարդիկ օգտագործում են &ldquo;խաղադրույքների ամսագիրը&rdquo; և &ldquo;խաղադրույքների մատյան&rdquo; փոխադարձաբար։ Խստորեն, ամսագիրը կարող է ներառել պատմողական նշումներ (&ldquo;զգացել եմ շտապել&rdquo;, &ldquo;տողը տեղափոխվել&rdquo;); մատյանում ընդգծվում են թվերը: Լավագույն գործիքները համատեղում են երկուսն էլ՝ կառուցվածքային տվյալներ և անվճար տեքստային նշումներ յուրաքանչյուր խաղադրույքի համար:</p>\n<h2>Ո՞ւմ է պետք մեկը:</h2>\n<p>Ամեն ոք, ով խաղադրույքը վերաբերվում է որպես հմտության խաղ, այլ ոչ թե վիճակախաղի տոմսեր.</p>\n<ul>\n<li>Համապատասխան խաղադրույքներ կատարողները հետևում են որակավորման և անվճար խաղադրույքներին</li>\n<li>Բորսայի առևտրականները չափում են միջնորդավճարով ճշգրտված եկամտաբերությունը</li>\n<li>Գովազդված ROI-ն հաստատող Tipster-ի հետևորդները</li>\n<li>Հանգիստ խաղարկողներ, ովքեր ցանկանում են ազնիվ կառավարել դրամական միջոցները</li>\n</ul>\n<h2>Սկսում</h2>\n<p>Ընտրեք մեկ սպորտաձև կամ շուկայական տեսակ և գրանցեք հաջորդ 20 խաղադրույքները՝ առանց ձեր գործընթացը փոխելու: Վերանայեք գործադուլի տոկոսադրույքը, միջին հավանականությունը և շահույթն ըստ շաբաթվա: Այդ ելակետային արժեքը ավելին է, քան ցանկացած հուշում:</p>\n<p><strong>Հետևեք դրան mybetrecord-ում.</strong> ստեղծեք անվճար հաշիվ, սահմանեք ձեր բանկերի և կանխադրված գործակիցների ձևաչափը և գրանցեք ձեր առաջին խաղադրույքը մեկ րոպեի ընթացքում:</p>"
       }
     }
+  },
+  "promoStats": {
+    "title": "Promo usage",
+    "publicNote": "Read-only view",
+    "users": "Users",
+    "totalDiscounted": "Total discounted",
+    "notFound": "This promo stats page could not be found."
+  },
+  "publicProfile": {
+    "title": "Public bet record",
+    "betCount": "{{count}} bets",
+    "empty": "No bets yet.",
+    "notFound": "This public bet record could not be found."
   }
 }

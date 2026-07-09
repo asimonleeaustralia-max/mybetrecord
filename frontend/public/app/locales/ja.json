@@ -192,7 +192,9 @@
     "maxLegs": "複数には最大 {{max}} 個の選択を含めることができます。",
     "needTwoLegs": "複数の場合は少なくとも 2 つの選択が必要です。",
     "legMissingFields": "各選択にはイベントと選択が必要です。",
-    "legBadOdds": "各選択には 1 より大きい有効なオッズが必要です。"
+    "legBadOdds": "各選択には 1 より大きい有効なオッズが必要です。",
+    "tipsterImplied": "予想屋の暗黙的オッズ (10 進数)",
+    "tipsterEdge": "予想屋のエッジ"
   },
   "reports": {
     "title": "レポート",
@@ -265,7 +267,26 @@
     "timezone": "タイムゾーン",
     "timezoneHint": "アプリ内の日付と時刻に使用されます",
     "supportContact": "助けが必要ですか? <a href=\"mailto:support@mybetrecord.com\">support@mybetrecord.com</a> に電子メールを送信します。",
-    "legalLinks": "<a href=\"/privacy\">プライバシー</a> · <a href=\"/terms\">利用規約</a> · <a href=\"/support\">サポート</a>"
+    "legalLinks": "<a href=\"/privacy\">プライバシー</a> · <a href=\"/terms\">利用規約</a> · <a href=\"/support\">サポート</a>",
+    "account": "アカウント",
+    "email": "電子メール",
+    "changePassword": "パスワードを変更する",
+    "currentPassword": "現在のパスワード",
+    "passwordChanged": "パスワードが更新されました",
+    "currentPasswordIncorrect": "現在のパスワードが間違っています",
+    "publicBetsTitle": "公開賭け記録",
+    "publicBetsEnabled": "自分のベットを一般公開する (読み取り専用)",
+    "publicBetsHint": "リンクを知っている人は誰でもサインインせずにベットを表示できます。損益やブックメーカーなどの機密性の高い詳細は非表示になります。",
+    "publicBetsCopyLink": "パブリックリンクをコピーする",
+    "publicBetsLinkCopied": "パブリックリンクがコピーされました",
+    "accountDescription": "アカウントの説明",
+    "publicNickname": "公開ニックネーム",
+    "publicNicknamePlaceholder": "例えばサイモン L.",
+    "publicNicknameHint": "これはあなたの公開賭け記録に表示される名前です。あなたのメールアドレスが公開されることはありません。",
+    "accountDescriptionPlaceholder": "訪問者に、賭けのアプローチ、注目するスポーツ、または記録の保管スタイルについて伝えます。",
+    "accountDescriptionHint": "オプション。公開ベットの記録に表示されます。最大500単語。",
+    "accountDescriptionWordCount": "{{count}} / 500 ワード",
+    "accountDescriptionTooLong": "アカウントの説明は 500 単語以下である必要があります"
   },
   "admin": {
     "title": "管理者",
@@ -383,7 +404,18 @@
     "compClear": "コンプを削除する",
     "compUntil": "{{date}}までコンプ",
     "compApplied": "無料の Pro アクセスが更新されました",
-    "compCleared": "無料の Pro アクセスが削除されました"
+    "compCleared": "無料の Pro アクセスが削除されました",
+    "whenWithTz": "いつ ({{tz}})",
+    "isp": "ISP",
+    "ispCountry": "ISPの国",
+    "browserLanguage": "ブラウザ言語",
+    "operatingSystem": "オペレーティング·システム",
+    "timezone": "タイムゾーン",
+    "promoStatsShare": "統計情報を共有する",
+    "promoStatsRevoke": "統計リンクを取り消す",
+    "promoStatsLinkCopied": "公開統計リンクがコピーされました",
+    "promoStatsRevokeConfirm": "この公開統計リンクを取り消しますか?リンクを知っている人は誰でも使用状況を表示できなくなります。",
+    "promoStatsRevoked": "公開統計リンクが取り消されました"
   },
   "errors": {
     "requestFailed": "リクエストが失敗しました",
@@ -586,5 +618,18 @@
         "body": "<p><strong>ベッティング台帳</strong>は、賭け金の完全な時系列記録です。つまり、何を、どのオッズで、いくら、そしてどのように決済したかを記録したものです。それは、シーズンに向けて準備ができているかどうかを推測することと<em>知ること</em>の違いであると考えてください。</p>\n<h2>スプレッドシートが失敗する理由</h2>\n<p>ほとんどのベッターは Excel または Google スプレッドシートから始めます。これは次の時点まで機能します。</p>\n<ul>\n<li>片道手数料列または為替手数料列を追加すると数式が壊れる</li>\n<li>無効またはキャッシュアウトを記録するのを忘れた</li>\n<li>ピボット テーブルを再構築しないと、予想屋やスポーツごとにスライスすることはできません</li>\n</ul>\n<p>専用の台帳がオッズを正規化し、編集ごとに利益を再計算し、レポートの一貫性を保ちます。</p>\n<h2>何を記録するか</h2>\n<p>少なくとも次のことをログに記録します。</p>\n<オル>\n<li><strong>イベントと選択</strong> — 数か月後のベットを認識するのに十分な詳細</li>\n<li><strong>賭け金と通貨</strong></li>\n<li><strong>オッズ</strong> (書籍に表示される形式を問わず)</li>\n<li><strong>結果</strong> — 保留中、勝利、敗北、無効</li>\n<li><strong>確定利益</strong> — またはソフトウェアに結果ルールから利益を導出させる</li>\n</ol>\n<p>鋭い記録者とカジュアルなメモを取る者を区別する高度なフィールド:</p>\n<ul>\n<li>個人的なインプライド オッズ (適正価格)</li>\n<li>クロージングラインオッズ (CLV の場合)</li>\n<li>予想屋またはモデルのソース</li>\n<li>ブックメーカーと手数料</li>\n</ul>\n<h2>元帳と仕訳帳</h2>\n<p>人々は「ベッティング ジャーナル」を使用します。そして「賭け台帳」交換可能に。厳密には、日記には物語的なメモ (「急いでいると感じた」、「行が移動した」など) が含まれる場合があります。台帳は数字を強調します。最良のツールは、構造化データとベットごとのフリーテキストのメモの両方を組み合わせたものです。</p>\n<h2>誰が必要ですか?</h2>\n<p>賭けを宝くじではなくスキル ゲームとして扱う人:</p>\n<ul>\n<li>資格のあるベットと無料のベットを追跡するマッチング ベッター</li>\n<li>為替トレーダーが手数料調整後の利回りを測定</li>\n<li>予想家のフォロワーが宣伝された ROI を検証する</li>\n<li>正直な資金管理を希望するレクリエーション パンター</li>\n</ul>\n<h2>はじめに</h2>\n<p>スポーツまたはマーケットの種類を 1 つ選択し、プロセスを変更せずに次の 20 回のベットを記録します。権利行使率、平均オッズ、利益を週ごとに確認します。このベースラインはどんなヒントよりも価値があります。</p>\n<p><strong>mybetrecord で追跡:</strong> 無料アカウントを作成し、バンクロールとデフォルトのオッズ形式を設定し、1 分以内に最初のベットをログインします。</p>"
       }
     }
+  },
+  "promoStats": {
+    "title": "プロモーションの使用",
+    "publicNote": "読み取り専用ビュー",
+    "users": "ユーザー",
+    "totalDiscounted": "合計割引額",
+    "notFound": "このプロモーション統計ページは見つかりませんでした。"
+  },
+  "publicProfile": {
+    "title": "公開賭け記録",
+    "betCount": "{{count}} ベット",
+    "empty": "まだ賭けはありません。",
+    "notFound": "この公開賭けの記録は見つかりませんでした。"
   }
 }

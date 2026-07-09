@@ -192,7 +192,9 @@
     "maxLegs": "Faodaidh taghadh {{max}} aig a’ char as motha a bhith aig ioma.",
     "needTwoLegs": "Feumaidh ioma-thaghadh co-dhiù 2.",
     "legMissingFields": "Feumaidh gach taghadh tachartas agus taghadh.",
-    "legBadOdds": "Feumaidh gach taghadh comharran dligheach nas motha na 1."
+    "legBadOdds": "Feumaidh gach taghadh comharran dligheach nas motha na 1.",
+    "tipsterImplied": "Tipster implied odds (decimal)",
+    "tipsterEdge": "Tipster edge"
   },
   "reports": {
     "title": "Aithisgean",
@@ -265,7 +267,26 @@
     "timezone": "Sòn ùine",
     "timezoneHint": "air a chleachdadh airson cinn-latha agus amannan san app",
     "supportContact": "A bheil feum agad air cuideachadh? Post-d <a href=\"mailto:support@mybetrecord.com\">support@mybetrecord.com</a>",
-    "legalLinks": "<a href=\"/privacy\">Prìobhaideachd</a> · <a href=\"/terms\">Teirmean</a> · <a href=\"/support\">Taic</a>"
+    "legalLinks": "<a href=\"/privacy\">Prìobhaideachd</a> · <a href=\"/terms\">Teirmean</a> · <a href=\"/support\">Taic</a>",
+    "account": "Account",
+    "email": "Email",
+    "changePassword": "Change password",
+    "currentPassword": "Current password",
+    "passwordChanged": "Password updated",
+    "currentPasswordIncorrect": "Current password is incorrect",
+    "publicBetsTitle": "Public bet record",
+    "publicBetsEnabled": "Make my bets publicly viewable (read-only)",
+    "publicBetsHint": "Anyone with the link can view your bets without signing in. Sensitive details like P/L and bookmaker are hidden.",
+    "publicBetsCopyLink": "Copy public link",
+    "publicBetsLinkCopied": "Public link copied",
+    "accountDescription": "Account description",
+    "publicNickname": "Public nickname",
+    "publicNicknamePlaceholder": "e.g. Simon L.",
+    "publicNicknameHint": "This is the name shown on your public bet record. Your email is never displayed publicly.",
+    "accountDescriptionPlaceholder": "Tell visitors about your betting approach, focus sports, or record-keeping style.",
+    "accountDescriptionHint": "Optional. Shown on your public bet record. Max 500 words.",
+    "accountDescriptionWordCount": "{{count}} / 500 words",
+    "accountDescriptionTooLong": "Account description must be 500 words or fewer"
   },
   "admin": {
     "title": "Rianachd",
@@ -383,7 +404,18 @@
     "compClear": "Thoir air falbh comp",
     "compUntil": "Comp gu {{date}}",
     "compApplied": "Cothrom an-asgaidh Pro ùrachadh",
-    "compCleared": "Chaidh ruigsinneachd Pro an-asgaidh a thoirt air falbh"
+    "compCleared": "Chaidh ruigsinneachd Pro an-asgaidh a thoirt air falbh",
+    "whenWithTz": "When ({{tz}})",
+    "isp": "ISP",
+    "ispCountry": "ISP country",
+    "browserLanguage": "Browser language",
+    "operatingSystem": "Operating system",
+    "timezone": "Timezone",
+    "promoStatsShare": "Share stats",
+    "promoStatsRevoke": "Revoke stats link",
+    "promoStatsLinkCopied": "Public stats link copied",
+    "promoStatsRevokeConfirm": "Revoke this public stats link? Anyone with the link will no longer be able to view usage.",
+    "promoStatsRevoked": "Public stats link revoked"
   },
   "errors": {
     "requestFailed": "Dh'fhàillig an t-iarrtas",
@@ -586,5 +618,18 @@
         "body": "<p>Chan eil ann an <strong>leabhar-cunntais</strong> ach clàr iomlan, a rèir eachdraidh, de na geallaidhean agad: na chuir thu taic ris, dè an coltas a th’ ann, dè an ìre, agus mar a shocraich e. Smaoinich air mar an diofar eadar tomhas a bheil thu deiseil airson an ràithe agus <em>fios</em>.</p>\n<h2>Carson a dh’fhàillig cliath-dhuilleagan</h2>\n<p>Bidh a’ mhòr-chuid de luchd-brathaidh a’ tòiseachadh ann an Excel no Google Sheets. Bidh sin ag obair gu:</p>\n<ul>\n<li>Bidh foirmlean a’ briseadh nuair a chuireas tu ris gach dòigh no nuair a nì thu iomlaid air colbhan coimisean</li>\n<li>Dhìochuimhnich thu logadh a-steach beàrn no airgead a-mach</li>\n<li>Chan urrainn dhut sgoltadh le tipster no spòrs gun a bhith ag ath-thogail bùird pivot</li>\n</ul>\n<p>Bidh leabhar-cunntais sònraichte a’ gnàthachadh chothroman, ag ath-àireamhachadh prothaid air a h-uile deasachadh, agus a’ cumail aithisgean cunbhalach.</p>\n<h2>Dè a chlàras tu</h2>\n<p>Co-dhiù, log:</p>\n<ol>\n<li><strong>Tachartas is taghadh</strong> — mion-fhiosrachadh gu leòr gus na mìosan geall aithneachadh às deidh sin</li>\n<li><strong>Cuid airgid agus airgead</strong></li>\n<li><strong>Ceart</strong> (ge bith dè an cruth a tha san leabhar a’ sealltainn)</li>\n<li><strong>Toradh</strong> — feitheamh, buannachadh, call, falamh</li>\n<li><strong>Prothaid rèiteachaidh</strong> - no leig le bathar-bog a thoirt a-mach à riaghailtean toraidh</li>\n</ol>\n<p>Raointean adhartach a bhios a’ sgaradh lorgairean biorach bho luchd-gabhail nòta cas:</p>\n<ul>\n<li>Seallaidhean pearsanta pearsanta (a’ phrìs chothromach agad)</li>\n<li>Cothroman dùnaidh loidhne (airson CLV)</li>\n<li>Tipster no stòr mhodail</li>\n<li>Bookmaker agus coimisean</li>\n</ul>\n<h2>Ledger vs iris</h2>\n<p>Bidh daoine a’ cleachdadh &ldquo;leabhar-latha gheallaidh&rdquo; agus &ldquo; leabhar-cunntais gheallaidh&rdquo; gu h-eadar-mhalairteach. Gu daingeann, dh’ fhaodadh gum bi notaichean aithriseach ann an iris (&ldquo;fet rushed&rdquo;, &ldquo;line moved&rdquo;); tha leabhar-cunntais a’ cur cuideam air àireamhan. Bidh na h-innealan as fheàrr a’ tighinn còmhla an dà chuid: dàta structarail agus notaichean teacsa an-asgaidh airson gach geall.</p>\n<h2>Cò a dh'fheumas fear?</h2>\n<p>Duine sam bith a bhios a’ dèiligeadh ri geall mar gheama sgil seach tiogaidean crannchuir:</p>\n<ul>\n<li>Bettors maidsichte a’ cumail sùil air geall iomchaidh is saor</li>\n<li>Trèanaichean iomlaid a’ tomhas toradh a chaidh atharrachadh le coimisean</li>\n<li>Luchd-leantainn Tipster a’ dearbhadh ROI sanasaichte</li>\n<li>Punters cur-seachad a tha ag iarraidh stiùireadh banca onarach</li>\n</ul>\n<h2>Tòiseachadh</h2>\n<p>Tagh aon seòrsa spòrs no margaidh agus log a-steach na 20 geall gun a bhith ag atharrachadh do phròiseas. Dèan lèirmheas air ìre stailc, àireamhan cuibheasach, agus prothaid gach seachdain. Is fhiach a’ bhun-loidhne sin barrachd air tip sam bith.</p>\n<p><strong>Thoir sùil air seo ann am mybetrecord:</strong> cruthaich cunntas an-asgaidh, suidhich do bankroll agus fòrmat nan roghainnean bunaiteach, agus log a-steach a’ chiad geall agad ann am mionaid.</p>"
       }
     }
+  },
+  "promoStats": {
+    "title": "Promo usage",
+    "publicNote": "Read-only view",
+    "users": "Users",
+    "totalDiscounted": "Total discounted",
+    "notFound": "This promo stats page could not be found."
+  },
+  "publicProfile": {
+    "title": "Public bet record",
+    "betCount": "{{count}} bets",
+    "empty": "No bets yet.",
+    "notFound": "This public bet record could not be found."
   }
 }

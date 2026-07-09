@@ -192,7 +192,9 @@
     "maxLegs": "ଏକାଧିକରେ ସର୍ବାଧିକ {{max}} ଚୟନ ହୋଇପାରେ |",
     "needTwoLegs": "ଏକାଧିକ ଏକାଧିକ ଅତିକମରେ 2 ଚୟନ ଆବଶ୍ୟକ କରେ |",
     "legMissingFields": "ପ୍ରତ୍ୟେକ ଚୟନ ଏକ ଇଭେଣ୍ଟ ଏବଂ ଏକ ଚୟନ ଆବଶ୍ୟକ କରେ |",
-    "legBadOdds": "ପ୍ରତ୍ୟେକ ଚୟନ 1 ରୁ ଅଧିକ ବ valid ଧ ସମ୍ଭାବନା ଆବଶ୍ୟକ କରେ |"
+    "legBadOdds": "ପ୍ରତ୍ୟେକ ଚୟନ 1 ରୁ ଅଧିକ ବ valid ଧ ସମ୍ଭାବନା ଆବଶ୍ୟକ କରେ |",
+    "tipsterImplied": "Tipster implied odds (decimal)",
+    "tipsterEdge": "Tipster edge"
   },
   "reports": {
     "title": "ରିପୋର୍ଟଗୁଡିକ",

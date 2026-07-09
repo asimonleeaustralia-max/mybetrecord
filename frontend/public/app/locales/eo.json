@@ -192,7 +192,9 @@
     "maxLegs": "Multoblaj povas havi maksimume {{max}} elektojn.",
     "needTwoLegs": "Multoblaj bezonas almenaŭ 2 elektojn.",
     "legMissingFields": "Ĉiu elekto bezonas eventon kaj elekton.",
-    "legBadOdds": "Ĉiu elekto bezonas validan probablecon pli ol 1."
+    "legBadOdds": "Ĉiu elekto bezonas validan probablecon pli ol 1.",
+    "tipsterImplied": "Tipster implica probableco (decimala)",
+    "tipsterEdge": "Tipster rando"
   },
   "reports": {
     "title": "Raportoj",
@@ -265,7 +267,26 @@
     "timezone": "Horzono",
     "timezoneHint": "uzata por datoj kaj horoj en la apo",
     "supportContact": "Ĉu vi bezonas helpon? Retpoŝtu <a href=\"mailto:support@mybetrecord.com\">support@mybetrecord.com</a>",
-    "legalLinks": "<a href=\"/privacy\">Privateco</a> · <a href=\"/terms\">Kondiĉoj</a> · <a href=\"/support\">Subteno</a>"
+    "legalLinks": "<a href=\"/privacy\">Privateco</a> · <a href=\"/terms\">Kondiĉoj</a> · <a href=\"/support\">Subteno</a>",
+    "account": "Konto",
+    "email": "Retpoŝto",
+    "changePassword": "Ŝanĝi pasvorton",
+    "currentPassword": "Nuna pasvorto",
+    "passwordChanged": "Pasvorto ĝisdatigita",
+    "currentPasswordIncorrect": "Nuna pasvorto estas malĝusta",
+    "publicBetsTitle": "Publika veta rekordo",
+    "publicBetsEnabled": "Faru miajn vetojn publike videblaj (nurlegebla)",
+    "publicBetsHint": "Ĉiu kun la ligo povas vidi viajn vetojn sen ensaluti. Sentemaj detaloj kiel P/L kaj bukmekro estas kaŝitaj.",
+    "publicBetsCopyLink": "Kopiu publikan ligilon",
+    "publicBetsLinkCopied": "Publika ligilo kopiita",
+    "accountDescription": "Priskribo de konto",
+    "publicNickname": "Publika kromnomo",
+    "publicNicknamePlaceholder": "ekz. Simon L.",
+    "publicNicknameHint": "Ĉi tiu estas la nomo montrita sur via publika veta rekordo. Via retpoŝto neniam estas montrata publike.",
+    "accountDescriptionPlaceholder": "Diru al vizitantoj pri via veta aliro, fokusaj sportoj aŭ rekorda stilo.",
+    "accountDescriptionHint": "Laŭvola. Montrite sur via publika veta rekordo. Maksimume 500 vortoj.",
+    "accountDescriptionWordCount": "{{count}} / 500 vortoj",
+    "accountDescriptionTooLong": "Konta priskribo devas esti 500 vortoj aŭ malpli"
   },
   "admin": {
     "title": "Admin",
@@ -383,7 +404,18 @@
     "compClear": "Forigi komp",
     "compUntil": "Kompon ĝis {{date}}",
     "compApplied": "Senpaga Pro-aliro ĝisdatigita",
-    "compCleared": "Senpaga Pro-aliro forigita"
+    "compCleared": "Senpaga Pro-aliro forigita",
+    "whenWithTz": "Kiam ({{tz}})",
+    "isp": "ISP",
+    "ispCountry": "ISP-lando",
+    "browserLanguage": "Retumila lingvo",
+    "operatingSystem": "Operaciumo",
+    "timezone": "Horzono",
+    "promoStatsShare": "Kunhavigi statistikojn",
+    "promoStatsRevoke": "Revoki statistikligon",
+    "promoStatsLinkCopied": "Publika statistika ligilo kopiita",
+    "promoStatsRevokeConfirm": "Ĉu nuligi ĉi tiun ligon pri publikaj statistikoj? Ĉiu kun la ligilo ne plu povos vidi uzadon.",
+    "promoStatsRevoked": "Ligo pri publikaj statistikoj nuligita"
   },
   "errors": {
     "requestFailed": "Peto malsukcesis",
@@ -586,5 +618,18 @@
         "body": "<p><strong>Vetlibro</strong> estas simple kompleta, kronologia rekordo de viaj vetoj: kion vi subtenis, je kia probablo, por kiom, kaj kiel ĝi aranĝis. Pensu pri tio kiel la diferenco inter diveni ĉu vi estas preta por la sezono kaj <em>sci</em>.</p>\n<h2>Kial kalkultabeloj malsukcesas</h2>\n<p>Plej multaj vetantoj komencas en Excel aŭ Google Sheets. Tio funkcias ĝis:</p>\n<ul>\n<li>Formuloj rompas kiam vi aldonas ĉiudirektajn aŭ interŝanĝajn komisiojn kolumnojn</li>\n<li>Vi forgesas ensaluti malplenon aŭ elaĉeton</li>\n<li>Vi ne povas tranĉi per informanto aŭ sporto sen rekonstrui pivottablojn</li>\n</ul>\n<p>Dediĉita ĉeflibro normaligas probablecon, rekalkulas profiton ĉe ĉiu redakto kaj konservas raportojn konsekvencaj.</p>\n<h2>Kion registri</h2>\n<p>Minmume, ensalutu:</p>\n<ol>\n<li><strong>Okazaĵo kaj elekto</strong> — sufiĉa detalo por rekoni la veton monatojn poste</li>\n<li><strong>Paso kaj valuto</strong></li>\n<li><strong>Odds</strong> (en kia ajn formato la libro montras)</li>\n<li><strong>Rezulto</strong> — pritraktata, gajno, perdo, malpleno</li>\n<li><strong>Filita profito</strong> — aŭ lasu programaron derivi ĝin el rezultaj reguloj</li>\n</ol>\n<p>Altnivelaj kampoj kiuj apartigas akrajn spuristojn de hazardaj not-prenantoj:</p>\n<ul>\n<li>Persona implicita probableco (via justa prezo)</li>\n<li>Ferma linio-probablo (por CLV)</li>\n<li>Tipster aŭ modelfonto</li>\n<li>Bukmekro kaj komisiono</li>\n</ul>\n<h2>Registro kontraŭ ĵurnalo</h2>\n<p>Homoj uzas &ldquo;vetaĵurnalon&rdquo; kaj &ldquo;veta ĉeflibro&rdquo; interŝanĝeble. Strikte, ĵurnalo povus inkluzivi rakontajn notojn (&ldquo;sentis rapida&rdquo;, &ldquo;linio movita&rdquo;); ĉeflibro emfazas nombrojn. La plej bonaj iloj kombinas ambaŭ: strukturitaj datumoj plus libertekstaj notoj por veto.</p>\n<h2>Kiu bezonas unu?</h2>\n<p>Ĉiu ajn, kiu traktas vetado kiel lertan ludon prefere ol loteriajn biletojn:</p>\n<ul>\n<li>Kongruaj vetantoj spurantaj kvalifikajn kaj senpagajn vetojn</li>\n<li>Interŝanĝistoj mezurantaj komision-alĝustigitan rendimenton</li>\n<li>Tipster-anoj kontrolante reklamitan ROI</li>\n<li>Distraj ludantoj, kiuj volas honestan administradon de bankrotoj</li>\n</ul>\n<h2>Komencigi</h2>\n<p>Elektu unu sportan aŭ merkatan tipon kaj ensalutu la sekvajn 20 vetojn sen ŝanĝi vian procezon. Revizu strikoprocenton, averaĝajn probablecon kaj profiton semajne. Tiu bazlinio valoras pli ol iu ajn konsileto.</p>\n<p><strong>Spuru ĉi tion en mybetrecord:</strong> kreu senpagan konton, agordu vian bankroll kaj defaŭltan kvozformaton, kaj ensalutu vian unuan veton post malpli ol minuto.</p>"
       }
     }
+  },
+  "promoStats": {
+    "title": "Reklama uzado",
+    "publicNote": "Nurlegebla vido",
+    "users": "Uzantoj",
+    "totalDiscounted": "Sumo rabatita",
+    "notFound": "Ĉi tiu reklama statistika paĝo ne troveblas."
+  },
+  "publicProfile": {
+    "title": "Publika veta rekordo",
+    "betCount": "{{count}} vetas",
+    "empty": "Ankoraŭ neniuj vetoj.",
+    "notFound": "Ĉi tiu publika veta rekordo ne estis trovita."
   }
 }

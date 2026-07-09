@@ -192,7 +192,9 @@
     "maxLegs": "Олон тоо хамгийн ихдээ {{max}} сонголттой байж болно.",
     "needTwoLegs": "Олонд хамгийн багадаа 2 сонголт шаардлагатай.",
     "legMissingFields": "Сонголт бүрт үйл явдал, сонголт хэрэгтэй.",
-    "legBadOdds": "Сонголт бүрт 1-ээс дээш хүчинтэй магадлал шаардлагатай."
+    "legBadOdds": "Сонголт бүрт 1-ээс дээш хүчинтэй магадлал шаардлагатай.",
+    "tipsterImplied": "Tipster implied odds (decimal)",
+    "tipsterEdge": "Tipster edge"
   },
   "reports": {
     "title": "Тайлангууд",

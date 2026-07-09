@@ -192,7 +192,9 @@
     "maxLegs": "Ein Vielfaches kann höchstens {{max}} Auswahlen haben.",
     "needTwoLegs": "Für ein Vielfaches sind mindestens zwei Auswahlen erforderlich.",
     "legMissingFields": "Jede Auswahl erfordert ein Ereignis und eine Auswahl.",
-    "legBadOdds": "Für jede Auswahl sind gültige Quoten größer als 1 erforderlich."
+    "legBadOdds": "Für jede Auswahl sind gültige Quoten größer als 1 erforderlich.",
+    "tipsterImplied": "Implizite Quoten des Tipsters (dezimal)",
+    "tipsterEdge": "Tipster-Vorteil"
   },
   "reports": {
     "title": "Berichte",
@@ -265,7 +267,26 @@
     "timezone": "Zeitzone",
     "timezoneHint": "Wird für Datum und Uhrzeit in der App verwendet",
     "supportContact": "Brauchen Sie Hilfe? E-Mail an <a href=\"mailto:support@mybetrecord.com\">support@mybetrecord.com</a>",
-    "legalLinks": "<a href=\"/privacy\">Datenschutz</a> · <a href=\"/terms\">Bedingungen</a> · <a href=\"/support\">Support</a>"
+    "legalLinks": "<a href=\"/privacy\">Datenschutz</a> · <a href=\"/terms\">Bedingungen</a> · <a href=\"/support\">Support</a>",
+    "account": "Konto",
+    "email": "E-Mail",
+    "changePassword": "Kennwort ändern",
+    "currentPassword": "Aktuelles Passwort",
+    "passwordChanged": "Passwort aktualisiert",
+    "currentPasswordIncorrect": "Das aktuelle Passwort ist falsch",
+    "publicBetsTitle": "Öffentlicher Wettrekord",
+    "publicBetsEnabled": "Meine Wetten öffentlich sichtbar machen (schreibgeschützt)",
+    "publicBetsHint": "Jeder, der über den Link verfügt, kann Ihre Wetten einsehen, ohne sich anzumelden. Sensible Details wie Gewinn/Verlust und Buchmacher werden ausgeblendet.",
+    "publicBetsCopyLink": "Öffentlichen Link kopieren",
+    "publicBetsLinkCopied": "Öffentlicher Link kopiert",
+    "accountDescription": "Kontobeschreibung",
+    "publicNickname": "Öffentlicher Spitzname",
+    "publicNicknamePlaceholder": "z.B. Simon L.",
+    "publicNicknameHint": "Dies ist der Name, der in Ihrem öffentlichen Wettprotokoll angezeigt wird. Ihre E-Mail-Adresse wird niemals öffentlich angezeigt.",
+    "accountDescriptionPlaceholder": "Erzählen Sie den Besuchern von Ihrem Wettansatz, Ihrem Fokus auf Sportarten oder Ihrem Aufzeichnungsstil.",
+    "accountDescriptionHint": "Optional. Wird in Ihrem öffentlichen Wettprotokoll angezeigt. Maximal 500 Wörter.",
+    "accountDescriptionWordCount": "{{count}} / 500 Wörter",
+    "accountDescriptionTooLong": "Die Kontobeschreibung darf maximal 500 Wörter umfassen"
   },
   "admin": {
     "title": "Admin",
@@ -383,7 +404,18 @@
     "compClear": "Komp. entfernen",
     "compUntil": "Comp bis {{date}}",
     "compApplied": "Kostenloser Pro-Zugang aktualisiert",
-    "compCleared": "Kostenloser Pro-Zugang entfernt"
+    "compCleared": "Kostenloser Pro-Zugang entfernt",
+    "whenWithTz": "Wann ({{tz}})",
+    "isp": "ISP",
+    "ispCountry": "ISP-Land",
+    "browserLanguage": "Browsersprache",
+    "operatingSystem": "Betriebssystem",
+    "timezone": "Zeitzone",
+    "promoStatsShare": "Statistiken teilen",
+    "promoStatsRevoke": "Statistiklink widerrufen",
+    "promoStatsLinkCopied": "Link zu öffentlichen Statistiken kopiert",
+    "promoStatsRevokeConfirm": "Diesen öffentlichen Statistiklink widerrufen? Wer über den Link verfügt, kann die Nutzung nicht mehr einsehen.",
+    "promoStatsRevoked": "Der Link zu den öffentlichen Statistiken wurde widerrufen"
   },
   "errors": {
     "requestFailed": "Die Anfrage ist fehlgeschlagen",
@@ -586,5 +618,18 @@
         "body": "<p>Ein <strong>Wettbuch</strong> ist einfach eine vollständige, chronologische Aufzeichnung Ihrer Wetten: was Sie gesetzt haben, zu welchen Quoten, für wie viel und wie die Auszahlung erfolgt ist. Betrachten Sie es als den Unterschied zwischen dem Erraten, ob Sie für die Saison bereit sind, und dem <em>Wissen</em>.</p>\n<h2>Warum Tabellenkalkulationen scheitern</h2>\n<p>Die meisten Wettenden beginnen mit Excel oder Google Sheets. Das funktioniert bis:</p>\n<ul>\n<li>Formeln brechen, wenn Sie Provisionsspalten für Hin- und Rückfahrten hinzufügen</li>\n<li>Sie haben vergessen, eine Stornierung oder Auszahlung zu protokollieren</li>\n<li>Sie können nicht nach Tippgebern oder Sportarten segmentieren, ohne die Pivot-Tabellen neu zu erstellen</li>\n</ul>\n<p>Ein spezielles Hauptbuch normalisiert die Quoten, berechnet den Gewinn bei jeder Bearbeitung neu und sorgt dafür, dass die Berichte konsistent sind.</p>\n<h2>Was aufgezeichnet werden soll</h2>\n<p>Mindestens protokollieren:</p>\n<ol>\n<li><strong>Ereignis und Auswahl</strong> – genug Details, um die Wette Monate später wiederzuerkennen</li>\n<li><strong>Einsatz und Währung</strong></li>\n<li><strong>Quoten</strong> (in welchem Format auch immer das Buch angezeigt wird)</li>\n<li><strong>Ergebnis</strong> – ausstehend, Sieg, Niederlage, ungültig</li>\n<li><strong>Abgerechneter Gewinn</strong> – oder lassen Sie ihn von der Software aus Ergebnisregeln ableiten</li>\n</ol>\n<p>Erweiterte Felder, die scharfsinnige Tracker von gelegentlichen Notizmachern unterscheiden:</p>\n<ul>\n<li>Persönliche implizite Quoten (Ihr fairer Preis)</li>\n<li>Schlussquoten (für CLV)</li>\n<li>Tippgeber- oder Modellquelle</li>\n<li>Buchmacher und Provision</li>\n</ul>\n<h2>Hauptbuch vs. Journal</h2>\n<p>Menschen nutzen das „Wettjournal“; und „Wettbuch“; austauschbar. Streng genommen könnte ein Tagebuch erzählerische Notizen enthalten („fühlte sich gehetzt an“, „Zeile verschoben“); Ein Hauptbuch betont Zahlen. Die besten Tools kombinieren beides: strukturierte Daten plus Freitextnotizen pro Wette.</p>\n<h2>Wer braucht einen?</h2>\n<p>Jeder, der Wetten als Geschicklichkeitsspiel und nicht als Lottoscheine betrachtet:</p>\n<ul>\n<li>Übereinstimmende Wettende verfolgen Qualifikations- und Gratiswetten</li>\n<li>Börsenhändler messen die provisionsbereinigte Rendite</li>\n<li>Tippgeber-Follower überprüfen den beworbenen ROI</li>\n<li>Freizeitspekulanten, die eine ehrliche Verwaltung ihrer Bankroll wünschen</li>\n</ul>\n<h2>Erste Schritte</h2>\n<p>Wählen Sie eine Sportart oder einen Markttyp aus und protokollieren Sie die nächsten 20 Wetten, ohne Ihren Prozess zu ändern. Überprüfen Sie die Trefferquote, die durchschnittlichen Quoten und den Gewinn pro Woche. Diese Grundlinie ist mehr wert als jeder Tipp.</p>\n<p><strong>Verfolgen Sie dies in mybetrecord:</strong> Erstellen Sie ein kostenloses Konto, legen Sie Ihr Guthaben und das Standardquotenformat fest und protokollieren Sie Ihre erste Wette in weniger als einer Minute.</p>"
       }
     }
+  },
+  "promoStats": {
+    "title": "Werbenutzung",
+    "publicNote": "Schreibgeschützte Ansicht",
+    "users": "Benutzer",
+    "totalDiscounted": "Insgesamt rabattiert",
+    "notFound": "Diese Aktionsstatistikseite konnte nicht gefunden werden."
+  },
+  "publicProfile": {
+    "title": "Öffentlicher Wettrekord",
+    "betCount": "{{count}} Wetten",
+    "empty": "Noch keine Wetten.",
+    "notFound": "Dieser öffentliche Wetteintrag konnte nicht gefunden werden."
   }
 }

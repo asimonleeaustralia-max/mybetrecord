@@ -192,7 +192,9 @@
     "maxLegs": "Multiplo batek gehienez {{max}} aukera izan ditzake.",
     "needTwoLegs": "Multiplo batek gutxienez 2 aukera behar ditu.",
     "legMissingFields": "Hautaketa bakoitzak ekitaldi bat eta hautaketa bat behar ditu.",
-    "legBadOdds": "Hautapen bakoitzak 1 baino handiagoak diren baliozko probabilitateak behar ditu."
+    "legBadOdds": "Hautapen bakoitzak 1 baino handiagoak diren baliozko probabilitateak behar ditu.",
+    "tipsterImplied": "Tipster inplizitutako probabilitateak (dezimal)",
+    "tipsterEdge": "Tipster ertza"
   },
   "reports": {
     "title": "Txostenak",
@@ -265,7 +267,26 @@
     "timezone": "Ordu-eremua",
     "timezoneHint": "aplikazioan egun eta orduetarako erabiltzen da",
     "supportContact": "Laguntza behar duzu? Posta elektronikoa <a href=\"mailto:support@mybetrecord.com\">support@mybetrecord.com</a>",
-    "legalLinks": "<a href=\"/privacy\">Pribatutasuna</a> · <a href=\"/terms\">Baldintzak</a> · <a href=\"/support\">Laguntza</a>"
+    "legalLinks": "<a href=\"/privacy\">Pribatutasuna</a> · <a href=\"/terms\">Baldintzak</a> · <a href=\"/support\">Laguntza</a>",
+    "account": "Kontua",
+    "email": "Posta elektronikoa",
+    "changePassword": "Aldatu pasahitza",
+    "currentPassword": "Uneko pasahitza",
+    "passwordChanged": "Pasahitza eguneratu da",
+    "currentPasswordIncorrect": "Oraingo pasahitza okerra da",
+    "publicBetsTitle": "Apustuen erregistro publikoa",
+    "publicBetsEnabled": "Egin nire apustuak publikoki ikusgai (irakurtzeko soilik)",
+    "publicBetsHint": "Esteka duen edonork ikus ditzake zure apustuak saioa hasi gabe. P/L eta bookmaker bezalako xehetasun sentikorrak ezkutatuta daude.",
+    "publicBetsCopyLink": "Kopiatu esteka publikoa",
+    "publicBetsLinkCopied": "Esteka publikoa kopiatu da",
+    "accountDescription": "Kontuaren deskribapena",
+    "publicNickname": "Ezizena publikoa",
+    "publicNicknamePlaceholder": "adib. Simon L.",
+    "publicNicknameHint": "Hau da zure apustuen erregistro publikoan agertzen den izena. Zure e-posta ez da inoiz publikoki bistaratzen.",
+    "accountDescriptionPlaceholder": "Esan bisitariei apustuen ikuspegia, kirolak bideratuak edo erregistroak mantentzeko estiloari buruz.",
+    "accountDescriptionHint": "Aukerakoa. Zure apustuen erregistro publikoan agertzen da. Gehienez 500 hitz.",
+    "accountDescriptionWordCount": "{{count}} / 500 hitz",
+    "accountDescriptionTooLong": "Kontuaren deskribapenak 500 hitz edo gutxiago izan behar ditu"
   },
   "admin": {
     "title": "Admin",
@@ -383,7 +404,18 @@
     "compClear": "Kendu konp",
     "compUntil": "Konpentsatu {{date}} arte",
     "compApplied": "Doako Pro sarbidea eguneratu da",
-    "compCleared": "Doako Pro sarbidea kendu da"
+    "compCleared": "Doako Pro sarbidea kendu da",
+    "whenWithTz": "Noiz ({{tz}})",
+    "isp": "ISP",
+    "ispCountry": "ISP herrialdea",
+    "browserLanguage": "Arakatzailearen hizkuntza",
+    "operatingSystem": "Sistema eragilea",
+    "timezone": "Ordu-eremua",
+    "promoStatsShare": "Partekatu estatistikak",
+    "promoStatsRevoke": "Ezeztatu estatistikak esteka",
+    "promoStatsLinkCopied": "Estatistika publikoen esteka kopiatu da",
+    "promoStatsRevokeConfirm": "Estatistika publikoen esteka hau baliogabetu nahi duzu? Esteka duen edonork ezingo du erabilera ikusi.",
+    "promoStatsRevoked": "Estatistika publikoen esteka baliogabetuta dago"
   },
   "errors": {
     "requestFailed": "Eskaerak huts egin du",
@@ -586,5 +618,18 @@
         "body": "<p><strong>Apustuen liburuxka</strong> zure apustuen erregistro osoa eta kronologikoa besterik ez da: zer babestu zenuen, zer probabilitatetan, zenbateraino eta nola konpondu zen. Pentsa ezazu denboraldirako prest zauden ala ez asmatzearen eta <em>jakitea</em>ren arteko aldea dela.</p>\n<h2>Zergatik huts egiten dute kalkulu-orriek</h2>\n<p>Apostatzaile gehienak Excel edo Google Sheets-en hasten dira. Horrek funtzionatzen du:</p> arte\n<ul>\n<li>Formulak apurtzen dira norabide bakoitzean edo komisioen zutabeak trukatzen dituzunean</li>\n<li>Ahazten zaizu hutsunea edo dirua ateratzea saioa egitea</li>\n<li>Ezin duzu iradokizuna edo kirola zatitu taula dinamikoak berreraiki gabe</li>\n</ul>\n<p>Liburu dedikatu batek probabilitateak normalizatzen ditu, irabaziak birkalkulatzen ditu aldaketa guztietan eta txostenak koherenteak mantentzen ditu.</p>\n<h2>Zer grabatu</h2>\n<p>Gutxienez, erregistratu:</p>\n<ol>\n<li><strong>Gertaera eta aukeraketa</strong>: adina xehetasun hilabete geroago apustua ezagutzeko</li>\n<li><strong>Partida eta moneta</strong></li>\n<li><strong>Odds</strong> (liburuak erakusten duen edozein formatuan)</li>\n<li><strong>Emaitza</strong>: zain, irabazi, galdu, hutsik</li>\n<li><strong>Irabazi likidatua</strong> — edo utzi softwareari emaitza-arauetatik ateratzen</li>\n</ol>\n<p>Oharrak hartzeko aztarnatzaile zorrotzak eta ohiko oharrak hartzen dituzten eremu aurreratuak:</p>\n<ul>\n<li>Proba inplizitu pertsonalak (zure arrazoizko prezioa)</li>\n<li>Ixteko lerroaren probabilitateak (CLVrako)</li>\n<li>Tipster edo ereduaren iturria</li>\n<li>Apustua eta komisioa</li>\n</ul>\n<h2>Ledger vs aldizkaria</h2>\n<p>Jendeak &ldquo;apustuen aldizkaria&rdquo; eta &ldquo;apustuen liburua&rdquo; trukaka. Zehazki, aldizkari batek ohar narratiboak sar ditzake (&ldquo;presaka sentitu&rdquo;, &ldquo;lerroa mugitu&rdquo;); liburu-liburu batek zenbakiak azpimarratzen ditu. Tresna onenek biak konbinatzen dituzte: datu egituratuak eta testu libreko oharrak apustu bakoitzeko.</p>\n<h2>Nork behar du bat?</h2>\n<p>Apustuak loteria-txartelak baino trebetasun-jokotzat hartzen dituen edonor:</p>\n<ul>\n<li>Apustuen parekatuak eta doako apustuen jarraipena egiten</li>\n<li>Trukeko merkatariak komisioen arabera egokitutako etekina neurtzen dute</li>\n<li>Iragarkitako ROI egiaztatzen duten informatzaileen jarraitzaileak</li>\n<li>Kutxaren kudeaketa zintzoa nahi duten aisialdiko jokalariak</li>\n</ul>\n<h2>Hasteko</h2>\n<p>Hautatu kirol edo merkatu mota bat eta erregistratu hurrengo 20 apustuak zure prozesua aldatu gabe. Berrikusi greba tasa, batez besteko probabilitateak eta irabaziak astero. Oinarrizko puntu horrek edozein aholku baino gehiago balio du.</p>\n<p><strong>Jarraitu honen jarraipena mybetrecord-en:</strong> sortu doako kontu bat, ezarri zure bankuaren eta kuoteen formatua lehenetsia, eta erregistratu zure lehen apustua minutu batean.</p>"
       }
     }
+  },
+  "promoStats": {
+    "title": "Promozio erabilera",
+    "publicNote": "Irakurtzeko soilik ikuspegia",
+    "users": "Erabiltzaileak",
+    "totalDiscounted": "Deskontua guztira",
+    "notFound": "Ezin izan da promozio estatistiken orri hau aurkitu."
+  },
+  "publicProfile": {
+    "title": "Apustuen erregistro publikoa",
+    "betCount": "{{count}} apustuak",
+    "empty": "Oraindik ez dago apusturik.",
+    "notFound": "Ezin izan da apustuen erregistro publiko hau aurkitu."
   }
 }

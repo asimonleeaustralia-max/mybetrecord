@@ -192,7 +192,9 @@
     "maxLegs": "Benshi barashobora kugira byinshi {{max}} byatoranijwe.",
     "needTwoLegs": "Byinshi bikenera byibura 2 byatoranijwe.",
     "legMissingFields": "Buri guhitamo gukenera ibyabaye no guhitamo.",
-    "legBadOdds": "Buri cyiciro gikeneye impinduka zirenze 1."
+    "legBadOdds": "Buri cyiciro gikeneye impinduka zirenze 1.",
+    "tipsterImplied": "Tipster implied odds (decimal)",
+    "tipsterEdge": "Tipster edge"
   },
   "reports": {
     "title": "Raporo",

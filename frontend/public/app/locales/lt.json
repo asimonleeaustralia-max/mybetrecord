@@ -192,7 +192,9 @@
     "maxLegs": "Keletas gali turėti daugiausia {{max}} pasirinkimų.",
     "needTwoLegs": "Keletui reikia bent 2 pasirinkimų.",
     "legMissingFields": "Kiekvienai atrankai reikia renginio ir atrankos.",
-    "legBadOdds": "Kiekvienam pasirinkimui reikalingas galiojantis koeficientas, didesnis nei 1."
+    "legBadOdds": "Kiekvienam pasirinkimui reikalingas galiojantis koeficientas, didesnis nei 1.",
+    "tipsterImplied": "Tipster implied odds (decimal)",
+    "tipsterEdge": "Tipster edge"
   },
   "reports": {
     "title": "Ataskaitos",

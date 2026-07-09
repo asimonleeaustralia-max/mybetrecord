@@ -192,7 +192,9 @@
     "maxLegs": "Ko'p sonli {{max}} ta tanlovga ega bo'lishi mumkin.",
     "needTwoLegs": "Bir nechta variant kamida 2 ta tanlovni talab qiladi.",
     "legMissingFields": "Har bir tanlov tadbir va tanlovni talab qiladi.",
-    "legBadOdds": "Har bir tanlov uchun 1 dan katta koeffitsientlar kerak."
+    "legBadOdds": "Har bir tanlov uchun 1 dan katta koeffitsientlar kerak.",
+    "tipsterImplied": "Tipster implied odds (decimal)",
+    "tipsterEdge": "Tipster edge"
   },
   "reports": {
     "title": "Hisobotlar",

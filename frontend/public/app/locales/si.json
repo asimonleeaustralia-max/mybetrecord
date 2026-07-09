@@ -192,7 +192,9 @@
     "maxLegs": "ගුණාකාරයකට උපරිම වශයෙන් {{max}} තේරීම් තිබිය හැක.",
     "needTwoLegs": "බහුවිධයකට අවම වශයෙන් තේරීම් 2ක් අවශ්‍ය වේ.",
     "legMissingFields": "සෑම තේරීමකටම සිදුවීමක් සහ තේරීමක් අවශ්‍ය වේ.",
-    "legBadOdds": "සෑම තේරීමකටම 1 ට වඩා වලංගු අවාසි අවශ්‍ය වේ."
+    "legBadOdds": "සෑම තේරීමකටම 1 ට වඩා වලංගු අවාසි අවශ්‍ය වේ.",
+    "tipsterImplied": "Tipster implied odds (decimal)",
+    "tipsterEdge": "Tipster edge"
   },
   "reports": {
     "title": "වාර්තා",

@@ -192,7 +192,9 @@
     "maxLegs": "یو څو کیدای شي په ډیرو {{max}} انتخابونو کې وي.",
     "needTwoLegs": "یو څو لږترلږه 2 انتخابونو ته اړتیا لري.",
     "legMissingFields": "هر انتخاب یوه پیښه او انتخاب ته اړتیا لري.",
-    "legBadOdds": "هر انتخاب له 1 څخه ډیر معتبر توپیرونو ته اړتیا لري."
+    "legBadOdds": "هر انتخاب له 1 څخه ډیر معتبر توپیرونو ته اړتیا لري.",
+    "tipsterImplied": "Tipster implied odds (decimal)",
+    "tipsterEdge": "Tipster edge"
   },
   "reports": {
     "title": "راپورونه",
