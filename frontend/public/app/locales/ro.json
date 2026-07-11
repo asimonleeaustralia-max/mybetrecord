@@ -122,6 +122,7 @@
     "stake": "Miză",
     "currency": "Valută",
     "eachWay": "În fiecare sens",
+    "eachWayNote": "Introduceți miza totală pentru ambele părți — câștig și loc (dublul unei mize unitare). De exemplu, £10 each way este înregistrat ca o miză de £20.",
     "placeFraction": "Pune fracția",
     "placed": "Plasat",
     "settlement": "Așezarea",

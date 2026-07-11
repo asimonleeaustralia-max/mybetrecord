@@ -122,6 +122,7 @@
     "stake": "Panos",
     "currency": "Valuutta",
     "eachWay": "Joka tapa",
+    "eachWayNote": "Anna kokonaispanos molemmille osille — voitto ja sijoitus (kaksinkertainen yhden yksikön panos). Esimerkiksi £10 each way kirjataan £20 panoksena.",
     "placeFraction": "Aseta murto-osa",
     "placed": "Sijoitettu",
     "settlement": "Ratkaisu",

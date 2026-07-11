@@ -122,6 +122,7 @@
     "stake": "pancang",
     "currency": "mata wang",
     "eachWay": "setiap jalan",
+    "eachWayNote": "Masukkan jumlah stake untuk kedua-dua bahagian — menang dan tempat (dua kali stake satu unit). Sebagai contoh, £10 each way direkodkan sebagai stake £20.",
     "placeFraction": "Pecahan letak",
     "placed": "diletakkan",
     "settlement": "Penyelesaian",

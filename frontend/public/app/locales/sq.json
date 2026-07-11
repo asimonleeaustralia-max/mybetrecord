@@ -122,6 +122,7 @@
     "stake": "Kunj",
     "currency": "Monedha",
     "eachWay": "Në çdo mënyrë",
+    "eachWayNote": "Futni bashtinë totale për të dy pjesët — fitore dhe vend (dyfishi i një bashtine njësi). Për shembull, £10 each way regjistrohet si bashti £20.",
     "placeFraction": "Pjesa e vendit",
     "placed": "E vendosur",
     "settlement": "Zgjidhje",

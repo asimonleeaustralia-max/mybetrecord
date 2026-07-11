@@ -122,6 +122,7 @@
     "stake": "innsats",
     "currency": "Valuta",
     "eachWay": "Hver vei",
+    "eachWayNote": "Skriv inn totalinnsatsen for begge deler — seier og plassering (det dobbelte av en enkeltinnsats). For eksempel registreres £10 each way som en innsats på £20.",
     "placeFraction": "Plasser fraksjon",
     "placed": "Plassert",
     "settlement": "Oppgjør",

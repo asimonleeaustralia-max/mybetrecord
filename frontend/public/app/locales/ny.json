@@ -122,6 +122,7 @@
     "stake": "Mtengo",
     "currency": "Ndalama",
     "eachWay": "Njira iliyonse",
+    "eachWayNote": "Lowetsani stake yonse ya zigawo ziwiri — kupambana ndi malo (kuwirikiza kawiri kwa stake imodzi). Mwachitsanzo, £10 each way imalembedwa ngati stake ya £20.",
     "placeFraction": "Malo gawo",
     "placed": "Yoyikidwa",
     "settlement": "Kukhazikika",

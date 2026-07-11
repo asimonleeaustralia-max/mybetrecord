@@ -122,6 +122,7 @@
     "stake": "kůl",
     "currency": "Měna",
     "eachWay": "Každým způsobem",
+    "eachWayNote": "Zadejte celkovou sázku za obě části — výhru i umístění (dvojnásobek jednotkové sázky). Například £10 each way se zaznamená jako sázka £20.",
     "placeFraction": "Umístěte zlomek",
     "placed": "Umístěno",
     "settlement": "Vyrovnání",

@@ -122,6 +122,7 @@
     "stake": "istaka",
     "currency": "Pera",
     "eachWay": "Bawat daan",
+    "eachWayNote": "Ilagay ang kabuuang stake para sa parehong bahagi — panalo at puwesto (doble ng isang unit stake). Halimbawa, ang £10 each way ay naitatala bilang £20 na stake.",
     "placeFraction": "Fraction ng lugar",
     "placed": "Nakalagay",
     "settlement": "Settlement",

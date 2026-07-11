@@ -122,6 +122,7 @@
     "stake": "Inzet",
     "currency": "Munteenheid",
     "eachWay": "Elke manier",
+    "eachWayNote": "Voer de totale inzet in voor beide delen — winst en plaats (het dubbele van een eenheidsinzet). Bijvoorbeeld: £10 each way wordt geregistreerd als een inzet van £20.",
     "placeFraction": "Plaats breuk",
     "placed": "Geplaatst",
     "settlement": "Schikking",

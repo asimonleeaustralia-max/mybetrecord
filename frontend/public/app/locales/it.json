@@ -122,6 +122,7 @@
     "stake": "Palo",
     "currency": "Valuta",
     "eachWay": "In ogni modo",
+    "eachWayNote": "Inserisci la puntata totale per entrambe le parti — vittoria e piazzamento (il doppio di una puntata unitaria). Ad esempio, £10 each way viene registrato come puntata di £20.",
     "placeFraction": "Frazione posizionale",
     "placed": "Posizionato",
     "settlement": "Insediamento",

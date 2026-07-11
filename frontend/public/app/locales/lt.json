@@ -122,6 +122,7 @@
     "stake": "Stalas",
     "currency": "Valiuta",
     "eachWay": "Į kiekvieną pusę",
+    "eachWayNote": "Įveskite bendrą statymą abiem dalims — pergalei ir vietai (dvigubas vieneto statymas). Pavyzdžiui, £10 each way įrašomas kaip £20 statymas.",
     "placeFraction": "Padėkite frakciją",
     "placed": "Padėtas",
     "settlement": "Atsiskaitymas",

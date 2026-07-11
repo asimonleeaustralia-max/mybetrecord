@@ -122,6 +122,7 @@
     "stake": "Patok",
     "currency": "Mata uang",
     "eachWay": "Unggal jalan",
+    "eachWayNote": "Lebetkeun total stake pikeun dua bagian — meunang jeung tempat (dua kali stake hiji unit). Contona, £10 each way dicatet salaku stake £20.",
     "placeFraction": "Fraksi tempat",
     "placed": "Ditempatkeun",
     "settlement": "Patempatan",

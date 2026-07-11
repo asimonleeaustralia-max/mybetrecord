@@ -1967,6 +1967,9 @@ function syncPromotionOptions() {
     form.free_bet.disabled = false;
   }
 
+  const eachWayNote = $("#eachWayNote");
+  if (eachWayNote) eachWayNote.hidden = !form.each_way.checked;
+
   const note = $("#freeBetNote");
   if (note) note.hidden = !form.free_bet?.checked;
 }

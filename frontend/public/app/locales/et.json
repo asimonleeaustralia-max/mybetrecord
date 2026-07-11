@@ -122,6 +122,7 @@
     "stake": "Panus",
     "currency": "Valuuta",
     "eachWay": "Igal viisil",
+    "eachWayNote": "Sisestage kogupanus mõlema osa jaoks — võit ja koht (ühe ühiku panuse kahekordne). Näiteks £10 each way salvestatakse £20 panusena.",
     "placeFraction": "Asetage murdosa",
     "placed": "Paigutatud",
     "settlement": "Arveldamine",

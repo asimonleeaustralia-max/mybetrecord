@@ -122,6 +122,7 @@
     "stake": "Qoziq",
     "currency": "Valyuta",
     "eachWay": "Har bir yo'l",
+    "eachWayNote": "Har ikkala qism uchun jami tikishni kiriting — g‘alaba va o‘rin (bir birlik tikishning ikki barobari). Masalan, £10 each way £20 tikish sifatida qayd etiladi.",
     "placeFraction": "Kasrni joylashtirish",
     "placed": "Joylashtirilgan",
     "settlement": "Hisob-kitob",

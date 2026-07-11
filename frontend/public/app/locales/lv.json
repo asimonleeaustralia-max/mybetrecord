@@ -122,6 +122,7 @@
     "stake": "Miets",
     "currency": "Valūta",
     "eachWay": "Katrā virzienā",
+    "eachWayNote": "Ievadiet kopējo likmi abām daļām — uzvarai un vietai (divkārša vienības likme). Piemēram, £10 each way tiek reģistrēta kā £20 likme.",
     "placeFraction": "Novietojiet frakciju",
     "placed": "Novietots",
     "settlement": "Norēķins",

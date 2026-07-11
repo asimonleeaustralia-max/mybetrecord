@@ -122,6 +122,7 @@
     "stake": "賭注",
     "currency": "貨幣",
     "eachWay": "每一種方式",
+    "eachWayNote": "請輸入兩部分的總投注額——勝出與名次（單份投注的兩倍）。例如，£10 each way 記為 £20 投注。",
     "placeFraction": "地方分數",
     "placed": "已放置",
     "settlement": "沉澱",

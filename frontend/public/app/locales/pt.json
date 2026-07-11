@@ -122,6 +122,7 @@
     "stake": "Estaca",
     "currency": "Moeda",
     "eachWay": "Cada sentido",
+    "eachWayNote": "Introduza o valor total da aposta para ambas as partes — vitória e lugar (o dobro de uma unidade). Por exemplo, £10 each way é registado como uma aposta de £20.",
     "placeFraction": "Fração de lugar",
     "placed": "Colocado",
     "settlement": "Povoado",

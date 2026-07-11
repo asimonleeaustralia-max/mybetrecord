@@ -122,6 +122,7 @@
     "stake": "말뚝",
     "currency": "통화",
     "eachWay": "편도로",
+    "eachWayNote": "승과 입상 두 부분의 총 스테이크를 입력하세요(단일 단위 스테이크의 두 배). 예를 들어 £10 each way는 £20 스테이크로 기록됩니다.",
     "placeFraction": "분수 배치",
     "placed": "배치됨",
     "settlement": "합의",

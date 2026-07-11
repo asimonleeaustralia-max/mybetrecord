@@ -122,6 +122,7 @@
     "stake": "Saami",
     "currency": "Lacagta",
     "eachWay": "Jid kasta",
+    "eachWayNote": "Geli wadarta stake ee labada qaybood — guul iyo meel (labanlaab stake hal unug). Tusaale ahaan, £10 each way waxaa loo diiwaangeliyaa stake £20.",
     "placeFraction": "Dhig jajab",
     "placed": "La dhigay",
     "settlement": "Dejinta",

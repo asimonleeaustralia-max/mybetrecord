@@ -122,6 +122,7 @@
     "stake": "Mdau",
     "currency": "Sarafu",
     "eachWay": "Kila njia",
+    "eachWayNote": "Weka jumla ya stake kwa sehemu zote mbili — ushindi na nafasi (mara mbili ya stake ya kitengo kimoja). Kwa mfano, £10 each way inarekodiwa kama stake ya £20.",
     "placeFraction": "Weka sehemu",
     "placed": "Imewekwa",
     "settlement": "Suluhu",

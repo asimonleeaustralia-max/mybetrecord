@@ -122,6 +122,7 @@
     "stake": "stanc",
     "currency": "Arian cyfred",
     "eachWay": "Pob ffordd",
+    "eachWayNote": "Rhowch y cyfanswm stêc ar gyfer y ddwy ran — ennill a lle (dwbl stêc uned sengl). Er enghraifft, cofnodir £10 each way fel stêc o £20.",
     "placeFraction": "Gosod ffracsiwn",
     "placed": "Wedi'i osod",
     "settlement": "Setliad",

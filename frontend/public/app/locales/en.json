@@ -172,6 +172,7 @@
     "stake": "Stake",
     "currency": "Currency",
     "eachWay": "Each way",
+    "eachWayNote": "Enter the total stake for both parts — win and place (double a single-unit stake). For example, £10 each way is recorded as a £20 stake.",
     "freeBet": "Free bet (promotion)",
     "freeBetBadge": "Free bet",
     "freeBetNote": "Promotion stake only — winnings are recorded without returning the stake. A loss records zero P/L because you did not risk your own money.",

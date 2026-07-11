@@ -122,6 +122,7 @@
     "stake": "Indsats",
     "currency": "Valuta",
     "eachWay": "Hver vej",
+    "eachWayNote": "Indtast den samlede indsats for begge dele — sejr og placering (dobbelt af en enkelt-enheds indsats). For eksempel registreres £10 each way som en indsats på £20.",
     "placeFraction": "Placer fraktion",
     "placed": "Placeret",
     "settlement": "Afregning",

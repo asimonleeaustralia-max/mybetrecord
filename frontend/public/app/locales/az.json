@@ -122,6 +122,7 @@
     "stake": "pay",
     "currency": "Valyuta",
     "eachWay": "Hər yol",
+    "eachWayNote": "Hər iki hissə üçün ümumi mərc məbləğini daxil edin — qələbə və yer (tək vahid mərcin ikiqatı). Məsələn, £10 each way £20 mərc kimi qeyd olunur.",
     "placeFraction": "Fraksiyanı yerləşdirin",
     "placed": "yerləşdirilmiş",
     "settlement": "Qəsəbə",

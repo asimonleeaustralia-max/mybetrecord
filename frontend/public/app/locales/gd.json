@@ -122,6 +122,7 @@
     "stake": "Sgeul",
     "currency": "Airgeadra",
     "eachWay": "A h-uile dòigh",
+    "eachWayNote": "Cuir a-steach an geall iomlan airson an dà phàirt — buannachadh agus àite (dùbailt aonad singilte). Mar eisimpleir, tha £10 each way air a chlàradh mar gheall £20.",
     "placeFraction": "Cuir bloigh",
     "placed": "Air a chur",
     "settlement": "Tuineachadh",

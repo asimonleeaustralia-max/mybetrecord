@@ -122,6 +122,7 @@
     "stake": "Einsatz",
     "currency": "Währung",
     "eachWay": "In jede Richtung",
+    "eachWayNote": "Geben Sie den Gesamteinsatz für beide Teile ein — Sieg und Platz (das Doppelte eines Einzeleinsatzes). Beispiel: £10 each way wird als Einsatz von £20 erfasst.",
     "placeFraction": "Platzieren Sie den Bruch",
     "placed": "Platziert",
     "settlement": "Siedlung",

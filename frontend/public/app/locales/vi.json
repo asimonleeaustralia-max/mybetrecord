@@ -122,6 +122,7 @@
     "stake": "cổ phần",
     "currency": "Tiền tệ",
     "eachWay": "Mỗi chiều",
+    "eachWayNote": "Nhập tổng tiền cược cho cả hai phần — thắng và xếp hạng (gấp đôi một đơn vị cược). Ví dụ: £10 each way được ghi là cược £20.",
     "placeFraction": "Đặt phân số",
     "placed": "Đã đặt",
     "settlement": "giải quyết",

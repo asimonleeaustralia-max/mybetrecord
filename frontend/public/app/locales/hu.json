@@ -122,6 +122,7 @@
     "stake": "Tét",
     "currency": "Valuta",
     "eachWay": "Minden irányban",
+    "eachWayNote": "Adja meg a teljes tétet mindkét részre — győzelem és helyezés (az egységnyi tét kétszerese). Például a £10 each way £20-os tétként kerül rögzítésre.",
     "placeFraction": "Helyezze el a frakciót",
     "placed": "Elhelyezve",
     "settlement": "Település",

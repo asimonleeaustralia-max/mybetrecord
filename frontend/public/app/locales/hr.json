@@ -122,6 +122,7 @@
     "stake": "Ulog",
     "currency": "Valuta",
     "eachWay": "Svaki put",
+    "eachWayNote": "Unesite ukupni ulog za oba dijela — pobjedu i plasman (dvostruki ulog jedne jedinice). Na primjer, £10 each way bilježi se kao ulog od £20.",
     "placeFraction": "Mjesto razlomak",
     "placed": "Postavljeno",
     "settlement": "Naselje",

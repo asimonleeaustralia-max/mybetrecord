@@ -122,6 +122,7 @@
     "stake": "Estaca",
     "currency": "Moneda",
     "eachWay": "Cada sentit",
+    "eachWayNote": "Introduïu l'import total de l'aposta per a ambdues parts — victòria i lloc (el doble d'una unitat). Per exemple, £10 each way es registra com una aposta de £20.",
     "placeFraction": "Col·loca la fracció",
     "placed": "Col·locat",
     "settlement": "Assentament",

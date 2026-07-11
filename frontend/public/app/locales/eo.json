@@ -122,6 +122,7 @@
     "stake": "Paliso",
     "currency": "Monero",
     "eachWay": "Ĉiu maniero",
+    "eachWayNote": "Enigu la totan veto-sumon por ambaŭ partoj — gajno kaj loko (duoblo de unu-unua veto). Ekzemple, £10 each way estas registrita kiel £20 veto.",
     "placeFraction": "Loki frakcion",
     "placed": "Lokita",
     "settlement": "Setlejo",

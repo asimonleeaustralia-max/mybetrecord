@@ -122,6 +122,7 @@
     "stake": "Bahis",
     "currency": "Para birimi",
     "eachWay": "Her yol",
+    "eachWayNote": "Her iki kısım için toplam bahis tutarını girin — galibiyet ve sıralama (tek birim bahsin iki katı). Örneğin £10 each way, £20 bahis olarak kaydedilir.",
     "placeFraction": "Kesri yerleştir",
     "placed": "Yerleştirildi",
     "settlement": "Yerleşim",

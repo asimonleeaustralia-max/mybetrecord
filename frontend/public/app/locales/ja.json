@@ -122,6 +122,7 @@
     "stake": "ステーク",
     "currency": "通貨",
     "eachWay": "それぞれの方法で",
+    "eachWayNote": "勝ちと着順の両方の合計ステークを入力してください（1単位ステークの2倍）。たとえば、£10 each way は £20 のステークとして記録されます。",
     "placeFraction": "分数を置く",
     "placed": "配置されました",
     "settlement": "決済",

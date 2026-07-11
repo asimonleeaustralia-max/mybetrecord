@@ -122,6 +122,7 @@
     "stake": "Insats",
     "currency": "Valuta",
     "eachWay": "Varje sätt",
+    "eachWayNote": "Ange den totala insatssumman för båda delarna — vinst och placering (dubbelt en enhetsinsats). Till exempel registreras £10 each way som en insats på £20.",
     "placeFraction": "Placera fraktion",
     "placed": "Placerad",
     "settlement": "Lösning",
