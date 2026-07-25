@@ -85,7 +85,7 @@ class BetEditorViewModel @Inject constructor(
     private val betsRepository: BetsRepository,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
-    private val betId: String? = savedStateHandle["betId"]?.takeIf { it != "new" }
+    private val betId: String? = savedStateHandle.get<String>("betId")?.takeIf { it != "new" }
 
     private val _state = MutableStateFlow(BetEditorUiState(isEdit = betId != null))
     val state: StateFlow<BetEditorUiState> = _state.asStateFlow()
