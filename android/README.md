@@ -10,14 +10,16 @@ This app is a private betting ledger. It does **not** accept wagers, sell subscr
 
 ## First-time setup: Gradle wrapper JAR
 
-This repo does not commit the binary `gradle/wrapper/gradle-wrapper.jar`. Generate it once before using `./gradlew`:
+The Gradle wrapper (`gradlew` / `gradlew.bat` and `gradle/wrapper/gradle-wrapper.jar`) is committed. From `android/`, use `./gradlew` on macOS/Linux or `.\gradlew.bat` in Windows PowerShell.
+
+If the wrapper JAR is missing locally, regenerate it once:
 
 ```bash
 cd android
-gradle wrapper --gradle-version 8.9   # requires a local Gradle install (brew install gradle)
+gradle wrapper --gradle-version 8.11.1   # requires a local Gradle install
 ```
 
-Or simply **open the `android/` folder in Android Studio**, which provisions the wrapper automatically on first sync. After that, `./gradlew` works normally.
+Or simply **open the `android/` folder in Android Studio**, which syncs the project automatically.
 
 ## Open in Android Studio
 
@@ -29,6 +31,8 @@ Or simply **open the `android/` folder in Android Studio**, which provisions the
 Debug builds talk to `http://10.0.2.2:8080` (Android emulator → host machine). Release builds use `https://www.mybetrecord.com`.
 
 ## Build from the command line
+
+**macOS / Linux (bash/zsh):**
 
 ```bash
 cd android
@@ -42,6 +46,29 @@ cd android
 # Release App Bundle (AAB) for Play Console upload
 ./gradlew bundleRelease
 ```
+
+**Windows (PowerShell):** use the `.bat` wrapper from the `android` folder. `./gradlew` is a Unix script and will fail in PowerShell.
+
+Gradle needs **JDK 17+**. If you see `JAVA_HOME is not set`, point it at Android Studio’s bundled JBR for the current session:
+
+```powershell
+# Find the JBR (pick the path that exists on your machine)
+Get-ChildItem "C:\Program Files\Android\Android Studio\jbr" -ErrorAction SilentlyContinue
+Get-ChildItem "$env:LOCALAPPDATA\Programs\Android Studio\jbr" -ErrorAction SilentlyContinue
+
+$env:JAVA_HOME = "C:\Program Files\Android\Android Studio\jbr"   # adjust if needed
+$env:Path = "$env:JAVA_HOME\bin;$env:Path"
+java -version   # should show 17+
+
+cd android
+.\gradlew.bat testDebugUnitTest
+.\gradlew.bat assembleDebug
+.\gradlew.bat bundleRelease
+```
+
+To set it permanently: Windows Settings → System → About → Advanced system settings → Environment Variables → New User variable `JAVA_HOME` = the `jbr` folder path (not the `bin` subfolder).
+
+If PowerShell blocks the script, run: `Set-ExecutionPolicy -Scope Process Bypass` then retry, or call `cmd /c gradlew.bat assembleDebug`.
 
 Outputs:
 

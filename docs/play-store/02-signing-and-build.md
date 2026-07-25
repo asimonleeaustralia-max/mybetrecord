@@ -30,8 +30,13 @@ Reference it from `app/build.gradle.kts` `signingConfigs.release`, or use Androi
 
 ```bash
 cd android
+# macOS/Linux:
 ./gradlew testDebugUnitTest      # must pass
 ./gradlew bundleRelease          # -> app/build/outputs/bundle/release/app-release.aab
+
+# Windows PowerShell:
+.\gradlew.bat testDebugUnitTest
+.\gradlew.bat bundleRelease
 ```
 
 ## 4. Play App Signing
