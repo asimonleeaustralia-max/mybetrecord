@@ -232,11 +232,20 @@ ensure_resource_group() {
     run az group create -n "$RESOURCE_GROUP" -l "$LOCATION"
     return
   fi
-  if ! az group show -n "$RESOURCE_GROUP" >/dev/null 2>&1; then
-    echo "Creating resource group $RESOURCE_GROUP in $LOCATION..."
-    run az group create -n "$RESOURCE_GROUP" -l "$LOCATION" -o none
-  else
+  if az group show -n "$RESOURCE_GROUP" >/dev/null 2>&1; then
     echo "Resource group $RESOURCE_GROUP exists."
+    return
+  fi
+  echo "Creating resource group $RESOURCE_GROUP in $LOCATION..."
+  if ! run az group create -n "$RESOURCE_GROUP" -l "$LOCATION" -o none; then
+    # CI identities are often scoped to an existing RG and cannot create groups.
+    # If the group already exists but was briefly invisible, continue; otherwise fail.
+    if az group show -n "$RESOURCE_GROUP" >/dev/null 2>&1; then
+      echo "Resource group $RESOURCE_GROUP is reachable; continuing."
+      return
+    fi
+    echo "Failed to create or access resource group $RESOURCE_GROUP." >&2
+    exit 1
   fi
 }
 
