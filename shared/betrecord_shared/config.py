@@ -17,9 +17,15 @@ class Settings:
         # Auth
         self.jwt_secret = os.getenv("JWT_SECRET", "dev-only-change-me")
         self.jwt_algorithm = os.getenv("JWT_ALGORITHM", "HS256")
+        # Web clients historically used long-lived access tokens. Mobile prefers
+        # short access + rotating refresh; both are issued on every login.
         self.access_token_minutes = int(os.getenv("ACCESS_TOKEN_MINUTES", "1440"))
+        self.mobile_access_token_minutes = int(os.getenv("MOBILE_ACCESS_TOKEN_MINUTES", "30"))
+        self.refresh_token_days = int(os.getenv("REFRESH_TOKEN_DAYS", "30"))
+        self.login_rate_limit_per_hour = int(os.getenv("LOGIN_RATE_LIMIT_PER_HOUR", "30"))
         self.password_reset_minutes = int(os.getenv("PASSWORD_RESET_MINUTES", "60"))
         self.email_verification_minutes = int(os.getenv("EMAIL_VERIFICATION_MINUTES", "1440"))
+        self.account_deletion_minutes = int(os.getenv("ACCOUNT_DELETION_MINUTES", "60"))
         self.frontend_url = os.getenv("FRONTEND_URL", "http://localhost:8080")
 
         # Email (optional — password reset falls back to logging in development)

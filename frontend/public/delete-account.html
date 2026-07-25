@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Delete account — mybetrecord</title>
+  <meta name="description" content="Request permanent deletion of your mybetrecord account and associated data." />
+  <link rel="canonical" href="https://mybetrecord.com/delete-account" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/marketing.css" />
+  <style>
+    .m-legal form { max-width: 28rem; margin-top: 1.5rem; display: grid; gap: 0.75rem; }
+    .m-legal label { font-weight: 500; }
+    .m-legal input[type="email"] {
+      padding: 0.65rem 0.75rem; border: 1px solid #d0d5dd; border-radius: 8px; font: inherit;
+    }
+    .m-legal button {
+      padding: 0.7rem 1rem; border: 0; border-radius: 8px; background: #111827; color: #fff;
+      font: inherit; font-weight: 600; cursor: pointer;
+    }
+    .m-legal button:disabled { opacity: 0.6; cursor: not-allowed; }
+    .msg { margin-top: 1rem; padding: 0.75rem 1rem; border-radius: 8px; background: #f3f4f6; }
+    .msg.err { background: #fef2f2; color: #991b1b; }
+    .msg.ok { background: #ecfdf5; color: #065f46; }
+  </style>
+</head>
+<body>
+  <div class="m-site">
+    <header class="m-header">
+      <a class="wordmark" href="/">my<span>bet</span>record</a>
+      <nav class="m-nav"><a href="/login">Sign in</a></nav>
+    </header>
+    <main class="m-legal">
+      <h1>Delete your account</h1>
+      <p>This permanently deletes your mybetrecord account, betting history, API keys, and settings. This cannot be undone.</p>
+      <p>You can also delete from Settings inside the web or Android app after signing in.</p>
+
+      <form id="delete-form">
+        <label for="email">Account email</label>
+        <input id="email" name="email" type="email" required autocomplete="email" placeholder="you@example.com" />
+        <button type="submit" id="submit-btn">Email me a confirmation link</button>
+      </form>
+      <div id="message" class="msg" hidden></div>
+
+      <p style="margin-top:2rem"><a href="/privacy">Privacy policy</a> · <a href="/">← Back to home</a></p>
+    </main>
+    <footer class="m-footer">
+      <nav><a href="/">Home</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/support">Support</a></nav>
+    </footer>
+  </div>
+  <script>
+    (function () {
+      const form = document.getElementById("delete-form");
+      const msg = document.getElementById("message");
+      const btn = document.getElementById("submit-btn");
+      const params = new URLSearchParams((location.hash || "").replace(/^#/, ""));
+      const token = params.get("token");
+
+      function show(text, ok) {
+        msg.hidden = false;
+        msg.textContent = text;
+        msg.className = "msg " + (ok ? "ok" : "err");
+      }
+
+      async function confirmToken(t) {
+        btn.disabled = true;
+        try {
+          const res = await fetch("/auth/account/deletion-confirm", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ token: t }),
+          });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) throw new Error(data.detail || "Confirmation failed");
+          form.hidden = true;
+          show(data.message || "Account deleted.", true);
+        } catch (e) {
+          show(e.message || "Confirmation failed", false);
+          btn.disabled = false;
+        }
+      }
+
+      if (token) {
+        confirmToken(token);
+      }
+
+      form.addEventListener("submit", async (ev) => {
+        ev.preventDefault();
+        btn.disabled = true;
+        msg.hidden = true;
+        try {
+          const email = document.getElementById("email").value.trim();
+          const res = await fetch("/auth/account/deletion-request", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email }),
+          });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) throw new Error(data.detail || "Request failed");
+          show(data.message || "Check your email.", true);
+        } catch (e) {
+          show(e.message || "Request failed", false);
+        } finally {
+          btn.disabled = false;
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

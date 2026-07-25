@@ -5,7 +5,7 @@ from __future__ import annotations
 import secrets
 from datetime import datetime, timedelta, timezone
 
-from fastapi import Depends, FastAPI, HTTPException, Query, Request, status
+from fastapi import Depends, FastAPI, Header, HTTPException, Query, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import Response
 from sqlalchemy import func, select
@@ -13,10 +13,31 @@ from sqlalchemy.orm import Session
 
 from betrecord_shared.config import get_settings
 from betrecord_shared.database import get_db, init_db
-from betrecord_shared.email import EmailDeliveryError, send_password_reset_email, send_verification_email
+from betrecord_shared.email import (
+    EmailDeliveryError,
+    send_account_deletion_email,
+    send_password_reset_email,
+    send_verification_email,
+)
 from betrecord_shared.events import log_event
-from betrecord_shared.models import ApiKey, AppEvent, Bet, LandingHit, PasswordResetToken, PendingRegistration, User
+from betrecord_shared.models import (
+    AccountDeletionToken,
+    ApiKey,
+    AppEvent,
+    Bet,
+    LandingHit,
+    PasswordResetToken,
+    PendingRegistration,
+    PromoRedemption,
+    RefreshToken,
+    User,
+)
+from betrecord_shared.rate_limit import login_limiter
 from betrecord_shared.schemas import (
+    AccountDeleteRequest,
+    AccountDeletionConfirm,
+    AccountDeletionRequest,
+    AccountDeletionResponse,
     AdminAddIn,
     AdminCompProIn,
     AdminStatsOut,
@@ -27,10 +48,12 @@ from betrecord_shared.schemas import (
     AppEventOut,
     LandingHitOut,
     LandingTrackIn,
+    LogoutRequest,
     PasswordChange,
     PasswordResetConfirm,
     PasswordResetRequest,
     PasswordResetResponse,
+    RefreshTokenRequest,
     RegisterResponse,
     SettingsUpdate,
     TokenResponse,
@@ -41,13 +64,18 @@ from betrecord_shared.schemas import (
 )
 from betrecord_shared.seed import promote_bootstrap_admin
 from betrecord_shared.security import (
-    create_access_token,
     generate_api_key,
     generate_password_reset_token,
     get_current_admin,
     get_current_user,
     hash_password,
     hash_password_reset_token,
+    hash_refresh_token,
+    issue_refresh_token,
+    issue_token_pair,
+    revoke_all_refresh_tokens,
+    revoke_refresh_family,
+    revoke_refresh_token,
     verify_password,
 )
 from betrecord_shared.ip_lookup import lookup_ip
@@ -83,6 +111,60 @@ def _as_utc(dt: datetime) -> datetime:
     if dt.tzinfo is None:
         return dt.replace(tzinfo=timezone.utc)
     return dt.astimezone(timezone.utc)
+
+
+def _token_response(
+    db: Session,
+    user_id: str,
+    *,
+    client: str | None = None,
+    device_name: str | None = None,
+) -> TokenResponse:
+    access, expires, refresh, refresh_expires = issue_token_pair(
+        db,
+        user_id,
+        client=client,
+        device_name=device_name,
+    )
+    return TokenResponse(
+        access_token=access,
+        expires_in=expires,
+        refresh_token=refresh,
+        refresh_expires_in=refresh_expires,
+    )
+
+
+def _delete_user_account(db: Session, user: User, *, ip: str | None) -> None:
+    """Permanently delete a user and cascaded personal data."""
+    email = user.email
+    user_id = user.id
+
+    # Revoke sessions and API keys first.
+    revoke_all_refresh_tokens(db, user_id)
+    for key in db.scalars(select(ApiKey).where(ApiKey.user_id == user_id)):
+        key.revoked = True
+
+    # Clear pending registrations for the same email.
+    for pending in db.scalars(select(PendingRegistration).where(PendingRegistration.email == email)):
+        db.delete(pending)
+
+    # Promo redemptions cascade via FK, but delete explicitly for clarity.
+    for row in db.scalars(select(PromoRedemption).where(PromoRedemption.user_id == user_id)):
+        db.delete(row)
+
+    # Anonymise audit events (FK is SET NULL) then delete the user row.
+    for event in db.scalars(select(AppEvent).where(AppEvent.user_id == user_id)):
+        event.user_id = None
+        if event.detail and email in event.detail:
+            event.detail = event.detail.replace(email, "[deleted]")
+
+    log_event(
+        db,
+        "account_deleted",
+        detail=f"user_id={user_id}",
+        ip_address=ip,
+    )
+    db.delete(user)
 
 
 @app.on_event("startup")
@@ -235,15 +317,26 @@ def verify_registration(
     )
     db.commit()
     db.refresh(user)
-    token, expires = create_access_token(user.id)
-    return TokenResponse(access_token=token, expires_in=expires)
+    response = _token_response(db, user.id, client=payload.client, device_name=payload.device_name)
+    db.commit()
+    return response
 
 
 @app.post("/auth/login", response_model=TokenResponse)
 def login(payload: UserLogin, request: Request, db: Session = Depends(get_db)) -> TokenResponse:
+    ip = _client_ip(request) or "unknown"
+    if not login_limiter.allow(
+        f"login:{ip}",
+        limit=settings.login_rate_limit_per_hour,
+        window_seconds=3600,
+    ):
+        raise HTTPException(
+            status.HTTP_429_TOO_MANY_REQUESTS,
+            "Too many sign-in attempts. Please try again later.",
+        )
+
     email = payload.email.lower()
     user = db.scalar(select(User).where(User.email == email))
-    ip = _client_ip(request)
     if not user or not verify_password(payload.password, user.password_hash):
         pending = db.scalar(select(PendingRegistration).where(PendingRegistration.email == email))
         if pending and verify_password(payload.password, pending.password_hash):
@@ -251,7 +344,7 @@ def login(payload: UserLogin, request: Request, db: Session = Depends(get_db)) -
                 db,
                 "login_blocked",
                 detail="email not verified",
-                ip_address=ip,
+                ip_address=ip if ip != "unknown" else None,
             )
             db.commit()
             raise HTTPException(
@@ -263,20 +356,131 @@ def login(payload: UserLogin, request: Request, db: Session = Depends(get_db)) -
             "login_failed",
             user_id=user.id if user else None,
             detail=email,
-            ip_address=ip,
+            ip_address=ip if ip != "unknown" else None,
         )
         db.commit()
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Incorrect email or password")
     if not user.is_active:
-        log_event(db, "login_blocked", user_id=user.id, detail="account disabled", ip_address=ip)
+        log_event(
+            db,
+            "login_blocked",
+            user_id=user.id,
+            detail="account disabled",
+            ip_address=ip if ip != "unknown" else None,
+        )
         db.commit()
         raise HTTPException(status.HTTP_403_FORBIDDEN, "Account disabled")
     user.last_login_at = datetime.now(timezone.utc)
     promote_bootstrap_admin(user, db)
-    log_event(db, "login", user_id=user.id, detail=user.email, ip_address=ip)
+    log_event(
+        db,
+        "login",
+        user_id=user.id,
+        detail=user.email,
+        ip_address=ip if ip != "unknown" else None,
+    )
+    response = _token_response(db, user.id, client=payload.client, device_name=payload.device_name)
     db.commit()
-    token, expires = create_access_token(user.id)
-    return TokenResponse(access_token=token, expires_in=expires)
+    return response
+
+
+@app.post("/auth/refresh", response_model=TokenResponse)
+def refresh_tokens(
+    payload: RefreshTokenRequest,
+    request: Request,
+    db: Session = Depends(get_db),
+) -> TokenResponse:
+    token_hash = hash_refresh_token(payload.refresh_token)
+    now = datetime.now(timezone.utc)
+    row = db.scalar(select(RefreshToken).where(RefreshToken.token_hash == token_hash))
+    ip = _client_ip(request)
+
+    if not row:
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid refresh token")
+
+    if row.revoked_at is not None:
+        # Refresh-token reuse: revoke the whole family.
+        revoke_refresh_family(db, row.family_id)
+        log_event(
+            db,
+            "refresh_reuse",
+            user_id=row.user_id,
+            detail=row.family_id,
+            ip_address=ip,
+        )
+        db.commit()
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Refresh token revoked")
+
+    if _as_utc(row.expires_at) <= now:
+        revoke_refresh_token(row)
+        db.commit()
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Refresh token expired")
+
+    user = db.get(User, row.user_id)
+    if not user or not user.is_active:
+        revoke_refresh_token(row)
+        db.commit()
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "User not found")
+
+    # Rotate: revoke old, issue new in the same family.
+    new_raw, new_expires, new_row = issue_refresh_token(
+        db,
+        user.id,
+        client=row.client,
+        device_name=row.device_name,
+        family_id=row.family_id,
+    )
+    revoke_refresh_token(row, replaced_by_id=new_row.id)
+    row.last_used_at = now
+
+    from betrecord_shared.security import access_token_minutes_for_client, create_access_token
+
+    access, access_expires = create_access_token(
+        user.id,
+        minutes=access_token_minutes_for_client(row.client),
+    )
+    log_event(db, "token_refreshed", user_id=user.id, detail=row.client, ip_address=ip)
+    db.commit()
+    return TokenResponse(
+        access_token=access,
+        expires_in=access_expires,
+        refresh_token=new_raw,
+        refresh_expires_in=new_expires,
+    )
+
+
+@app.post("/auth/logout", status_code=204)
+def logout(
+    payload: LogoutRequest,
+    request: Request,
+    db: Session = Depends(get_db),
+    authorization: str | None = Header(default=None),
+) -> Response:
+    """Revoke refresh token(s). Bearer optional when logging out with refresh token only."""
+    from betrecord_shared.security import decode_token
+
+    ip = _client_ip(request)
+    user_id: str | None = None
+
+    if authorization and authorization.lower().startswith("bearer "):
+        user_id = decode_token(authorization[7:].strip())
+
+    if payload.all_devices:
+        if not user_id:
+            raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Authentication required")
+        revoke_all_refresh_tokens(db, user_id)
+        log_event(db, "logout_all", user_id=user_id, ip_address=ip)
+    elif payload.refresh_token:
+        token_hash = hash_refresh_token(payload.refresh_token)
+        row = db.scalar(select(RefreshToken).where(RefreshToken.token_hash == token_hash))
+        if row and (user_id is None or row.user_id == user_id):
+            revoke_refresh_token(row)
+            user_id = row.user_id
+        log_event(db, "logout", user_id=user_id, ip_address=ip)
+    elif user_id:
+        log_event(db, "logout", user_id=user_id, detail="access_only", ip_address=ip)
+    db.commit()
+    return Response(status_code=204)
 
 
 _PASSWORD_RESET_MESSAGE = (
@@ -395,6 +599,7 @@ def confirm_password_reset(
     user.password_hash = hash_password(payload.password)
     reset_row.used_at = now
     _invalidate_reset_tokens(db, user.id)
+    revoke_all_refresh_tokens(db, user.id)
     log_event(
         db,
         "password_reset_completed",
@@ -417,6 +622,7 @@ def change_password(
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "Current password is incorrect")
     user.password_hash = hash_password(payload.password)
     _invalidate_reset_tokens(db, user.id)
+    revoke_all_refresh_tokens(db, user.id)
     log_event(
         db,
         "password_changed",
@@ -426,6 +632,117 @@ def change_password(
     )
     db.commit()
     return PasswordResetResponse(message="Password updated.")
+
+
+@app.delete("/auth/account", status_code=204)
+def delete_account(
+    payload: AccountDeleteRequest,
+    request: Request,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> Response:
+    if not verify_password(payload.password, user.password_hash):
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Password is incorrect")
+    ip = _client_ip(request)
+    _delete_user_account(db, user, ip=ip)
+    db.commit()
+    return Response(status_code=204)
+
+
+_ACCOUNT_DELETION_MESSAGE = (
+    "If an account exists for that email, a confirmation link has been sent."
+)
+
+
+def _deletion_url(raw_token: str) -> str:
+    base = settings.frontend_url.rstrip("/")
+    return f"{base}/delete-account#token={raw_token}"
+
+
+@app.post("/auth/account/deletion-request", response_model=AccountDeletionResponse)
+def request_account_deletion(
+    payload: AccountDeletionRequest,
+    request: Request,
+    db: Session = Depends(get_db),
+) -> AccountDeletionResponse:
+    """Public web path for Play Store account-deletion compliance."""
+    email = payload.email.lower()
+    user = db.scalar(select(User).where(User.email == email))
+    ip = _client_ip(request)
+    raw_token: str | None = None
+
+    if user and user.is_active:
+        now = datetime.now(timezone.utc)
+        for row in db.scalars(
+            select(AccountDeletionToken).where(
+                AccountDeletionToken.user_id == user.id,
+                AccountDeletionToken.used_at.is_(None),
+            )
+        ):
+            row.used_at = now
+        raw_token, token_hash = generate_password_reset_token()
+        db.add(
+            AccountDeletionToken(
+                user_id=user.id,
+                token_hash=token_hash,
+                expires_at=now + timedelta(minutes=settings.account_deletion_minutes),
+            )
+        )
+        try:
+            send_account_deletion_email(
+                user.email,
+                _deletion_url(raw_token),
+                settings.account_deletion_minutes,
+            )
+        except EmailDeliveryError as exc:
+            db.rollback()
+            raise HTTPException(
+                status.HTTP_503_SERVICE_UNAVAILABLE,
+                "Unable to send confirmation email. Please try again later.",
+            ) from exc
+        log_event(
+            db,
+            "account_deletion_requested",
+            user_id=user.id,
+            detail=user.email,
+            ip_address=ip,
+        )
+        db.commit()
+
+    response = AccountDeletionResponse(message=_ACCOUNT_DELETION_MESSAGE)
+    if raw_token and settings.environment != "production":
+        response.deletion_token = raw_token
+    return response
+
+
+@app.post("/auth/account/deletion-confirm", response_model=AccountDeletionResponse)
+def confirm_account_deletion(
+    payload: AccountDeletionConfirm,
+    request: Request,
+    db: Session = Depends(get_db),
+) -> AccountDeletionResponse:
+    token_hash = hash_password_reset_token(payload.token)
+    now = datetime.now(timezone.utc)
+    row = db.scalar(
+        select(AccountDeletionToken).where(AccountDeletionToken.token_hash == token_hash)
+    )
+    ip = _client_ip(request)
+
+    if not row or row.used_at is not None or _as_utc(row.expires_at) <= now:
+        log_event(db, "account_deletion_failed", detail="invalid or expired token", ip_address=ip)
+        db.commit()
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Invalid or expired deletion link")
+
+    user = db.get(User, row.user_id)
+    if not user:
+        row.used_at = now
+        db.commit()
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Invalid or expired deletion link")
+
+    row.used_at = now
+    _delete_user_account(db, user, ip=ip)
+    db.commit()
+    return AccountDeletionResponse(message="Your account and associated data have been deleted.")
 
 
 @app.get("/auth/me", response_model=UserOut)

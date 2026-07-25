@@ -18,30 +18,48 @@
     </header>
     <main class="m-legal">
       <h1>Privacy Policy</h1>
-      <p><em>Last updated: June 2026</em></p>
-      <p>mybetrecord (&ldquo;we&rdquo;, &ldquo;us&rdquo;) operates the mybetrecord.com web application. This policy describes what data we collect and how we use it.</p>
+      <p><em>Last updated: July 2026</em></p>
+      <p>mybetrecord (&ldquo;we&rdquo;, &ldquo;us&rdquo;) operates the mybetrecord.com web application and the mybetrecord Android app. This policy describes what data we collect and how we use it.</p>
+
       <h2>Information we collect</h2>
       <ul>
-        <li><strong>Account data:</strong> email address, password hash, timezone, and preferences (bankroll, currency, odds format).</li>
-        <li><strong>Betting records:</strong> bets you enter — events, stakes, odds, outcomes, notes, and related metadata.</li>
-        <li><strong>Usage data:</strong> login timestamps, API key usage, and administrative audit events for security.</li>
-        <li><strong>Cookies:</strong> locale preference cookie on the app; session tokens stored in your browser local storage.</li>
+        <li><strong>Account data:</strong> email address, password hash, display name, timezone, locale, and preferences (bankroll, currency, odds format).</li>
+        <li><strong>Betting records:</strong> bets you enter — events, stakes, odds, outcomes, notes, bookmaker names you type, and related metadata. We do not place bets on your behalf.</li>
+        <li><strong>Authentication:</strong> access and refresh tokens (mobile/web sessions), API keys (hashed), password-reset and email-verification tokens (hashed).</li>
+        <li><strong>Usage &amp; security data:</strong> login timestamps, API key usage, and administrative audit events. Audit events may include IP address.</li>
+        <li><strong>Marketing-site analytics:</strong> when you visit our public website we may record path, IP address, approximate country, ISP, browser, OS, language, timezone, referrer, and whether the visit appears automated. This is not tied to your ledger account.</li>
+        <li><strong>App / device data (Android):</strong> app version, crash diagnostics we receive from the platform, and language/timezone settings you choose. We do not request contacts, location, SMS, or microphone permissions for the core ledger.</li>
+        <li><strong>Local storage:</strong> session tokens may be stored on your device (browser local storage or Android encrypted storage).</li>
       </ul>
+
       <h2>How we use data</h2>
-      <p>We use your data to provide the ledger, generate reports, authenticate API requests, and improve reliability. We do not sell your personal data.</p>
+      <p>We use your data to provide the ledger, generate reports, authenticate API requests, prevent abuse, send transactional email (verification, password reset, account deletion), and improve reliability. We do not sell your personal data. We do not use your betting history for advertising.</p>
+
       <h2>Data storage &amp; security</h2>
-      <p>Data is stored on secure cloud infrastructure. Passwords are hashed; API keys are stored in a form that cannot be retrieved after creation.</p>
-      <h2>Your choices</h2>
-      <p>You may update settings, revoke API keys, or delete individual bets at any time. To delete your account, <a href="mailto:support@mybetrecord.com">contact us</a> — we will remove your personal data subject to legal retention requirements.</p>
+      <p>Data is stored on secure cloud infrastructure. Passwords and API keys are hashed. Mobile refresh tokens are stored hashed server-side and encrypted on device. Traffic uses HTTPS. We retain audit logs and security events as needed for fraud prevention and legal obligations.</p>
+
+      <h2>Your choices &amp; account deletion</h2>
+      <p>You may update settings, revoke API keys, or delete individual bets at any time. You can permanently delete your account and associated personal data:</p>
+      <ul>
+        <li>In the Android app or web app: Settings → Delete account (requires password confirmation).</li>
+        <li>On the web without signing in: <a href="/delete-account">mybetrecord.com/delete-account</a> — we email a confirmation link.</li>
+      </ul>
+      <p>Deletion removes your account, betting records, API keys, and settings. Anonymised security audit rows may be retained. Stripe billing records are retained by Stripe under their policies where a subscription existed.</p>
+
       <h2>Third parties</h2>
-      <p>Payment processing (when enabled) is handled by Stripe under their privacy policy. For billing we send Stripe your email address and link your account to a Stripe customer id; Stripe stores payment method and invoice details. We do not share betting data with bookmakers.</p>
+      <p>Payment processing (when enabled on the website) is handled by Stripe under their privacy policy. For billing we send Stripe your email address and link your account to a Stripe customer id. The Android app does not process payments in-app. We do not share betting data with bookmakers.</p>
+      <p>Email delivery may use a transactional email provider. Hosting and infrastructure providers process data as processors under our instructions.</p>
+
+      <h2>Children</h2>
+      <p>mybetrecord is for adults (18+). We do not knowingly collect data from children. If you believe a minor has created an account, contact us and we will delete it.</p>
+
       <h2>Contact</h2>
       <p>General support and privacy questions: <a href="mailto:support@mybetrecord.com">support@mybetrecord.com</a></p>
       <p>Privacy-specific enquiries: <a href="mailto:privacy@mybetrecord.com">privacy@mybetrecord.com</a></p>
-      <p><a href="/">← Back to home</a></p>
+      <p><a href="/responsible-gambling">Responsible gambling</a> · <a href="/">← Back to home</a></p>
     </main>
     <footer class="m-footer">
-      <nav><a href="/">Home</a><a href="/terms">Terms</a><a href="/support">Support</a></nav>
+      <nav><a href="/">Home</a><a href="/terms">Terms</a><a href="/support">Support</a><a href="/delete-account">Delete account</a></nav>
     </footer>
   </div>
 </body>

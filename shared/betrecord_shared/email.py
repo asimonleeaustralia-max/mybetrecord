@@ -62,3 +62,15 @@ def send_password_reset_email(to: str, reset_url: str, expires_minutes: int) -> 
         "If you did not request this, you can ignore this email.\n"
     )
     send_email(to, subject, body)
+
+
+def send_account_deletion_email(to: str, delete_url: str, expires_minutes: int) -> None:
+    subject = "Confirm deletion of your mybetrecord account"
+    body = (
+        "You requested deletion of your mybetrecord account.\n\n"
+        "This permanently removes your account, betting history, API keys, and settings.\n"
+        f"Confirm deletion by opening this link (valid for {expires_minutes} minutes):\n"
+        f"{delete_url}\n\n"
+        "If you did not request this, you can ignore this email — your account will remain active.\n"
+    )
+    send_email(to, subject, body)

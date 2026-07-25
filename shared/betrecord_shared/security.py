@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import hashlib
 import secrets
+import uuid
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
@@ -23,7 +24,7 @@ from sqlalchemy.orm import Session
 
 from .config import get_settings
 from .database import get_db
-from .models import ApiKey, User
+from .models import ApiKey, RefreshToken, User
 
 settings = get_settings()
 
@@ -48,8 +49,8 @@ def verify_password(password: str, password_hash: str) -> bool:
 
 # -------------------------------- JWT ------------------------------------- #
 
-def create_access_token(user_id: str) -> tuple[str, int]:
-    expires_seconds = settings.access_token_minutes * 60
+def create_access_token(user_id: str, *, minutes: int | None = None) -> tuple[str, int]:
+    expires_seconds = (minutes if minutes is not None else settings.access_token_minutes) * 60
     now = datetime.now(timezone.utc)
     payload = {
         "sub": user_id,
@@ -64,9 +65,18 @@ def create_access_token(user_id: str) -> tuple[str, int]:
 def decode_token(token: str) -> Optional[str]:
     try:
         payload = jwt.decode(token, settings.jwt_secret, algorithms=[settings.jwt_algorithm])
+        if payload.get("typ") not in (None, "access"):
+            return None
         return payload.get("sub")
     except jwt.PyJWTError:
         return None
+
+
+def access_token_minutes_for_client(client: str | None) -> int:
+    client_norm = (client or "web").strip().lower()
+    if client_norm in ("android", "ios", "mobile"):
+        return settings.mobile_access_token_minutes
+    return settings.access_token_minutes
 
 
 # ------------------------------ API keys ---------------------------------- #
@@ -94,6 +104,101 @@ def generate_password_reset_token() -> tuple[str, str]:
 
 def hash_password_reset_token(raw_token: str) -> str:
     return hashlib.sha256(raw_token.encode()).hexdigest()
+
+
+# ---------------------------- Refresh tokens ------------------------------ #
+
+def generate_refresh_token() -> tuple[str, str]:
+    """Return (raw_token, token_hash)."""
+    raw = secrets.token_urlsafe(48)
+    return raw, hashlib.sha256(raw.encode()).hexdigest()
+
+
+def hash_refresh_token(raw_token: str) -> str:
+    return hashlib.sha256(raw_token.encode()).hexdigest()
+
+
+def issue_refresh_token(
+    db: Session,
+    user_id: str,
+    *,
+    client: str = "web",
+    device_name: str | None = None,
+    family_id: str | None = None,
+) -> tuple[str, int, RefreshToken]:
+    """Create a new refresh token row and return (raw_token, expires_seconds, row)."""
+    raw, token_hash = generate_refresh_token()
+    expires_at = datetime.now(timezone.utc) + timedelta(days=settings.refresh_token_days)
+    row = RefreshToken(
+        user_id=user_id,
+        token_hash=token_hash,
+        family_id=family_id or str(uuid.uuid4()),
+        client=(client or "web")[:32],
+        device_name=(device_name or None)[:120] if device_name else None,
+        expires_at=expires_at,
+    )
+    db.add(row)
+    db.flush()
+    expires_seconds = settings.refresh_token_days * 24 * 60 * 60
+    return raw, expires_seconds, row
+
+
+def revoke_refresh_token(row: RefreshToken, *, replaced_by_id: str | None = None) -> None:
+    now = datetime.now(timezone.utc)
+    if row.revoked_at is None:
+        row.revoked_at = now
+    if replaced_by_id:
+        row.replaced_by_id = replaced_by_id
+
+
+def revoke_refresh_family(db: Session, family_id: str) -> int:
+    """Revoke an entire refresh-token family (reuse detection)."""
+    now = datetime.now(timezone.utc)
+    count = 0
+    for row in db.scalars(
+        select(RefreshToken).where(
+            RefreshToken.family_id == family_id,
+            RefreshToken.revoked_at.is_(None),
+        )
+    ):
+        row.revoked_at = now
+        count += 1
+    return count
+
+
+def revoke_all_refresh_tokens(db: Session, user_id: str) -> int:
+    now = datetime.now(timezone.utc)
+    count = 0
+    for row in db.scalars(
+        select(RefreshToken).where(
+            RefreshToken.user_id == user_id,
+            RefreshToken.revoked_at.is_(None),
+        )
+    ):
+        row.revoked_at = now
+        count += 1
+    return count
+
+
+def issue_token_pair(
+    db: Session,
+    user_id: str,
+    *,
+    client: str | None = None,
+    device_name: str | None = None,
+    family_id: str | None = None,
+) -> tuple[str, int, str, int]:
+    """Return (access_token, access_expires, refresh_token, refresh_expires)."""
+    minutes = access_token_minutes_for_client(client)
+    access, access_expires = create_access_token(user_id, minutes=minutes)
+    refresh, refresh_expires, _ = issue_refresh_token(
+        db,
+        user_id,
+        client=client or "web",
+        device_name=device_name,
+        family_id=family_id,
+    )
+    return access, access_expires, refresh, refresh_expires
 
 
 # --------------------------- Auth dependency ------------------------------ #

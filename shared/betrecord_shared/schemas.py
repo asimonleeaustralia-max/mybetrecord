@@ -83,12 +83,50 @@ class UserRegister(BaseModel):
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
+    client: Optional[str] = Field(default="web", max_length=32)  # web | android | ios | mobile
+    device_name: Optional[str] = Field(default=None, max_length=120)
 
 
 class TokenResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"
     expires_in: int
+    refresh_token: Optional[str] = None
+    refresh_expires_in: Optional[int] = None
+
+
+class RefreshTokenRequest(BaseModel):
+    refresh_token: str = Field(min_length=16, max_length=512)
+
+
+class LogoutRequest(BaseModel):
+    refresh_token: Optional[str] = Field(default=None, min_length=16, max_length=512)
+    all_devices: bool = False
+
+
+class AccountDeleteRequest(BaseModel):
+    password: str = Field(min_length=1, max_length=128)
+    confirm: str = Field(min_length=1, max_length=32)
+
+    @field_validator("confirm")
+    @classmethod
+    def _confirm(cls, v: str) -> str:
+        if v.strip().upper() != "DELETE":
+            raise ValueError("Type DELETE to confirm account deletion")
+        return "DELETE"
+
+
+class AccountDeletionRequest(BaseModel):
+    email: EmailStr
+
+
+class AccountDeletionConfirm(BaseModel):
+    token: str = Field(min_length=16, max_length=256)
+
+
+class AccountDeletionResponse(BaseModel):
+    message: str
+    deletion_token: Optional[str] = None  # populated in non-production for local testing
 
 
 class RegisterResponse(BaseModel):
@@ -98,6 +136,8 @@ class RegisterResponse(BaseModel):
 
 class VerifyEmailConfirm(BaseModel):
     token: str = Field(min_length=16, max_length=256)
+    client: Optional[str] = Field(default="web", max_length=32)
+    device_name: Optional[str] = Field(default=None, max_length=120)
 
 
 class PasswordResetRequest(BaseModel):
