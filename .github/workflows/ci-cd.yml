@@ -7,8 +7,8 @@ on:
     branches: [main]
 
 env:
-  RESOURCE_GROUP: mybetrecord-rg
-  LOCATION: australiaeast
+  RESOURCE_GROUP: mybetrecord-eus2-rg
+  LOCATION: eastus2
 
 jobs:
   test:

@@ -22,8 +22,8 @@ if [[ -f "$ROOT/.env.deploy" ]]; then
   set +a
 fi
 
-RESOURCE_GROUP="${RESOURCE_GROUP:-mybetrecord-rg}"
-LOCATION="${LOCATION:-australiaeast}"
+RESOURCE_GROUP="${RESOURCE_GROUP:-mybetrecord-eus2-rg}"
+LOCATION="${LOCATION:-eastus2}"
 IMAGE_TAG="${IMAGE_TAG:-$(git rev-parse --short=7 HEAD 2>/dev/null || echo latest)}"
 PARAMS_FILE="${PARAMS_FILE:-infra/main.parameters.json}"
 BICEP_FILE="${BICEP_FILE:-infra/main.bicep}"
@@ -438,7 +438,10 @@ if [[ "$INFRA_ONLY" -eq 1 ]]; then
   deploy_bicep_with_retry "$IMAGE_TAG"
 elif [[ "$BOOTSTRAP" -eq 1 ]]; then
   echo "Bootstrap: provisioning infrastructure..."
-  deploy_bicep_with_retry "$IMAGE_TAG"
+  # First pass often fails on Container Apps until images exist in ACR — continue to build.
+  if ! deploy_bicep_with_retry "$IMAGE_TAG"; then
+    echo "Initial infra deploy reported errors (often missing images); continuing to build images..."
+  fi
   build_and_push_images
   echo "Bootstrap: redeploying apps with images..."
   deploy_bicep_with_retry "$IMAGE_TAG"
@@ -446,7 +449,9 @@ else
   resolve_acr
   if [[ -z "${ACR_NAME:-}" ]]; then
     echo "No ACR found — bootstrapping (infra → images → infra)..."
-    deploy_bicep_with_retry "$IMAGE_TAG"
+    if ! deploy_bicep_with_retry "$IMAGE_TAG"; then
+      echo "Initial infra deploy reported errors (often missing images); continuing to build images..."
+    fi
     build_and_push_images
     deploy_bicep_with_retry "$IMAGE_TAG"
   else

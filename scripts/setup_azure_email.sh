@@ -20,8 +20,8 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
-RESOURCE_GROUP="${RESOURCE_GROUP:-mybetrecord-rg}"
-LOCATION="${LOCATION:-australiaeast}"
+RESOURCE_GROUP="${RESOURCE_GROUP:-mybetrecord-eus2-rg}"
+LOCATION="${LOCATION:-eastus2}"
 EMAIL_SERVICE_NAME="${EMAIL_SERVICE_NAME:-mybetrec-email}"
 COMM_SERVICE_NAME="${COMM_SERVICE_NAME:-mybetrec-comm}"
 DOMAIN_NAME="AzureManagedDomain"
@@ -29,7 +29,7 @@ ENTRA_APP_NAME="${ENTRA_APP_NAME:-mybetrec-smtp}"
 SMTP_USERNAME_RESOURCE="${SMTP_USERNAME_RESOURCE:-mybetrec-smtp-auth}"
 SMTP_USERNAME_VALUE="${SMTP_USERNAME_VALUE:-mybetrec-mailer}"
 FRONTEND_URL="${FRONTEND_URL:-https://www.mybetrecord.com}"
-DATA_LOCATION="${DATA_LOCATION:-australia}"
+DATA_LOCATION="${DATA_LOCATION:-unitedstates}"
 SKIP_DEPLOY=0
 
 usage() {

@@ -21,3 +21,6 @@ dist/
 .import_debug.log
 tmp_*
 
+# Region migration dumps (never commit)
+.migration/
+

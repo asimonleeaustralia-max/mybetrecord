@@ -267,10 +267,10 @@ The deployment output `frontendUrl` is your live site.
 
 ```bash
 # 1. Resource group
-az group create -n mybetrecord-rg -l australiaeast
+az group create -n mybetrecord-eus2-rg -l eastus2
 
 # 2. Infra + a registry to push to
-az deployment group create -g mybetrecord-rg -n main \
+az deployment group create -g mybetrecord-eus2-rg -n main \
   --template-file infra/main.bicep \
   --parameters infra/main.parameters.json \
   --parameters pgAdminPassword='<strong-password>' jwtSecret='<long-random>'
