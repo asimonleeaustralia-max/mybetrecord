@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.mybetrecord.android.i18n.tr
 import com.mybetrecord.android.ui.components.ErrorText
 import com.mybetrecord.android.ui.components.LoadingScreen
 import com.mybetrecord.android.util.formatMoney
@@ -45,22 +46,18 @@ fun DashboardScreen(
                         .padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
-                    Text("Dashboard", style = MaterialTheme.typography.headlineSmall)
-                    Text(
-                        "Personal ledger summary. For record-keeping only.",
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
+                    Text(tr("android.home"), style = MaterialTheme.typography.headlineSmall)
+                    Text(tr("android.summarySub"), style = MaterialTheme.typography.bodyMedium)
                     state.error?.let { ErrorText(it) }
                     val s = state.summary
                     if (s != null) {
-                        MetricCard("Profit", formatMoney(s.profit, s.currency ?: s.baseCurrency))
-                        MetricCard("Turnover", formatMoney(s.turnover, s.currency ?: s.baseCurrency))
-                        MetricCard("Yield", "%.2f%%".format(s.yieldPct))
-                        MetricCard("Strike rate", "%.2f%%".format(s.strikeRatePct))
-                        MetricCard("Settled bets", s.settledBets.toString())
-                        MetricCard("Total bets", s.totalBets.toString())
+                        MetricCard(tr("ticker.pl"), formatMoney(s.profit, s.currency ?: s.baseCurrency))
+                        MetricCard(tr("android.turnover"), formatMoney(s.turnover, s.currency ?: s.baseCurrency))
+                        MetricCard(tr("ticker.yield"), "%.2f%%".format(s.yieldPct))
+                        MetricCard(tr("reports.strikeRate"), "%.2f%%".format(s.strikeRatePct))
+                        MetricCard(tr("reports.totalBets"), "${s.settledBets} / ${s.totalBets}")
                         s.bankroll?.let {
-                            MetricCard("Bankroll", formatMoney(it, s.baseCurrency))
+                            MetricCard(tr("ticker.bankroll"), formatMoney(it, s.baseCurrency))
                         }
                     }
                 }

@@ -5,8 +5,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mybetrecord.android.data.remote.BetCreateDto
 import com.mybetrecord.android.data.remote.BetDto
+import com.mybetrecord.android.data.remote.BetLegCreateDto
 import com.mybetrecord.android.data.remote.BetUpdateDto
 import com.mybetrecord.android.data.repository.BetsRepository
+import com.mybetrecord.android.i18n.tr
+import com.mybetrecord.android.util.BetMath
 import com.mybetrecord.android.util.toUserMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,6 +19,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 data class BetsListUiState(
@@ -61,6 +66,13 @@ class BetsListViewModel @Inject constructor(
     }
 }
 
+/** One editable selection of a multiple. Odds text is in the bet's odds format. */
+data class LegInput(
+    val event: String = "",
+    val selection: String = "",
+    val odds: String = "",
+)
+
 data class BetEditorUiState(
     val loading: Boolean = false,
     val saving: Boolean = false,
@@ -70,15 +82,30 @@ data class BetEditorUiState(
     val sport: String = "Football",
     val event: String = "",
     val selection: String = "",
+    val oddsFormat: String = "decimal",
     val odds: String = "",
     val stake: String = "",
     val currency: String = "GBP",
     val betType: String = "Win",
     val outcome: String = "pending",
     val bookmaker: String = "",
+    val portal: String = "",
+    val tipster: String = "",
     val notes: String = "",
+    val eachWay: Boolean = false,
+    val freeBet: Boolean = false,
+    val cashOut: String = "",
+    val eventAt: String = "",
+    val closingOdds: String = "",
+    val isMultiple: Boolean = false,
+    val legs: List<LegInput> = listOf(LegInput(), LegInput()),
+    val clvPct: Double? = null,
+    val shareToken: String? = null,
+    val sharing: Boolean = false,
     val isEdit: Boolean = false,
 )
+
+private val EVENT_AT_INPUT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
 
 @HiltViewModel
 class BetEditorViewModel @Inject constructor(
@@ -105,13 +132,32 @@ class BetEditorViewModel @Inject constructor(
                         sport = bet.sport,
                         event = bet.event,
                         selection = bet.selection,
+                        // The API stores only decimal odds, so edits always re-open in decimal.
+                        oddsFormat = "decimal",
                         odds = bet.oddsDecimal.toString(),
                         stake = bet.stake.toString(),
                         currency = bet.currency,
                         betType = bet.betType,
                         outcome = bet.outcome,
                         bookmaker = bet.bookmaker.orEmpty(),
+                        portal = bet.portal.orEmpty(),
+                        tipster = bet.tipster.orEmpty(),
                         notes = bet.notes.orEmpty(),
+                        eachWay = bet.eachWay,
+                        freeBet = bet.freeBet,
+                        cashOut = bet.cashOutAmount?.toString().orEmpty(),
+                        eventAt = formatEventAt(bet.eventAt),
+                        closingOdds = bet.closingOdds?.toString().orEmpty(),
+                        isMultiple = bet.isMultiple,
+                        legs = if (bet.isMultiple && bet.legs.isNotEmpty()) {
+                            bet.legs.map { leg ->
+                                LegInput(leg.event, leg.selection, leg.oddsDecimal.toString())
+                            }
+                        } else {
+                            it.legs
+                        },
+                        clvPct = bet.clvPct,
+                        shareToken = bet.shareToken,
                     )
                 }
             } catch (t: Throwable) {
@@ -124,14 +170,130 @@ class BetEditorViewModel @Inject constructor(
         _state.update(transform)
     }
 
+    fun addLeg() {
+        _state.update { s ->
+            if (s.legs.size >= 10) s else s.copy(legs = s.legs + LegInput())
+        }
+    }
+
+    fun removeLeg(index: Int) {
+        _state.update { s ->
+            if (s.legs.size <= 2) s else s.copy(legs = s.legs.filterIndexed { i, _ -> i != index })
+        }
+    }
+
+    fun updateLeg(index: Int, transform: (LegInput) -> LegInput) {
+        _state.update { s ->
+            s.copy(legs = s.legs.mapIndexed { i, leg -> if (i == index) transform(leg) else leg })
+        }
+    }
+
+    /** Decimal odds implied by the current inputs, for previews (combined odds, liability). */
+    fun currentDecimalOdds(): Double? {
+        val s = _state.value
+        return if (s.isMultiple) {
+            BetMath.combinedOdds(s.legs.mapNotNull { parseOddsToDecimal(it.odds, s.oddsFormat) })
+        } else {
+            parseOddsToDecimal(s.odds, s.oddsFormat)
+        }
+    }
+
+    private fun parseOddsToDecimal(text: String, format: String): Double? {
+        if (text.isBlank()) return null
+        return if (format == "fractional") {
+            BetMath.parseFractional(text)?.let { (n, d) -> BetMath.fractionalToDecimal(n, d) }
+        } else {
+            text.toDoubleOrNull()?.takeIf { it > 1 }
+        }
+    }
+
+    /** Returns odds (value, denominator) as the API expects them, or null when invalid. */
+    private fun oddsForApi(text: String, format: String): Pair<Double, Double?>? {
+        return if (format == "fractional") {
+            BetMath.parseFractional(text)?.let { (n, d) -> n to d }
+        } else {
+            text.toDoubleOrNull()?.takeIf { it > 1 }?.let { it to null }
+        }
+    }
+
+    private fun parseEventAt(text: String): String? {
+        if (text.isBlank()) return null
+        return LocalDateTime.parse(text.trim(), EVENT_AT_INPUT)
+            .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+    }
+
+    private fun formatEventAt(iso: String?): String {
+        if (iso.isNullOrBlank()) return ""
+        return try {
+            LocalDateTime
+                .parse(iso.take(16), DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"))
+                .format(EVENT_AT_INPUT)
+        } catch (_: Exception) {
+            ""
+        }
+    }
+
     fun save() {
         val current = _state.value
-        val odds = current.odds.toDoubleOrNull()
         val stake = current.stake.toDoubleOrNull()
-        if (current.event.isBlank() || current.selection.isBlank() || odds == null || stake == null) {
-            _state.update { it.copy(error = "Event, selection, odds and stake are required") }
+
+        val eventAtIso = try {
+            parseEventAt(current.eventAt)
+        } catch (_: Exception) {
+            _state.update { it.copy(error = tr("android.invalidEventAt")) }
             return
         }
+
+        val legsForApi: List<BetLegCreateDto>?
+        val odds: Pair<Double, Double?>?
+        if (current.isMultiple) {
+            odds = null
+            val parsed = current.legs.map { leg ->
+                if (leg.event.isBlank() || leg.selection.isBlank()) {
+                    _state.update { it.copy(error = tr("form.legMissingFields")) }
+                    return
+                }
+                val legOdds = oddsForApi(leg.odds, current.oddsFormat)
+                if (legOdds == null) {
+                    _state.update { it.copy(error = tr("form.legBadOdds")) }
+                    return
+                }
+                BetLegCreateDto(
+                    event = leg.event.trim(),
+                    selection = leg.selection.trim(),
+                    odds = legOdds.first,
+                    oddsFormat = current.oddsFormat,
+                    oddsDenominator = legOdds.second,
+                )
+            }
+            if (parsed.size < 2) {
+                _state.update { it.copy(error = tr("form.needTwoLegs")) }
+                return
+            }
+            legsForApi = parsed
+            if (stake == null) {
+                _state.update { it.copy(error = tr("android.requiredFields")) }
+                return
+            }
+        } else {
+            legsForApi = null
+            odds = oddsForApi(current.odds, current.oddsFormat)
+            if (current.event.isBlank() || current.selection.isBlank() || odds == null || stake == null) {
+                _state.update {
+                    it.copy(
+                        error = if (current.oddsFormat == "fractional" && current.odds.isNotBlank() &&
+                            BetMath.parseFractional(current.odds) == null
+                        ) {
+                            tr("android.invalidFractional")
+                        } else {
+                            tr("android.requiredFields")
+                        },
+                    )
+                }
+                return
+            }
+        }
+
         viewModelScope.launch {
             _state.update { it.copy(saving = true, error = null) }
             try {
@@ -139,15 +301,26 @@ class BetEditorViewModel @Inject constructor(
                     betsRepository.createBet(
                         BetCreateDto(
                             sport = current.sport.trim(),
-                            event = current.event.trim(),
-                            selection = current.selection.trim(),
-                            odds = odds,
+                            event = current.event.trim().ifBlank { null },
+                            selection = current.selection.trim().ifBlank { null },
+                            odds = odds?.first,
+                            oddsDenominator = odds?.second,
+                            oddsFormat = current.oddsFormat,
                             stake = stake,
-                            currency = current.currency.trim().ifBlank { "GBP" },
+                            currency = current.currency.trim().uppercase().ifBlank { "GBP" },
                             betType = current.betType.trim().ifBlank { "Win" },
                             outcome = current.outcome.trim().ifBlank { "pending" },
                             bookmaker = current.bookmaker.trim().ifBlank { null },
+                            portal = current.portal.ifBlank { null },
+                            tipster = current.tipster.trim().ifBlank { null },
                             notes = current.notes.trim().ifBlank { null },
+                            eachWay = !current.isMultiple && current.eachWay,
+                            freeBet = !current.isMultiple && current.freeBet,
+                            cashOutAmount = current.cashOut.toDoubleOrNull(),
+                            eventAt = eventAtIso,
+                            closingOdds = current.closingOdds.toDoubleOrNull(),
+                            isMultiple = current.isMultiple,
+                            legs = legsForApi,
                         ),
                     )
                 } else {
@@ -155,15 +328,26 @@ class BetEditorViewModel @Inject constructor(
                         betId,
                         BetUpdateDto(
                             sport = current.sport.trim(),
-                            event = current.event.trim(),
-                            selection = current.selection.trim(),
-                            odds = odds,
+                            event = current.event.trim().ifBlank { null },
+                            selection = current.selection.trim().ifBlank { null },
+                            odds = odds?.first,
+                            oddsDenominator = odds?.second,
+                            oddsFormat = current.oddsFormat,
                             stake = stake,
-                            currency = current.currency.trim().ifBlank { "GBP" },
+                            currency = current.currency.trim().uppercase().ifBlank { "GBP" },
                             betType = current.betType.trim().ifBlank { "Win" },
                             outcome = current.outcome.trim().ifBlank { "pending" },
                             bookmaker = current.bookmaker.trim().ifBlank { null },
+                            portal = current.portal.ifBlank { null },
+                            tipster = current.tipster.trim().ifBlank { null },
                             notes = current.notes.trim().ifBlank { null },
+                            eachWay = !current.isMultiple && current.eachWay,
+                            freeBet = !current.isMultiple && current.freeBet,
+                            cashOutAmount = current.cashOut.toDoubleOrNull(),
+                            eventAt = eventAtIso,
+                            closingOdds = current.closingOdds.toDoubleOrNull(),
+                            isMultiple = current.isMultiple,
+                            legs = legsForApi,
                         ),
                     )
                 }
@@ -183,6 +367,32 @@ class BetEditorViewModel @Inject constructor(
                 _state.update { it.copy(saving = false, deleted = true) }
             } catch (t: Throwable) {
                 _state.update { it.copy(saving = false, error = t.toUserMessage()) }
+            }
+        }
+    }
+
+    fun createShareLink() {
+        val id = betId ?: return
+        viewModelScope.launch {
+            _state.update { it.copy(sharing = true, error = null) }
+            try {
+                val token = betsRepository.createShareLink(id)
+                _state.update { it.copy(sharing = false, shareToken = token) }
+            } catch (t: Throwable) {
+                _state.update { it.copy(sharing = false, error = t.toUserMessage()) }
+            }
+        }
+    }
+
+    fun revokeShareLink() {
+        val id = betId ?: return
+        viewModelScope.launch {
+            _state.update { it.copy(sharing = true, error = null) }
+            try {
+                betsRepository.revokeShareLink(id)
+                _state.update { it.copy(sharing = false, shareToken = null) }
+            } catch (t: Throwable) {
+                _state.update { it.copy(sharing = false, error = t.toUserMessage()) }
             }
         }
     }

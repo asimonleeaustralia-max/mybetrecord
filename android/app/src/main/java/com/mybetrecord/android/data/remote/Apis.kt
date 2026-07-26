@@ -1,5 +1,6 @@
 package com.mybetrecord.android.data.remote
 
+import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -9,6 +10,7 @@ import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
+import retrofit2.http.Streaming
 
 interface AuthApi {
     @POST("auth/login")
@@ -57,6 +59,12 @@ interface BetsApi {
 
     @DELETE("bets/{id}")
     suspend fun deleteBet(@Path("id") id: String): Response<Unit>
+
+    @POST("bets/{id}/share")
+    suspend fun createShareLink(@Path("id") id: String): BetShareDto
+
+    @DELETE("bets/{id}/share")
+    suspend fun revokeShareLink(@Path("id") id: String): Response<Unit>
 }
 
 interface ReportsApi {
@@ -64,4 +72,12 @@ interface ReportsApi {
     suspend fun summary(
         @Query("use_primary_currency") usePrimaryCurrency: Boolean = true,
     ): ReportSummaryDto
+
+    @GET("reports/equity-curve")
+    suspend fun equityCurve(): List<EquityPointDto>
+
+    /** kind is csv, json, or xlsx — matches /reports/export.{kind}. */
+    @Streaming
+    @GET("reports/export.{kind}")
+    suspend fun export(@Path("kind") kind: String): ResponseBody
 }

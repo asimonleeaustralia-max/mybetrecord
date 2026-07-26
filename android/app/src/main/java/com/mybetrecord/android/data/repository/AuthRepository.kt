@@ -1,7 +1,9 @@
 package com.mybetrecord.android.data.repository
 
+import com.mybetrecord.android.data.local.AppPreferences
 import com.mybetrecord.android.data.local.TokenStore
 import com.mybetrecord.android.data.remote.AuthApi
+import com.mybetrecord.android.i18n.I18n
 import com.mybetrecord.android.data.remote.AccountDeleteRequestDto
 import com.mybetrecord.android.data.remote.LoginRequestDto
 import com.mybetrecord.android.data.remote.LogoutRequestDto
@@ -19,6 +21,7 @@ import javax.inject.Singleton
 class AuthRepository @Inject constructor(
     private val api: AuthApi,
     private val tokenStore: TokenStore,
+    private val appPreferences: AppPreferences,
 ) {
     fun isLoggedIn(): Boolean = tokenStore.hasSession()
 
@@ -88,9 +91,17 @@ class AuthRepository @Inject constructor(
         }
     }
 
-    suspend fun me(): UserDto = api.me()
+    suspend fun me(): UserDto = api.me().also { syncLocale(it) }
 
-    suspend fun updateSettings(update: SettingsUpdateDto): UserDto = api.updateSettings(update)
+    suspend fun updateSettings(update: SettingsUpdateDto): UserDto =
+        api.updateSettings(update).also { syncLocale(it) }
+
+    /** Keep the app language in step with the account's preferred_locale, like the web app. */
+    private suspend fun syncLocale(user: UserDto) {
+        val normalized = I18n.normalize(user.preferredLocale) ?: return
+        if (normalized != I18n.locale) I18n.switchLocale(normalized)
+        appPreferences.setLocale(normalized)
+    }
 
     suspend fun deleteAccount(password: String) {
         val response = api.deleteAccount(

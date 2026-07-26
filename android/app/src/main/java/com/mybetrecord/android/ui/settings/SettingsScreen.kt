@@ -3,6 +3,7 @@ package com.mybetrecord.android.ui.settings
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -12,11 +13,13 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -24,10 +27,24 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mybetrecord.android.R
+import com.mybetrecord.android.i18n.I18n
+import com.mybetrecord.android.i18n.tr
 import com.mybetrecord.android.ui.components.AppTextField
+import com.mybetrecord.android.ui.components.ChoiceRow
 import com.mybetrecord.android.ui.components.ErrorText
 import com.mybetrecord.android.ui.components.LoadingScreen
 import com.mybetrecord.android.util.openUrl
+import com.mybetrecord.android.util.publicProfileUrl
+import com.mybetrecord.android.util.shareText
+
+private val ODDS_FORMATS = listOf(
+    "decimal" to "settings.oddsDecimal",
+    "american" to "settings.oddsAmerican",
+    "fractional" to "settings.oddsFractional",
+    "hong_kong" to "settings.oddsHongKong",
+    "malaysian" to "settings.oddsMalaysian",
+    "indonesian" to "settings.oddsIndonesian",
+)
 
 @Composable
 fun SettingsScreen(
@@ -54,7 +71,7 @@ fun SettingsScreen(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Text("Settings", style = MaterialTheme.typography.headlineSmall)
+        Text(tr("settings.title"), style = MaterialTheme.typography.headlineSmall)
         Text(stringResource(R.string.disclaimer), style = MaterialTheme.typography.bodySmall)
         state.error?.let { ErrorText(it) }
         state.info?.let { Text(it, color = MaterialTheme.colorScheme.secondary) }
@@ -63,12 +80,11 @@ fun SettingsScreen(
             Card(modifier = Modifier.fillMaxWidth()) {
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     Text(stringResource(R.string.plan_status), style = MaterialTheme.typography.titleMedium)
-                    Text("Email: ${user.email}")
-                    Text("Plan: ${user.plan.uppercase()}${if (user.isPro) " (Pro active)" else ""}")
-                    user.subscriptionStatus?.let { Text("Subscription status: $it") }
-                    user.subscriptionCurrentPeriodEnd?.let { Text("Current period end: $it") }
+                    Text("${tr("settings.email")}: ${user.email}")
+                    Text("${tr("plan.title")}: ${user.plan.uppercase()}${if (user.isPro) " (Pro)" else ""}")
+                    user.subscriptionStatus?.let { Text(it) }
                     Text(
-                        "Plan changes are managed on the website. This app does not sell subscriptions.",
+                        tr("android.planWebNote"),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
                     )
@@ -76,25 +92,61 @@ fun SettingsScreen(
             }
         }
 
-        AppTextField(state.displayName, { viewModel.update { s -> s.copy(displayName = it) } }, "Display name")
-        AppTextField(state.baseCurrency, { viewModel.update { s -> s.copy(baseCurrency = it) } }, "Base currency")
-        AppTextField(state.bankroll, { viewModel.update { s -> s.copy(bankroll = it) } }, "Bankroll")
-        AppTextField(state.timezone, { viewModel.update { s -> s.copy(timezone = it) } }, "Timezone")
-        AppTextField(
-            state.defaultOddsFormat,
-            { viewModel.update { s -> s.copy(defaultOddsFormat = it) } },
-            "Default odds format",
+        Text(tr("settings.preferences"), style = MaterialTheme.typography.titleMedium)
+        ChoiceRow(
+            label = tr("settings.language"),
+            options = I18n.languages,
+            selected = state.locale,
+            onSelected = { viewModel.update { s -> s.copy(locale = it) } },
         )
+        AppTextField(state.displayName, { viewModel.update { s -> s.copy(displayName = it) } }, tr("settings.publicNickname"))
+        AppTextField(state.baseCurrency, { viewModel.update { s -> s.copy(baseCurrency = it) } }, tr("settings.defaultCurrency"))
+        AppTextField(state.bankroll, { viewModel.update { s -> s.copy(bankroll = it) } }, tr("settings.bankroll") + " (" + tr("settings.bankrollHint") + ")")
+        AppTextField(state.kellyMultiplier, { viewModel.update { s -> s.copy(kellyMultiplier = it) } }, tr("settings.kellyMultiplier") + " (" + tr("settings.kellyHint") + ")")
+        AppTextField(state.timezone, { viewModel.update { s -> s.copy(timezone = it) } }, tr("settings.timezone"))
+        ChoiceRow(
+            label = tr("settings.defaultOdds"),
+            options = ODDS_FORMATS.map { (value, key) -> value to tr(key) },
+            selected = state.defaultOddsFormat,
+            onSelected = { viewModel.update { s -> s.copy(defaultOddsFormat = it) } },
+        )
+
+        Text(tr("settings.publicBetsTitle"), style = MaterialTheme.typography.titleMedium)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Switch(
+                checked = state.publicBetsEnabled,
+                onCheckedChange = { viewModel.update { s -> s.copy(publicBetsEnabled = it) } },
+            )
+            Text(
+                tr("settings.publicBetsEnabled"),
+                modifier = Modifier.padding(start = 8.dp),
+            )
+        }
+        Text(tr("settings.publicBetsHint"), style = MaterialTheme.typography.bodySmall)
+        if (state.publicBetsEnabled) {
+            AppTextField(
+                state.accountDescription,
+                { viewModel.update { s -> s.copy(accountDescription = it) } },
+                tr("settings.accountDescription"),
+                singleLine = false,
+            )
+            state.user?.publicBetsToken?.let { token ->
+                OutlinedButton(
+                    onClick = { context.shareText(publicProfileUrl(token)) },
+                    modifier = Modifier.fillMaxWidth(),
+                ) { Text(tr("android.shareProfile")) }
+            }
+        }
 
         Button(
             onClick = viewModel::save,
             enabled = !state.saving,
             modifier = Modifier.fillMaxWidth(),
         ) {
-            Text(if (state.saving) "Saving…" else "Save settings")
+            Text(tr("settings.save"))
         }
 
-        Text("Legal & help", style = MaterialTheme.typography.titleMedium)
+        Text(tr("android.legalHelp"), style = MaterialTheme.typography.titleMedium)
         LinkButton(stringResource(R.string.privacy)) {
             context.openUrl(context.getString(R.string.url_privacy))
         }
@@ -112,7 +164,7 @@ fun SettingsScreen(
             onClick = viewModel::logout,
             modifier = Modifier.fillMaxWidth(),
         ) {
-            Text(stringResource(R.string.logout))
+            Text(tr("nav.signOut"))
         }
 
         Button(
@@ -126,29 +178,29 @@ fun SettingsScreen(
     if (state.showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { viewModel.update { it.copy(showDeleteDialog = false) } },
-            title = { Text("Delete account permanently?") },
+            title = { Text(stringResource(R.string.delete_account)) },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("This permanently deletes your account and bet history. Type DELETE to confirm.")
+                    Text(tr("android.deleteAccountBody"))
                     AppTextField(
                         value = state.deletePassword,
                         onValueChange = { viewModel.update { s -> s.copy(deletePassword = it) } },
-                        label = "Password",
+                        label = tr("auth.password"),
                         isPassword = true,
                     )
                     AppTextField(
                         value = state.deleteConfirm,
                         onValueChange = { viewModel.update { s -> s.copy(deleteConfirm = it) } },
-                        label = "Type DELETE",
+                        label = tr("android.typeDelete"),
                     )
                 }
             },
             confirmButton = {
-                TextButton(onClick = viewModel::deleteAccount) { Text("Delete forever") }
+                TextButton(onClick = viewModel::deleteAccount) { Text(tr("android.deleteForever")) }
             },
             dismissButton = {
                 TextButton(onClick = { viewModel.update { it.copy(showDeleteDialog = false) } }) {
-                    Text("Cancel")
+                    Text(tr("common.cancel"))
                 }
             },
         )

@@ -62,3 +62,34 @@ fun formatMoney(amount: Double, currency: String?): String {
     val ccy = currency?.uppercase()?.takeIf { it.isNotBlank() } ?: ""
     return "%s%.2f".format(if (ccy.isNotEmpty()) "$ccy " else "", amount)
 }
+
+/** Web origin for public links (share pages, profiles). Same host as the API. */
+fun webOrigin(): String = com.mybetrecord.android.BuildConfig.API_BASE_URL.trimEnd('/')
+
+fun shareLinkUrl(token: String): String = "${webOrigin()}/share/$token"
+
+fun publicProfileUrl(token: String): String = "${webOrigin()}/u/$token"
+
+/** Opens the system share sheet with a plain-text payload (e.g. a public link). */
+fun Context.shareText(text: String) {
+    val intent = Intent(Intent.ACTION_SEND).apply {
+        type = "text/plain"
+        putExtra(Intent.EXTRA_TEXT, text)
+    }
+    startActivity(Intent.createChooser(intent, null))
+}
+
+/** Opens the system share sheet for a file in this app's cache, via FileProvider. */
+fun Context.shareFile(file: java.io.File, mimeType: String) {
+    val uri = androidx.core.content.FileProvider.getUriForFile(
+        this,
+        "$packageName.fileprovider",
+        file,
+    )
+    val intent = Intent(Intent.ACTION_SEND).apply {
+        type = mimeType
+        putExtra(Intent.EXTRA_STREAM, uri)
+        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    }
+    startActivity(Intent.createChooser(intent, null))
+}

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Assessment
+import androidx.compose.material.icons.filled.Calculate
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Settings
@@ -29,6 +30,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.mybetrecord.android.data.repository.AuthRepository
+import com.mybetrecord.android.i18n.tr
 import com.mybetrecord.android.ui.age.AgeAttestationScreen
 import com.mybetrecord.android.ui.age.AgeViewModel
 import com.mybetrecord.android.ui.auth.AuthScreen
@@ -38,6 +40,7 @@ import com.mybetrecord.android.ui.bets.BetsListScreen
 import com.mybetrecord.android.ui.dashboard.DashboardScreen
 import com.mybetrecord.android.ui.reports.ReportsScreen
 import com.mybetrecord.android.ui.settings.SettingsScreen
+import com.mybetrecord.android.ui.tools.ToolsScreen
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
@@ -50,12 +53,13 @@ object Routes {
     const val BETS = "bets"
     const val BET_EDIT = "bets/{betId}"
     const val REPORTS = "reports"
+    const val TOOLS = "tools"
     const val SETTINGS = "settings"
 
     fun betEdit(betId: String) = "bets/$betId"
 }
 
-private data class Tab(val route: String, val label: String, val icon: androidx.compose.ui.graphics.vector.ImageVector)
+private data class Tab(val route: String, val labelKey: String, val icon: androidx.compose.ui.graphics.vector.ImageVector)
 
 @EntryPoint
 @InstallIn(SingletonComponent::class)
@@ -93,10 +97,11 @@ fun MyBetRecordNavHost() {
 private fun AppNav(startDestination: String) {
     val navController = rememberNavController()
     val tabs = listOf(
-        Tab(Routes.DASHBOARD, "Home", Icons.Default.Home),
-        Tab(Routes.BETS, "Bets", Icons.Default.List),
-        Tab(Routes.REPORTS, "Reports", Icons.Default.Assessment),
-        Tab(Routes.SETTINGS, "Settings", Icons.Default.Settings),
+        Tab(Routes.DASHBOARD, "android.home", Icons.Default.Home),
+        Tab(Routes.BETS, "nav.bets", Icons.Default.List),
+        Tab(Routes.REPORTS, "nav.reports", Icons.Default.Assessment),
+        Tab(Routes.TOOLS, "android.tools", Icons.Default.Calculate),
+        Tab(Routes.SETTINGS, "nav.settings", Icons.Default.Settings),
     )
 
     NavHost(navController = navController, startDestination = startDestination) {
@@ -170,6 +175,21 @@ private fun AppNav(startDestination: String) {
                 ReportsScreen(padding = padding)
             }
         }
+        composable(Routes.TOOLS) {
+            MainScaffold(
+                tabs = tabs,
+                currentRoute = Routes.TOOLS,
+                onTabSelected = { route ->
+                    navController.navigate(route) {
+                        popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                },
+            ) { padding ->
+                ToolsScreen(padding = padding)
+            }
+        }
         composable(Routes.SETTINGS) {
             MainScaffold(
                 tabs = tabs,
@@ -206,11 +226,12 @@ private fun MainScaffold(
         bottomBar = {
             NavigationBar {
                 tabs.forEach { tab ->
+                    val label = tr(tab.labelKey)
                     NavigationBarItem(
                         selected = currentRoute == tab.route,
                         onClick = { onTabSelected(tab.route) },
-                        icon = { Icon(tab.icon, contentDescription = tab.label) },
-                        label = { Text(tab.label) },
+                        icon = { Icon(tab.icon, contentDescription = label) },
+                        label = { Text(label) },
                     )
                 }
             }

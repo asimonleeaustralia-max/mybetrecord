@@ -129,6 +129,11 @@ data class BetDto(
     val portal: String? = null,
     val tipster: String? = null,
     val notes: String? = null,
+    @SerialName("closing_odds") val closingOdds: Double? = null,
+    @SerialName("closing_odds_exchange") val closingOddsExchange: Double? = null,
+    @SerialName("clv_pct") val clvPct: Double? = null,
+    @SerialName("edge_pct") val edgePct: Double? = null,
+    @SerialName("share_token") val shareToken: String? = null,
     @SerialName("created_at") val createdAt: String? = null,
     @SerialName("updated_at") val updatedAt: String? = null,
 )
@@ -143,25 +148,42 @@ data class BetLegDto(
 )
 
 @Serializable
-data class BetCreateDto(
-    val sport: String,
+data class BetLegCreateDto(
     val event: String,
     val selection: String,
+    // Numerator when odds_format is fractional and odds_denominator is set.
     val odds: Double,
+    @SerialName("odds_format") val oddsFormat: String? = null,
+    @SerialName("odds_denominator") val oddsDenominator: Double? = null,
+)
+
+@Serializable
+data class BetCreateDto(
+    val sport: String,
+    val event: String? = null,
+    val selection: String? = null,
+    val odds: Double? = null,
     val stake: Double,
     @SerialName("bet_type") val betType: String = "Win",
     val side: String = "back",
     val currency: String = "GBP",
     @SerialName("odds_format") val oddsFormat: String = "decimal",
+    @SerialName("odds_denominator") val oddsDenominator: Double? = null,
     val outcome: String = "pending",
     val tournament: String? = null,
     val bookmaker: String? = null,
+    val portal: String? = null,
     val tipster: String? = null,
     val notes: String? = null,
     @SerialName("each_way") val eachWay: Boolean = false,
     val placed: Boolean = false,
     @SerialName("free_bet") val freeBet: Boolean = false,
+    @SerialName("is_multiple") val isMultiple: Boolean = false,
+    val legs: List<BetLegCreateDto>? = null,
+    @SerialName("cash_out_amount") val cashOutAmount: Double? = null,
+    @SerialName("closing_odds") val closingOdds: Double? = null,
     @SerialName("placed_at") val placedAt: String? = null,
+    @SerialName("event_at") val eventAt: String? = null,
 )
 
 @Serializable
@@ -175,14 +197,33 @@ data class BetUpdateDto(
     val side: String? = null,
     val currency: String? = null,
     @SerialName("odds_format") val oddsFormat: String? = null,
+    @SerialName("odds_denominator") val oddsDenominator: Double? = null,
     val outcome: String? = null,
     val tournament: String? = null,
     val bookmaker: String? = null,
+    val portal: String? = null,
     val tipster: String? = null,
     val notes: String? = null,
     @SerialName("each_way") val eachWay: Boolean? = null,
     val placed: Boolean? = null,
     @SerialName("free_bet") val freeBet: Boolean? = null,
+    @SerialName("is_multiple") val isMultiple: Boolean? = null,
+    val legs: List<BetLegCreateDto>? = null,
+    @SerialName("cash_out_amount") val cashOutAmount: Double? = null,
+    @SerialName("closing_odds") val closingOdds: Double? = null,
+    @SerialName("event_at") val eventAt: String? = null,
+)
+
+@Serializable
+data class BetShareDto(
+    @SerialName("share_token") val shareToken: String,
+)
+
+@Serializable
+data class EquityPointDto(
+    val date: String,
+    val profit: Double,
+    val cumulative: Double,
 )
 
 @Serializable

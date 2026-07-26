@@ -27,6 +27,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.mybetrecord.android.i18n.tr
 import com.mybetrecord.android.ui.components.AppTextField
 import com.mybetrecord.android.ui.components.ErrorText
 import com.mybetrecord.android.ui.components.ScreenScaffold
@@ -51,7 +52,7 @@ fun ForgotPasswordScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Text(
-                text = "Reset password",
+                text = tr("auth.forgotPassword"),
                 style = MaterialTheme.typography.headlineSmall,
             )
 
@@ -71,7 +72,7 @@ fun ForgotPasswordScreen(
 
             if (state.step != ResetStep.DONE) {
                 TextButton(onClick = onBackToSignIn, enabled = !state.loading) {
-                    Text("Back to sign in")
+                    Text(tr("auth.backToSignIn"))
                 }
             }
         }
@@ -82,14 +83,14 @@ fun ForgotPasswordScreen(
 private fun RequestStep(state: ForgotPasswordUiState, viewModel: ForgotPasswordViewModel) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text(
-            text = "Enter the email on your account and we'll send you a reset code.",
+            text = tr("auth.forgotPasswordHint"),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         AppTextField(
             value = state.email,
             onValueChange = viewModel::onEmailChange,
-            label = "Email",
+            label = tr("auth.email"),
             enabled = !state.loading,
             keyboardType = KeyboardType.Email,
         )
@@ -99,7 +100,7 @@ private fun RequestStep(state: ForgotPasswordUiState, viewModel: ForgotPasswordV
             enabled = !state.loading,
             modifier = Modifier.fillMaxWidth(),
         ) {
-            Text(if (state.loading) "Sending…" else "Send reset code")
+            Text(tr("auth.sendResetLink"))
         }
     }
 }
@@ -117,21 +118,21 @@ private fun ConfirmStep(state: ForgotPasswordUiState, viewModel: ForgotPasswordV
         AppTextField(
             value = state.code,
             onValueChange = viewModel::onCodeChange,
-            label = "Reset code",
+            label = tr("android.resetCode"),
             enabled = !state.loading,
             keyboardType = KeyboardType.Number,
         )
         AppTextField(
             value = state.newPassword,
             onValueChange = viewModel::onNewPasswordChange,
-            label = "New password",
+            label = tr("auth.newPassword"),
             isPassword = true,
             enabled = !state.loading,
         )
         AppTextField(
             value = state.confirmPassword,
             onValueChange = viewModel::onConfirmPasswordChange,
-            label = "Confirm new password",
+            label = tr("auth.confirmPassword"),
             isPassword = true,
             enabled = !state.loading,
         )
@@ -141,7 +142,7 @@ private fun ConfirmStep(state: ForgotPasswordUiState, viewModel: ForgotPasswordV
             enabled = !state.loading,
             modifier = Modifier.fillMaxWidth(),
         ) {
-            Text(if (state.loading) "Updating…" else "Reset password")
+            Text(tr("auth.updatePassword"))
         }
         Column(horizontalAlignment = Alignment.Start) {
             TextButton(
@@ -150,14 +151,14 @@ private fun ConfirmStep(state: ForgotPasswordUiState, viewModel: ForgotPasswordV
             ) {
                 Text(
                     if (state.resendCooldownSeconds > 0) {
-                        "Resend code in ${state.resendCooldownSeconds}s"
+                        tr("android.resendCodeIn", mapOf("s" to state.resendCooldownSeconds.toString()))
                     } else {
-                        "Resend code"
+                        tr("android.resendCode")
                     },
                 )
             }
             TextButton(onClick = viewModel::useDifferentEmail, enabled = !state.loading) {
-                Text("Use a different email")
+                Text(tr("android.useDifferentEmail"))
             }
         }
     }
@@ -177,16 +178,16 @@ private fun DoneStep(onBackToSignIn: () -> Unit) {
             modifier = Modifier.size(48.dp),
         )
         Text(
-            text = "Your password has been updated.",
+            text = tr("auth.passwordUpdated"),
             style = MaterialTheme.typography.titleMedium,
         )
         Text(
-            text = "You can now sign in with your new password.",
+            text = tr("android.signInNewPassword"),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Button(onClick = onBackToSignIn, modifier = Modifier.fillMaxWidth()) {
-            Text("Back to sign in")
+            Text(tr("auth.backToSignIn"))
         }
     }
 }

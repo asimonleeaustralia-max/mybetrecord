@@ -58,6 +58,28 @@ class BetsRepository @Inject constructor(
         betDao.delete(id)
     }
 
+    suspend fun createShareLink(id: String): String {
+        val token = api.createShareLink(id).shareToken
+        refreshCachedBet(id)
+        return token
+    }
+
+    suspend fun revokeShareLink(id: String) {
+        val response = api.revokeShareLink(id)
+        if (!response.isSuccessful && response.code() != 204) {
+            throw IllegalStateException("Revoke failed (${response.code()})")
+        }
+        refreshCachedBet(id)
+    }
+
+    private suspend fun refreshCachedBet(id: String) {
+        try {
+            betDao.upsert(encode(api.getBet(id)))
+        } catch (_: Exception) {
+            // Cache refresh is best-effort; the share call itself already succeeded.
+        }
+    }
+
     private fun encode(bet: BetDto): BetEntity = BetEntity(
         id = bet.id,
         event = bet.event,

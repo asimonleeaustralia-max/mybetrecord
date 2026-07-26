@@ -27,7 +27,7 @@ class AuthRepositoryRefreshTest {
     fun setUp() {
         api = mockk()
         tokenStore = mockk(relaxed = true)
-        repository = AuthRepository(api, tokenStore)
+        repository = AuthRepository(api, tokenStore, mockk(relaxed = true))
     }
 
     @Test

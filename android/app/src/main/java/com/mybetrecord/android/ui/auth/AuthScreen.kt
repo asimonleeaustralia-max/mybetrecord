@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mybetrecord.android.R
+import com.mybetrecord.android.i18n.tr
 import com.mybetrecord.android.ui.components.AppTextField
 import com.mybetrecord.android.ui.components.ErrorText
 import com.mybetrecord.android.ui.components.ScreenScaffold
@@ -53,23 +54,23 @@ fun AuthScreen(
                 color = MaterialTheme.colorScheme.primary,
             )
             Text(
-                text = if (state.isRegister) stringResource(R.string.register) else stringResource(R.string.login),
+                text = if (state.isRegister) tr("auth.createAccount") else tr("auth.signIn"),
                 style = MaterialTheme.typography.headlineSmall,
             )
             Text(
-                text = stringResource(R.string.disclaimer),
+                text = tr("auth.tagline"),
                 style = MaterialTheme.typography.bodySmall,
             )
             AppTextField(
                 value = state.email,
                 onValueChange = viewModel::onEmailChange,
-                label = stringResource(R.string.email),
+                label = tr("auth.email"),
                 enabled = !state.loading,
             )
             AppTextField(
                 value = state.password,
                 onValueChange = viewModel::onPasswordChange,
-                label = stringResource(R.string.password),
+                label = tr("auth.password"),
                 isPassword = true,
                 enabled = !state.loading,
             )
@@ -77,7 +78,7 @@ fun AuthScreen(
                 AppTextField(
                     value = state.confirmPassword,
                     onValueChange = viewModel::onConfirmPasswordChange,
-                    label = "Confirm password",
+                    label = tr("auth.confirmPassword"),
                     isPassword = true,
                     enabled = !state.loading,
                 )
@@ -87,7 +88,7 @@ fun AuthScreen(
                     enabled = !state.loading,
                     modifier = Modifier.align(Alignment.End),
                 ) {
-                    Text("Forgot password?")
+                    Text(tr("auth.forgotPassword"))
                 }
             }
             state.error?.let { ErrorText(it) }
@@ -100,15 +101,15 @@ fun AuthScreen(
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(
-                    if (state.loading) "Please wait…"
-                    else if (state.isRegister) stringResource(R.string.register)
-                    else stringResource(R.string.login),
+                    if (state.loading) tr("meta.signingIn")
+                    else if (state.isRegister) tr("auth.createAccount")
+                    else tr("auth.signIn"),
                 )
             }
             TextButton(onClick = viewModel::toggleMode, enabled = !state.loading) {
                 Text(
-                    if (state.isRegister) "Already have an account? Sign in"
-                    else "Need an account? Register",
+                    if (state.isRegister) tr("auth.signIn")
+                    else tr("auth.createAccount"),
                 )
             }
         }

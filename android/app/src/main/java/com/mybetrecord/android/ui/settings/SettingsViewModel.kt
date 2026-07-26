@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.mybetrecord.android.data.remote.SettingsUpdateDto
 import com.mybetrecord.android.data.remote.UserDto
 import com.mybetrecord.android.data.repository.AuthRepository
+import com.mybetrecord.android.i18n.I18n
+import com.mybetrecord.android.i18n.tr
 import com.mybetrecord.android.util.toUserMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,6 +27,10 @@ data class SettingsUiState(
     val bankroll: String = "",
     val timezone: String = "",
     val defaultOddsFormat: String = "decimal",
+    val kellyMultiplier: String = "1.0",
+    val locale: String = "en",
+    val publicBetsEnabled: Boolean = false,
+    val accountDescription: String = "",
     val showDeleteDialog: Boolean = false,
     val deletePassword: String = "",
     val deleteConfirm: String = "",
@@ -57,6 +63,10 @@ class SettingsViewModel @Inject constructor(
                         bankroll = user.bankroll.toString(),
                         timezone = user.timezone,
                         defaultOddsFormat = user.defaultOddsFormat,
+                        kellyMultiplier = user.kellyMultiplier.toString(),
+                        locale = I18n.normalize(user.preferredLocale) ?: I18n.locale,
+                        publicBetsEnabled = user.publicBetsEnabled,
+                        accountDescription = user.accountDescription.orEmpty(),
                     )
                 }
             } catch (t: Throwable) {
@@ -79,13 +89,19 @@ class SettingsViewModel @Inject constructor(
                         bankroll = current.bankroll.toDoubleOrNull(),
                         timezone = current.timezone.trim().ifBlank { null },
                         defaultOddsFormat = current.defaultOddsFormat.trim().ifBlank { null },
+                        kellyMultiplier = current.kellyMultiplier.toDoubleOrNull(),
+                        preferredLocale = current.locale,
+                        publicBetsEnabled = current.publicBetsEnabled,
+                        accountDescription = current.accountDescription.trim().ifBlank { null },
                     ),
                 )
+                // AuthRepository.syncLocale already switched the app language.
                 _state.update {
                     it.copy(
                         saving = false,
                         user = updated,
-                        info = "Settings saved",
+                        publicBetsEnabled = updated.publicBetsEnabled,
+                        info = tr("settings.saved"),
                     )
                 }
             } catch (t: Throwable) {
@@ -104,11 +120,11 @@ class SettingsViewModel @Inject constructor(
     fun deleteAccount() {
         val current = _state.value
         if (current.deleteConfirm.trim().uppercase() != "DELETE") {
-            _state.update { it.copy(error = "Type DELETE to confirm") }
+            _state.update { it.copy(error = tr("android.typeDelete")) }
             return
         }
         if (current.deletePassword.isBlank()) {
-            _state.update { it.copy(error = "Password is required") }
+            _state.update { it.copy(error = tr("auth.password")) }
             return
         }
         viewModelScope.launch {

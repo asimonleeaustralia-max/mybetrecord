@@ -8,6 +8,27 @@ Native Kotlin / Jetpack Compose client for [mybetrecord](https://www.mybetrecord
 
 This app is a private betting ledger. It does **not** accept wagers, sell subscriptions, or include Stripe/checkout/upgrade CTAs.
 
+## Localization
+
+The app bundles the same locale catalogs the web frontend serves, so both clients translate in lockstep (~100 languages). `app/src/main/assets/locales/*.json` are copies of `frontend/public/app/locales/*.json` with the web-only namespaces (`home`, `blog`, `admin`, `plan`, …) stripped to keep the APK small. When web translations change, re-copy and re-strip them:
+
+```bash
+cp frontend/public/app/locales/*.json android/app/src/main/assets/locales/
+python - <<'EOF'
+import json, glob, os
+KEEP = {"meta","common","i18n","auth","nav","ticker","bets","share","promoStats","publicProfile","outcomes","form","reports","settings","errors"}
+for path in glob.glob('android/app/src/main/assets/locales/*.json'):
+    if os.path.basename(path) == 'languages.json':
+        continue
+    with open(path, encoding='utf-8') as f:
+        d = json.load(f)
+    with open(path, 'w', encoding='utf-8') as f:
+        json.dump({k: v for k, v in d.items() if k in KEEP}, f, ensure_ascii=False, separators=(',', ':'))
+EOF
+```
+
+Strings resolve at runtime via `com.mybetrecord.android.i18n.I18n` (dotted keys, English fallback). The language is chosen from the account's `preferred_locale`, falling back to the device language, and can be changed in Settings. A handful of Android-only strings live in `I18n.androidExtras` (English only).
+
 ## First-time setup: Gradle wrapper JAR
 
 The Gradle wrapper (`gradlew` / `gradlew.bat` and `gradle/wrapper/gradle-wrapper.jar`) is committed. From `android/`, use `./gradlew` on macOS/Linux or `.\gradlew.bat` in Windows PowerShell.
