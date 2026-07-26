@@ -24,3 +24,6 @@
 # App models
 -keep class com.mybetrecord.android.data.remote.** { *; }
 
+# Tink (used by androidx.security-crypto) references error-prone annotations
+# that are compile-time only and absent at runtime; safe to ignore for R8.
+-dontwarn com.google.errorprone.annotations.**
