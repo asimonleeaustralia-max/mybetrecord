@@ -12,6 +12,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -26,6 +27,7 @@ import com.mybetrecord.android.util.SecureWindowEffect
 @Composable
 fun AuthScreen(
     onLoggedIn: () -> Unit,
+    onForgotPassword: () -> Unit,
     viewModel: AuthViewModel = hiltViewModel(),
 ) {
     SecureWindowEffect(enabled = true)
@@ -79,6 +81,14 @@ fun AuthScreen(
                     isPassword = true,
                     enabled = !state.loading,
                 )
+            } else {
+                TextButton(
+                    onClick = onForgotPassword,
+                    enabled = !state.loading,
+                    modifier = Modifier.align(Alignment.End),
+                ) {
+                    Text("Forgot password?")
+                }
             }
             state.error?.let { ErrorText(it) }
             state.info?.let {

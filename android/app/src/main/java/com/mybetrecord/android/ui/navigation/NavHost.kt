@@ -32,6 +32,7 @@ import com.mybetrecord.android.data.repository.AuthRepository
 import com.mybetrecord.android.ui.age.AgeAttestationScreen
 import com.mybetrecord.android.ui.age.AgeViewModel
 import com.mybetrecord.android.ui.auth.AuthScreen
+import com.mybetrecord.android.ui.auth.ForgotPasswordScreen
 import com.mybetrecord.android.ui.bets.BetEditorScreen
 import com.mybetrecord.android.ui.bets.BetsListScreen
 import com.mybetrecord.android.ui.dashboard.DashboardScreen
@@ -44,6 +45,7 @@ import dagger.hilt.components.SingletonComponent
 
 object Routes {
     const val AUTH = "auth"
+    const val FORGOT_PASSWORD = "forgot-password"
     const val DASHBOARD = "dashboard"
     const val BETS = "bets"
     const val BET_EDIT = "bets/{betId}"
@@ -105,6 +107,12 @@ private fun AppNav(startDestination: String) {
                         popUpTo(Routes.AUTH) { inclusive = true }
                     }
                 },
+                onForgotPassword = { navController.navigate(Routes.FORGOT_PASSWORD) },
+            )
+        }
+        composable(Routes.FORGOT_PASSWORD) {
+            ForgotPasswordScreen(
+                onBackToSignIn = { navController.popBackStack() },
             )
         }
         composable(Routes.DASHBOARD) {

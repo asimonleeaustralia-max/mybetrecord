@@ -20,6 +20,12 @@ interface AuthApi {
     @POST("auth/refresh")
     suspend fun refresh(@Body body: RefreshRequestDto): TokenResponseDto
 
+    @POST("auth/password-reset/request")
+    suspend fun requestPasswordReset(@Body body: PasswordResetRequestDto): Response<Unit>
+
+    @POST("auth/password-reset/confirm")
+    suspend fun confirmPasswordReset(@Body body: PasswordResetConfirmDto): Response<Unit>
+
     @POST("auth/logout")
     suspend fun logout(@Body body: LogoutRequestDto): Response<Unit>
 

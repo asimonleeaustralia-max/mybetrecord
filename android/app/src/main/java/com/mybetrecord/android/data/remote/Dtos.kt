@@ -46,6 +46,17 @@ data class LogoutRequestDto(
 )
 
 @Serializable
+data class PasswordResetRequestDto(
+    val email: String,
+)
+
+@Serializable
+data class PasswordResetConfirmDto(
+    val token: String,
+    val password: String,
+)
+
+@Serializable
 data class AccountDeleteRequestDto(
     val password: String,
     val confirm: String = "DELETE",

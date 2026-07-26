@@ -5,6 +5,8 @@ import com.mybetrecord.android.data.remote.AuthApi
 import com.mybetrecord.android.data.remote.AccountDeleteRequestDto
 import com.mybetrecord.android.data.remote.LoginRequestDto
 import com.mybetrecord.android.data.remote.LogoutRequestDto
+import com.mybetrecord.android.data.remote.PasswordResetConfirmDto
+import com.mybetrecord.android.data.remote.PasswordResetRequestDto
 import com.mybetrecord.android.data.remote.RefreshRequestDto
 import com.mybetrecord.android.data.remote.RegisterRequestDto
 import com.mybetrecord.android.data.remote.SettingsUpdateDto
@@ -34,6 +36,27 @@ class AuthRepository @Inject constructor(
                 timezone = timezone,
             ),
         ).message
+    }
+
+    suspend fun requestPasswordReset(email: String) {
+        // Backend intentionally returns 200 whether or not the email exists, to avoid
+        // leaking account existence. We don't branch on the response body here.
+        api.requestPasswordReset(PasswordResetRequestDto(email = email.trim()))
+    }
+
+    suspend fun confirmPasswordReset(token: String, newPassword: String) {
+        val response = api.confirmPasswordReset(
+            PasswordResetConfirmDto(token = token.trim(), password = newPassword),
+        )
+        if (!response.isSuccessful) {
+            throw IllegalStateException(
+                if (response.code() == 400 || response.code() == 422) {
+                    "That code is invalid or has expired. Request a new one."
+                } else {
+                    "Password reset failed (${response.code()})"
+                },
+            )
+        }
     }
 
     /**
