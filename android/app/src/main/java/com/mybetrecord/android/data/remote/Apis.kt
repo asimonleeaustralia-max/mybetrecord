@@ -1,6 +1,5 @@
 package com.mybetrecord.android.data.remote
 
-import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -10,7 +9,7 @@ import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
-import retrofit2.http.Streaming
+import retrofit2.http.QueryMap
 
 interface AuthApi {
     @POST("auth/login")
@@ -48,6 +47,18 @@ interface BetsApi {
         @Query("offset") offset: Int = 0,
     ): List<BetDto>
 
+    @GET("bets/sports")
+    suspend fun sports(): List<String>
+
+    @GET("bets/bet-types")
+    suspend fun betTypes(): List<String>
+
+    @GET("bets/tipsters")
+    suspend fun tipsters(): List<String>
+
+    @GET("bets/currencies")
+    suspend fun currencies(): List<String>
+
     @GET("bets/{id}")
     suspend fun getBet(@Path("id") id: String): BetDto
 
@@ -68,16 +79,17 @@ interface BetsApi {
 }
 
 interface ReportsApi {
+    // The web app sends the same filter query string to all three endpoints, so
+    // the callers build one map and pass it through unchanged.
     @GET("reports/summary")
-    suspend fun summary(
-        @Query("use_primary_currency") usePrimaryCurrency: Boolean = true,
-    ): ReportSummaryDto
+    suspend fun summary(@QueryMap filters: Map<String, String>): ReportSummaryDto
 
     @GET("reports/equity-curve")
-    suspend fun equityCurve(): List<EquityPointDto>
+    suspend fun equityCurve(@QueryMap filters: Map<String, String>): List<EquityPointDto>
 
-    /** kind is csv, json, or xlsx — matches /reports/export.{kind}. */
-    @Streaming
-    @GET("reports/export.{kind}")
-    suspend fun export(@Path("kind") kind: String): ResponseBody
+    @GET("reports/breakdown")
+    suspend fun breakdown(
+        @Query("dimension") dimension: String,
+        @QueryMap filters: Map<String, String>,
+    ): List<BreakdownRowDto>
 }

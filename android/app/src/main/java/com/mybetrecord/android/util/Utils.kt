@@ -58,10 +58,14 @@ fun SecureWindowEffect(enabled: Boolean = true) {
     }
 }
 
-fun formatMoney(amount: Double, currency: String?): String {
+/** [signed] prefixes gains with "+", matching the web app's money(v, true). */
+fun formatMoney(amount: Double, currency: String?, signed: Boolean = false): String {
     val ccy = currency?.uppercase()?.takeIf { it.isNotBlank() } ?: ""
-    return "%s%.2f".format(if (ccy.isNotEmpty()) "$ccy " else "", amount)
+    val sign = if (signed && amount > 0) "+" else ""
+    return "%s%s%.2f".format(if (ccy.isNotEmpty()) "$ccy " else "", sign, amount)
 }
+
+fun formatPct(value: Double?): String = if (value == null) "—" else "%.2f%%".format(value)
 
 /** Web origin for public links (share pages, profiles). Same host as the API. */
 fun webOrigin(): String = com.mybetrecord.android.BuildConfig.API_BASE_URL.trimEnd('/')
@@ -75,21 +79,6 @@ fun Context.shareText(text: String) {
     val intent = Intent(Intent.ACTION_SEND).apply {
         type = "text/plain"
         putExtra(Intent.EXTRA_TEXT, text)
-    }
-    startActivity(Intent.createChooser(intent, null))
-}
-
-/** Opens the system share sheet for a file in this app's cache, via FileProvider. */
-fun Context.shareFile(file: java.io.File, mimeType: String) {
-    val uri = androidx.core.content.FileProvider.getUriForFile(
-        this,
-        "$packageName.fileprovider",
-        file,
-    )
-    val intent = Intent(Intent.ACTION_SEND).apply {
-        type = mimeType
-        putExtra(Intent.EXTRA_STREAM, uri)
-        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
     }
     startActivity(Intent.createChooser(intent, null))
 }

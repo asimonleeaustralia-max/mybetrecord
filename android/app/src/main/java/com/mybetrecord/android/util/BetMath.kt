@@ -57,4 +57,76 @@ object BetMath {
         if (legOdds.size < 2 || legOdds.any { it <= 1 }) return null
         return legOdds.fold(1.0) { acc, o -> acc * o }
     }
+
+    /**
+     * Profit/loss for one bet, ported from settle_profit in
+     * shared/betrecord_shared/betting_math.py.
+     *
+     * Used only to fill in a plausible P/L for a bet recorded offline, so the
+     * ledger and reports read sensibly before the server settles it for real.
+     * The server's value overwrites this as soon as the change syncs.
+     */
+    fun settleProfit(
+        stake: Double,
+        decimalOdds: Double,
+        outcome: String,
+        eachWay: Boolean = false,
+        placeFraction: Double = 0.25,
+        placed: Boolean = false,
+        exchangeCommissionPct: Double = 0.0,
+        cashOutAmount: Double? = null,
+        side: String = "back",
+        freeBet: Boolean = false,
+    ): Double {
+        fun round2(v: Double) = Math.round(v * 100) / 100.0
+
+        // A cash-out overrides the outcome entirely.
+        if (cashOutAmount != null) {
+            return round2(if (freeBet) cashOutAmount else cashOutAmount - stake)
+        }
+
+        val result = outcome.lowercase().ifBlank { "pending" }
+        if (result == "pending" || result == "void") return 0.0
+
+        val isLay = side.lowercase() == "lay"
+        val gross = when {
+            isLay -> when {
+                eachWay -> 0.0
+                result == "win" -> stake
+                result == "loss" -> -(layLiability(stake, decimalOdds) ?: 0.0)
+                else -> 0.0
+            }
+            !eachWay -> when (result) {
+                "win" -> stake * (decimalOdds - 1.0)
+                "half_win" -> 0.5 * stake * (decimalOdds - 1.0)
+                "half_loss" -> if (freeBet) 0.0 else -0.5 * stake
+                "loss" -> if (freeBet) 0.0 else -stake
+                else -> 0.0
+            }
+            else -> {
+                // Each way: the stake covers both parts, so a unit is half of it.
+                val unit = stake / 2.0
+                val winPart = if (result == "win") {
+                    unit * (decimalOdds - 1.0)
+                } else {
+                    if (freeBet) 0.0 else -unit
+                }
+                val placeOdds = 1.0 + (decimalOdds - 1.0) * placeFraction
+                val placePart = if (placed || result == "win" || result == "placed") {
+                    unit * (placeOdds - 1.0)
+                } else {
+                    if (freeBet) 0.0 else -unit
+                }
+                winPart + placePart
+            }
+        }
+
+        // Deductions apply to net winnings only.
+        val commission = if (gross > 0 && exchangeCommissionPct != 0.0) {
+            gross * (exchangeCommissionPct / 100.0)
+        } else {
+            0.0
+        }
+        return round2(gross - commission)
+    }
 }

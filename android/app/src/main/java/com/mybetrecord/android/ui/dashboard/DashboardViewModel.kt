@@ -17,6 +17,9 @@ data class DashboardUiState(
     val loading: Boolean = true,
     val error: String? = null,
     val summary: ReportSummaryDto? = null,
+    /** These figures came from the on-device copy rather than the server. */
+    val fromCache: Boolean = false,
+    val fetchedAt: Long? = null,
 )
 
 @HiltViewModel
@@ -35,7 +38,15 @@ class DashboardViewModel @Inject constructor(
             _state.update { it.copy(loading = true, error = null) }
             try {
                 val summary = reportsRepository.summary()
-                _state.update { it.copy(loading = false, summary = summary) }
+                _state.update {
+                    it.copy(
+                        loading = false,
+                        summary = summary.value,
+                        fromCache = summary.fromCache,
+                        fetchedAt = summary.fetchedAt,
+                        error = null,
+                    )
+                }
             } catch (t: Throwable) {
                 _state.update { it.copy(loading = false, error = t.toUserMessage()) }
             }

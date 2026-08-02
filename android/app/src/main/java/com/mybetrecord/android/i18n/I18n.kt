@@ -37,15 +37,6 @@ object I18n {
     // they fall back here for every locale.
     private val androidExtras = mapOf(
         "android.home" to "Home",
-        "android.tools" to "Tools",
-        "android.toolsSub" to "Stake and liability calculators — nothing here places a bet.",
-        "android.kellyTitle" to "Kelly stake calculator",
-        "android.kellyOdds" to "Bookmaker odds (decimal)",
-        "android.kellyImplied" to "Your implied odds (decimal)",
-        "android.liabilityTitle" to "Lay liability calculator",
-        "android.layOdds" to "Lay odds (decimal)",
-        "android.exportShare" to "Export & share",
-        "android.exporting" to "Preparing export…",
         "android.shareProfile" to "Share public profile link",
         "android.deleteForever" to "Delete forever",
         "android.deleteAccountBody" to "This permanently deletes your account and bet history. Type DELETE to confirm.",
@@ -65,6 +56,22 @@ object I18n {
         "android.resendCodeIn" to "Resend code in {{s}}s",
         "android.useDifferentEmail" to "Use a different email",
         "android.signInNewPassword" to "You can now sign in with your new password.",
+        "android.filters" to "Filters",
+        "android.filtersActive" to "Filters ({{count}})",
+        "android.clearFilters" to "Clear filters",
+        "android.anyDate" to "Any date",
+        "android.chartHint" to "Touch and drag the chart to read a point.",
+        "android.barChartHint" to "Tap a bar to read the month.",
+        "android.deleteBet" to "Delete bet",
+        "android.setResult" to "Set result",
+        "android.savingResult" to "Saving…",
+        "android.offline" to "Offline — your bets are saved on this device",
+        "android.syncPending" to "Waiting for network sync — {{count}} change(s) pending",
+        "android.syncFailed" to "{{count}} change(s) couldn't sync — open the bet to retry",
+        "android.pendingBadge" to "Not synced",
+        "android.offlineReport" to "Offline — showing saved data from {{time}}",
+        "android.offlineNoReport" to "No saved data for these filters. Reconnect to load this view.",
+        "android.savedOffline" to "Saved on this device. It will sync when you're back online.",
     )
 
     fun init(context: Context, savedLocale: String?) {

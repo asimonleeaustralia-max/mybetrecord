@@ -1,24 +1,37 @@
 package com.mybetrecord.android.ui.bets
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.CloudQueue
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
@@ -38,6 +51,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -55,8 +69,7 @@ import com.mybetrecord.android.util.formatMoney
 import com.mybetrecord.android.util.shareLinkUrl
 import com.mybetrecord.android.util.shareText
 
-private val OUTCOMES = listOf("pending", "win", "loss", "void", "half_win", "half_loss", "placed")
-private val PORTALS = listOf("" to "form.optional", "online" to "form.portalOnline", "phone" to "form.portalPhone", "in_shop" to "form.portalInShop")
+private val PORTALS =listOf("" to "form.optional", "online" to "form.portalOnline", "phone" to "form.portalPhone", "in_shop" to "form.portalInShop")
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -95,8 +108,10 @@ fun BetsListScreen(
                         items(bets, key = { it.id }) { bet ->
                             BetRow(
                                 bet = bet,
+                                settling = bet.id in state.settling,
                                 onClick = { onOpenBet(bet.id) },
                                 onDelete = { pendingDelete = bet },
+                                onOutcomeSelected = { viewModel.setOutcome(bet.id, it) },
                             )
                         }
                     }
@@ -124,38 +139,141 @@ fun BetsListScreen(
 }
 
 @Composable
-private fun BetRow(bet: BetDto, onClick: () -> Unit, onDelete: () -> Unit) {
+private fun BetRow(
+    bet: BetDto,
+    settling: Boolean,
+    onClick: () -> Unit,
+    onDelete: () -> Unit,
+    onOutcomeSelected: (String) -> Unit,
+) {
     Card(modifier = Modifier.fillMaxWidth().clickable(onClick = onClick)) {
-        Row(
+        Column(
             modifier = Modifier.padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically,
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                Text(bet.event, style = MaterialTheme.typography.titleMedium)
-                val outcome = tr("outcomes.${bet.outcome}")
-                val subtitle = buildString {
-                    append(bet.selection)
-                    append(" · ").append(bet.sport)
-                    append(" · ").append(outcome)
-                    if (bet.isMultiple) {
-                        append(" · ").append(tr("bets.legsCount", mapOf("count" to bet.legs.size.toString())))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                    Text(bet.event, style = MaterialTheme.typography.titleMedium)
+                    val subtitle = buildString {
+                        append(bet.selection)
+                        append(" · ").append(bet.sport)
+                        if (bet.isMultiple) {
+                            append(" · ").append(tr("bets.legsCount", mapOf("count" to bet.legs.size.toString())))
+                        }
+                        if (bet.freeBet) append(" · ").append(tr("form.freeBetBadge"))
                     }
-                    if (bet.freeBet) append(" · ").append(tr("form.freeBetBadge"))
+                    Text(subtitle, style = MaterialTheme.typography.bodyMedium)
+                    val detail = buildString {
+                        append("${tr("bets.odds")} ${bet.oddsDecimal}")
+                        append(" · ${tr("form.stake")} ${formatMoney(bet.stake, bet.currency)}")
+                        append(" · ${tr("bets.pl")} ${formatMoney(bet.profit, bet.currency, signed = true)}")
+                        bet.clvPct?.let { append(" · ${tr("bets.clv")} ${"%.2f".format(it)}%") }
+                    }
+                    Text(detail, style = MaterialTheme.typography.bodySmall)
                 }
-                Text(subtitle, style = MaterialTheme.typography.bodyMedium)
-                val detail = buildString {
-                    append("${tr("bets.odds")} ${bet.oddsDecimal}")
-                    append(" · ${tr("form.stake")} ${formatMoney(bet.stake, bet.currency)}")
-                    append(" · ${tr("bets.pl")} ${formatMoney(bet.profit, bet.currency)}")
-                    bet.clvPct?.let { append(" · ${tr("bets.clv")} ${"%.2f".format(it)}%") }
+                IconButton(onClick = onDelete) {
+                    Icon(
+                        Icons.Default.Delete,
+                        contentDescription = tr("bets.deleteAria", mapOf("name" to bet.selection)),
+                    )
                 }
-                Text(detail, style = MaterialTheme.typography.bodySmall)
             }
-            IconButton(onClick = onDelete) {
-                Icon(Icons.Default.Delete, contentDescription = tr("common.confirm"))
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                OutcomePicker(bet = bet, settling = settling, onSelected = onOutcomeSelected)
+                if (bet.pendingSync) {
+                    PendingSyncBadge()
+                }
             }
         }
     }
+}
+
+/**
+ * Settles a bet without opening the editor — the mobile equivalent of the
+ * result dropdown on each row of the web ledger.
+ */
+@Composable
+private fun OutcomePicker(bet: BetDto, settling: Boolean, onSelected: (String) -> Unit) {
+    var expanded by remember { mutableStateOf(false) }
+    val current = displayOutcome(bet)
+
+    Box {
+        AssistChip(
+            onClick = { expanded = true },
+            enabled = !settling,
+            label = { Text(if (settling) tr("android.savingResult") else tr("outcomes.$current")) },
+            leadingIcon = {
+                Box(
+                    Modifier
+                        .size(10.dp)
+                        .background(outcomeColor(current), CircleShape),
+                )
+            },
+            trailingIcon = {
+                Icon(Icons.Default.ArrowDropDown, contentDescription = tr("android.setResult"))
+            },
+        )
+        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+            outcomeOptions(bet.eachWay).forEach { option ->
+                DropdownMenuItem(
+                    text = { Text(tr("outcomes.$option")) },
+                    onClick = {
+                        expanded = false
+                        if (option != current) onSelected(option)
+                    },
+                )
+            }
+        }
+    }
+}
+
+/** Marks a row whose latest change is still sitting in the outbox. */
+@Composable
+private fun PendingSyncBadge() {
+    Row(
+        modifier = Modifier
+            .background(
+                MaterialTheme.colorScheme.tertiaryContainer,
+                MaterialTheme.shapes.small,
+            )
+            .padding(horizontal = 8.dp, vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        Icon(
+            Icons.Default.CloudQueue,
+            contentDescription = null,
+            modifier = Modifier.size(14.dp),
+            tint = MaterialTheme.colorScheme.onTertiaryContainer,
+        )
+        Text(
+            tr("android.pendingBadge"),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onTertiaryContainer,
+        )
+    }
+}
+
+/** Heading for one of the form's sections — the app's take on the web's <legend>. */
+@Composable
+private fun SectionHeader(title: String) {
+    Text(
+        title,
+        style = MaterialTheme.typography.titleMedium,
+        modifier = Modifier.padding(top = 8.dp),
+    )
+}
+
+/** Same win/loss/void/pending tones the web ledger paints its result select with. */
+@Composable
+private fun outcomeColor(outcome: String): Color = when (outcome) {
+    "win", "placed", "half_win" -> Color(0xFF157A52)
+    "loss", "half_loss" -> Color(0xFFBD3A2B)
+    "void" -> MaterialTheme.colorScheme.outline
+    else -> MaterialTheme.colorScheme.secondary
 }
 
 @Composable
@@ -165,6 +283,7 @@ fun BetEditorScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    var confirmDelete by remember { mutableStateOf(false) }
 
     LaunchedEffect(state.saved, state.deleted) {
         if (state.saved || state.deleted) onDone()
@@ -188,8 +307,9 @@ fun BetEditorScreen(
         )
         state.error?.let { ErrorText(it) }
 
-        AppTextField(state.sport, { viewModel.update { s -> s.copy(sport = it) } }, tr("form.sport"))
-        AppTextField(state.betType, { viewModel.update { s -> s.copy(betType = it) } }, tr("form.betType"))
+        // Section order and grouping follow the web app's <fieldset>s so the two
+        // clients read the same way.
+        SectionHeader(tr("form.whatYouBacked"))
 
         // Single vs multiple (parlay). Multiples are created from legs; each-way,
         // free bets and fractional-vs-decimal apply per the backend's rules.
@@ -209,22 +329,25 @@ fun BetEditorScreen(
             }
         }
 
-        // Odds format applies to the single bet's odds or to every leg.
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            FilterChip(
-                selected = state.oddsFormat == "decimal",
-                onClick = { viewModel.update { s -> s.copy(oddsFormat = "decimal") } },
-                label = { Text(tr("form.decimal")) },
-            )
-            FilterChip(
-                selected = state.oddsFormat == "fractional",
-                onClick = { viewModel.update { s -> s.copy(oddsFormat = "fractional") } },
-                label = { Text(tr("form.fractional")) },
-            )
+        AppTextField(state.sport, { viewModel.update { s -> s.copy(sport = it) } }, tr("form.sport"))
+        AppTextField(state.betType, { viewModel.update { s -> s.copy(betType = it) } }, tr("form.betType"))
+        AppTextField(state.bookmaker, { viewModel.update { s -> s.copy(bookmaker = it) } }, tr("form.bookmaker"))
+        ChoiceRow(
+            label = tr("form.portal"),
+            options = PORTALS.map { (value, key) -> value to tr(key) },
+            selected = state.portal,
+            onSelected = { viewModel.update { s -> s.copy(portal = it) } },
+        )
+
+        // A multiple's event/selection live on its legs instead.
+        if (!state.isMultiple) {
+            AppTextField(state.event, { viewModel.update { s -> s.copy(event = it) } }, tr("form.event"))
+            AppTextField(state.selection, { viewModel.update { s -> s.copy(selection = it) } }, tr("form.selection"))
         }
+        AppTextField(state.eventAt, { viewModel.update { s -> s.copy(eventAt = it) } }, tr("form.eventAt") + " — " + tr("android.eventAtHint"))
 
         if (state.isMultiple) {
-            Text(tr("form.selections"), style = MaterialTheme.typography.titleMedium)
+            SectionHeader(tr("form.selections"))
             Text(tr("form.legsHint"), style = MaterialTheme.typography.bodySmall)
             state.legs.forEachIndexed { index, leg ->
                 Card(Modifier.fillMaxWidth()) {
@@ -258,9 +381,25 @@ fun BetEditorScreen(
             viewModel.currentDecimalOdds()?.let { combined ->
                 Text("${tr("form.combinedOdds")}: ${"%.2f".format(combined)}", style = MaterialTheme.typography.bodyMedium)
             }
-        } else {
-            AppTextField(state.event, { viewModel.update { s -> s.copy(event = it) } }, tr("form.event"))
-            AppTextField(state.selection, { viewModel.update { s -> s.copy(selection = it) } }, tr("form.selection"))
+        }
+
+        SectionHeader(tr("form.oddsStake"))
+
+        // Odds format applies to the single bet's odds or to every leg.
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            FilterChip(
+                selected = state.oddsFormat == "decimal",
+                onClick = { viewModel.update { s -> s.copy(oddsFormat = "decimal") } },
+                label = { Text(tr("form.decimal")) },
+            )
+            FilterChip(
+                selected = state.oddsFormat == "fractional",
+                onClick = { viewModel.update { s -> s.copy(oddsFormat = "fractional") } },
+                label = { Text(tr("form.fractional")) },
+            )
+        }
+
+        if (!state.isMultiple) {
             AppTextField(
                 state.odds,
                 { viewModel.update { s -> s.copy(odds = it) } },
@@ -277,7 +416,6 @@ fun BetEditorScreen(
             }
         }
 
-        AppTextField(state.eventAt, { viewModel.update { s -> s.copy(eventAt = it) } }, tr("form.eventAt") + " — " + tr("android.eventAtHint"))
         AppTextField(state.stake, { viewModel.update { s -> s.copy(stake = it) } }, tr("form.stake"), keyboardType = KeyboardType.Decimal)
         AppTextField(state.currency, { viewModel.update { s -> s.copy(currency = it) } }, tr("form.currency"))
 
@@ -285,7 +423,15 @@ fun BetEditorScreen(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Checkbox(
                     checked = state.eachWay,
-                    onCheckedChange = { viewModel.update { s -> s.copy(eachWay = it) } },
+                    // Each-way swaps which results are valid, so drop one that no longer is.
+                    onCheckedChange = { checked ->
+                        viewModel.update { s ->
+                            s.copy(
+                                eachWay = checked,
+                                outcome = s.outcome.takeIf { it in outcomeOptions(checked) } ?: "pending",
+                            )
+                        }
+                    },
                 )
                 Text(tr("form.eachWay"))
             }
@@ -304,10 +450,10 @@ fun BetEditorScreen(
             }
         }
 
-        Text(tr("form.settlement"), style = MaterialTheme.typography.titleMedium)
+        SectionHeader(tr("form.settlement"))
         ChoiceRow(
             label = tr("form.result"),
-            options = OUTCOMES.map { it to tr("outcomes.$it") },
+            options = outcomeOptions(state.eachWay).map { it to tr("outcomes.$it") },
             selected = state.outcome,
             onSelected = { viewModel.update { s -> s.copy(outcome = it) } },
         )
@@ -318,7 +464,7 @@ fun BetEditorScreen(
             keyboardType = KeyboardType.Decimal,
         )
 
-        Text(tr("form.modelling"), style = MaterialTheme.typography.titleMedium)
+        SectionHeader(tr("form.modelling"))
         AppTextField(
             state.closingOdds,
             { viewModel.update { s -> s.copy(closingOdds = it) } },
@@ -329,13 +475,7 @@ fun BetEditorScreen(
             Text("${tr("bets.clv")}: ${"%.2f".format(it)}%", style = MaterialTheme.typography.bodyMedium)
         }
 
-        AppTextField(state.bookmaker, { viewModel.update { s -> s.copy(bookmaker = it) } }, tr("form.bookmaker"))
-        ChoiceRow(
-            label = tr("form.portal"),
-            options = PORTALS.map { (value, key) -> value to tr(key) },
-            selected = state.portal,
-            onSelected = { viewModel.update { s -> s.copy(portal = it) } },
-        )
+        SectionHeader(tr("form.notes"))
         AppTextField(state.tipster, { viewModel.update { s -> s.copy(tipster = it) } }, tr("form.tipster"))
         AppTextField(state.notes, { viewModel.update { s -> s.copy(notes = it) } }, tr("form.notes"), singleLine = false)
 
@@ -348,7 +488,7 @@ fun BetEditorScreen(
         }
 
         if (state.isEdit) {
-            Text(tr("share.shareSection"), style = MaterialTheme.typography.titleMedium)
+            SectionHeader(tr("share.shareSection"))
             Text(tr("share.shareHint"), style = MaterialTheme.typography.bodySmall)
             val token = state.shareToken
             if (token == null) {
@@ -367,10 +507,39 @@ fun BetEditorScreen(
                 }
             }
 
-            TextButton(onClick = viewModel::delete, enabled = !state.saving) {
-                Text(tr("bets.deleteAria", mapOf("name" to state.selection)), color = MaterialTheme.colorScheme.error)
+            OutlinedButton(
+                onClick = { confirmDelete = true },
+                enabled = !state.saving,
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.outlinedButtonColors(
+                    contentColor = MaterialTheme.colorScheme.error,
+                ),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.error),
+            ) {
+                Icon(Icons.Default.Delete, contentDescription = null, modifier = Modifier.size(18.dp))
+                Spacer(Modifier.width(8.dp))
+                Text(tr("android.deleteBet"))
             }
         }
         TextButton(onClick = onDone) { Text(tr("form.cancel")) }
+    }
+
+    if (confirmDelete) {
+        AlertDialog(
+            onDismissRequest = { confirmDelete = false },
+            title = { Text(tr("bets.deleteConfirm")) },
+            text = { Text("${state.event} / ${state.selection}") },
+            confirmButton = {
+                TextButton(onClick = {
+                    confirmDelete = false
+                    viewModel.delete()
+                }) {
+                    Text(tr("android.deleteBet"), color = MaterialTheme.colorScheme.error)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { confirmDelete = false }) { Text(tr("common.cancel")) }
+            },
+        )
     }
 }

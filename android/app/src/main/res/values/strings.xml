@@ -22,6 +22,8 @@
     <string name="delete_account">Delete account</string>
     <string name="plan_status">Plan status</string>
     <string name="disclaimer">mybetrecord does not accept or facilitate wagers. For record-keeping only; not betting or financial advice.</string>
+    <string name="open_website">Open MyBetRecord.com</string>
+    <string name="url_site">https://www.mybetrecord.com</string>
     <string name="url_privacy">https://www.mybetrecord.com/privacy</string>
     <string name="url_terms">https://www.mybetrecord.com/terms</string>
     <string name="url_responsible">https://www.mybetrecord.com/responsible-gambling</string>

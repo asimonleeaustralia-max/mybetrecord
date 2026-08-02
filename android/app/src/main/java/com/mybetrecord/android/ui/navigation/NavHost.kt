@@ -2,11 +2,11 @@ package com.mybetrecord.android.ui.navigation
 
 import android.app.Activity
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Assessment
-import androidx.compose.material.icons.filled.Calculate
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Settings
@@ -37,10 +37,10 @@ import com.mybetrecord.android.ui.auth.AuthScreen
 import com.mybetrecord.android.ui.auth.ForgotPasswordScreen
 import com.mybetrecord.android.ui.bets.BetEditorScreen
 import com.mybetrecord.android.ui.bets.BetsListScreen
+import com.mybetrecord.android.ui.components.SyncBanner
 import com.mybetrecord.android.ui.dashboard.DashboardScreen
 import com.mybetrecord.android.ui.reports.ReportsScreen
 import com.mybetrecord.android.ui.settings.SettingsScreen
-import com.mybetrecord.android.ui.tools.ToolsScreen
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
@@ -53,7 +53,6 @@ object Routes {
     const val BETS = "bets"
     const val BET_EDIT = "bets/{betId}"
     const val REPORTS = "reports"
-    const val TOOLS = "tools"
     const val SETTINGS = "settings"
 
     fun betEdit(betId: String) = "bets/$betId"
@@ -100,7 +99,6 @@ private fun AppNav(startDestination: String) {
         Tab(Routes.DASHBOARD, "android.home", Icons.Default.Home),
         Tab(Routes.BETS, "nav.bets", Icons.Default.List),
         Tab(Routes.REPORTS, "nav.reports", Icons.Default.Assessment),
-        Tab(Routes.TOOLS, "android.tools", Icons.Default.Calculate),
         Tab(Routes.SETTINGS, "nav.settings", Icons.Default.Settings),
     )
 
@@ -175,21 +173,6 @@ private fun AppNav(startDestination: String) {
                 ReportsScreen(padding = padding)
             }
         }
-        composable(Routes.TOOLS) {
-            MainScaffold(
-                tabs = tabs,
-                currentRoute = Routes.TOOLS,
-                onTabSelected = { route ->
-                    navController.navigate(route) {
-                        popUpTo(navController.graph.findStartDestination().id) { saveState = true }
-                        launchSingleTop = true
-                        restoreState = true
-                    }
-                },
-            ) { padding ->
-                ToolsScreen(padding = padding)
-            }
-        }
         composable(Routes.SETTINGS) {
             MainScaffold(
                 tabs = tabs,
@@ -224,15 +207,19 @@ private fun MainScaffold(
 ) {
     Scaffold(
         bottomBar = {
-            NavigationBar {
-                tabs.forEach { tab ->
-                    val label = tr(tab.labelKey)
-                    NavigationBarItem(
-                        selected = currentRoute == tab.route,
-                        onClick = { onTabSelected(tab.route) },
-                        icon = { Icon(tab.icon, contentDescription = label) },
-                        label = { Text(label) },
-                    )
+            Column {
+                // Sits directly above the tabs so it is visible on every screen.
+                SyncBanner()
+                NavigationBar {
+                    tabs.forEach { tab ->
+                        val label = tr(tab.labelKey)
+                        NavigationBarItem(
+                            selected = currentRoute == tab.route,
+                            onClick = { onTabSelected(tab.route) },
+                            icon = { Icon(tab.icon, contentDescription = label) },
+                            label = { Text(label) },
+                        )
+                    }
                 }
             }
         },

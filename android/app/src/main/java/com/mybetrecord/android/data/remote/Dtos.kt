@@ -2,6 +2,7 @@ package com.mybetrecord.android.data.remote
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import kotlinx.serialization.json.JsonElement
 
 @Serializable
@@ -136,6 +137,12 @@ data class BetDto(
     @SerialName("share_token") val shareToken: String? = null,
     @SerialName("created_at") val createdAt: String? = null,
     @SerialName("updated_at") val updatedAt: String? = null,
+    /**
+     * Client-only: this bet holds a local change the server has not accepted
+     * yet. Transient so it never reaches the wire or the cached payload — the
+     * repository restores it from the cache row.
+     */
+    @Transient val pendingSync: Boolean = false,
 )
 
 @Serializable
@@ -242,6 +249,16 @@ data class ReportSummaryDto(
     @SerialName("base_currency") val baseCurrency: String? = null,
     val currency: String? = null,
     @SerialName("total_bets") val totalBets: Int = 0,
+)
+
+/** One row of /reports/breakdown — portfolio metrics grouped by the chosen dimension. */
+@Serializable
+data class BreakdownRowDto(
+    val key: String,
+    val profit: Double = 0.0,
+    @SerialName("yield_pct") val yieldPct: Double = 0.0,
+    @SerialName("strike_rate_pct") val strikeRatePct: Double = 0.0,
+    @SerialName("settled_bets") val settledBets: Int = 0,
 )
 
 @Serializable

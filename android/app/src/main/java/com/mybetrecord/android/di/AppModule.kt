@@ -6,6 +6,8 @@ import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFact
 import com.mybetrecord.android.BuildConfig
 import com.mybetrecord.android.data.local.AppDatabase
 import com.mybetrecord.android.data.local.BetDao
+import com.mybetrecord.android.data.local.PendingOpDao
+import com.mybetrecord.android.data.local.ReportCacheDao
 import com.mybetrecord.android.data.remote.AuthApi
 import com.mybetrecord.android.data.remote.AuthInterceptor
 import com.mybetrecord.android.data.remote.BetsApi
@@ -104,4 +106,12 @@ object AppModule {
     @Provides
     @Singleton
     fun provideBetDao(db: AppDatabase): BetDao = db.betDao()
+
+    @Provides
+    @Singleton
+    fun providePendingOpDao(db: AppDatabase): PendingOpDao = db.pendingOpDao()
+
+    @Provides
+    @Singleton
+    fun provideReportCacheDao(db: AppDatabase): ReportCacheDao = db.reportCacheDao()
 }

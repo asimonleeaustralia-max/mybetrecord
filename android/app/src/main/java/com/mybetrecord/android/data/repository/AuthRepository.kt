@@ -1,6 +1,9 @@
 package com.mybetrecord.android.data.repository
 
 import com.mybetrecord.android.data.local.AppPreferences
+import com.mybetrecord.android.data.local.BetDao
+import com.mybetrecord.android.data.local.PendingOpDao
+import com.mybetrecord.android.data.local.ReportCacheDao
 import com.mybetrecord.android.data.local.TokenStore
 import com.mybetrecord.android.data.remote.AuthApi
 import com.mybetrecord.android.i18n.I18n
@@ -22,8 +25,23 @@ class AuthRepository @Inject constructor(
     private val api: AuthApi,
     private val tokenStore: TokenStore,
     private val appPreferences: AppPreferences,
+    private val betDao: BetDao,
+    private val pendingOpDao: PendingOpDao,
+    private val reportCacheDao: ReportCacheDao,
 ) {
     fun isLoggedIn(): Boolean = tokenStore.hasSession()
+
+    /**
+     * Drops everything cached for the signed-in account. Essential now that the
+     * app keeps a ledger, an outbox and report data on disk: without this the
+     * next account would see the previous one's bets, and queued writes would
+     * replay under the wrong token.
+     */
+    private suspend fun clearLocalData() {
+        betDao.clear()
+        pendingOpDao.clear()
+        reportCacheDao.clear()
+    }
 
     suspend fun login(email: String, password: String): TokenResponseDto {
         val tokens = api.login(LoginRequestDto(email = email.trim(), password = password))
@@ -88,6 +106,7 @@ class AuthRepository @Inject constructor(
             // Always clear local session even if network fails.
         } finally {
             tokenStore.clear()
+            clearLocalData()
         }
     }
 
@@ -111,6 +130,7 @@ class AuthRepository @Inject constructor(
             throw IllegalStateException("Account deletion failed (${response.code()})")
         }
         tokenStore.clear()
+        clearLocalData()
     }
 
     fun persistTokens(tokens: TokenResponseDto) {

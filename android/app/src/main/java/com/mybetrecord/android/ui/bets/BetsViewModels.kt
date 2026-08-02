@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.io.IOException
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
@@ -27,7 +28,23 @@ data class BetsListUiState(
     val loading: Boolean = false,
     val refreshing: Boolean = false,
     val error: String? = null,
+    /** Bets whose result is mid-save, so their row can show progress. */
+    val settling: Set<String> = emptySet(),
 )
+
+/**
+ * Results selectable for a bet, mirroring the web's BET_OUTCOMES: each-way bets
+ * swap the Asian-handicap halves for "placed".
+ */
+fun outcomeOptions(eachWay: Boolean): List<String> = if (eachWay) {
+    listOf("pending", "win", "placed", "loss", "void")
+} else {
+    listOf("pending", "win", "loss", "void", "half_win", "half_loss")
+}
+
+/** An each-way bet whose place part came in reads as "placed", not "loss". */
+fun displayOutcome(bet: BetDto): String =
+    if (bet.eachWay && bet.placed && bet.outcome == "loss") "placed" else bet.outcome
 
 @HiltViewModel
 class BetsListViewModel @Inject constructor(
@@ -49,8 +66,26 @@ class BetsListViewModel @Inject constructor(
             try {
                 betsRepository.refreshBets()
                 _state.update { it.copy(refreshing = false) }
+            } catch (t: IOException) {
+                // The cached ledger is already on screen and the sync banner
+                // explains the state, so a connection drop is not an error here.
+                _state.update { it.copy(refreshing = false) }
             } catch (t: Throwable) {
                 _state.update { it.copy(refreshing = false, error = t.toUserMessage()) }
+            }
+        }
+    }
+
+    /** Settles a bet straight from the ledger — the app's quickest way to record a result. */
+    fun setOutcome(id: String, outcome: String) {
+        viewModelScope.launch {
+            _state.update { it.copy(settling = it.settling + id, error = null) }
+            try {
+                betsRepository.setOutcome(id, outcome)
+            } catch (t: Throwable) {
+                _state.update { it.copy(error = t.toUserMessage()) }
+            } finally {
+                _state.update { it.copy(settling = it.settling - id) }
             }
         }
     }

@@ -27,7 +27,14 @@ class AuthRepositoryRefreshTest {
     fun setUp() {
         api = mockk()
         tokenStore = mockk(relaxed = true)
-        repository = AuthRepository(api, tokenStore, mockk(relaxed = true))
+        repository = AuthRepository(
+            api,
+            tokenStore,
+            mockk(relaxed = true),
+            betDao = mockk(relaxed = true),
+            pendingOpDao = mockk(relaxed = true),
+            reportCacheDao = mockk(relaxed = true),
+        )
     }
 
     @Test

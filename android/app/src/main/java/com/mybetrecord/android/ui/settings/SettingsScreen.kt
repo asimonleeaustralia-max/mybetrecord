@@ -147,6 +147,9 @@ fun SettingsScreen(
         }
 
         Text(tr("android.legalHelp"), style = MaterialTheme.typography.titleMedium)
+        LinkButton(stringResource(R.string.open_website)) {
+            context.openUrl(context.getString(R.string.url_site))
+        }
         LinkButton(stringResource(R.string.privacy)) {
             context.openUrl(context.getString(R.string.url_privacy))
         }
