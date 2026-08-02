@@ -7,6 +7,7 @@ Step-by-step guide to ship the native Android app (`android/`) to Google Play un
 3. [Store listing assets & declarations](03-listing-and-declarations.md)
 4. [Closed testing, production access & rollout](04-closed-testing-and-launch.md)
 5. [Reviewer / demo account](05-reviewer-access.md)
+6. [Launch sequencing & store visibility](06-launch-and-visibility.md)
 
 Related:
 - App source & build: [`../../android/README.md`](../../android/README.md)

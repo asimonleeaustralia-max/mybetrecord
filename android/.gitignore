@@ -19,6 +19,8 @@ release/
 *.jks
 *.keystore
 !debug.keystore
+# Upload-key credentials — never commit (see docs/play-store/02-signing-and-build.md)
+/keystore.properties
 google-services.json
 *.log
 .kotlin/

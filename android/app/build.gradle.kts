@@ -1,3 +1,6 @@
+import java.io.File
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -6,6 +9,23 @@ plugins {
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
 }
+
+/**
+ * Upload-key credentials, kept outside version control.
+ *
+ * Create `android/keystore.properties` (gitignored) with storeFile,
+ * storePassword, keyAlias and keyPassword — see
+ * docs/play-store/02-signing-and-build.md. When the file is absent the release
+ * build still runs and simply produces an unsigned artifact, so CI and other
+ * machines are not blocked by not holding the key.
+ */
+val keystorePropertiesFile = rootProject.file("keystore.properties")
+val keystoreProperties = Properties().apply {
+    if (keystorePropertiesFile.exists()) {
+        keystorePropertiesFile.inputStream().use { load(it) }
+    }
+}
+val hasUploadKey = keystorePropertiesFile.exists()
 
 android {
     namespace = "com.mybetrecord.android"
@@ -22,6 +42,21 @@ android {
         manifestPlaceholders["usesCleartextTraffic"] = "false"
     }
 
+    signingConfigs {
+        if (hasUploadKey) {
+            create("release") {
+                // Resolve relative paths against android/ (where keystore.properties
+                // lives) rather than app/, which is the surprising default.
+                storeFile = keystoreProperties.getProperty("storeFile").let { path ->
+                    File(path).takeIf(File::isAbsolute) ?: rootProject.file(path)
+                }
+                storePassword = keystoreProperties.getProperty("storePassword")
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                keyPassword = keystoreProperties.getProperty("keyPassword")
+            }
+        }
+    }
+
     buildTypes {
         debug {
             applicationIdSuffix = ".debug"
@@ -31,6 +66,10 @@ android {
             isMinifyEnabled = false
         }
         release {
+            // Signed only when keystore.properties is present; otherwise the
+            // artifact is unsigned and Play will reject it, which is the
+            // intended, loud failure mode rather than a debug-signed upload.
+            signingConfig = if (hasUploadKey) signingConfigs.getByName("release") else null
             buildConfigField("String", "API_BASE_URL", "\"https://www.mybetrecord.com\"")
             manifestPlaceholders["usesCleartextTraffic"] = "false"
             isMinifyEnabled = true
