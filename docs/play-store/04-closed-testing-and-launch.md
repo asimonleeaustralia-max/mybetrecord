@@ -1,6 +1,10 @@
 # Closed testing, production access & staged rollout
 
-Personal accounts (created after 13 Nov 2023) must pass a closed test before production.
+> **Applies to Personal accounts only.** Accounts created after 13 Nov 2023
+> must pass a closed test before production. If you registered as an
+> **Organisation** (`01-account-registration.md`), sections 1–3 do not apply —
+> go straight from internal testing to section 4. Internal testing is still
+> worth doing regardless.
 
 ## 0. Internal testing first
 - [ ] Upload the signed AAB to **Internal testing**.

@@ -1,6 +1,6 @@
 # mybetrecord — Play Store launch runbook
 
-Step-by-step guide to ship the native Android app (`android/`) to Google Play under a personal developer account, with a consumption-only (no in-app purchase) model.
+Step-by-step guide to ship the native Android app (`android/`) to Google Play, with a consumption-only (no in-app purchase) model.
 
 1. [Account registration & verification](01-account-registration.md)
 2. [Signing & release build](02-signing-and-build.md)
@@ -21,5 +21,8 @@ Related:
 - Positioning: private historical betting ledger — does **not** accept/facilitate wagers, provide odds/tips, link bookmakers, hold funds, or show gambling ads
 - Audience: adults (18+)
 - Required legal URLs: `/privacy`, `/terms`, `/responsible-gambling`, `/delete-account` on `https://www.mybetrecord.com`
-- New personal account => **12 testers / 14 days** closed test before production
+- Account type: **Organisation** (via ABN + D-U-N-S). This is the decision that
+  cannot be undone later — see `01-account-registration.md`
+- **Personal** accounts created after 13 Nov 2023 must pass a **12 testers /
+  14 days** closed test before production. Organisation accounts are exempt
 - targetSdk 36 (Android 16) to satisfy the 31 Aug 2026 requirement

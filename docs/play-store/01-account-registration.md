@@ -1,8 +1,38 @@
-# Play Console — personal account registration & verification
+# Play Console — account registration & verification
 
-Owner runbook for registering the mybetrecord Android app under a **personal** Google Play developer account.
+Owner runbook for registering the mybetrecord Android app on Google Play.
 
-> Personal accounts created after 13 Nov 2023 must complete a 12-tester / 14-day closed test before production. See `04-closed-testing-and-launch.md`.
+## 0. Choose the account type first (irreversible)
+
+**The account type cannot be changed after registration.** Decide before paying.
+
+| | Personal | Organisation |
+|---|---|---|
+| Requires | Government ID | ABN + **D-U-N-S number** + ID |
+| Closed testing before production | **12 testers, opted in continuously for 14 days** | **Not required** |
+| Fee | US$25 | US$25 |
+| Lead time | Days (ID verification) | 1–4 weeks (D-U-N-S issuance) |
+
+**Use Organisation.** mybetrecord operates commercially (Pro is sold on the
+website) and an ABN is already held, so the Organisation route is available —
+and it removes the closed-testing requirement entirely. The 12-tester rule is
+the single biggest launch risk for a product without an existing user base:
+the 14-day clock resets if the tester count drops below 12, and it depends on
+a dozen other people staying opted in.
+
+### Getting a D-U-N-S number
+- [ ] **Check whether one already exists** — free lookup at dnb.com.au. Many
+      ABN holders are already on file.
+- [ ] If not, request one from Dun & Bradstreet. Free. Allow 1–4 weeks.
+- [ ] **Make the details match exactly.** The legal business name and address
+      on the D-U-N-S record must match the ABN record and what is entered in
+      Play Console, character for character. Abbreviation mismatches
+      ("St" vs "Street") and trading-name-vs-registered-name are the most
+      common verification failures. Fix discrepancies with D&B *before*
+      starting Play registration.
+
+> If you register **Personal** instead, the 12-tester / 14-day closed test in
+> `04-closed-testing-and-launch.md` becomes mandatory.
 
 ## 1. Owner Google account
 - [ ] Create/choose a dedicated Google account to own the developer account (e.g. `dev@mybetrecord.com` or a personal Gmail).
@@ -11,12 +41,14 @@ Owner runbook for registering the mybetrecord Android app under a **personal** G
 
 ## 2. Register the developer account
 1. Go to https://play.google.com/console/signup.
-2. Choose account type: **Personal**.
-3. Pay the one-time **US$25** registration fee (credit/debit card in your legal name).
-4. Accept the Developer Distribution Agreement.
+2. Choose account type: **Organisation** (see section 0 — this cannot be changed later).
+3. Enter the D-U-N-S number and the matching legal business name/address.
+4. Pay the one-time **US$25** registration fee.
+5. Accept the Developer Distribution Agreement.
 
-## 3. Identity verification
-- [ ] Link a **personal Google Payments profile**. Legal name + address are taken from this profile.
+## 3. Identity & organisation verification
+- [ ] Google verifies the organisation against the D-U-N-S record; expect a wait.
+- [ ] Link the Google Payments profile. Legal name + address are taken from this profile and must match the D-U-N-S record.
 - [ ] Ensure the legal name/address match your **government ID** and the **payment card**; mismatches forfeit the fee.
 - [ ] Provide and verify (one-time password):
   - Contact email (Google → you)
@@ -42,6 +74,7 @@ Owner runbook for registering the mybetrecord Android app under a **personal** G
 - [ ] Users and permissions → invite collaborators with only the roles they need (e.g. "Release manager" without financial/account access).
 
 ## Gate before proceeding
-- Developer account is verified (identity + device).
+- Account type is **Organisation** (or the closed-test requirement is accepted).
+- Developer account is verified (organisation + identity + device).
 - App entry exists with package `com.mybetrecord.android`.
 - Play App Signing enabled.
