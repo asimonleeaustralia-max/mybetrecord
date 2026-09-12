@@ -1,6 +1,4 @@
-# Mobile / Android API contract
-
-> **Note:** This document is superseded by [`mobile-api-contract.md`](mobile-api-contract.md), which covers both Android and iOS clients.
+# Mobile API contract (Android & iOS)
 
 Base URL (production): `https://www.mybetrecord.com`
 
@@ -12,7 +10,7 @@ All authenticated routes accept `Authorization: Bearer <access_token>`.
 |--------|------|------|-------|
 | POST | `/auth/register` | `{email, password, timezone?}` | Sends verification email |
 | POST | `/auth/register/verify` | `{token, client?, device_name?}` | Returns token pair |
-| POST | `/auth/login` | `{email, password, client?, device_name?}` | `client: "android"` → short-lived access + refresh |
+| POST | `/auth/login` | `{email, password, client?, device_name?}` | `client: "android"` or `"ios"` → short-lived access + refresh |
 | POST | `/auth/refresh` | `{refresh_token}` | Rotates refresh; reuse revokes family |
 | POST | `/auth/logout` | `{refresh_token?, all_devices?}` | Bearer optional if refresh provided |
 | POST | `/auth/password-reset/request` | `{email}` | |
@@ -45,6 +43,8 @@ All authenticated routes accept `Authorization: Bearer <access_token>`.
 | GET | `/bets/{id}` |
 | PATCH | `/bets/{id}` |
 | DELETE | `/bets/{id}` |
+| POST | `/bets/{id}/share` |
+| DELETE | `/bets/{id}/share` |
 
 ## Reports
 
@@ -52,15 +52,23 @@ All authenticated routes accept `Authorization: Bearer <access_token>`.
 |--------|------|
 | GET | `/reports/summary` |
 | GET | `/reports/equity-curve` |
-| GET | `/reports/breakdown` |
+| GET | `/reports/export.{csv,xlsx,json}` |
 
-## Legal URLs (Play Console)
+## Legal URLs
 
 - Privacy: https://www.mybetrecord.com/privacy
 - Terms: https://www.mybetrecord.com/terms
 - Responsible gambling: https://www.mybetrecord.com/responsible-gambling
 - Account deletion (web): https://www.mybetrecord.com/delete-account
 
-## Android billing policy
+## Mobile billing policy
 
-The Android client must **not** include Stripe checkout, upgrade CTAs, or external payment links for digital subscriptions. Existing Pro entitlements from the website may be displayed as read-only plan status.
+Android and iOS clients must **not** include Stripe checkout, upgrade CTAs, or external payment links for digital subscriptions. Existing Pro entitlements from the website may be displayed as read-only plan status.
+
+## Client identifiers
+
+| Client | `client` field on login |
+|--------|-------------------------|
+| Web | `web` (default) |
+| Android | `android` |
+| iOS | `ios` |
