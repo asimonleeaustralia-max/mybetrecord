@@ -18,31 +18,37 @@ final class I18n: ObservableObject {
         let normalized = Self.normalize(code) ?? "en"
         locale = normalized
         if tables[normalized] == nil {
-            tables[normalized] = loadTable(normalized) ?? loadTable("en") ?? [:]
+            tables[normalized] = loadTable(normalized) ?? [:]
+        }
+        // Always keep English available for fallback lookups.
+        if tables["en"] == nil {
+            tables["en"] = loadTable("en") ?? [:]
         }
         objectWillChange.send()
     }
 
     func tr(_ key: String, params: [String: String] = [:]) -> String {
-        let value = lookup(key, in: tables[locale] ?? [:]) ?? lookup(key, in: tables["en"] ?? [:]) ?? key
+        let value = lookup(key, in: tables[locale] ?? [:])
+            ?? lookup(key, in: tables["en"] ?? [:])
+            ?? key
         return interpolate(value, params: params)
     }
 
     static func normalize(_ code: String) -> String? {
         let trimmed = code.trimmingCharacters(in: .whitespacesAndNewlines)
         if trimmed.isEmpty { return nil }
-        if Bundle.main.url(forResource: trimmed, withExtension: "json", subdirectory: "Locales") != nil {
+        if resourceURL(for: trimmed) != nil {
             return trimmed
         }
         let base = trimmed.split(separator: "-").first.map(String.init) ?? trimmed
-        if Bundle.main.url(forResource: base, withExtension: "json", subdirectory: "Locales") != nil {
+        if resourceURL(for: base) != nil {
             return base
         }
         return "en"
     }
 
     private func loadLanguagesManifest() {
-        guard let url = Bundle.main.url(forResource: "languages", withExtension: "json", subdirectory: "Locales"),
+        guard let url = Self.resourceURL(for: "languages"),
               let data = try? Data(contentsOf: url),
               let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
               let all = json["all"] as? [String: String] else {
@@ -53,12 +59,27 @@ final class I18n: ObservableObject {
     }
 
     private func loadTable(_ code: String) -> [String: Any]? {
-        guard let url = Bundle.main.url(forResource: code, withExtension: "json", subdirectory: "Locales"),
+        guard let url = Self.resourceURL(for: code),
               let data = try? Data(contentsOf: url),
               let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
             return nil
         }
         return json
+    }
+
+    /// Prefer `Locales/<code>.json` (folder reference). Fall back to a flattened bundle root copy.
+    private static func resourceURL(for name: String) -> URL? {
+        if let url = Bundle.main.url(forResource: name, withExtension: "json", subdirectory: "Locales") {
+            return url
+        }
+        if let url = Bundle.main.url(forResource: name, withExtension: "json") {
+            return url
+        }
+        // Some Xcode setups nest under MyBetRecord/Resources/Locales.
+        if let url = Bundle.main.url(forResource: name, withExtension: "json", subdirectory: "Resources/Locales") {
+            return url
+        }
+        return nil
     }
 
     private func lookup(_ key: String, in table: [String: Any]) -> String? {

@@ -82,6 +82,10 @@ struct SettingsView: View {
                         Text(lang.label).tag(lang.code)
                     }
                 }
+                .onChange(of: locale) { newValue in
+                    i18n.switchLocale(newValue)
+                    AppPreferences.locale = newValue
+                }
                 AppTextField(title: tr("settings.publicNickname"), text: $displayName)
                 AppTextField(title: tr("settings.defaultCurrency"), text: $baseCurrency)
                 AppTextField(title: tr("settings.bankroll"), text: $bankroll, keyboard: .decimalPad)
@@ -115,6 +119,7 @@ struct SettingsView: View {
             }
             .padding()
         }
+        .id(i18n.locale)
     }
 
     private func load() async {

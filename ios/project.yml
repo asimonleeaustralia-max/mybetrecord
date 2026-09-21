@@ -2,7 +2,7 @@ name: MyBetRecord
 options:
   bundleIdPrefix: com.mybetrecord
   deploymentTarget:
-    iOS: "17.0"
+    iOS: "15.0"
   createIntermediateGroups: true
 settings:
   base:
@@ -18,19 +18,19 @@ targets:
     sources:
       - path: MyBetRecord
         excludes:
-          - Resources/Info.plist
-    resources:
+          - Resources/**
       - path: MyBetRecord/Resources/Locales
+        buildPhase: resources
       - path: MyBetRecord/Resources/Assets.xcassets
+        buildPhase: resources
       - path: MyBetRecord/Resources/PrivacyInfo.xcprivacy
+        buildPhase: resources
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.mybetrecord.ios
         INFOPLIST_FILE: MyBetRecord/Resources/Info.plist
         GENERATE_INFOPLIST_FILE: false
         API_BASE_URL: https://www.mybetrecord.com
-        SWIFT_ACTIVE_COMPILATION_CONDITIONS: $(inherited)
-        OTHER_SWIFT_FLAGS: -DAPI_BASE_URL=\"$(API_BASE_URL)\"
     configs:
       Debug:
         SWIFT_ACTIVE_COMPILATION_CONDITIONS: DEBUG $(inherited)

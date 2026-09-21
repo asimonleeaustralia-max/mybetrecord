@@ -2,6 +2,7 @@ import SwiftUI
 
 struct RootView: View {
     @EnvironmentObject private var auth: AuthRepository
+    @EnvironmentObject private var i18n: I18n
     @State private var ageAttested = AppPreferences.ageAttested
     @State private var showForgotPassword = false
 
@@ -20,10 +21,14 @@ struct RootView: View {
                 AuthView(onForgotPassword: { showForgotPassword = true })
             }
         }
+        // Re-evaluate labels when the active locale changes.
+        .id(i18n.locale)
     }
 }
 
 struct MainTabView: View {
+    @EnvironmentObject private var i18n: I18n
+
     var body: some View {
         TabView {
             NavigationView {
@@ -51,6 +56,7 @@ struct MainTabView: View {
             }
             .tabItem { Label(tr("nav.settings"), systemImage: "gearshape") }
         }
+        .id(i18n.locale)
     }
 }
 

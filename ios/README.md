@@ -62,11 +62,22 @@ Tests cover bet maths (Kelly, lay liability, fractional odds) and auth token per
 
 ## Localization
 
-Locale JSON files live in `MyBetRecord/Resources/Locales/` (copied from the web app). Re-sync after web locale updates:
+Locale JSON files live in `MyBetRecord/Resources/Locales/` (synced from the web app, plus mobile-specific keys).
+
+They are bundled via XcodeGen as resource build-phase sources so `I18n` can load them at runtime. After editing `project.yml`, regenerate:
 
 ```bash
-cp -R ../frontend/public/app/locales MyBetRecord/Resources/
+cd ios
+xcodegen generate
 ```
+
+Re-sync web locales (then re-merge any mobile-only keys if needed):
+
+```bash
+cp -R ../frontend/public/app/locales/* MyBetRecord/Resources/Locales/
+```
+
+Language can be changed in Settings; the UI refreshes immediately.
 
 ## App Store
 

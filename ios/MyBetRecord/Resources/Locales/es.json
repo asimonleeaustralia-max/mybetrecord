@@ -38,15 +38,23 @@
     "verificationLinkSent": "Revise su correo electrónico para obtener un enlace de verificación para activar su cuenta.",
     "verificationEmailSent": "Hemos enviado un correo electrónico de verificación a {{email}}. Revise su bandeja de entrada y haga clic en el enlace para terminar de crear su cuenta.",
     "verificationLinkInvalid": "Este enlace de verificación no es válido o ha caducado.",
-    "emailNotVerified": "Verifique su correo electrónico antes de iniciar sesión. Revise su bandeja de entrada para ver el enlace de verificación."
+    "emailNotVerified": "Verifique su correo electrónico antes de iniciar sesión. Revise su bandeja de entrada para ver el enlace de verificación.",
+    "emailPasswordRequired": "Email and password are required",
+    "resetCode": "Reset Code",
+    "resendCode": "Resend Code",
+    "resendCodeIn": "Resend in {{s}}s",
+    "useDifferentEmail": "Use a Different Email",
+    "signInNewPassword": "You can now sign in with your new password"
   },
   "nav": {
     "bets": "Apuestas",
     "recordBet": "Registrar una apuesta",
     "reports": "Informes",
-    "settings": "Ajustes",
+    "settings": "Configuración",
     "admin": "Administración",
-    "signOut": "desconectar"
+    "signOut": "Cerrar Sesión",
+    "home": "Inicio",
+    "tools": "Herramientas"
   },
   "ticker": {
     "bankroll": "Financiar",
@@ -55,28 +63,28 @@
     "yield": "Producir"
   },
   "bets": {
-    "title": "Tus apuestas",
+    "title": "Apuestas",
     "recordBet": "+ Registrar una apuesta",
-    "empty": "Ninguna apuesta coincide con estos filtros todavía. Registre el primero para iniciar el libro mayor.",
+    "empty": "No hay apuestas todavía. Toca + para registrar tu primera apuesta.",
     "date": "Fecha",
     "sport": "Deporte",
     "eventSelection": "Evento / Selección",
     "type": "Tipo",
-    "odds": "Impares",
+    "odds": "Cuota",
     "stake": "Apostar",
     "result": "Resultado",
-    "pl": "P/L",
+    "pl": "G/P",
     "clv": "CLV",
     "all": "Todo",
     "from": "De",
     "to": "A",
-    "deleteConfirm": "¿Eliminar esta apuesta? Esto no se puede deshacer.",
+    "deleteConfirm": "¿Eliminar esta apuesta?",
     "deleted": "Apuesta eliminada",
     "editAria": "Editar {{name}}",
     "deleteAria": "Eliminar {{name}}",
     "resultAria": "Resultado para {{name}}",
     "shareAria": "Compartir {{name}}",
-    "legsCount": "{{count}} piernas"
+    "legsCount": "{{count}} selecciones"
   },
   "outcomes": {
     "pending": "Pendiente",
@@ -195,32 +203,33 @@
     "legMissingFields": "Cada selección necesita un evento y una selección.",
     "legBadOdds": "Cada selección necesita probabilidades válidas mayores que 1.",
     "tipsterImplied": "Cuotas implícitas del tipster (decimal)",
-    "tipsterEdge": "Ventaja del informante"
+    "tipsterEdge": "Ventaja del informante",
+    "closingOdds": "Closing Odds"
   },
   "reports": {
     "title": "Informes",
     "exportCsv": "Exportar CSV",
     "exportXlsx": "Exportar Excel",
     "exportJson": "Exportar JSON",
-    "equityCurve": "Curva de acciones",
+    "equityCurve": "Curva de Capital",
     "equitySub": "ganancia/pérdida acumulada",
     "byDimension": "Por dimensión",
-    "profitByMonth": "Ganancia por mes",
+    "profitByMonth": "Beneficio por Mes",
     "bets": "Apuestas",
     "strike": "Huelga",
-    "yield": "Producir",
+    "yield": "Rendimiento",
     "pl": "P/L",
     "allCurrencies": "Todas las monedas",
-    "profitLoss": "Ganancia / Pérdida",
-    "roi": "retorno de la inversión",
-    "strikeRate": "Tasa de huelga",
-    "totalBets": "Apuestas totales",
+    "profitLoss": "Ganancias/Pérdidas",
+    "roi": "ROI",
+    "strikeRate": "Tasa de Acierto",
+    "totalBets": "Apuestas Totales",
     "settled": "{{count}} liquidado · {{note}}",
     "currencyOnly": "{{currency}} solamente",
     "allCurrenciesNote": "todas las monedas",
     "perUnitStaked": "por unidad apostada",
     "ofBankroll": "{{pct}} de fondos",
-    "turnover": "{{amount}} facturación",
+    "turnover": "Volumen",
     "wlv": "{{wins}}W / {{losses}}L / {{voids}}V",
     "noSettled": "Aún no hay apuestas resueltas.",
     "dimSport": "Deporte",
@@ -230,10 +239,12 @@
     "chartFallback": "Gráfico no disponible: muestra los valores recientes como una tabla.",
     "date": "Fecha",
     "value": "Valor",
-    "noData": "No hay datos para este período."
+    "noData": "No hay datos para este período.",
+    "subtitle": "Análisis detallado del rendimiento",
+    "export": "Exportar y Compartir"
   },
   "settings": {
-    "title": "Ajustes",
+    "title": "Configuración",
     "preferences": "Preferencias",
     "language": "Idioma preferido",
     "defaultOdds": "Cuotas de entrada predeterminadas",
@@ -250,8 +261,8 @@
     "kellyMultiplier": "multiplicador de kelly",
     "kellyHint": "1 = completo, 0,5 = mitad",
     "displayName": "Nombre para mostrar",
-    "save": "Guardar configuración",
-    "saved": "Configuración guardada",
+    "save": "Guardar Configuración",
+    "saved": "Configuración guardada correctamente",
     "apiAccess": "Acceso API",
     "generateKey": "Generar clave",
     "apiHelp": "Utilice una tecla para insertar o extraer su registro de los scripts. Envíelo como 〈código〉Autorización: Portador mbr_…〈/código〉 o 〈código〉X-API-Key〈/código〉.",
@@ -287,7 +298,19 @@
     "accountDescriptionPlaceholder": "Informe a los visitantes sobre su enfoque de apuestas, deportes de enfoque o estilo de mantenimiento de registros.",
     "accountDescriptionHint": "Opcional. Se muestra en su registro de apuestas públicas. Máximo 500 palabras.",
     "accountDescriptionWordCount": "{{count}} / 500 palabras",
-    "accountDescriptionTooLong": "La descripción de la cuenta debe tener 500 palabras o menos."
+    "accountDescriptionTooLong": "La descripción de la cuenta debe tener 500 palabras o menos.",
+    "subtitle": "Registro personal de apuestas, no es una casa de apuestas. Los planes Pro se gestionan solo en el sitio web.",
+    "shareProfile": "Share Profile",
+    "planNote": "Pro plans can only be managed on the website",
+    "legal": "Legal & Help",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "responsibleGambling": "Responsible Gambling",
+    "deleteAccountWeb": "Delete Account (Web)",
+    "deleteAccount": "Delete Account",
+    "deleteAccountBody": "This action is permanent and cannot be undone. All your data will be deleted.",
+    "typeDelete": "Type DELETE to confirm",
+    "deleteForever": "Delete Forever"
   },
   "admin": {
     "title": "Administración",
@@ -424,7 +447,10 @@
   },
   "common": {
     "confirm": "Confirmar",
-    "cancel": "Cancelar"
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "save": "Guardar",
+    "edit": "Editar"
   },
   "storage": {
     "ephemeral": "Navegación privada: su sesión no se guardará después de cerrar esta pestaña."
@@ -632,5 +658,31 @@
     "betCount": "{{count}} apuestas",
     "empty": "Aún no hay apuestas.",
     "notFound": "No se pudo encontrar este registro de apuesta pública."
+  },
+  "dashboard": {
+    "title": "Panel",
+    "subtitle": "Tu rendimiento de apuestas de un vistazo",
+    "pl": "Ganancias/Pérdidas",
+    "turnover": "Volumen",
+    "yield": "Rendimiento",
+    "strikeRate": "Tasa de Acierto",
+    "totalBets": "Apuestas Totales",
+    "bankroll": "Banca"
+  },
+  "tools": {
+    "title": "Tools",
+    "subtitle": "Calculators and utilities for better betting",
+    "kellyTitle": "Kelly Criterion Calculator",
+    "kellyOdds": "Decimal Odds",
+    "kellyImplied": "Your Implied Probability (%)",
+    "liabilityTitle": "Lay Liability Calculator",
+    "layOdds": "Lay Odds"
+  },
+  "ageGate": {
+    "title": "Age Verification",
+    "message": "You must be 18 or older to use this app. mybetrecord is a private betting ledger for tracking your own wagers — it does not accept bets or facilitate gambling.",
+    "disclaimer": "This app is for personal record-keeping only. If you have a gambling problem, seek help at begambleaware.org or your local support service.",
+    "confirm": "I am 18 or older",
+    "exit": "Exit"
   }
 }
