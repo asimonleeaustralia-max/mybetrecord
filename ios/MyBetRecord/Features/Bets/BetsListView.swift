@@ -95,6 +95,7 @@ struct BetRowView: View {
 
     private var subtitle: String {
         var parts = [bet.selection, bet.sport, tr("outcomes.\(bet.outcome)")]
+        if bet.side == "lay" { parts.append(tr("form.sideLay")) }
         if bet.isMultiple { parts.append(tr("bets.legsCount", params: ["count": "\(bet.legs.count)"])) }
         if bet.freeBet { parts.append(tr("form.freeBetBadge")) }
         return parts.joined(separator: " · ")

@@ -12,9 +12,11 @@ final class BetEditorModel: ObservableObject {
     @Published var loading = false
     @Published var saving = false
     @Published var errorMessage: String?
+    @Published var warningMessage: String?
     @Published var saved = false
     @Published var deleted = false
-    @Published var sport = "Football"
+
+    @Published var sport = "Soccer"
     @Published var event = ""
     @Published var selection = ""
     @Published var oddsFormat = "decimal"
@@ -22,75 +24,299 @@ final class BetEditorModel: ObservableObject {
     @Published var stake = ""
     @Published var currency = "GBP"
     @Published var betType = "Win"
+    @Published var side = "back"
     @Published var outcome = "pending"
     @Published var bookmaker = ""
     @Published var portal = ""
     @Published var tipster = ""
+    @Published var betBroker = ""
     @Published var notes = ""
+    @Published var tournament = ""
     @Published var eachWay = false
     @Published var freeBet = false
+    @Published var placeFraction = "0.25"
+    @Published var exchangeCommission = ""
     @Published var cashOut = ""
     @Published var eventAt = ""
+    @Published var placedAt = ""
+    @Published var settledAt = ""
     @Published var closingOdds = ""
+    @Published var closingOddsExchange = ""
+    @Published var betModel = ""
+    @Published var personalImpliedOdds = ""
+    @Published var modelImpliedOdds = ""
+    @Published var tipsterImpliedOdds = ""
     @Published var isMultiple = false
     @Published var legs: [LegInput] = [LegInput(), LegInput()]
     @Published var shareToken: String?
     @Published var sharing = false
+    @Published var clvPct: Double?
+    @Published var bankroll: Double = 0
+    @Published var kellyMultiplier: Double = 1
 
     let betId: String?
     let isEdit: Bool
     private let betsRepository: BetsRepository
+    private let authRepository: AuthRepository?
 
-    init(betId: String?, betsRepository: BetsRepository) {
+    init(betId: String?, betsRepository: BetsRepository, authRepository: AuthRepository? = nil) {
         self.betId = betId == "new" ? nil : betId
         self.isEdit = betId != nil && betId != "new"
         self.betsRepository = betsRepository
-        if let id = self.betId { Task { await load(id: id) } }
+        self.authRepository = authRepository
+        if let id = self.betId {
+            Task { await load(id: id) }
+        } else {
+            placedAt = Self.nowLocal()
+            Task { await applyUserDefaults() }
+        }
+    }
+
+    private func applyUserDefaults() async {
+        guard let authRepository else { return }
+        do {
+            let user = try await authRepository.me()
+            if !isEdit {
+                currency = user.baseCurrency
+                oddsFormat = user.defaultOddsFormat
+            }
+            bankroll = user.bankroll
+            kellyMultiplier = user.kellyMultiplier
+        } catch {
+            // Defaults already set; editing can continue without profile prefs.
+        }
     }
 
     func load(id: String) async {
         loading = true
         defer { loading = false }
         do {
-            let bet = try await betsRepository.getBet(id: id)
-            sport = bet.sport
-            event = bet.event
-            selection = bet.selection
-            oddsFormat = "decimal"
-            odds = String(bet.oddsDecimal)
-            stake = String(bet.stake)
-            currency = bet.currency
-            betType = bet.betType
-            outcome = bet.outcome
-            bookmaker = bet.bookmaker ?? ""
-            portal = bet.portal ?? ""
-            tipster = bet.tipster ?? ""
-            notes = bet.notes ?? ""
-            eachWay = bet.eachWay
-            freeBet = bet.freeBet
-            cashOut = bet.cashOutAmount.map { String($0) } ?? ""
-            eventAt = Self.formatEventAt(bet.eventAt)
-            closingOdds = bet.closingOdds.map { String($0) } ?? ""
-            isMultiple = bet.isMultiple
-            if bet.isMultiple, !bet.legs.isEmpty {
-                legs = bet.legs.map { LegInput(event: $0.event, selection: $0.selection, odds: String($0.oddsDecimal)) }
+            async let betTask = betsRepository.getBet(id: id)
+            async let userTask: User? = {
+                guard let authRepository else { return nil }
+                return try? await authRepository.me()
+            }()
+            let bet = try await betTask
+            if let user = await userTask {
+                bankroll = user.bankroll
+                kellyMultiplier = user.kellyMultiplier
             }
-            shareToken = bet.shareToken
+            apply(bet)
         } catch {
             self.errorMessage = error.userMessage
         }
     }
 
+    private func apply(_ bet: Bet) {
+        sport = bet.sport
+        event = bet.event
+        selection = bet.selection
+        let fmt = BetMath.oddsFormats.contains(bet.oddsFormat) ? bet.oddsFormat : "decimal"
+        oddsFormat = fmt
+        odds = BetMath.formatFromDecimal(bet.oddsDecimal, format: fmt)
+        stake = String(bet.stake)
+        currency = bet.currency
+        betType = bet.betType
+        side = bet.side
+        bookmaker = bet.bookmaker ?? ""
+        portal = bet.portal ?? ""
+        tipster = bet.tipster ?? ""
+        betBroker = bet.betBroker ?? ""
+        notes = bet.notes ?? ""
+        tournament = bet.tournament ?? ""
+        eachWay = bet.eachWay
+        freeBet = bet.freeBet
+        placeFraction = String(bet.placeFraction)
+        exchangeCommission = bet.exchangeCommissionPct.map { String($0) } ?? ""
+        cashOut = bet.cashOutAmount.map { String($0) } ?? ""
+        eventAt = Self.formatDateTime(bet.eventAt)
+        placedAt = Self.formatDateTime(bet.placedAt)
+        settledAt = bet.outcome != "pending" ? Self.formatDateTime(bet.settledAt) : ""
+        closingOdds = bet.closingOdds.map { String($0) } ?? ""
+        closingOddsExchange = bet.closingOddsExchange.map { String($0) } ?? ""
+        betModel = bet.betModel ?? ""
+        personalImpliedOdds = bet.personalImpliedOdds.map { String($0) } ?? ""
+        modelImpliedOdds = bet.modelImpliedOdds.map { String($0) } ?? ""
+        tipsterImpliedOdds = bet.tipsterImpliedOdds.map { String($0) } ?? ""
+        isMultiple = bet.isMultiple
+        if bet.isMultiple, !bet.legs.isEmpty {
+            let legFmt = BetMath.oddsFormats.contains(bet.legs[0].oddsFormat) ? bet.legs[0].oddsFormat : fmt
+            oddsFormat = legFmt
+            legs = bet.legs.map {
+                LegInput(event: $0.event, selection: $0.selection, odds: BetMath.formatFromDecimal($0.oddsDecimal, format: legFmt))
+            }
+        }
+        outcome = Self.displayOutcome(bet)
+        shareToken = bet.shareToken
+        clvPct = bet.clvPct
+    }
+
+    func setOddsFormat(_ next: String) {
+        guard next != oddsFormat else { return }
+        if isMultiple {
+            legs = legs.map { leg in
+                var copy = leg
+                if let dec = BetMath.toDecimal(leg.odds, format: oddsFormat) {
+                    copy.odds = BetMath.formatFromDecimal(dec, format: next)
+                }
+                return copy
+            }
+        } else if let dec = BetMath.toDecimal(odds, format: oddsFormat) {
+            odds = BetMath.formatFromDecimal(dec, format: next)
+        }
+        oddsFormat = next
+    }
+
+    func setMultiple(_ enabled: Bool) {
+        isMultiple = enabled
+        if enabled {
+            side = "back"
+            eachWay = false
+            freeBet = false
+        }
+    }
+
+    func setSide(_ value: String) {
+        side = value
+        if value == "lay" {
+            eachWay = false
+            freeBet = false
+        }
+    }
+
+    func setEachWay(_ enabled: Bool) {
+        eachWay = enabled
+        let valid = Set(availableOutcomes.map(\.self))
+        if !valid.contains(outcome) {
+            outcome = "pending"
+        }
+    }
+
+    func addLeg() {
+        guard legs.count < 10 else { return }
+        legs.append(LegInput())
+    }
+
+    func removeLeg(at index: Int) {
+        guard legs.count > 2, legs.indices.contains(index) else { return }
+        legs.remove(at: index)
+    }
+
+    var availableOutcomes: [String] {
+        if eachWay && !isMultiple {
+            return ["pending", "win", "placed", "loss", "void"]
+        }
+        return ["pending", "win", "loss", "void", "half_win", "half_loss"]
+    }
+
+    var isLay: Bool { side == "lay" && !isMultiple }
+
+    var canUsePromotions: Bool { !isMultiple && !isLay }
+
+    func currentDecimalOdds() -> Double? {
+        if isMultiple {
+            let values = legs.compactMap { BetMath.toDecimal($0.odds, format: oddsFormat) }
+            return BetMath.combinedOdds(values)
+        }
+        return BetMath.toDecimal(odds, format: oddsFormat)
+    }
+
+    func settlementProfitPreview() -> Double? {
+        guard let stakeValue = Double(stake), stakeValue > 0 else { return nil }
+        let cashOutValue = cashOut.trimmingCharacters(in: .whitespaces).isEmpty ? nil : Double(cashOut)
+        let settled = outcome != "pending" || cashOutValue != nil
+        guard settled else { return nil }
+        let oddsDec = currentDecimalOdds() ?? 0
+        return BetMath.settleProfit(
+            stake: stakeValue,
+            oddsDecimal: oddsDec,
+            outcome: outcome,
+            eachWay: !isMultiple && eachWay,
+            placeFraction: Double(placeFraction) ?? 0.25,
+            side: isMultiple ? "back" : side,
+            freeBet: !isMultiple && freeBet,
+            exchangeCommissionPct: Double(exchangeCommission) ?? 0,
+            cashOutAmount: cashOutValue
+        )
+    }
+
+    func liabilityPreview() -> Double? {
+        guard isLay, let stakeValue = Double(stake), let oddsDec = currentDecimalOdds() else { return nil }
+        return BetMath.layLiability(backersStake: stakeValue, oddsDecimal: oddsDec)
+    }
+
+    func effectiveOddsPreview() -> Double? {
+        guard !isLay, let oddsDec = currentDecimalOdds(), let commission = Double(exchangeCommission) else { return nil }
+        return BetMath.effectiveDecimalOdds(oddsDecimal: oddsDec, commissionPct: commission)
+    }
+
+    func cashOutExceedsMax() -> Bool {
+        guard let cashOutValue = Double(cashOut),
+              let stakeValue = Double(stake),
+              let oddsDec = currentDecimalOdds(),
+              let maxReturn = BetMath.maxCashOutReturn(stake: stakeValue, oddsDecimal: oddsDec, freeBet: freeBet)
+        else { return false }
+        return cashOutValue > maxReturn + 0.001
+    }
+
+    func personalEdge() -> Double? {
+        guard let oddsDec = currentDecimalOdds(), let implied = Double(personalImpliedOdds) else { return nil }
+        return BetMath.edgePct(oddsDecimal: oddsDec, impliedDecimal: implied)
+    }
+
+    func modelEdge() -> Double? {
+        guard let oddsDec = currentDecimalOdds(), let implied = Double(modelImpliedOdds) else { return nil }
+        return BetMath.edgePct(oddsDecimal: oddsDec, impliedDecimal: implied)
+    }
+
+    func tipsterEdge() -> Double? {
+        guard let oddsDec = currentDecimalOdds(), let implied = Double(tipsterImpliedOdds) else { return nil }
+        return BetMath.edgePct(oddsDecimal: oddsDec, impliedDecimal: implied)
+    }
+
+    func personalKelly() -> BetMath.KellyResult? {
+        guard let oddsDec = currentDecimalOdds(), let implied = Double(personalImpliedOdds) else { return nil }
+        return BetMath.kelly(oddsDecimal: oddsDec, impliedDecimal: implied, bankroll: bankroll, multiplier: kellyMultiplier)
+    }
+
+    func modelKelly() -> BetMath.KellyResult? {
+        guard let oddsDec = currentDecimalOdds(), let implied = Double(modelImpliedOdds) else { return nil }
+        return BetMath.kelly(oddsDecimal: oddsDec, impliedDecimal: implied, bankroll: bankroll, multiplier: kellyMultiplier)
+    }
+
+    func computedClv() -> Double? {
+        guard let oddsDec = currentDecimalOdds(), let closing = Double(closingOdds) else { return clvPct }
+        return BetMath.clvPct(takenDecimal: oddsDec, closingDecimal: closing)
+    }
+
     func save() async {
-        guard let stakeValue = Double(stake) else {
-            errorMessage = tr("android.requiredFields")
+        warningMessage = nil
+        errorMessage = nil
+
+        let currencyValue = currency.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+        guard currencyValue.range(of: "^[A-Z]{3}$", options: .regularExpression) != nil else {
+            errorMessage = tr("form.invalidCurrency")
             return
         }
+
+        guard let stakeValue = Double(stake), stakeValue > 0 else {
+            errorMessage = tr("form.requiredFields")
+            return
+        }
+
         let eventAtIso: String?
+        let placedAtIso: String?
+        let settledAtIso: String?
         do {
-            eventAtIso = try Self.parseEventAt(eventAt)
+            eventAtIso = try Self.parseDateTime(eventAt, required: false)
+            placedAtIso = try Self.parseDateTime(placedAt, required: false) ?? Self.nowIso()
+            if outcome != "pending" || !cashOut.trimmingCharacters(in: .whitespaces).isEmpty {
+                settledAtIso = try Self.parseDateTime(settledAt, required: false) ?? Self.nowIso()
+            } else {
+                settledAtIso = try Self.parseDateTime(settledAt, required: false)
+            }
         } catch {
-            errorMessage = tr("android.invalidEventAt")
+            errorMessage = tr("form.invalidDateTime")
             return
         }
 
@@ -99,15 +325,22 @@ final class BetEditorModel: ObservableObject {
         if isMultiple {
             var parsed: [BetLegCreate] = []
             for leg in legs {
-                guard !leg.event.isEmpty, !leg.selection.isEmpty else {
+                guard !leg.event.trimmingCharacters(in: .whitespaces).isEmpty,
+                      !leg.selection.trimmingCharacters(in: .whitespaces).isEmpty else {
                     errorMessage = tr("form.legMissingFields")
                     return
                 }
-                guard let legOdds = oddsForApi(leg.odds, format: oddsFormat) else {
+                guard let legOdds = BetMath.oddsForApi(leg.odds, format: oddsFormat) else {
                     errorMessage = tr("form.legBadOdds")
                     return
                 }
-                parsed.append(BetLegCreate(event: leg.event, selection: leg.selection, odds: legOdds.0, oddsFormat: oddsFormat, oddsDenominator: legOdds.1))
+                parsed.append(BetLegCreate(
+                    event: leg.event.trimmingCharacters(in: .whitespaces),
+                    selection: leg.selection.trimmingCharacters(in: .whitespaces),
+                    odds: legOdds.0,
+                    oddsFormat: oddsFormat,
+                    oddsDenominator: legOdds.1
+                ))
             }
             guard parsed.count >= 2 else {
                 errorMessage = tr("form.needTwoLegs")
@@ -115,69 +348,105 @@ final class BetEditorModel: ObservableObject {
             }
             legsForApi = parsed
         } else {
-            guard !event.isEmpty, !selection.isEmpty, let pair = oddsForApi(odds, format: oddsFormat) else {
-                errorMessage = oddsFormat == "fractional" && BetMath.parseFractional(odds) == nil ? tr("android.invalidFractional") : tr("android.requiredFields")
+            guard !event.trimmingCharacters(in: .whitespaces).isEmpty,
+                  !selection.trimmingCharacters(in: .whitespaces).isEmpty,
+                  let pair = BetMath.oddsForApi(odds, format: oddsFormat) else {
+                if oddsFormat == "fractional", !odds.isEmpty, BetMath.parseFractional(odds) == nil {
+                    errorMessage = tr("form.invalidFractional")
+                } else {
+                    errorMessage = tr("form.requiredFields")
+                }
                 return
             }
             oddsPair = pair
         }
 
+        if cashOutExceedsMax() {
+            warningMessage = tr("form.cashOutExceedsMax")
+        }
+
+        let useEachWay = !isMultiple && !isLay && eachWay
+        let useFreeBet = !isMultiple && !isLay && freeBet
+        let placed = useEachWay && (outcome == "win" || outcome == "placed")
+        let sideValue = isMultiple ? "back" : side
+
         saving = true
-        errorMessage = nil
         defer { saving = false }
         do {
             if let betId {
                 let update = BetUpdate(
                     sport: sport.trimmingCharacters(in: .whitespaces),
-                    event: event.nilIfBlank,
-                    selection: selection.nilIfBlank,
+                    event: isMultiple ? nil : event.nilIfBlank,
+                    selection: isMultiple ? nil : selection.nilIfBlank,
                     odds: oddsPair?.0,
                     stake: stakeValue,
-                    betType: betType,
-                    currency: currency.uppercased(),
+                    betType: betType.trimmingCharacters(in: .whitespaces).nilIfBlank ?? "Win",
+                    side: sideValue,
+                    currency: currencyValue,
                     oddsFormat: oddsFormat,
                     oddsDenominator: oddsPair?.1,
                     outcome: outcome,
+                    tournament: tournament.nilIfBlank,
                     bookmaker: bookmaker.nilIfBlank,
                     portal: portal.nilIfBlank,
+                    exchangeCommissionPct: Double(exchangeCommission) ?? 0,
                     tipster: tipster.nilIfBlank,
+                    betBroker: betBroker.nilIfBlank,
                     notes: notes.nilIfBlank,
-                    eachWay: !isMultiple && eachWay,
-                    freeBet: !isMultiple && freeBet,
+                    eachWay: useEachWay,
+                    placeFraction: useEachWay ? (Double(placeFraction) ?? 0.25) : nil,
+                    placed: placed,
+                    freeBet: useFreeBet,
                     isMultiple: isMultiple,
                     legs: legsForApi,
                     cashOutAmount: Double(cashOut),
+                    betModel: betModel.nilIfBlank,
+                    modelImpliedOdds: Double(modelImpliedOdds),
+                    personalImpliedOdds: Double(personalImpliedOdds),
+                    tipsterImpliedOdds: Double(tipsterImpliedOdds),
                     closingOdds: Double(closingOdds),
-                    eventAt: eventAtIso
+                    closingOddsExchange: Double(closingOddsExchange),
+                    eventAt: eventAtIso,
+                    placedAt: placedAtIso,
+                    settledAt: settledAtIso
                 )
                 _ = try await betsRepository.updateBet(id: betId, body: update)
             } else {
                 let create = BetCreate(
                     sport: sport.trimmingCharacters(in: .whitespaces),
-                    event: event.nilIfBlank,
-                    selection: selection.nilIfBlank,
+                    event: isMultiple ? nil : event.nilIfBlank,
+                    selection: isMultiple ? nil : selection.nilIfBlank,
                     odds: oddsPair?.0,
                     stake: stakeValue,
-                    betType: betType,
-                    side: "back",
-                    currency: currency.uppercased(),
+                    betType: betType.trimmingCharacters(in: .whitespaces).nilIfBlank ?? "Win",
+                    side: sideValue,
+                    currency: currencyValue,
                     oddsFormat: oddsFormat,
                     oddsDenominator: oddsPair?.1,
                     outcome: outcome,
-                    tournament: nil,
+                    tournament: tournament.nilIfBlank,
                     bookmaker: bookmaker.nilIfBlank,
                     portal: portal.nilIfBlank,
+                    exchangeCommissionPct: Double(exchangeCommission) ?? 0,
                     tipster: tipster.nilIfBlank,
+                    betBroker: betBroker.nilIfBlank,
                     notes: notes.nilIfBlank,
-                    eachWay: !isMultiple && eachWay,
-                    placed: false,
-                    freeBet: !isMultiple && freeBet,
+                    eachWay: useEachWay,
+                    placeFraction: useEachWay ? (Double(placeFraction) ?? 0.25) : 0.25,
+                    placed: placed,
+                    freeBet: useFreeBet,
                     isMultiple: isMultiple,
                     legs: legsForApi,
                     cashOutAmount: Double(cashOut),
+                    betModel: betModel.nilIfBlank,
+                    modelImpliedOdds: Double(modelImpliedOdds),
+                    personalImpliedOdds: Double(personalImpliedOdds),
+                    tipsterImpliedOdds: Double(tipsterImpliedOdds),
                     closingOdds: Double(closingOdds),
-                    placedAt: nil,
-                    eventAt: eventAtIso
+                    closingOddsExchange: Double(closingOddsExchange),
+                    placedAt: placedAtIso,
+                    eventAt: eventAtIso,
+                    settledAt: settledAtIso
                 )
                 _ = try await betsRepository.createBet(create)
             }
@@ -222,45 +491,45 @@ final class BetEditorModel: ObservableObject {
         }
     }
 
-    func currentDecimalOdds() -> Double? {
-        if isMultiple {
-            let values = legs.compactMap { parseOddsToDecimal($0.odds, format: oddsFormat) }
-            return BetMath.combinedOdds(values)
+    func onOutcomeChanged() {
+        if outcome != "pending", settledAt.trimmingCharacters(in: .whitespaces).isEmpty {
+            settledAt = Self.nowLocal()
         }
-        return parseOddsToDecimal(odds, format: oddsFormat)
     }
 
-    private func parseOddsToDecimal(_ text: String, format: String) -> Double? {
-        guard !text.isEmpty else { return nil }
-        if format == "fractional" {
-            guard let (n, d) = BetMath.parseFractional(text) else { return nil }
-            return BetMath.fractionalToDecimal(numerator: n, denominator: d)
-        }
-        guard let value = Double(text), value > 1 else { return nil }
-        return value
+    private static func displayOutcome(_ bet: Bet) -> String {
+        if bet.eachWay, bet.placed, bet.outcome == "loss" { return "placed" }
+        return bet.outcome
     }
 
-    private func oddsForApi(_ text: String, format: String) -> (Double, Double?)? {
-        if format == "fractional" {
-            guard let (n, d) = BetMath.parseFractional(text) else { return nil }
-            return (n, d)
-        }
-        guard let value = Double(text), value > 1 else { return nil }
-        return (value, nil)
-    }
-
-    private static func parseEventAt(_ text: String) throws -> String? {
-        guard !text.trimmingCharacters(in: .whitespaces).isEmpty else { return nil }
+    private static func nowLocal() -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd HH:mm"
-        guard let date = formatter.date(from: text.trimmingCharacters(in: .whitespaces)) else {
+        return formatter.string(from: Date())
+    }
+
+    private static func nowIso() -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+        return formatter.string(from: Date())
+    }
+
+    private static func parseDateTime(_ text: String, required: Bool) throws -> String? {
+        let trimmed = text.trimmingCharacters(in: .whitespaces)
+        if trimmed.isEmpty {
+            if required { throw NSError(domain: "Bet", code: 1) }
+            return nil
+        }
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd HH:mm"
+        guard let date = formatter.date(from: trimmed) else {
             throw NSError(domain: "Bet", code: 1)
         }
         formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
         return formatter.string(from: date)
     }
 
-    private static func formatEventAt(_ iso: String?) -> String {
+    private static func formatDateTime(_ iso: String?) -> String {
         guard let iso, !iso.isEmpty else { return "" }
         let inFormatter = DateFormatter()
         inFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm"

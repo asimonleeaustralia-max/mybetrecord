@@ -14,6 +14,30 @@ final class BetMathTests: XCTestCase {
         XCTAssertEqual(BetMath.fractionalToDecimal(numerator: 11, denominator: 8), 2.375, accuracy: 1e-9)
     }
 
+    func testAmericanToDecimal() {
+        XCTAssertEqual(BetMath.toDecimal("+150", format: "american")!, 2.5, accuracy: 1e-9)
+        XCTAssertEqual(BetMath.toDecimal("-200", format: "american")!, 1.5, accuracy: 1e-9)
+    }
+
+    func testHongKongAndAsian() {
+        XCTAssertEqual(BetMath.toDecimal("0.85", format: "hong_kong")!, 1.85, accuracy: 1e-9)
+        XCTAssertEqual(BetMath.toDecimal("+0.85", format: "malaysian")!, 1.85, accuracy: 1e-9)
+        XCTAssertEqual(BetMath.toDecimal("-0.85", format: "malaysian")!, 1 + 1 / 0.85, accuracy: 1e-9)
+    }
+
+    func testOddsForApiAmericanNegative() {
+        let pair = BetMath.oddsForApi("-200", format: "american")
+        XCTAssertEqual(pair?.odds, -200, accuracy: 1e-9)
+        XCTAssertNil(pair?.denominator)
+    }
+
+    func testFormatFromDecimalRoundTrip() {
+        let american = BetMath.formatFromDecimal(2.5, format: "american")
+        XCTAssertEqual(american, "+150")
+        let fractional = BetMath.formatFromDecimal(2.375, format: "fractional")
+        XCTAssertEqual(fractional, "11/8")
+    }
+
     func testLayLiability() {
         XCTAssertEqual(BetMath.layLiability(backersStake: 10, oddsDecimal: 2.5)!, 15, accuracy: 1e-9)
         XCTAssertNil(BetMath.layLiability(backersStake: 0, oddsDecimal: 2.5))
@@ -32,6 +56,45 @@ final class BetMathTests: XCTestCase {
     func testCombinedOdds() {
         XCTAssertEqual(BetMath.combinedOdds([2, 3])!, 6, accuracy: 1e-9)
         XCTAssertNil(BetMath.combinedOdds([2]))
+    }
+
+    func testSettleProfitBackWin() {
+        let profit = BetMath.settleProfit(stake: 10, oddsDecimal: 2.5, outcome: "win")
+        XCTAssertEqual(profit!, 15, accuracy: 1e-9)
+    }
+
+    func testSettleProfitFreeBetLoss() {
+        let profit = BetMath.settleProfit(stake: 10, oddsDecimal: 2.5, outcome: "loss", freeBet: true)
+        XCTAssertEqual(profit!, 0, accuracy: 1e-9)
+    }
+
+    func testSettleProfitCashOut() {
+        let profit = BetMath.settleProfit(stake: 10, oddsDecimal: 2.5, outcome: "pending", cashOutAmount: 12)
+        XCTAssertEqual(profit!, 2, accuracy: 1e-9)
+    }
+
+    func testSettleProfitLay() {
+        let win = BetMath.settleProfit(stake: 10, oddsDecimal: 2.5, outcome: "win", side: "lay")
+        XCTAssertEqual(win!, 10, accuracy: 1e-9)
+        let loss = BetMath.settleProfit(stake: 10, oddsDecimal: 2.5, outcome: "loss", side: "lay")
+        XCTAssertEqual(loss!, -15, accuracy: 1e-9)
+    }
+
+    func testSettleProfitEachWayPlaced() {
+        let profit = BetMath.settleProfit(
+            stake: 20,
+            oddsDecimal: 5,
+            outcome: "placed",
+            eachWay: true,
+            placeFraction: 0.25
+        )
+        // unit 10; place odds 2.0; place profit 10; win part -10 → 0
+        XCTAssertEqual(profit!, 0, accuracy: 1e-9)
+    }
+
+    func testEffectiveOdds() {
+        let eff = BetMath.effectiveDecimalOdds(oddsDecimal: 2.0, commissionPct: 5)
+        XCTAssertEqual(eff!, 1.95, accuracy: 1e-9)
     }
 }
 

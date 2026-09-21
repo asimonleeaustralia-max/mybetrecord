@@ -121,9 +121,20 @@ struct Bet: Codable, Equatable, Identifiable {
     var outcome: String
     var profit: Double
     var cashOutAmount: Double?
+    var betModel: String?
+    var modelImpliedOdds: Double?
+    var personalImpliedOdds: Double?
+    var tipsterImpliedOdds: Double?
+    var personalEdgePct: Double?
+    var modelEdgePct: Double?
+    var tipsterEdgePct: Double?
+    var kellyStake: Double?
+    var modelKellyStake: Double?
     var bookmaker: String?
     var portal: String?
+    var exchangeCommissionPct: Double?
     var tipster: String?
+    var betBroker: String?
     var notes: String?
     var closingOdds: Double?
     var closingOddsExchange: Double?
@@ -157,17 +168,26 @@ struct BetCreate: Codable {
     let tournament: String?
     let bookmaker: String?
     let portal: String?
+    let exchangeCommissionPct: Double?
     let tipster: String?
+    let betBroker: String?
     let notes: String?
     let eachWay: Bool
+    let placeFraction: Double?
     let placed: Bool
     let freeBet: Bool
     let isMultiple: Bool
     let legs: [BetLegCreate]?
     let cashOutAmount: Double?
+    let betModel: String?
+    let modelImpliedOdds: Double?
+    let personalImpliedOdds: Double?
+    let tipsterImpliedOdds: Double?
     let closingOdds: Double?
+    let closingOddsExchange: Double?
     let placedAt: String?
     let eventAt: String?
+    let settledAt: String?
 }
 
 struct BetUpdate: Codable {
@@ -185,16 +205,26 @@ struct BetUpdate: Codable {
     var tournament: String?
     var bookmaker: String?
     var portal: String?
+    var exchangeCommissionPct: Double?
     var tipster: String?
+    var betBroker: String?
     var notes: String?
     var eachWay: Bool?
+    var placeFraction: Double?
     var placed: Bool?
     var freeBet: Bool?
     var isMultiple: Bool?
     var legs: [BetLegCreate]?
     var cashOutAmount: Double?
+    var betModel: String?
+    var modelImpliedOdds: Double?
+    var personalImpliedOdds: Double?
+    var tipsterImpliedOdds: Double?
     var closingOdds: Double?
+    var closingOddsExchange: Double?
     var eventAt: String?
+    var placedAt: String?
+    var settledAt: String?
 }
 
 struct BetShare: Codable {
