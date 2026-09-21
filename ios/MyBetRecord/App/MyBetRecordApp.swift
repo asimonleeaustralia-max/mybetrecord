@@ -1,5 +1,4 @@
 import SwiftUI
-import SwiftData
 
 @main
 struct MyBetRecordApp: App {
@@ -11,7 +10,6 @@ struct MyBetRecordApp: App {
                 .environmentObject(environment)
                 .environmentObject(environment.authRepository)
                 .environmentObject(I18n.shared)
-                .modelContainer(environment.modelContainer)
         }
     }
 }

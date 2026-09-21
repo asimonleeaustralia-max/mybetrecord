@@ -26,27 +26,27 @@ struct RootView: View {
 struct MainTabView: View {
     var body: some View {
         TabView {
-            NavigationStack {
+            NavigationView {
                 DashboardView()
             }
-            .tabItem { Label(tr("android.home"), systemImage: "house") }
+            .tabItem { Label(tr("nav.home"), systemImage: "house") }
 
-            NavigationStack {
+            NavigationView {
                 BetsTab()
             }
             .tabItem { Label(tr("nav.bets"), systemImage: "list.bullet") }
 
-            NavigationStack {
+            NavigationView {
                 ReportsView()
             }
             .tabItem { Label(tr("nav.reports"), systemImage: "chart.bar") }
 
-            NavigationStack {
+            NavigationView {
                 ToolsView()
             }
-            .tabItem { Label(tr("android.tools"), systemImage: "function") }
+            .tabItem { Label(tr("nav.tools"), systemImage: "function") }
 
-            NavigationStack {
+            NavigationView {
                 SettingsView()
             }
             .tabItem { Label(tr("nav.settings"), systemImage: "gearshape") }
@@ -56,12 +56,28 @@ struct MainTabView: View {
 
 private struct BetsTab: View {
     @State private var editorRoute: BetEditorRoute?
+    
+    private var isShowingEditor: Binding<Bool> {
+        Binding(
+            get: { editorRoute != nil },
+            set: { if !$0 { editorRoute = nil } }
+        )
+    }
 
     var body: some View {
-        BetsListView(onOpenBet: { editorRoute = BetEditorRoute(id: $0) })
-            .navigationDestination(item: $editorRoute) { route in
-                BetEditorView(betId: route.id, onDone: { editorRoute = nil })
+        ZStack {
+            BetsListView(onOpenBet: { editorRoute = BetEditorRoute(id: $0) })
+            
+            NavigationLink(
+                destination: editorRoute.map { route in
+                    AnyView(BetEditorView(betId: route.id, onDone: { editorRoute = nil }))
+                } ?? AnyView(EmptyView()),
+                isActive: isShowingEditor
+            ) {
+                EmptyView()
             }
+            .hidden()
+        }
     }
 }
 

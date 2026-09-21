@@ -95,6 +95,9 @@
 		B8F089DF9AAD1FC23326F627 /* be.json in Resources */ = {isa = PBXBuildFile; fileRef = 853C0F767AB9688A3D5024FD /* be.json */; };
 		BB85C2775910ECD329E190E7 /* ta.json in Resources */ = {isa = PBXBuildFile; fileRef = 613A46276418EBFC2198F52F /* ta.json */; };
 		C01824D3FF504464C8809BBC /* id.json in Resources */ = {isa = PBXBuildFile; fileRef = 5C3C8F6BA3BA0CB9B583AA34 /* id.json */; };
+		C3395AC0306127A400C95FE9 /* Localesen.json in Resources */ = {isa = PBXBuildFile; fileRef = C3395ABF306127A400C95FE9 /* Localesen.json */; };
+		C3395AC2306127A800C95FE9 /* Localeslanguages.json in Resources */ = {isa = PBXBuildFile; fileRef = C3395AC1306127A800C95FE9 /* Localeslanguages.json */; };
+		C3395AC4306127B500C95FE9 /* Localeses.json in Resources */ = {isa = PBXBuildFile; fileRef = C3395AC3306127B500C95FE9 /* Localeses.json */; };
 		C3657678F53801B2EFAFC90E /* sk.json in Resources */ = {isa = PBXBuildFile; fileRef = 4746AE5787777625418CA95B /* sk.json */; };
 		C36F5DE2FC4C259294E692B2 /* sv.json in Resources */ = {isa = PBXBuildFile; fileRef = 532B69FF3F927DB39BE8C839 /* sv.json */; };
 		C3E96E91757E156682F942AC /* hy.json in Resources */ = {isa = PBXBuildFile; fileRef = 0B60520059DB5A3A2D8A1628 /* hy.json */; };
@@ -196,7 +199,7 @@
 		5D563ABC8326269BA9E8EA15 /* tt.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = tt.json; sourceTree = "<group>"; };
 		613A46276418EBFC2198F52F /* ta.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ta.json; sourceTree = "<group>"; };
 		61FCC42EF0771AA1EAE92085 /* km.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = km.json; sourceTree = "<group>"; };
-		65A33286639322C6F6AA041D /* MyBetRecord.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = MyBetRecord.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		65A33286639322C6F6AA041D /* MyBetRecord.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyBetRecord.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		69EFA544D7BE7568B80C4A48 /* fy.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fy.json; sourceTree = "<group>"; };
 		6A0D589151DBC84810DDF43E /* ga.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ga.json; sourceTree = "<group>"; };
 		6BC7B469B7A0A87AA1EFD2D0 /* AuthRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthRepository.swift; sourceTree = "<group>"; };
@@ -248,6 +251,9 @@
 		BEDB058F8CFBD970D411E0F2 /* no.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = no.json; sourceTree = "<group>"; };
 		BF180B44068F1DBB820610B6 /* tk.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = tk.json; sourceTree = "<group>"; };
 		C1764646FEE32A8AB549A56E /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		C3395ABF306127A400C95FE9 /* Localesen.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Localesen.json; sourceTree = "<group>"; };
+		C3395AC1306127A800C95FE9 /* Localeslanguages.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Localeslanguages.json; sourceTree = "<group>"; };
+		C3395AC3306127B500C95FE9 /* Localeses.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Localeses.json; sourceTree = "<group>"; };
 		C47323BC72C9998274E5EB4C /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
 		C705D72957ED6E6EC9EDAFCD /* fa.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fa.json; sourceTree = "<group>"; };
 		CA35C71E0143DF7CC1FDB010 /* eu.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = eu.json; sourceTree = "<group>"; };
@@ -257,7 +263,7 @@
 		DAEBF51EEF4BEF69D72CB997 /* TokenStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenStore.swift; sourceTree = "<group>"; };
 		DBD4616BA299B6DB887E2232 /* gl.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = gl.json; sourceTree = "<group>"; };
 		DDD7FC8D6B3DAECB689B7921 /* my.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = my.json; sourceTree = "<group>"; };
-		DDE5CD6A8B8764B46638C7E0 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		DDE5CD6A8B8764B46638C7E0 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		DF1EFB52795B453C21F4EF37 /* tg.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = tg.json; sourceTree = "<group>"; };
 		E07E6A08367102600211C039 /* MyBetRecordTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyBetRecordTests.swift; sourceTree = "<group>"; };
 		E16344EE47218219C739ADC1 /* bg.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = bg.json; sourceTree = "<group>"; };
@@ -304,6 +310,9 @@
 			isa = PBXGroup;
 			children = (
 				C1764646FEE32A8AB549A56E /* SettingsView.swift */,
+				C3395ABF306127A400C95FE9 /* Localesen.json */,
+				C3395AC1306127A800C95FE9 /* Localeslanguages.json */,
+				C3395AC3306127B500C95FE9 /* Localeses.json */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -524,10 +533,18 @@
 		BEC6EA1CA0EB05296A864806 = {
 			isa = PBXGroup;
 			children = (
+				C3395AC53061289000C95FE9 /* New Group */,
 				F059CD7C03E933B5448B40F7 /* MyBetRecord */,
 				4269CEBA114372881F91EC44 /* MyBetRecordTests */,
 				A3E6FFF008FD63982EC10E9B /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		C3395AC53061289000C95FE9 /* New Group */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = "New Group";
 			sourceTree = "<group>";
 		};
 		D2CC55FB5C6947A6F29312CE /* Dashboard */ = {
@@ -654,7 +671,6 @@
 						ProvisioningStyle = Automatic;
 					};
 					FFE3BA8A17199885B56F9B5B = {
-						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -687,6 +703,7 @@
 				F448004F6C22587049984BFC /* Assets.xcassets in Resources */,
 				D4F0897464862468B7A380C4 /* PrivacyInfo.xcprivacy in Resources */,
 				7368E0481C26FD91A9E126D6 /* af.json in Resources */,
+				C3395AC2306127A800C95FE9 /* Localeslanguages.json in Resources */,
 				D5D674E01B91C22D31E03FC1 /* am.json in Resources */,
 				597020CE074200C09F79817F /* ar.json in Resources */,
 				8C1043EF41413C1CF0EF3F94 /* az.json in Resources */,
@@ -696,6 +713,8 @@
 				52321436C4C2BE7F9A23ADAC /* bs.json in Resources */,
 				99F1E5A6693A5370C8B98187 /* ca.json in Resources */,
 				6376C2DBFAAF849BFA36F31C /* ceb.json in Resources */,
+				C3395AC4306127B500C95FE9 /* Localeses.json in Resources */,
+				C3395AC0306127A400C95FE9 /* Localesen.json in Resources */,
 				CAE1D00CDE14F99C4057DF98 /* cs.json in Resources */,
 				92123A951619E13E7F6739A9 /* cy.json in Resources */,
 				6619E9D38187FBBA36EB9663 /* da.json in Resources */,
@@ -993,8 +1012,10 @@
 				API_BASE_URL = "https://www.mybetrecord.com";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = W7TYAP8RVN;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = MyBetRecord/Resources/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1030,8 +1051,10 @@
 				API_BASE_URL = "https://www.mybetrecord.com";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = W7TYAP8RVN;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = MyBetRecord/Resources/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

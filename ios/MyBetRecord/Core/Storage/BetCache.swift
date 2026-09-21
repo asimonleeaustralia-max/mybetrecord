@@ -1,9 +1,8 @@
 import Foundation
-import SwiftData
 
-@Model
-final class BetCacheEntity {
-    @Attribute(.unique) var id: String
+// iOS 15 compatible cache storage using FileManager
+final class BetCacheEntity: Codable {
+    var id: String
     var event: String
     var selection: String
     var sport: String
@@ -45,6 +44,57 @@ final class BetCacheEntity {
         self.placedAt = placedAt
         self.bookmaker = bookmaker
         self.payloadJson = payloadJson
+    }
+}
+
+// Simple file-based storage for iOS 15 compatibility
+@MainActor
+final class BetCacheStorage {
+    private let fileURL: URL
+    private var cache: [String: BetCacheEntity] = [:]
+    
+    init() {
+        let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        fileURL = documentsDirectory.appendingPathComponent("bet_cache.json")
+        loadCache()
+    }
+    
+    private func loadCache() {
+        guard FileManager.default.fileExists(atPath: fileURL.path),
+              let data = try? Data(contentsOf: fileURL),
+              let entities = try? JSONDecoder().decode([BetCacheEntity].self, from: data) else {
+            return
+        }
+        cache = Dictionary(uniqueKeysWithValues: entities.map { ($0.id, $0) })
+    }
+    
+    private func saveCache() {
+        let entities = Array(cache.values)
+        guard let data = try? JSONEncoder().encode(entities) else { return }
+        try? data.write(to: fileURL)
+    }
+    
+    func insert(_ entity: BetCacheEntity) {
+        cache[entity.id] = entity
+        saveCache()
+    }
+    
+    func delete(_ entity: BetCacheEntity) {
+        cache.removeValue(forKey: entity.id)
+        saveCache()
+    }
+    
+    func fetch() -> [BetCacheEntity] {
+        Array(cache.values)
+    }
+    
+    func fetch(id: String) -> BetCacheEntity? {
+        cache[id]
+    }
+    
+    func deleteAll() {
+        cache.removeAll()
+        saveCache()
     }
 }
 

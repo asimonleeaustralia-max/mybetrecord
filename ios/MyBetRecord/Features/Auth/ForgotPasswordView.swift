@@ -54,7 +54,7 @@ struct ForgotPasswordView: View {
     @ViewBuilder
     private var confirmStep: some View {
         if let info { Text(info).foregroundStyle(.secondary) }
-        AppTextField(title: tr("android.resetCode"), text: $code, keyboard: .numberPad)
+        AppTextField(title: tr("auth.resetCode"), text: $code, keyboard: .numberPad)
         AppTextField(title: tr("auth.newPassword"), text: $newPassword, isSecure: true)
         AppTextField(title: tr("auth.confirmPassword"), text: $confirmPassword, isSecure: true)
         if let error { ErrorText(message: error) }
@@ -62,9 +62,9 @@ struct ForgotPasswordView: View {
             .buttonStyle(.borderedProminent)
             .frame(maxWidth: .infinity)
             .disabled(loading)
-        Button(resendCooldown > 0 ? tr("android.resendCodeIn", params: ["s": "\(resendCooldown)"]) : tr("android.resendCode"), action: requestCode)
+        Button(resendCooldown > 0 ? tr("auth.resendCodeIn", params: ["s": "\(resendCooldown)"]) : tr("auth.resendCode"), action: requestCode)
             .disabled(loading || resendCooldown > 0)
-        Button(tr("android.useDifferentEmail")) { step = .request }
+        Button(tr("auth.useDifferentEmail")) { step = .request }
     }
 
     @ViewBuilder
@@ -73,7 +73,7 @@ struct ForgotPasswordView: View {
             .font(.system(size: 48))
             .foregroundStyle(.tint)
         Text(tr("auth.passwordUpdated")).font(.headline)
-        Text(tr("android.signInNewPassword")).foregroundStyle(.secondary)
+        Text(tr("auth.signInNewPassword")).foregroundStyle(.secondary)
         Button(tr("auth.backToSignIn"), action: onBack)
             .buttonStyle(.borderedProminent)
             .frame(maxWidth: .infinity)

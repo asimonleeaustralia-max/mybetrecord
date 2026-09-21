@@ -8,8 +8,8 @@ struct ToolsView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                Text(tr("android.tools")).font(.title2)
-                Text(tr("android.toolsSub")).font(.footnote).foregroundStyle(.secondary)
+                Text(tr("tools.title")).font(.title2)
+                Text(tr("tools.subtitle")).font(.footnote).foregroundStyle(.secondary)
                 KellyCalculatorCard(
                     defaultBankroll: user?.bankroll ?? 0,
                     defaultMultiplier: user?.kellyMultiplier ?? 1,
@@ -36,9 +36,9 @@ private struct KellyCalculatorCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text(tr("android.kellyTitle")).font(.headline)
-            AppTextField(title: tr("android.kellyOdds"), text: $odds, keyboard: .decimalPad)
-            AppTextField(title: tr("android.kellyImplied"), text: $implied, keyboard: .decimalPad)
+            Text(tr("tools.kellyTitle")).font(.headline)
+            AppTextField(title: tr("tools.kellyOdds"), text: $odds, keyboard: .decimalPad)
+            AppTextField(title: tr("tools.kellyImplied"), text: $implied, keyboard: .decimalPad)
             AppTextField(title: tr("settings.bankroll"), text: $bankroll, keyboard: .decimalPad)
             AppTextField(title: tr("settings.kellyMultiplier"), text: $multiplier, keyboard: .decimalPad)
             if let o = Double(odds), let i = Double(implied), let edge = BetMath.edgePct(oddsDecimal: o, impliedDecimal: i) {
@@ -73,9 +73,9 @@ private struct LiabilityCalculatorCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text(tr("android.liabilityTitle")).font(.headline)
+            Text(tr("tools.liabilityTitle")).font(.headline)
             AppTextField(title: tr("form.backersStake"), text: $stake, keyboard: .decimalPad)
-            AppTextField(title: tr("android.layOdds"), text: $odds, keyboard: .decimalPad)
+            AppTextField(title: tr("tools.layOdds"), text: $odds, keyboard: .decimalPad)
             if let s = Double(stake), let o = Double(odds), let liability = BetMath.layLiability(backersStake: s, oddsDecimal: o) {
                 Text("\(tr("form.liability")): \(Formatters.money(liability, currency: currency))").font(.headline)
                 Text(tr("form.backersStakeHint")).font(.footnote).foregroundStyle(.secondary)

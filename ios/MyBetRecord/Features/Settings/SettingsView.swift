@@ -61,7 +61,7 @@ struct SettingsView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 12) {
                 Text(tr("settings.title")).font(.title2)
-                Text("Personal betting ledger — not a sportsbook. Pro plans are managed on the website only.")
+                Text(tr("settings.subtitle"))
                     .font(.footnote)
                     .foregroundStyle(.secondary)
                 if let error { ErrorText(message: error) }
@@ -71,7 +71,7 @@ struct SettingsView: View {
                         Text(tr("plan.title")).font(.headline)
                         Text("\(tr("settings.email")): \(user.email)")
                         Text("\(tr("plan.title")): \(user.plan.uppercased())\(user.isPro ? " (Pro)" : "")")
-                        Text(tr("android.planWebNote")).font(.footnote).foregroundStyle(.secondary)
+                        Text(tr("settings.planNote")).font(.footnote).foregroundStyle(.secondary)
                     }
                     .padding()
                     .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 12))
@@ -96,21 +96,21 @@ struct SettingsView: View {
                 if publicBetsEnabled {
                     AppTextField(title: tr("settings.accountDescription"), text: $accountDescription, axis: .vertical)
                     if user?.publicBetsToken != nil {
-                        Button(tr("android.shareProfile")) { shareProfile = true }
+                        Button(tr("settings.shareProfile")) { shareProfile = true }
                     }
                 }
                 Button(tr("settings.save"), action: save)
                     .buttonStyle(.borderedProminent)
                     .frame(maxWidth: .infinity)
                     .disabled(saving)
-                Text(tr("android.legalHelp")).font(.headline)
-                LinkButton(title: "Privacy") { open("https://www.mybetrecord.com/privacy") }
-                LinkButton(title: "Terms") { open("https://www.mybetrecord.com/terms") }
-                LinkButton(title: "Responsible gambling") { open("https://www.mybetrecord.com/responsible-gambling") }
-                LinkButton(title: "Delete account (web)") { open("https://www.mybetrecord.com/delete-account") }
+                Text(tr("settings.legal")).font(.headline)
+                LinkButton(title: tr("settings.privacy")) { open("https://www.mybetrecord.com/privacy") }
+                LinkButton(title: tr("settings.terms")) { open("https://www.mybetrecord.com/terms") }
+                LinkButton(title: tr("settings.responsibleGambling")) { open("https://www.mybetrecord.com/responsible-gambling") }
+                LinkButton(title: tr("settings.deleteAccountWeb")) { open("https://www.mybetrecord.com/delete-account") }
                 Button(tr("nav.signOut"), role: .destructive) { Task { await auth.logout() } }
                     .frame(maxWidth: .infinity)
-                Button("Delete account") { showDeleteDialog = true }
+                Button(tr("settings.deleteAccount")) { showDeleteDialog = true }
                     .frame(maxWidth: .infinity)
             }
             .padding()
@@ -166,7 +166,7 @@ struct SettingsView: View {
 
     private func deleteAccount() async {
         guard deleteConfirm == "DELETE" else {
-            error = tr("android.typeDelete")
+            error = tr("settings.typeDelete")
             return
         }
         do {
@@ -197,23 +197,22 @@ private struct DeleteAccountSheet: View {
     let onDelete: () -> Void
 
     var body: some View {
-        NavigationStack {
+        NavigationView {
             VStack(alignment: .leading, spacing: 12) {
-                Text(tr("android.deleteAccountBody"))
+                Text(tr("settings.deleteAccountBody"))
                 SecureField(tr("auth.password"), text: $deletePassword)
-                TextField(tr("android.typeDelete"), text: $deleteConfirm)
-                Button(tr("android.deleteForever"), role: .destructive, action: onDelete)
+                TextField(tr("settings.typeDelete"), text: $deleteConfirm)
+                Button(tr("settings.deleteForever"), role: .destructive, action: onDelete)
                     .frame(maxWidth: .infinity)
             }
             .padding()
-            .navigationTitle("Delete account")
+            .navigationTitle(tr("settings.deleteAccount"))
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button(tr("common.cancel"), action: onCancel)
                 }
             }
         }
-        .presentationDetents([.medium])
     }
 }
 

@@ -8,14 +8,6 @@ struct TokenResponse: Codable {
     let expiresIn: Int
     let refreshToken: String?
     let refreshExpiresIn: Int?
-
-    enum CodingKeys: String, CodingKey {
-        case accessToken = "access_token"
-        case tokenType = "token_type"
-        case expiresIn = "expires_in"
-        case refreshToken = "refresh_token"
-        case refreshExpiresIn = "refresh_expires_in"
-    }
 }
 
 struct LoginRequest: Codable {
@@ -23,11 +15,6 @@ struct LoginRequest: Codable {
     let password: String
     let client: String
     let deviceName: String?
-
-    enum CodingKeys: String, CodingKey {
-        case email, password, client
-        case deviceName = "device_name"
-    }
 }
 
 struct RegisterRequest: Codable {
@@ -39,29 +26,15 @@ struct RegisterRequest: Codable {
 struct RegisterResponse: Codable {
     let message: String
     let verificationToken: String?
-
-    enum CodingKeys: String, CodingKey {
-        case message
-        case verificationToken = "verification_token"
-    }
 }
 
 struct RefreshRequest: Codable {
     let refreshToken: String
-
-    enum CodingKeys: String, CodingKey {
-        case refreshToken = "refresh_token"
-    }
 }
 
 struct LogoutRequest: Codable {
     let refreshToken: String?
     let allDevices: Bool
-
-    enum CodingKeys: String, CodingKey {
-        case refreshToken = "refresh_token"
-        case allDevices = "all_devices"
-    }
 }
 
 struct PasswordResetRequest: Codable {
@@ -100,26 +73,6 @@ struct User: Codable, Equatable {
     let publicBetsToken: String?
     var accountDescription: String?
     var displayName: String?
-
-    enum CodingKeys: String, CodingKey {
-        case id, email, bankroll, timezone, plan
-        case defaultOddsFormat = "default_odds_format"
-        case baseCurrency = "base_currency"
-        case kellyMultiplier = "kelly_multiplier"
-        case preferredLocale = "preferred_locale"
-        case isAdmin = "is_admin"
-        case createdAt = "created_at"
-        case planCurrency = "plan_currency"
-        case subscriptionStatus = "subscription_status"
-        case subscriptionCancelAtPeriodEnd = "subscription_cancel_at_period_end"
-        case subscriptionCurrentPeriodEnd = "subscription_current_period_end"
-        case compProUntil = "comp_pro_until"
-        case isPro = "is_pro"
-        case publicBetsEnabled = "public_bets_enabled"
-        case publicBetsToken = "public_bets_token"
-        case accountDescription = "account_description"
-        case displayName = "display_name"
-    }
 }
 
 struct SettingsUpdate: Codable {
@@ -132,17 +85,6 @@ struct SettingsUpdate: Codable {
     var publicBetsEnabled: Bool?
     var accountDescription: String?
     var displayName: String?
-
-    enum CodingKeys: String, CodingKey {
-        case bankroll, timezone
-        case defaultOddsFormat = "default_odds_format"
-        case baseCurrency = "base_currency"
-        case kellyMultiplier = "kelly_multiplier"
-        case preferredLocale = "preferred_locale"
-        case publicBetsEnabled = "public_bets_enabled"
-        case accountDescription = "account_description"
-        case displayName = "display_name"
-    }
 }
 
 // MARK: - Bets
@@ -153,13 +95,6 @@ struct BetLeg: Codable, Equatable {
     let selection: String
     let oddsDecimal: Double
     let oddsFormat: String
-
-    enum CodingKeys: String, CodingKey {
-        case event, selection
-        case legIndex = "leg_index"
-        case oddsDecimal = "odds_decimal"
-        case oddsFormat = "odds_format"
-    }
 }
 
 struct Bet: Codable, Equatable, Identifiable {
@@ -197,28 +132,6 @@ struct Bet: Codable, Equatable, Identifiable {
     var shareToken: String?
     var createdAt: String?
     var updatedAt: String?
-
-    enum CodingKeys: String, CodingKey {
-        case id, tournament, event, selection, sport, side, legs, stake, currency, outcome, profit, bookmaker, portal, tipster, notes, placed
-        case betType = "bet_type"
-        case isMultiple = "is_multiple"
-        case placedAt = "placed_at"
-        case eventAt = "event_at"
-        case settledAt = "settled_at"
-        case oddsDecimal = "odds_decimal"
-        case oddsFormat = "odds_format"
-        case eachWay = "each_way"
-        case placeFraction = "place_fraction"
-        case freeBet = "free_bet"
-        case cashOutAmount = "cash_out_amount"
-        case closingOdds = "closing_odds"
-        case closingOddsExchange = "closing_odds_exchange"
-        case clvPct = "clv_pct"
-        case edgePct = "edge_pct"
-        case shareToken = "share_token"
-        case createdAt = "created_at"
-        case updatedAt = "updated_at"
-    }
 }
 
 struct BetLegCreate: Codable {
@@ -227,12 +140,6 @@ struct BetLegCreate: Codable {
     let odds: Double
     let oddsFormat: String?
     let oddsDenominator: Double?
-
-    enum CodingKeys: String, CodingKey {
-        case event, selection, odds
-        case oddsFormat = "odds_format"
-        case oddsDenominator = "odds_denominator"
-    }
 }
 
 struct BetCreate: Codable {
@@ -261,20 +168,6 @@ struct BetCreate: Codable {
     let closingOdds: Double?
     let placedAt: String?
     let eventAt: String?
-
-    enum CodingKeys: String, CodingKey {
-        case sport, event, selection, odds, stake, side, currency, outcome, tournament, bookmaker, portal, tipster, notes, placed, legs
-        case betType = "bet_type"
-        case oddsFormat = "odds_format"
-        case oddsDenominator = "odds_denominator"
-        case eachWay = "each_way"
-        case freeBet = "free_bet"
-        case isMultiple = "is_multiple"
-        case cashOutAmount = "cash_out_amount"
-        case closingOdds = "closing_odds"
-        case placedAt = "placed_at"
-        case eventAt = "event_at"
-    }
 }
 
 struct BetUpdate: Codable {
@@ -302,27 +195,10 @@ struct BetUpdate: Codable {
     var cashOutAmount: Double?
     var closingOdds: Double?
     var eventAt: String?
-
-    enum CodingKeys: String, CodingKey {
-        case sport, event, selection, odds, stake, side, currency, outcome, tournament, bookmaker, portal, tipster, notes, placed, legs
-        case betType = "bet_type"
-        case oddsFormat = "odds_format"
-        case oddsDenominator = "odds_denominator"
-        case eachWay = "each_way"
-        case freeBet = "free_bet"
-        case isMultiple = "is_multiple"
-        case cashOutAmount = "cash_out_amount"
-        case closingOdds = "closing_odds"
-        case eventAt = "event_at"
-    }
 }
 
 struct BetShare: Codable {
     let shareToken: String
-
-    enum CodingKeys: String, CodingKey {
-        case shareToken = "share_token"
-    }
 }
 
 // MARK: - Reports
@@ -349,17 +225,6 @@ struct ReportSummary: Codable {
     let baseCurrency: String?
     let currency: String?
     let totalBets: Int
-
-    enum CodingKeys: String, CodingKey {
-        case turnover, profit, bankroll, currency, wins, losses, voids
-        case yieldPct = "yield_pct"
-        case roiPct = "roi_pct"
-        case strikeRatePct = "strike_rate_pct"
-        case settledBets = "settled_bets"
-        case roiVsBankrollPct = "roi_vs_bankroll_pct"
-        case baseCurrency = "base_currency"
-        case totalBets = "total_bets"
-    }
 }
 
 struct MonthlyProfit: Identifiable {

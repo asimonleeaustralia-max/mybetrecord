@@ -13,8 +13,13 @@ struct AppTextField: View {
             if isSecure {
                 SecureField(title, text: $text)
             } else if axis == .vertical {
-                TextField(title, text: $text, axis: .vertical)
-                    .lineLimit(3...6)
+                if #available(iOS 16.0, *) {
+                    TextField(title, text: $text, axis: .vertical)
+                        .lineLimit(3...6)
+                } else {
+                    TextField(title, text: $text)
+                        .lineLimit(3)
+                }
             } else {
                 TextField(title, text: $text)
             }
@@ -45,7 +50,15 @@ struct LoadingView: View {
 struct EmptyStateView: View {
     let message: String
     var body: some View {
-        ContentUnavailableView(message, systemImage: "tray")
+        VStack(spacing: 12) {
+            Image(systemName: "tray")
+                .font(.system(size: 48))
+                .foregroundColor(.secondary)
+            Text(message)
+                .font(.headline)
+                .foregroundColor(.secondary)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 

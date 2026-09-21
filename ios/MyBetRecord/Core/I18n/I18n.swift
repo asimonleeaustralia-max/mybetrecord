@@ -10,7 +10,7 @@ final class I18n: ObservableObject {
 
     private init() {
         loadLanguagesManifest()
-        let initial = AppPreferences.locale ?? Locale.current.language.languageCode?.identifier ?? "en"
+        let initial = AppPreferences.locale ?? Locale.current.languageCode ?? "en"
         switchLocale(Self.normalize(initial) ?? "en")
     }
 

@@ -1,19 +1,19 @@
 import Foundation
-import SwiftData
 
 @MainActor
 final class BetsRepository: ObservableObject {
     private let api: APIClient
-    private let modelContext: ModelContext
+    private let cacheStorage: BetCacheStorage
 
-    init(api: APIClient, modelContext: ModelContext) {
+    init(api: APIClient, cacheStorage: BetCacheStorage) {
         self.api = api
-        self.modelContext = modelContext
+        self.cacheStorage = cacheStorage
     }
 
     func cachedBets() throws -> [Bet] {
-        let descriptor = FetchDescriptor<BetCacheEntity>(sortBy: [SortDescriptor(\.placedAt, order: .reverse)])
-        return try modelContext.fetch(descriptor).compactMap(BetCacheCodec.decode)
+        return cacheStorage.fetch()
+            .sorted { $0.placedAt > $1.placedAt }
+            .compactMap(BetCacheCodec.decode)
     }
 
     func refreshBets() async throws -> [Bet] {
@@ -49,10 +49,8 @@ final class BetsRepository: ObservableObject {
 
     func deleteBet(id: String) async throws {
         try await api.deleteBet(id: id)
-        let descriptor = FetchDescriptor<BetCacheEntity>(predicate: #Predicate { $0.id == id })
-        if let entity = try modelContext.fetch(descriptor).first {
-            modelContext.delete(entity)
-            try modelContext.save()
+        if let entity = cacheStorage.fetch(id: id) {
+            cacheStorage.delete(entity)
         }
     }
 
@@ -80,11 +78,6 @@ final class BetsRepository: ObservableObject {
 
     private func upsert(_ bet: Bet) throws {
         let entity = try BetCacheCodec.encode(bet)
-        let descriptor = FetchDescriptor<BetCacheEntity>(predicate: #Predicate { $0.id == bet.id })
-        if let existing = try modelContext.fetch(descriptor).first {
-            modelContext.delete(existing)
-        }
-        modelContext.insert(entity)
-        try modelContext.save()
+        cacheStorage.insert(entity)
     }
 }

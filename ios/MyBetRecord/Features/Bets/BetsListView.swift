@@ -20,7 +20,7 @@ struct BetsListView: View {
                         }
                         .swipeActions {
                             Button(role: .destructive) { pendingDelete = bet } label: {
-                                Label(tr("common.confirm"), systemImage: "trash")
+                                Label(tr("common.delete"), systemImage: "trash")
                             }
                         }
                     }

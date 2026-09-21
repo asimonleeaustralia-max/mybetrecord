@@ -1,5 +1,4 @@
 import SwiftUI
-import SwiftData
 
 struct BetEditorView: View {
     @EnvironmentObject private var environment: AppEnvironment
@@ -44,8 +43,8 @@ private struct BetEditorForm: View {
         }
         .navigationTitle(model.isEdit ? tr("form.editTitle") : tr("form.recordTitle"))
         .navigationBarTitleDisplayMode(.inline)
-        .onChange(of: model.saved) { _, saved in if saved { onDone() } }
-        .onChange(of: model.deleted) { _, deleted in if deleted { onDone() } }
+        .onChange(of: model.saved) { saved in if saved { onDone() } }
+        .onChange(of: model.deleted) { deleted in if deleted { onDone() } }
     }
 
     private var editorForm: some View {
@@ -91,7 +90,7 @@ private struct BetEditorForm: View {
                 AppTextField(title: tr("form.currency"), text: $model.currency)
                 ChoicePicker(label: tr("form.result"), options: outcomes.map { ($0, tr("outcomes.\($0)")) }, selection: $model.outcome)
                 AppTextField(title: tr("form.cashOut"), text: $model.cashOut, keyboard: .decimalPad)
-                AppTextField(title: tr("android.closingOdds"), text: $model.closingOdds, keyboard: .decimalPad)
+                AppTextField(title: tr("form.closingOdds"), text: $model.closingOdds, keyboard: .decimalPad)
                 AppTextField(title: tr("form.bookmaker"), text: $model.bookmaker)
                 AppTextField(title: tr("form.tipster"), text: $model.tipster)
                 AppTextField(title: tr("form.notes"), text: $model.notes, axis: .vertical)

@@ -1,5 +1,4 @@
 import SwiftUI
-import Charts
 
 struct ReportsView: View {
     @EnvironmentObject private var environment: AppEnvironment
@@ -15,41 +14,54 @@ struct ReportsView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 12) {
                 Text(tr("reports.title")).font(.title2)
-                Text(tr("android.summarySub")).foregroundStyle(.secondary)
+                Text(tr("reports.subtitle")).foregroundStyle(.secondary)
                 if let error { ErrorText(message: error) }
                 if let summary {
                     let currency = summary.currency ?? summary.baseCurrency
                     MetricCard(label: tr("reports.profitLoss"), value: Formatters.money(summary.profit, currency: currency))
-                    MetricCard(label: tr("android.turnover"), value: Formatters.money(summary.turnover, currency: currency))
+                    MetricCard(label: tr("reports.turnover"), value: Formatters.money(summary.turnover, currency: currency))
                     MetricCard(label: tr("reports.roi"), value: String(format: "%.2f%%", summary.roiPct))
                     MetricCard(label: tr("reports.yield"), value: String(format: "%.2f%%", summary.yieldPct))
                     MetricCard(label: tr("reports.strikeRate"), value: String(format: "%.2f%%", summary.strikeRatePct))
                 }
+                
+                // Charts are not available in iOS 15, showing data in list format instead
                 if equity.count >= 2 {
                     Text(tr("reports.equityCurve")).font(.headline)
-                    Chart(equity) { point in
-                        LineMark(
-                            x: .value("Date", point.date),
-                            y: .value("Cumulative", point.cumulative)
-                        )
+                    VStack(alignment: .leading, spacing: 4) {
+                        ForEach(equity.suffix(10)) { point in
+                            HStack {
+                                Text(String(point.date.prefix(10)))
+                                    .font(.caption)
+                                Spacer()
+                                Text(String(format: "%.2f", point.cumulative))
+                                    .font(.caption.monospacedDigit())
+                            }
+                        }
                     }
-                    .frame(height: 200)
                     .padding()
                     .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 12))
                 }
+                
                 if !monthly.isEmpty {
                     Text(tr("reports.profitByMonth")).font(.headline)
-                    Chart(monthly) { item in
-                        BarMark(
-                            x: .value("Month", item.month),
-                            y: .value("Profit", item.profit)
-                        )
+                    VStack(alignment: .leading, spacing: 4) {
+                        ForEach(monthly.suffix(12)) { item in
+                            HStack {
+                                Text(item.month)
+                                    .font(.caption)
+                                Spacer()
+                                Text(String(format: "%.2f", item.profit))
+                                    .font(.caption.monospacedDigit())
+                                    .foregroundColor(item.profit >= 0 ? .green : .red)
+                            }
+                        }
                     }
-                    .frame(height: 180)
                     .padding()
                     .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 12))
                 }
-                Text(tr("android.exportShare")).font(.headline)
+                
+                Text(tr("reports.export")).font(.headline)
                 HStack {
                     Button(tr("reports.exportCsv")) { export("csv", mime: "text/csv") }
                     Button(tr("reports.exportXlsx")) { export("xlsx", mime: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") }
