@@ -296,6 +296,14 @@ extension APIClient {
         try await requestVoid("DELETE", path: "bets/\(id)/share")
     }
 
+    func listSports() async throws -> [String] {
+        try await request("GET", path: "bets/sports")
+    }
+
+    func listBetTypes() async throws -> [String] {
+        try await request("GET", path: "bets/bet-types")
+    }
+
     // MARK: Reports
 
     func reportSummary(usePrimaryCurrency: Bool = true) async throws -> ReportSummary {

@@ -65,6 +65,14 @@ final class BetsRepository: ObservableObject {
         try? await refreshCachedBet(id: id)
     }
 
+    func listSports() async throws -> [String] {
+        try await api.listSports()
+    }
+
+    func listBetTypes() async throws -> [String] {
+        try await api.listBetTypes()
+    }
+
     private func refreshCachedBet(id: String) async throws {
         let remote = try await api.getBet(id: id)
         try upsert(remote)

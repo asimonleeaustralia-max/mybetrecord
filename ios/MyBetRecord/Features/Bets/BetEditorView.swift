@@ -67,8 +67,18 @@ private struct BetEditorForm: View {
 
                 sectionHeader(model.isLay ? tr("form.whatYouLay") : tr("form.whatYouBacked"))
 
-                AppTextField(title: tr("form.sport"), text: $model.sport)
-                AppTextField(title: tr("form.betType"), text: $model.betType)
+                SuggestionTextField(
+                    title: tr("form.sport"),
+                    text: $model.sport,
+                    suggestions: model.sportSuggestions,
+                    placeholder: tr("form.sportPlaceholder")
+                )
+                SuggestionTextField(
+                    title: tr("form.betType"),
+                    text: $model.betType,
+                    suggestions: model.betTypeSuggestions,
+                    placeholder: tr("form.betTypePlaceholder")
+                )
 
                 if !model.isEdit || model.isMultiple {
                     Toggle(isOn: Binding(
@@ -92,7 +102,12 @@ private struct BetEditorForm: View {
                 }
 
                 AppTextField(title: tr("form.tournament"), text: $model.tournament)
-                AppTextField(title: tr("form.bookmaker"), text: $model.bookmaker)
+                SuggestionTextField(
+                    title: tr("form.bookmaker"),
+                    text: $model.bookmaker,
+                    suggestions: model.bookmakerSuggestions,
+                    placeholder: tr("form.bookmakerPlaceholder")
+                )
                 ChoicePicker(
                     label: tr("form.portal"),
                     options: portals.map { ($0.0, tr($0.1)) },

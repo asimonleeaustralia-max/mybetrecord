@@ -53,6 +53,9 @@ final class BetEditorModel: ObservableObject {
     @Published var clvPct: Double?
     @Published var bankroll: Double = 0
     @Published var kellyMultiplier: Double = 1
+    @Published var sportSuggestions: [String] = BetCatalog.choices(catalog: BetCatalog.sports)
+    @Published var betTypeSuggestions: [String] = BetCatalog.choices(catalog: BetCatalog.betTypes)
+    @Published var bookmakerSuggestions: [String] = BetCatalog.choices(catalog: BetCatalog.bookmakers)
 
     let betId: String?
     let isEdit: Bool
@@ -64,12 +67,14 @@ final class BetEditorModel: ObservableObject {
         self.isEdit = betId != nil && betId != "new"
         self.betsRepository = betsRepository
         self.authRepository = authRepository
+        applyCachedSuggestionExtras()
         if let id = self.betId {
             Task { await load(id: id) }
         } else {
             placedAt = Self.nowLocal()
             Task { await applyUserDefaults() }
         }
+        Task { await refreshSuggestionExtras() }
     }
 
     private func applyUserDefaults() async {
@@ -85,6 +90,37 @@ final class BetEditorModel: ObservableObject {
         } catch {
             // Defaults already set; editing can continue without profile prefs.
         }
+    }
+
+    private func applyCachedSuggestionExtras() {
+        let cached = (try? betsRepository.cachedBets()) ?? []
+        let sports = cached.map(\.sport)
+        let betTypes = cached.map(\.betType)
+        let bookmakers = cached.compactMap(\.bookmaker)
+        sportSuggestions = BetCatalog.choices(catalog: BetCatalog.sports, extras: sports)
+        betTypeSuggestions = BetCatalog.choices(catalog: BetCatalog.betTypes, extras: betTypes)
+        bookmakerSuggestions = BetCatalog.choices(catalog: BetCatalog.bookmakers, extras: bookmakers)
+    }
+
+    private func refreshSuggestionExtras() async {
+        applyCachedSuggestionExtras()
+        async let sportsTask = betsRepository.listSports()
+        async let betTypesTask = betsRepository.listBetTypes()
+        let remoteSports = (try? await sportsTask) ?? []
+        let remoteBetTypes = (try? await betTypesTask) ?? []
+        let cached = (try? betsRepository.cachedBets()) ?? []
+        sportSuggestions = BetCatalog.choices(
+            catalog: BetCatalog.sports,
+            extras: remoteSports + cached.map(\.sport)
+        )
+        betTypeSuggestions = BetCatalog.choices(
+            catalog: BetCatalog.betTypes,
+            extras: remoteBetTypes + cached.map(\.betType)
+        )
+        bookmakerSuggestions = BetCatalog.choices(
+            catalog: BetCatalog.bookmakers,
+            extras: cached.compactMap(\.bookmaker)
+        )
     }
 
     func load(id: String) async {

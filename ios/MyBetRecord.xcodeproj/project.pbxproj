@@ -33,6 +33,7 @@
 		3033D5F865AF17777B22099F /* tl.json in Resources */ = {isa = PBXBuildFile; fileRef = 731DA20E1194493726559891 /* tl.json */; };
 		3555540597B491903AD83249 /* gu.json in Resources */ = {isa = PBXBuildFile; fileRef = B4CF27B013DE126077EC2C41 /* gu.json */; };
 		3E7C7231A3EAF4E1C14DDA7F /* BetMath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95E287703B23267524C848DF /* BetMath.swift */; };
+		8D5F0B2A3C9E5167F0B4D2E1 /* BetCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C4E9A1F2B8D4056E9A3C1D0 /* BetCatalog.swift */; };
 		420BC05930CFCBCF5BF3679C /* TokenStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAEBF51EEF4BEF69D72CB997 /* TokenStore.swift */; };
 		42C0D5797A5F316CE38902EC /* ht.json in Resources */ = {isa = PBXBuildFile; fileRef = 7936E146935F95522C6CCE37 /* ht.json */; };
 		434C435DCA7B47F1A310756A /* AppEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70538966E7035575C2836886 /* AppEnvironment.swift */; };
@@ -225,6 +226,7 @@
 		9303C037B251C58A6C8BB91C /* he.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = he.json; sourceTree = "<group>"; };
 		9331CCA1778BC540C4D9E2F7 /* sq.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = sq.json; sourceTree = "<group>"; };
 		95E287703B23267524C848DF /* BetMath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BetMath.swift; sourceTree = "<group>"; };
+		7C4E9A1F2B8D4056E9A3C1D0 /* BetCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BetCatalog.swift; sourceTree = "<group>"; };
 		96A50E4E61DE17D0CAB9E7D4 /* mk.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = mk.json; sourceTree = "<group>"; };
 		9B34CA752E4910BC92E39D7E /* BetEditorModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BetEditorModel.swift; sourceTree = "<group>"; };
 		9D85F976E512279047393D58 /* sw.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = sw.json; sourceTree = "<group>"; };
@@ -576,6 +578,7 @@
 		ECADC7E7D47463FB920F94EA /* Util */ = {
 			isa = PBXGroup;
 			children = (
+				7C4E9A1F2B8D4056E9A3C1D0 /* BetCatalog.swift */,
 				95E287703B23267524C848DF /* BetMath.swift */,
 				EF8B81F08CBF6DC264E2E77C /* Formatters.swift */,
 			);
@@ -810,6 +813,7 @@
 				12CC7B4AAAB6CF03EAFCD5FE /* AuthRepository.swift in Sources */,
 				DE88E4FB4AD0CCE456977D91 /* AuthView.swift in Sources */,
 				905D4430AFA441C76050D4A1 /* BetCache.swift in Sources */,
+				8D5F0B2A3C9E5167F0B4D2E1 /* BetCatalog.swift in Sources */,
 				AF885D3FFEB14A06FEBFA7A7 /* BetEditorModel.swift in Sources */,
 				639DC642E2361D7DF7A4F964 /* BetEditorView.swift in Sources */,
 				3E7C7231A3EAF4E1C14DDA7F /* BetMath.swift in Sources */,

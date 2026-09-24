@@ -80,6 +80,134 @@ struct ChoicePicker: View {
     }
 }
 
+/// Free-text field with catalog suggestions (web-style datalist).
+/// The user can type any value; suggestions are optional shortcuts.
+struct SuggestionTextField: View {
+    let title: String
+    @Binding var text: String
+    let suggestions: [String]
+    var placeholder: String = ""
+    var maxSuggestions: Int = 8
+
+    @FocusState private var focused: Bool
+    @State private var showBrowser = false
+
+    private var filtered: [String] {
+        let query = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        let matches: [String]
+        if query.isEmpty {
+            matches = Array(suggestions.prefix(maxSuggestions))
+        } else {
+            matches = suggestions
+                .filter {
+                    $0.localizedCaseInsensitiveContains(query)
+                        && $0.caseInsensitiveCompare(query) != .orderedSame
+                }
+                .prefix(maxSuggestions)
+                .map { $0 }
+        }
+        return matches
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(title).font(.subheadline.weight(.semibold))
+            HStack(spacing: 8) {
+                TextField(placeholder.isEmpty ? title : placeholder, text: $text)
+                    .textFieldStyle(.roundedBorder)
+                    .textInputAutocapitalization(.words)
+                    .autocorrectionDisabled()
+                    .focused($focused)
+
+                Button {
+                    showBrowser = true
+                } label: {
+                    Image(systemName: "list.bullet")
+                        .font(.body.weight(.medium))
+                        .frame(width: 36, height: 36)
+                }
+                .buttonStyle(.bordered)
+                .accessibilityLabel(title)
+            }
+
+            if focused, !filtered.isEmpty {
+                VStack(alignment: .leading, spacing: 0) {
+                    ForEach(filtered, id: \.self) { item in
+                        Button {
+                            text = item
+                            focused = false
+                        } label: {
+                            Text(item)
+                                .foregroundStyle(.primary)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 10)
+                                .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
+                        if item != filtered.last {
+                            Divider()
+                        }
+                    }
+                }
+                .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 8))
+            }
+        }
+        .sheet(isPresented: $showBrowser) {
+            SuggestionBrowserSheet(
+                title: title,
+                suggestions: suggestions,
+                selection: $text,
+                isPresented: $showBrowser
+            )
+        }
+    }
+}
+
+private struct SuggestionBrowserSheet: View {
+    let title: String
+    let suggestions: [String]
+    @Binding var selection: String
+    @Binding var isPresented: Bool
+    @State private var query = ""
+
+    private var filtered: [String] {
+        let q = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        if q.isEmpty { return suggestions }
+        return suggestions.filter { $0.localizedCaseInsensitiveContains(q) }
+    }
+
+    var body: some View {
+        NavigationView {
+            List {
+                if !query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                    Button {
+                        selection = query.trimmingCharacters(in: .whitespacesAndNewlines)
+                        isPresented = false
+                    } label: {
+                        Label(query.trimmingCharacters(in: .whitespacesAndNewlines), systemImage: "plus.circle")
+                    }
+                }
+                ForEach(filtered, id: \.self) { item in
+                    Button(item) {
+                        selection = item
+                        isPresented = false
+                    }
+                    .foregroundStyle(.primary)
+                }
+            }
+            .navigationTitle(title)
+            .navigationBarTitleDisplayMode(.inline)
+            .searchable(text: $query, prompt: title)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button(tr("form.cancel")) { isPresented = false }
+                }
+            }
+        }
+    }
+}
+
 struct MetricCard: View {
     let label: String
     let value: String
