@@ -353,14 +353,48 @@ build_and_push_images() {
 
   echo "Building images in ACR $ACR_NAME (tag: $IMAGE_TAG)..."
   for svc in "${SERVICES[@]}"; do
-    run az acr build --registry "$ACR_NAME" \
+    acr_build_with_retry \
       --image "${svc}:${IMAGE_TAG}" --image "${svc}:latest" \
       --file "services/${svc}/Dockerfile" .
   done
-  run az acr build --registry "$ACR_NAME" \
+  acr_build_with_retry \
     --image "frontend:${IMAGE_TAG}" --image "frontend:latest" \
     --build-arg "BUILD_ID=${IMAGE_TAG}" \
     --file frontend/Dockerfile .
+}
+
+# ACR builds pull base images from Docker Hub; transient timeouts are common.
+# Retry a few times with backoff before failing the deploy.
+acr_build_with_retry() {
+  local attempt=1
+  local max_attempts=4
+  local wait_seconds=20
+  local output
+  local status
+
+  while true; do
+    if [[ "$DRY_RUN" -eq 1 ]]; then
+      echo "[dry-run] az acr build --registry $ACR_NAME $*"
+      return 0
+    fi
+    set +e
+    output="$(az acr build --registry "$ACR_NAME" "$@" 2>&1)"
+    status=$?
+    set -e
+    if [[ $status -eq 0 ]]; then
+      [[ -n "$output" ]] && echo "$output"
+      return 0
+    fi
+    echo "$output" >&2
+    if (( attempt >= max_attempts )); then
+      echo "ACR build failed after ${max_attempts} attempts." >&2
+      return "$status"
+    fi
+    echo "ACR build failed (attempt ${attempt}/${max_attempts}); retrying in ${wait_seconds}s..."
+    sleep "$wait_seconds"
+    attempt=$((attempt + 1))
+    wait_seconds=$((wait_seconds * 2))
+  done
 }
 
 print_outputs() {

@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM node:22-alpine AS frontend-build
+FROM public.ecr.aws/docker/library/node:22-alpine AS frontend-build
 WORKDIR /build
 COPY frontend/package.json frontend/package-lock.json ./
 RUN npm ci
@@ -9,7 +9,7 @@ COPY frontend/src ./src
 COPY frontend/public ./public
 RUN npm run build
 
-FROM nginx:1.27-alpine
+FROM public.ecr.aws/docker/library/nginx:1.27-alpine
 
 ARG BUILD_ID=dev
 
