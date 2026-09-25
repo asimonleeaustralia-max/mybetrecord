@@ -5,6 +5,7 @@ enum APIError: LocalizedError {
     case http(status: Int, body: String)
     case decoding(Error)
     case unauthorized
+    case offline(message: String)
 
     var errorDescription: String? {
         switch self {
@@ -22,8 +23,20 @@ enum APIError: LocalizedError {
             return "Unexpected response from server"
         case .unauthorized:
             return "Session expired. Please sign in again."
+        case .offline(let message):
+            return message
         }
     }
+}
+
+enum TokenRefreshResult {
+    case refreshed(String)
+    /// Access token was already updated by another concurrent refresh.
+    case current(String)
+    /// Refresh token rejected — session is gone.
+    case unauthorized
+    /// Network/dead-spot failure — keep the existing session and retry later.
+    case transientFailure
 }
 
 enum AppConfig {
@@ -39,57 +52,81 @@ enum AppConfig {
 actor TokenRefreshCoordinator {
     private let tokenStore: TokenStore
     private let baseURL: URL
-    private var refreshTask: Task<TokenResponse?, Never>?
+    private var refreshTask: Task<TokenRefreshResult, Never>?
 
     init(tokenStore: TokenStore, baseURL: URL) {
         self.tokenStore = tokenStore
         self.baseURL = baseURL
     }
 
-    func refreshIfNeeded(requestToken: String?) async -> String? {
+    func refreshIfNeeded(requestToken: String?) async -> TokenRefreshResult {
         let current = tokenStore.getAccessToken()
         if let current, !current.isEmpty, current != requestToken {
-            return current
+            return .current(current)
         }
         if let refreshTask {
-            let result = await refreshTask.value
-            return result?.accessToken
+            return await refreshTask.value
         }
-        let task = Task<TokenResponse?, Never> {
-            guard let refresh = tokenStore.getRefreshToken() else { return nil }
-            return await Self.performRefresh(baseURL: baseURL, refreshToken: refresh)
+        let task = Task<TokenRefreshResult, Never> {
+            guard let refresh = tokenStore.getRefreshToken(), !refresh.isEmpty else {
+                return .unauthorized
+            }
+            switch await Self.performRefresh(baseURL: baseURL, refreshToken: refresh) {
+            case .success(let tokens):
+                tokenStore.setAccessToken(tokens.accessToken)
+                if let rt = tokens.refreshToken {
+                    tokenStore.setRefreshToken(rt)
+                }
+                return .refreshed(tokens.accessToken)
+            case .unauthorized:
+                tokenStore.clear()
+                return .unauthorized
+            case .transientFailure:
+                return .transientFailure
+            }
         }
         refreshTask = task
         let result = await task.value
         refreshTask = nil
-        if let result {
-            tokenStore.setAccessToken(result.accessToken)
-            if let rt = result.refreshToken {
-                tokenStore.setRefreshToken(rt)
-            }
-            return result.accessToken
-        }
-        tokenStore.clear()
-        return nil
+        return result
     }
 
-    private static func performRefresh(baseURL: URL, refreshToken: String) async -> TokenResponse? {
+    private enum RefreshAttempt {
+        case success(TokenResponse)
+        case unauthorized
+        case transientFailure
+    }
+
+    private static func performRefresh(baseURL: URL, refreshToken: String) async -> RefreshAttempt {
         let url = baseURL.appendingPathComponent("auth/refresh")
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.setValue("application/json", forHTTPHeaderField: "Accept")
+        request.timeoutInterval = 15
         let body = RefreshRequest(refreshToken: refreshToken)
-        guard let data = try? JSONEncoder.api.encode(body) else { return nil }
+        guard let data = try? JSONEncoder.api.encode(body) else { return .unauthorized }
         request.httpBody = data
         do {
             let (responseData, response) = try await URLSession.shared.data(for: request)
-            guard let http = response as? HTTPURLResponse, (200..<300).contains(http.statusCode) else {
-                return nil
+            guard let http = response as? HTTPURLResponse else {
+                return .transientFailure
             }
-            return try JSONDecoder.api.decode(TokenResponse.self, from: responseData)
+            if (200..<300).contains(http.statusCode) {
+                do {
+                    let tokens = try JSONDecoder.api.decode(TokenResponse.self, from: responseData)
+                    return .success(tokens)
+                } catch {
+                    return .unauthorized
+                }
+            }
+            if http.statusCode == 401 || http.statusCode == 403 {
+                return .unauthorized
+            }
+            // 5xx / unexpected — treat as transient so dead spots or outages don't force logout.
+            return .transientFailure
         } catch {
-            return nil
+            return error.isConnectivityError ? .transientFailure : .transientFailure
         }
     }
 }
@@ -141,15 +178,29 @@ final class APIClient: @unchecked Sendable {
         skipAuth: Bool = false,
         retryOn401: Bool = true
     ) async throws -> Data {
+        try await performRequestData(method, path: path, body: body, query: query, skipAuth: skipAuth, retryOn401: retryOn401)
+    }
+
+    private func performRequestData(
+        _ method: String,
+        path: String,
+        body: (any Encodable)?,
+        query: [URLQueryItem],
+        skipAuth: Bool,
+        retryOn401: Bool
+    ) async throws -> Data {
         let requestToken = skipAuth ? nil : tokenStore.getAccessToken()
         var request = try buildRequest(method, path: path, body: body, query: query, accessToken: requestToken, skipAuth: skipAuth)
         var (data, response) = try await URLSession.shared.data(for: request)
         if let http = response as? HTTPURLResponse, http.statusCode == 401, !skipAuth, retryOn401 {
-            if let newToken = await refreshCoordinator.refreshIfNeeded(requestToken: requestToken) {
+            switch await refreshCoordinator.refreshIfNeeded(requestToken: requestToken) {
+            case .refreshed(let newToken), .current(let newToken):
                 request = try buildRequest(method, path: path, body: body, query: query, accessToken: newToken, skipAuth: false)
                 (data, response) = try await URLSession.shared.data(for: request)
-            } else {
+            case .unauthorized:
                 throw APIError.unauthorized
+            case .transientFailure:
+                throw APIError.offline(message: "Connection interrupted. Try again when you have a signal.")
             }
         }
         guard let http = response as? HTTPURLResponse else {
@@ -175,6 +226,7 @@ final class APIClient: @unchecked Sendable {
         guard let url = components?.url else { throw APIError.invalidURL }
         var request = URLRequest(url: url)
         request.httpMethod = method
+        request.timeoutInterval = 20
         request.setValue("application/json", forHTTPHeaderField: "Accept")
         if let body {
             request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -333,10 +385,59 @@ enum UIDeviceName {
 #endif
 
 extension Error {
+    var isConnectivityError: Bool {
+        if let api = self as? APIError, case .offline = api { return true }
+        if let urlError = self as? URLError {
+            switch urlError.code {
+            case .notConnectedToInternet,
+                 .networkConnectionLost,
+                 .timedOut,
+                 .cannotConnectToHost,
+                 .cannotFindHost,
+                 .dnsLookupFailed,
+                 .internationalRoamingOff,
+                 .dataNotAllowed,
+                 .secureConnectionFailed,
+                 .cannotLoadFromNetwork:
+                return true
+            default:
+                return false
+            }
+        }
+        let ns = self as NSError
+        guard ns.domain == NSURLErrorDomain else { return false }
+        switch ns.code {
+        case NSURLErrorNotConnectedToInternet,
+             NSURLErrorNetworkConnectionLost,
+             NSURLErrorTimedOut,
+             NSURLErrorCannotConnectToHost,
+             NSURLErrorCannotFindHost,
+             NSURLErrorDNSLookupFailed,
+             NSURLErrorInternationalRoamingOff,
+             NSURLErrorDataNotAllowed,
+             NSURLErrorSecureConnectionFailed,
+             NSURLErrorCannotLoadFromNetwork:
+            return true
+        default:
+            return false
+        }
+    }
+
     var userMessage: String {
         if let api = self as? APIError, let desc = api.errorDescription { return desc }
-        if let localized = (self as NSError).userInfo[NSLocalizedDescriptionKey] as? String { return localized }
-        if let url = self as? URLError { return "Network error. Check your connection." }
+        if isConnectivityError {
+            return "No internet connection. Check your signal and try again."
+        }
+        if let localized = (self as NSError).userInfo[NSLocalizedDescriptionKey] as? String {
+            // Replace the system "The Internet connection appears to be offline" phrasing.
+            let lower = localized.lowercased()
+            if lower.contains("appears to be offline")
+                || lower.contains("internet connection")
+                || lower.contains("network connection was lost") {
+                return "No internet connection. Check your signal and try again."
+            }
+            return localized
+        }
         return localizedDescription.isEmpty ? "Something went wrong" : localizedDescription
     }
 }

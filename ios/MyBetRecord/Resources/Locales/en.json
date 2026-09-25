@@ -96,7 +96,11 @@
     "deleteAria": "Delete {{name}}",
     "shareAria": "Share {{name}}",
     "resultAria": "Result for {{name}}",
-    "legsCount": "{{count}} legs"
+    "legsCount": "{{count}} legs",
+    "pendingSync": "{{count}} bet(s) waiting to sync",
+    "pendingBadge": "Pending sync",
+    "offlineCached": "Showing bets saved on this device. Will sync when you're back online.",
+    "savedOffline": "Saved on this device. Will sync when you have a connection."
   },
   "share": {
     "title": "Shared bet",

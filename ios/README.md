@@ -55,7 +55,7 @@ Tests cover bet maths (Kelly, lay liability, fractional odds) and auth token per
 | Auth | Login / register (`client: "ios"`) |
 | Forgot password | Request code → confirm → done |
 | Dashboard | Summary metrics, pull-to-refresh |
-| Bets | CRUD, parlays, share links, SwiftData cache |
+| Bets | CRUD, parlays, share links, offline local buffer + sync outbox |
 | Reports | Summary, equity curve, monthly chart, CSV/XLSX/JSON export |
 | Tools | Kelly stake + lay liability calculators |
 | Settings | Profile, locale (~100 languages), legal links, logout, account deletion |

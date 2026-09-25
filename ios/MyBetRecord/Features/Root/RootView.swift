@@ -2,7 +2,9 @@ import SwiftUI
 
 struct RootView: View {
     @EnvironmentObject private var auth: AuthRepository
+    @EnvironmentObject private var environment: AppEnvironment
     @EnvironmentObject private var i18n: I18n
+    @Environment(\.scenePhase) private var scenePhase
     @State private var ageAttested = AppPreferences.ageAttested
     @State private var showForgotPassword = false
 
@@ -23,6 +25,11 @@ struct RootView: View {
         }
         // Re-evaluate labels when the active locale changes.
         .id(i18n.locale)
+        .onChange(of: scenePhase) { phase in
+            if phase == .active {
+                environment.betsRepository.scheduleSync()
+            }
+        }
     }
 }
 

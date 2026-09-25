@@ -93,7 +93,7 @@ final class BetEditorModel: ObservableObject {
     }
 
     private func applyCachedSuggestionExtras() {
-        let cached = (try? betsRepository.cachedBets()) ?? []
+        let cached = betsRepository.cachedBets()
         let sports = cached.map(\.sport)
         let betTypes = cached.map(\.betType)
         let bookmakers = cached.compactMap(\.bookmaker)
@@ -108,7 +108,7 @@ final class BetEditorModel: ObservableObject {
         async let betTypesTask = betsRepository.listBetTypes()
         let remoteSports = (try? await sportsTask) ?? []
         let remoteBetTypes = (try? await betTypesTask) ?? []
-        let cached = (try? betsRepository.cachedBets()) ?? []
+        let cached = betsRepository.cachedBets()
         sportSuggestions = BetCatalog.choices(
             catalog: BetCatalog.sports,
             extras: remoteSports + cached.map(\.sport)
@@ -486,6 +486,9 @@ final class BetEditorModel: ObservableObject {
                     settledAt: settledAtIso
                 )
                 _ = try await betsRepository.createBet(create)
+            }
+            if betsRepository.pendingSyncCount > 0 {
+                warningMessage = tr("bets.savedOffline")
             }
             saved = true
         } catch {

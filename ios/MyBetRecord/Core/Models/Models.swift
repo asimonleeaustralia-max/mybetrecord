@@ -278,39 +278,52 @@ extension Bet {
         placedAt: String,
         bookmaker: String? = nil
     ) {
-        self.id = id
-        self.tournament = nil
-        self.event = event
-        self.selection = selection
-        self.sport = sport
-        self.betType = betType
-        self.side = "back"
-        self.isMultiple = false
-        self.legs = []
-        self.placedAt = placedAt
-        self.eventAt = nil
-        self.settledAt = nil
-        self.oddsDecimal = oddsDecimal
-        self.oddsFormat = "decimal"
-        self.stake = stake
-        self.currency = currency
-        self.eachWay = false
-        self.placeFraction = 0.25
-        self.placed = false
-        self.freeBet = false
-        self.outcome = outcome
-        self.profit = profit
-        self.cashOutAmount = nil
-        self.bookmaker = bookmaker
-        self.portal = nil
-        self.tipster = nil
-        self.notes = nil
-        self.closingOdds = nil
-        self.closingOddsExchange = nil
-        self.clvPct = nil
-        self.edgePct = nil
-        self.shareToken = nil
-        self.createdAt = nil
-        self.updatedAt = nil
+        self.init(
+            id: id,
+            tournament: nil,
+            event: event,
+            selection: selection,
+            sport: sport,
+            betType: betType,
+            side: "back",
+            isMultiple: false,
+            legs: [],
+            placedAt: placedAt,
+            eventAt: nil,
+            settledAt: nil,
+            oddsDecimal: oddsDecimal,
+            oddsFormat: "decimal",
+            stake: stake,
+            currency: currency,
+            eachWay: false,
+            placeFraction: 0.25,
+            placed: false,
+            freeBet: false,
+            outcome: outcome,
+            profit: profit,
+            cashOutAmount: nil,
+            betModel: nil,
+            modelImpliedOdds: nil,
+            personalImpliedOdds: nil,
+            tipsterImpliedOdds: nil,
+            personalEdgePct: nil,
+            modelEdgePct: nil,
+            tipsterEdgePct: nil,
+            kellyStake: nil,
+            modelKellyStake: nil,
+            bookmaker: bookmaker,
+            portal: nil,
+            exchangeCommissionPct: nil,
+            tipster: nil,
+            betBroker: nil,
+            notes: nil,
+            closingOdds: nil,
+            closingOddsExchange: nil,
+            clvPct: nil,
+            edgePct: nil,
+            shareToken: nil,
+            createdAt: nil,
+            updatedAt: nil
+        )
     }
 }

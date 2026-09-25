@@ -3,6 +3,7 @@ import UIKit
 
 struct SettingsView: View {
     @EnvironmentObject private var auth: AuthRepository
+    @EnvironmentObject private var environment: AppEnvironment
     @EnvironmentObject private var i18n: I18n
     @State private var user: User?
     @State private var loading = true
@@ -112,7 +113,12 @@ struct SettingsView: View {
                 LinkButton(title: tr("settings.terms")) { open("https://www.mybetrecord.com/terms") }
                 LinkButton(title: tr("settings.responsibleGambling")) { open("https://www.mybetrecord.com/responsible-gambling") }
                 LinkButton(title: tr("settings.deleteAccountWeb")) { open("https://www.mybetrecord.com/delete-account") }
-                Button(tr("nav.signOut"), role: .destructive) { Task { await auth.logout() } }
+                Button(tr("nav.signOut"), role: .destructive) {
+                    Task {
+                        await auth.logout()
+                        environment.betsRepository.clearLocalData()
+                    }
+                }
                     .frame(maxWidth: .infinity)
                 Button(tr("settings.deleteAccount")) { showDeleteDialog = true }
                     .frame(maxWidth: .infinity)
@@ -137,8 +143,14 @@ struct SettingsView: View {
             defaultOddsFormat = loaded.defaultOddsFormat
             publicBetsEnabled = loaded.publicBetsEnabled
             accountDescription = loaded.accountDescription ?? ""
+            error = nil
         } catch {
-            self.error = error.userMessage
+            if error.isConnectivityError {
+                self.error = nil
+                self.info = tr("bets.offlineCached")
+            } else {
+                self.error = error.userMessage
+            }
         }
     }
 
@@ -176,6 +188,7 @@ struct SettingsView: View {
         }
         do {
             try await auth.deleteAccount(password: deletePassword)
+            environment.betsRepository.clearLocalData()
         } catch {
             self.error = error.userMessage
         }

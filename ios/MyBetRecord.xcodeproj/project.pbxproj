@@ -10,6 +10,7 @@
 		0139EED2B6178F49CA8B0B6A /* languages.json in Resources */ = {isa = PBXBuildFile; fileRef = E40C8E8A347FC842448D1B58 /* languages.json */; };
 		02B953D17FCE9A3E7143D2C4 /* gl.json in Resources */ = {isa = PBXBuildFile; fileRef = DBD4616BA299B6DB887E2232 /* gl.json */; };
 		043481D704EDE2830F9E461D /* hu.json in Resources */ = {isa = PBXBuildFile; fileRef = 04BB82F4D2457B7759DBAB2C /* hu.json */; };
+		051E62224F169D2A5D39A436 /* LocalBetFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF4BE94EE2A3A36CEFCF7F41 /* LocalBetFactory.swift */; };
 		061D5394ACDCB5634C0C21ED /* nl.json in Resources */ = {isa = PBXBuildFile; fileRef = A7A3E0C8A86D8F5C85B023DA /* nl.json */; };
 		0EE7F98EF3DC121766C7C4D8 /* ro.json in Resources */ = {isa = PBXBuildFile; fileRef = E6038E35024D6F41A1768A52 /* ro.json */; };
 		103FA7A9D413D4B4B1F3177E /* uk.json in Resources */ = {isa = PBXBuildFile; fileRef = E39E1563FDB0709FE388E980 /* uk.json */; };
@@ -33,9 +34,9 @@
 		3033D5F865AF17777B22099F /* tl.json in Resources */ = {isa = PBXBuildFile; fileRef = 731DA20E1194493726559891 /* tl.json */; };
 		3555540597B491903AD83249 /* gu.json in Resources */ = {isa = PBXBuildFile; fileRef = B4CF27B013DE126077EC2C41 /* gu.json */; };
 		3E7C7231A3EAF4E1C14DDA7F /* BetMath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95E287703B23267524C848DF /* BetMath.swift */; };
-		8D5F0B2A3C9E5167F0B4D2E1 /* BetCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C4E9A1F2B8D4056E9A3C1D0 /* BetCatalog.swift */; };
 		420BC05930CFCBCF5BF3679C /* TokenStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAEBF51EEF4BEF69D72CB997 /* TokenStore.swift */; };
 		42C0D5797A5F316CE38902EC /* ht.json in Resources */ = {isa = PBXBuildFile; fileRef = 7936E146935F95522C6CCE37 /* ht.json */; };
+		42EDFB0707C090C9450B4F63 /* BetCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE9EAC1D4C52691F246C9B74 /* BetCatalog.swift */; };
 		434C435DCA7B47F1A310756A /* AppEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70538966E7035575C2836886 /* AppEnvironment.swift */; };
 		44BDC2887BD254DC262753DC /* BetsRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DE17B25079B16D11683A5E6 /* BetsRepository.swift */; };
 		48538738F346B2C10FD66411 /* ur.json in Resources */ = {isa = PBXBuildFile; fileRef = 92AB3BF0C325B7A41BF7F531 /* ur.json */; };
@@ -51,6 +52,7 @@
 		5E329B664AA0690D78F44011 /* el.json in Resources */ = {isa = PBXBuildFile; fileRef = CA92E7074F8E23DDFC6B5B01 /* el.json */; };
 		6229EF746DC6C8A27D598E31 /* ig.json in Resources */ = {isa = PBXBuildFile; fileRef = F708A98F833A63F364189267 /* ig.json */; };
 		625A827BFB411444B8E9B238 /* ml.json in Resources */ = {isa = PBXBuildFile; fileRef = BC85678ED4900A3B8C9C6D46 /* ml.json */; };
+		625D5CACDD1DD63D9ECBB1B1 /* NetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9725FC753927B8BCF7972E02 /* NetworkMonitor.swift */; };
 		6376C2DBFAAF849BFA36F31C /* ceb.json in Resources */ = {isa = PBXBuildFile; fileRef = 542546E3210AE3F852287F3F /* ceb.json */; };
 		639DC642E2361D7DF7A4F964 /* BetEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 023AB5FE20D9BF4C1F7D20D0 /* BetEditorView.swift */; };
 		6451AC7C8C0D44D0A60A1F3A /* tr.json in Resources */ = {isa = PBXBuildFile; fileRef = B8AC85A880B79A1BA828EAF8 /* tr.json */; };
@@ -71,6 +73,7 @@
 		85ADEBD5CE64A380EDF845FC /* jv.json in Resources */ = {isa = PBXBuildFile; fileRef = 18103346C5F0109E6DE5C676 /* jv.json */; };
 		863B76DA2338D6AAF83C9CE8 /* ug.json in Resources */ = {isa = PBXBuildFile; fileRef = 803411D5F5B52DF5A3EB73E6 /* ug.json */; };
 		8726AEC2F1212A5144669480 /* kk.json in Resources */ = {isa = PBXBuildFile; fileRef = CE41D1B60E757C6F00BA2B50 /* kk.json */; };
+		881ACA428C0AB4FA94BACA49 /* SyncOutbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39C28C1510A301B61D9C1404 /* SyncOutbox.swift */; };
 		8C1043EF41413C1CF0EF3F94 /* az.json in Resources */ = {isa = PBXBuildFile; fileRef = F451A1EA85F3CF9E953710D7 /* az.json */; };
 		8FF69B7BBEF1E5C324ABB2C9 /* zu.json in Resources */ = {isa = PBXBuildFile; fileRef = D23285B88EAC7393B696D1BC /* zu.json */; };
 		905D4430AFA441C76050D4A1 /* BetCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DBCA87A0EF13967C4DFCC0C /* BetCache.swift */; };
@@ -172,6 +175,7 @@
 		323699018B41DFB604D547FC /* cs.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = cs.json; sourceTree = "<group>"; };
 		33420067D5626707404ADBC2 /* BetsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BetsListView.swift; sourceTree = "<group>"; };
 		37D54201D7A8D9EA673325CE /* MyBetRecordTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = MyBetRecordTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		39C28C1510A301B61D9C1404 /* SyncOutbox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncOutbox.swift; sourceTree = "<group>"; };
 		3B6B4A27877F4792890CFADE /* te.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = te.json; sourceTree = "<group>"; };
 		3EFC2CB4451141CB242DDCB6 /* lv.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = lv.json; sourceTree = "<group>"; };
 		436EABCF2D0B5AD4606DFEE4 /* uz.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = uz.json; sourceTree = "<group>"; };
@@ -197,7 +201,7 @@
 		5D563ABC8326269BA9E8EA15 /* tt.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = tt.json; sourceTree = "<group>"; };
 		613A46276418EBFC2198F52F /* ta.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ta.json; sourceTree = "<group>"; };
 		61FCC42EF0771AA1EAE92085 /* km.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = km.json; sourceTree = "<group>"; };
-		65A33286639322C6F6AA041D /* MyBetRecord.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyBetRecord.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		65A33286639322C6F6AA041D /* MyBetRecord.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = MyBetRecord.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		69EFA544D7BE7568B80C4A48 /* fy.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fy.json; sourceTree = "<group>"; };
 		6A0D589151DBC84810DDF43E /* ga.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ga.json; sourceTree = "<group>"; };
 		6BC7B469B7A0A87AA1EFD2D0 /* AuthRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthRepository.swift; sourceTree = "<group>"; };
@@ -226,8 +230,8 @@
 		9303C037B251C58A6C8BB91C /* he.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = he.json; sourceTree = "<group>"; };
 		9331CCA1778BC540C4D9E2F7 /* sq.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = sq.json; sourceTree = "<group>"; };
 		95E287703B23267524C848DF /* BetMath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BetMath.swift; sourceTree = "<group>"; };
-		7C4E9A1F2B8D4056E9A3C1D0 /* BetCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BetCatalog.swift; sourceTree = "<group>"; };
 		96A50E4E61DE17D0CAB9E7D4 /* mk.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = mk.json; sourceTree = "<group>"; };
+		9725FC753927B8BCF7972E02 /* NetworkMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitor.swift; sourceTree = "<group>"; };
 		9B34CA752E4910BC92E39D7E /* BetEditorModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BetEditorModel.swift; sourceTree = "<group>"; };
 		9D85F976E512279047393D58 /* sw.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = sw.json; sourceTree = "<group>"; };
 		9E0E5F46CC7D181BFD6B07FE /* ToolsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolsView.swift; sourceTree = "<group>"; };
@@ -249,6 +253,7 @@
 		BC85678ED4900A3B8C9C6D46 /* ml.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ml.json; sourceTree = "<group>"; };
 		BEDB058F8CFBD970D411E0F2 /* no.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = no.json; sourceTree = "<group>"; };
 		BF180B44068F1DBB820610B6 /* tk.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = tk.json; sourceTree = "<group>"; };
+		BF4BE94EE2A3A36CEFCF7F41 /* LocalBetFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalBetFactory.swift; sourceTree = "<group>"; };
 		C1764646FEE32A8AB549A56E /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		C47323BC72C9998274E5EB4C /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
 		C705D72957ED6E6EC9EDAFCD /* fa.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fa.json; sourceTree = "<group>"; };
@@ -259,7 +264,7 @@
 		DAEBF51EEF4BEF69D72CB997 /* TokenStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenStore.swift; sourceTree = "<group>"; };
 		DBD4616BA299B6DB887E2232 /* gl.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = gl.json; sourceTree = "<group>"; };
 		DDD7FC8D6B3DAECB689B7921 /* my.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = my.json; sourceTree = "<group>"; };
-		DDE5CD6A8B8764B46638C7E0 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		DDE5CD6A8B8764B46638C7E0 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		DF1EFB52795B453C21F4EF37 /* tg.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = tg.json; sourceTree = "<group>"; };
 		E07E6A08367102600211C039 /* MyBetRecordTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyBetRecordTests.swift; sourceTree = "<group>"; };
 		E16344EE47218219C739ADC1 /* bg.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = bg.json; sourceTree = "<group>"; };
@@ -270,6 +275,7 @@
 		E6038E35024D6F41A1768A52 /* ro.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ro.json; sourceTree = "<group>"; };
 		E674C8680AC5D25A83386733 /* es.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = es.json; sourceTree = "<group>"; };
 		E72D553DBCFF06FE85D303C8 /* I18n.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = I18n.swift; sourceTree = "<group>"; };
+		EE9EAC1D4C52691F246C9B74 /* BetCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BetCatalog.swift; sourceTree = "<group>"; };
 		EF8B81F08CBF6DC264E2E77C /* Formatters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Formatters.swift; sourceTree = "<group>"; };
 		F20842D0717A265BAE1F6172 /* ps.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ps.json; sourceTree = "<group>"; };
 		F451A1EA85F3CF9E953710D7 /* az.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = az.json; sourceTree = "<group>"; };
@@ -456,6 +462,7 @@
 			isa = PBXGroup;
 			children = (
 				C47323BC72C9998274E5EB4C /* APIClient.swift */,
+				9725FC753927B8BCF7972E02 /* NetworkMonitor.swift */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -485,6 +492,7 @@
 			isa = PBXGroup;
 			children = (
 				7DBCA87A0EF13967C4DFCC0C /* BetCache.swift */,
+				39C28C1510A301B61D9C1404 /* SyncOutbox.swift */,
 				DAEBF51EEF4BEF69D72CB997 /* TokenStore.swift */,
 			);
 			path = Storage;
@@ -578,9 +586,10 @@
 		ECADC7E7D47463FB920F94EA /* Util */ = {
 			isa = PBXGroup;
 			children = (
-				7C4E9A1F2B8D4056E9A3C1D0 /* BetCatalog.swift */,
+				EE9EAC1D4C52691F246C9B74 /* BetCatalog.swift */,
 				95E287703B23267524C848DF /* BetMath.swift */,
 				EF8B81F08CBF6DC264E2E77C /* Formatters.swift */,
+				BF4BE94EE2A3A36CEFCF7F41 /* LocalBetFactory.swift */,
 			);
 			path = Util;
 			sourceTree = "<group>";
@@ -657,6 +666,7 @@
 						ProvisioningStyle = Automatic;
 					};
 					FFE3BA8A17199885B56F9B5B = {
+						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -813,7 +823,7 @@
 				12CC7B4AAAB6CF03EAFCD5FE /* AuthRepository.swift in Sources */,
 				DE88E4FB4AD0CCE456977D91 /* AuthView.swift in Sources */,
 				905D4430AFA441C76050D4A1 /* BetCache.swift in Sources */,
-				8D5F0B2A3C9E5167F0B4D2E1 /* BetCatalog.swift in Sources */,
+				42EDFB0707C090C9450B4F63 /* BetCatalog.swift in Sources */,
 				AF885D3FFEB14A06FEBFA7A7 /* BetEditorModel.swift in Sources */,
 				639DC642E2361D7DF7A4F964 /* BetEditorView.swift in Sources */,
 				3E7C7231A3EAF4E1C14DDA7F /* BetMath.swift in Sources */,
@@ -824,12 +834,15 @@
 				2ADC5528C3FC88AC9E78470B /* ForgotPasswordView.swift in Sources */,
 				152941A56A144E97CB29E77B /* Formatters.swift in Sources */,
 				5880BCAF258A1A03D05BFF08 /* I18n.swift in Sources */,
+				051E62224F169D2A5D39A436 /* LocalBetFactory.swift in Sources */,
 				824EE98417B0FEF7338DDFA4 /* Models.swift in Sources */,
 				97AFFD74C6DD5EF4D3D69C63 /* MyBetRecordApp.swift in Sources */,
+				625D5CACDD1DD63D9ECBB1B1 /* NetworkMonitor.swift in Sources */,
 				2544B6D01E0A7396C273AE12 /* ReportsRepository.swift in Sources */,
 				D553FC9FA09045CC3436D8CF /* ReportsView.swift in Sources */,
 				12410AD686032EE12DAA98ED /* RootView.swift in Sources */,
 				9EF741F9D9E6591CE4202A5A /* SettingsView.swift in Sources */,
+				881ACA428C0AB4FA94BACA49 /* SyncOutbox.swift in Sources */,
 				420BC05930CFCBCF5BF3679C /* TokenStore.swift in Sources */,
 				DC9DAF72D8A8AB79D4EA5B16 /* ToolsView.swift in Sources */,
 			);
@@ -996,7 +1009,6 @@
 				API_BASE_URL = "https://www.mybetrecord.com";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = W7TYAP8RVN;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = MyBetRecord/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1032,7 +1044,6 @@
 				API_BASE_URL = "https://www.mybetrecord.com";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = W7TYAP8RVN;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = MyBetRecord/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (

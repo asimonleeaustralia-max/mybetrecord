@@ -10,6 +10,7 @@ struct MyBetRecordApp: App {
                 .environmentObject(environment)
                 .environmentObject(environment.authRepository)
                 .environmentObject(I18n.shared)
+                .onAppear { environment.startNetworkMonitoring() }
         }
     }
 }

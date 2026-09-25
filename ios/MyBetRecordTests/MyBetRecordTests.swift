@@ -96,6 +96,56 @@ final class BetMathTests: XCTestCase {
         let eff = BetMath.effectiveDecimalOdds(oddsDecimal: 2.0, commissionPct: 5)
         XCTAssertEqual(eff!, 1.95, accuracy: 1e-9)
     }
+
+    func testLocalBetFactoryFromCreate() {
+        let body = BetCreate(
+            sport: "Football",
+            event: "A vs B",
+            selection: "A",
+            odds: 2.5,
+            stake: 10,
+            betType: "Win",
+            side: "back",
+            currency: "GBP",
+            oddsFormat: "decimal",
+            oddsDenominator: nil,
+            outcome: "win",
+            tournament: nil,
+            bookmaker: "Bet365",
+            portal: nil,
+            exchangeCommissionPct: 0,
+            tipster: nil,
+            betBroker: nil,
+            notes: nil,
+            eachWay: false,
+            placeFraction: 0.25,
+            placed: false,
+            freeBet: false,
+            isMultiple: false,
+            legs: nil,
+            cashOutAmount: nil,
+            betModel: nil,
+            modelImpliedOdds: nil,
+            personalImpliedOdds: nil,
+            tipsterImpliedOdds: nil,
+            closingOdds: nil,
+            closingOddsExchange: nil,
+            placedAt: "2026-01-01T12:00:00",
+            eventAt: nil,
+            settledAt: "2026-01-01T14:00:00"
+        )
+        let bet = LocalBetFactory.make(from: body, id: LocalBetFactory.localId())
+        XCTAssertTrue(LocalBetFactory.isLocalId(bet.id))
+        XCTAssertEqual(bet.oddsDecimal, 2.5, accuracy: 1e-9)
+        XCTAssertEqual(bet.profit, 15, accuracy: 1e-9)
+    }
+
+    func testConnectivityErrorDetection() {
+        let offline = URLError(.notConnectedToInternet)
+        XCTAssertTrue(offline.isConnectivityError)
+        XCTAssertFalse(APIError.unauthorized.isConnectivityError)
+        XCTAssertTrue(APIError.offline(message: "x").isConnectivityError)
+    }
 }
 
 @MainActor

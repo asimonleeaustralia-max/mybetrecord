@@ -39,6 +39,12 @@ final class AuthRepository: ObservableObject {
             persistTokens(tokens)
             return tokens
         } catch {
+            // Dead spots / offline must not sign the user out.
+            if error.isConnectivityError { return nil }
+            if let api = error as? APIError, case .offline = api { return nil }
+            if let api = error as? APIError, case .http(let status, _) = api, status >= 500 {
+                return nil
+            }
             tokenStore.clear()
             isLoggedIn = false
             return nil

@@ -8,6 +8,7 @@ struct ReportsView: View {
     @State private var loading = false
     @State private var exporting = false
     @State private var error: String?
+    @State private var offlineNotice: String?
     @State private var shareItems: [Any]?
 
     var body: some View {
@@ -15,6 +16,9 @@ struct ReportsView: View {
             VStack(alignment: .leading, spacing: 12) {
                 Text(tr("reports.title")).font(.title2)
                 Text(tr("reports.subtitle")).foregroundStyle(.secondary)
+                if let offlineNotice {
+                    Text(offlineNotice).font(.footnote).foregroundStyle(.secondary)
+                }
                 if let error { ErrorText(message: error) }
                 if let summary {
                     let currency = summary.currency ?? summary.baseCurrency
@@ -84,6 +88,7 @@ struct ReportsView: View {
     private func refresh() async {
         loading = summary == nil
         error = nil
+        offlineNotice = nil
         defer { loading = false }
         do {
             async let summaryTask = environment.reportsRepository.summary()
@@ -93,7 +98,21 @@ struct ReportsView: View {
             equity = e
             monthly = environment.reportsRepository.monthlyProfits(from: e)
         } catch {
-            self.error = error.userMessage
+            if error.isConnectivityError {
+                let bets = environment.betsRepository.cachedBets()
+                if !bets.isEmpty {
+                    summary = LocalBetFactory.summary(from: bets)
+                    equity = []
+                    monthly = []
+                }
+                offlineNotice = tr("bets.offlineCached")
+                return
+            }
+            if summary == nil {
+                self.error = error.userMessage
+            } else {
+                offlineNotice = error.userMessage
+            }
         }
     }
 

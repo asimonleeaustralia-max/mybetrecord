@@ -4,7 +4,7 @@ struct BetsListView: View {
     @EnvironmentObject private var environment: AppEnvironment
     @State private var bets: [Bet] = []
     @State private var refreshing = false
-    @State private var error: String?
+    @State private var statusMessage: String?
     @State private var pendingDelete: Bet?
     let onOpenBet: (String) -> Void
 
@@ -14,9 +14,18 @@ struct BetsListView: View {
                 EmptyStateView(message: tr("bets.empty"))
             } else {
                 List {
+                    if let statusMessage {
+                        Text(statusMessage)
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                            .listRowBackground(Color.clear)
+                    }
                     ForEach(bets) { bet in
                         Button { onOpenBet(bet.id) } label: {
-                            BetRowView(bet: bet)
+                            BetRowView(
+                                bet: bet,
+                                isPendingSync: environment.betsRepository.isPendingSync(id: bet.id)
+                            )
                         }
                         .swipeActions {
                             Button(role: .destructive) { pendingDelete = bet } label: {
@@ -38,6 +47,13 @@ struct BetsListView: View {
         }
         .refreshable { await refresh() }
         .task { await refresh() }
+        .onChange(of: environment.betsRepository.cacheGeneration) { _ in
+            bets = environment.betsRepository.cachedBets()
+            updateStatusMessage()
+        }
+        .onChange(of: environment.betsRepository.pendingSyncCount) { _ in
+            updateStatusMessage()
+        }
         .alert(tr("bets.deleteConfirm"), isPresented: Binding(
             get: { pendingDelete != nil },
             set: { if !$0 { pendingDelete = nil } }
@@ -52,20 +68,35 @@ struct BetsListView: View {
                 Text("\(bet.event) / \(bet.selection)")
             }
         }
-        if let error {
-            Text(error).foregroundStyle(.red).padding()
-        }
     }
 
     private func refresh() async {
         refreshing = true
-        error = nil
         defer { refreshing = false }
+        // Show cache immediately so offline launches aren't blank.
+        bets = environment.betsRepository.cachedBets()
+        updateStatusMessage()
         do {
             bets = try await environment.betsRepository.refreshBets()
+            updateStatusMessage()
         } catch {
-            bets = (try? environment.betsRepository.cachedBets()) ?? []
-            self.error = error.userMessage
+            bets = environment.betsRepository.cachedBets()
+            if error.isConnectivityError {
+                statusMessage = tr("bets.offlineCached")
+            } else {
+                statusMessage = error.userMessage
+            }
+        }
+    }
+
+    private func updateStatusMessage() {
+        let pending = environment.betsRepository.pendingSyncCount
+        if pending > 0 {
+            statusMessage = tr("bets.pendingSync", params: ["count": "\(pending)"])
+        } else if !environment.networkMonitor.isOnline {
+            statusMessage = tr("bets.offlineCached")
+        } else {
+            statusMessage = nil
         }
     }
 
@@ -74,8 +105,9 @@ struct BetsListView: View {
             do {
                 try await environment.betsRepository.deleteBet(id: id)
                 bets.removeAll { $0.id == id }
+                updateStatusMessage()
             } catch {
-                self.error = error.userMessage
+                statusMessage = error.userMessage
             }
         }
     }
@@ -83,10 +115,21 @@ struct BetsListView: View {
 
 struct BetRowView: View {
     let bet: Bet
+    var isPendingSync = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(bet.event).font(.headline)
+            HStack {
+                Text(bet.event).font(.headline)
+                if isPendingSync {
+                    Text(tr("bets.pendingBadge"))
+                        .font(.caption2.weight(.semibold))
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(Color.orange.opacity(0.15), in: Capsule())
+                        .foregroundStyle(.orange)
+                }
+            }
             Text(subtitle).font(.subheadline).foregroundStyle(.secondary)
             Text(detail).font(.caption).foregroundStyle(.secondary)
         }
