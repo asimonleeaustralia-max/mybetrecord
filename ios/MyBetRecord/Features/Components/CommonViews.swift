@@ -7,27 +7,39 @@ struct AppTextField: View {
     var isSecure = false
     var keyboard: UIKeyboardType = .default
     var axis: Axis = .horizontal
+    /// Tip shown inside the field when empty (e.g. "e.g. Premier League").
+    /// When set, `title` is shown as a label above the field.
+    var placeholder: String = ""
+
+    private var prompt: String {
+        placeholder.isEmpty ? title : placeholder
+    }
 
     var body: some View {
-        Group {
-            if isSecure {
-                SecureField(title, text: $text)
-            } else if axis == .vertical {
-                if #available(iOS 16.0, *) {
-                    TextField(title, text: $text, axis: .vertical)
-                        .lineLimit(3...6)
-                } else {
-                    TextField(title, text: $text)
-                        .lineLimit(3)
-                }
-            } else {
-                TextField(title, text: $text)
+        VStack(alignment: .leading, spacing: 6) {
+            if !placeholder.isEmpty {
+                Text(title).font(.subheadline.weight(.semibold))
             }
+            Group {
+                if isSecure {
+                    SecureField(prompt, text: $text)
+                } else if axis == .vertical {
+                    if #available(iOS 16.0, *) {
+                        TextField(prompt, text: $text, axis: .vertical)
+                            .lineLimit(3...6)
+                    } else {
+                        TextField(prompt, text: $text)
+                            .lineLimit(3)
+                    }
+                } else {
+                    TextField(prompt, text: $text)
+                }
+            }
+            .textFieldStyle(.roundedBorder)
+            .keyboardType(keyboard)
+            .textInputAutocapitalization(.never)
+            .autocorrectionDisabled()
         }
-        .textFieldStyle(.roundedBorder)
-        .keyboardType(keyboard)
-        .textInputAutocapitalization(.never)
-        .autocorrectionDisabled()
     }
 }
 

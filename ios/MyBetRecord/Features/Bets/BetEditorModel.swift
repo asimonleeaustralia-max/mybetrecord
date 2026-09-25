@@ -16,7 +16,7 @@ final class BetEditorModel: ObservableObject {
     @Published var saved = false
     @Published var deleted = false
 
-    @Published var sport = "Soccer"
+    @Published var sport = ""
     @Published var event = ""
     @Published var selection = ""
     @Published var oddsFormat = "decimal"
@@ -335,7 +335,8 @@ final class BetEditorModel: ObservableObject {
             return
         }
 
-        guard let stakeValue = Double(stake), stakeValue > 0 else {
+        guard !sport.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+              let stakeValue = Double(stake), stakeValue > 0 else {
             errorMessage = tr("form.requiredFields")
             return
         }

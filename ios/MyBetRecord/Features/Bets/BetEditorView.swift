@@ -101,7 +101,6 @@ private struct BetEditorForm: View {
                     )
                 }
 
-                AppTextField(title: tr("form.tournament"), text: $model.tournament)
                 SuggestionTextField(
                     title: tr("form.bookmaker"),
                     text: $model.bookmaker,
@@ -116,9 +115,22 @@ private struct BetEditorForm: View {
                 AppTextField(title: tr("form.commission"), text: $model.exchangeCommission, keyboard: .decimalPad)
                 Text(tr("form.commissionHint")).font(.caption).foregroundStyle(.secondary)
 
+                AppTextField(
+                    title: tr("form.tournament"),
+                    text: $model.tournament,
+                    placeholder: tr("form.tournamentPlaceholder")
+                )
                 if !model.isMultiple {
-                    AppTextField(title: tr("form.event"), text: $model.event)
-                    AppTextField(title: tr("form.selection"), text: $model.selection)
+                    AppTextField(
+                        title: tr("form.event"),
+                        text: $model.event,
+                        placeholder: tr("form.eventPlaceholder")
+                    )
+                    AppTextField(
+                        title: tr("form.selection"),
+                        text: $model.selection,
+                        placeholder: tr("form.selectionPlaceholder")
+                    )
                 }
 
                 AppTextField(title: "\(tr("form.eventAt")) — \(tr("form.dateHint"))", text: $model.eventAt)
@@ -149,8 +161,16 @@ private struct BetEditorForm: View {
                                     }
                                 }
                             }
-                            AppTextField(title: tr("form.event"), text: $model.legs[index].event)
-                            AppTextField(title: tr("form.selection"), text: $model.legs[index].selection)
+                            AppTextField(
+                                title: tr("form.event"),
+                                text: $model.legs[index].event,
+                                placeholder: tr("form.eventPlaceholder")
+                            )
+                            AppTextField(
+                                title: tr("form.selection"),
+                                text: $model.legs[index].selection,
+                                placeholder: tr("form.selectionPlaceholder")
+                            )
                             AppTextField(
                                 title: oddsFieldTitle,
                                 text: $model.legs[index].odds,
